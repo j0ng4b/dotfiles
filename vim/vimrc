@@ -1,0 +1,11 @@
+" Compatibility
+if &compatible
+	set nocompatible
+endif
+set cpoptions+=EgnW
+
+""
+"""  Options
+""""
+runtime! options.vim
+
