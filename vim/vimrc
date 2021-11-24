@@ -9,3 +9,8 @@ set cpoptions+=EgnW
 """"
 runtime! options.vim
 
+""
+"""  Keymaps
+""""
+runtime! keymaps.vim
+
