@@ -28,3 +28,7 @@ map! <C-S>   <Cmd>w<CR>
 map  <C-Q>   <Cmd>q<CR>
 map! <C-Q>   <Cmd>q<CR>
 
+
+"" Change map leaderr
+let mapleader = ','
+

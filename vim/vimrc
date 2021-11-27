@@ -14,3 +14,30 @@ runtime! options.vim
 """"
 runtime! keymaps.vim
 
+""
+"""  Autocmds
+""""
+augroup HighlightSearch
+	autocmd!
+	autocmd CmdLineEnter /,? set hlsearch
+	autocmd CmdLineLeave /,? set nohlsearch
+augroup END
+
+""
+"""  Colorschemes
+""""
+let g:gruvbox_italic = 1
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_hls_cursor = 'red'
+let g:gruvbox_sign_column = 'none'
+let g:gruvbox_invert_selection = 0
+let g:gruvbox_invert_indent_guides = 1
+let g:gruvbox_improved_strings = 1
+let g:gruvbox_improved_warnings = 1
+silent! colorscheme gruvbox
+
+let g:tokyonight_style = 'night'
+let g:tokyonight_enable_italic = 0
+let g:tokyonight_disable_italic_comment = 1
+"silent! colorscheme tokyonight
+

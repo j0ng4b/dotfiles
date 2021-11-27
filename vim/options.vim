@@ -13,7 +13,6 @@ set colorcolumn=+1
 set completeopt=menu,menuone,popup,noinsert,noselect
 set completepopup=height:10,align:menu,border:on
 set confirm
-set cursorcolumn
 set cursorline
 set display=lastline,uhex
 set encoding=utf-8
@@ -23,7 +22,6 @@ set fillchars=vert:│,fold:·,foldopen:↓,foldclose:→,foldsep:│,diff:—,e
 set helpheight=0
 set hidden
 set history=10000
-set hlsearch
 set ignorecase
 set incsearch
 set laststatus=2
@@ -58,7 +56,7 @@ set tabstop=4
 set termguicolors
 set textwidth=80
 set timeout
-set timeoutlen=180
+set timeoutlen=500
 set ttimeoutlen=80
 set undodir=~/.vim/undos//
 set undofile
