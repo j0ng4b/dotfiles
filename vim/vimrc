@@ -26,6 +26,8 @@ augroup END
 ""
 """  Colorschemes
 """"
+let g:polyglot_disabled = [ 'sensible' ]
+
 let g:gruvbox_italic = 1
 let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_hls_cursor = 'red'
@@ -40,4 +42,15 @@ let g:tokyonight_style = 'night'
 let g:tokyonight_enable_italic = 0
 let g:tokyonight_disable_italic_comment = 1
 "silent! colorscheme tokyonight
+
+""
+""" Plugins
+""""
+let g:lexima_map_escape = 'jk'
+let g:lexima_accept_pum_with_enter = 1
+
+let NERDCommentWholeLinesInVMode = 1
+let NERDRemoveExtraSpaces = 1
+let NERDSpaceDelims = 1
+let NERDTrimTrailingWhitespace = 1
 

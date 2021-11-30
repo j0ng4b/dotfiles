@@ -4,3 +4,21 @@
 [submodule "tokyonight-vim"]
 	path = vim/pack/colors/opt/tokyonight-vim
 	url = https://github.com/ghifarit53/tokyonight-vim.git
+[submodule "vim-polyglot"]
+	path = vim/pack/colors/start/vim-polyglot
+	url = https://github.com/sheerun/vim-polyglot
+[submodule "nerdcommenter"]
+	path = vim/pack/packages/start/nerdcommenter
+	url = https://github.com/preservim/nerdcommenter.git
+[submodule "repeat"]
+	path = vim/pack/packages/start/repeat
+	url = https://tpope.io/vim/repeat.git
+[submodule "editorconfig-vim"]
+	path = vim/pack/packages/start/editorconfig-vim
+	url = https://github.com/editorconfig/editorconfig-vim.git
+[submodule "surround"]
+	path = vim/pack/packages/start/surround
+	url = https://tpope.io/vim/surround.git
+[submodule "lexima.vim"]
+	path = vim/pack/packages/start/lexima.vim
+	url = https://github.com/cohama/lexima.vim.git
