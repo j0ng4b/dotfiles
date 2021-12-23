@@ -26,10 +26,10 @@ augroup END
 ""
 """  Colorschemes
 """"
-let g:polyglot_disabled = [ 'sensible' ]
+let g:polyglot_disabled = [ 'sensible', 'ftdetect' ]
 
-let g:gruvbox_italic = 1
-let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_italic = 0
+let g:gruvbox_contrast_dark = 'soft'
 let g:gruvbox_hls_cursor = 'red'
 let g:gruvbox_sign_column = 'none'
 let g:gruvbox_invert_selection = 0

@@ -1,0 +1,88 @@
+#!/usr/bin/env sh
+
+# Source some environment variables
+. ${PWD}/zsh/zshenv
+
+# Install vim dotfiles and packges
+vim_dots() {
+	mkdir -p ~/.vim/undos/
+
+	ln -sf ${PWD}/vim/vimrc -t ~/.vim/
+	ln -sf ${PWD}/vim/pack -t ~/.vim/
+	ln -sf ${PWD}/vim/options.vim -t ~/.vim/
+	ln -sf ${PWD}/vim/keymaps.vim -t ~/.vim/
+
+	echo "VIM dotfiles installed!"
+
+	git submodule init ${PWD}/vim/pack/
+	git submodule update --depth 1
+	vim -c 'helptags ALL' -c 'qa'
+
+	echo "VIM packages installed!"
+}
+
+# Install zsh dotfiles
+zsh_dots() {
+	mkdir -p ${ZDOTDIR}
+	mkdir -p ${HISTFILE}
+
+	ln -sf ${PWD}/zsh/zshenv -T ~/.zshenv
+	ln -sf ${PWD}/zsh/zshrc -T ${ZDOTDIR}/.zshrc
+	ln -sf ${PWD}/zsh/aliases -T ${ZDOTDIR}/aliases
+
+	echo "Zsh dotfiles installed!"
+}
+
+# Print usage
+usage() {
+	echo "Usage: $0 [-h] [-i] [-u] [<dotfile>]"
+	echo ""
+	echo "Install or uninstall configuration files, the dotfiles"
+	echo ""
+	echo "Options"
+	echo "  -i     install dotfile"
+	echo "  -u     uninstall dotfile"
+	echo "  -h     show this help message"
+	echo ""
+	echo "Dotfiles"
+	echo "  vim    vim dotfiles and packages"
+	echo "  zsh    zsh dotfiles"
+	echo "  all    all above"
+}
+
+install_dots() {
+	case $1 in
+		vim) vim_dots ;;
+		zsh) zsh_dots ;;
+		all) vim_dots ; zsh_dots ;;
+		*)   usage ;;
+	esac
+}
+
+uninstall_dots() {
+	case $1 in
+		vim) ;;
+		zsh) ;;
+		all) ;;
+		*)   usage ;;
+	esac
+}
+
+# Parse command-line arguments
+[ $# -eq 0 ] && usage
+while getopts 'hi:u:' opt; do
+	case $opt in
+		i)
+			install_dots $OPTARG
+			;;
+
+		u)
+			uninstall_dots $OPTARG
+			;;
+
+		h)
+			usage
+			;;
+	esac
+done
+
