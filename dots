@@ -24,7 +24,7 @@ vim_dots() {
 # Install zsh dotfiles
 zsh_dots() {
 	mkdir -p ${ZDOTDIR}
-	mkdir -p ${HISTFILE}
+	mkdir -p $(dirname ${HISTFILE})
 
 	ln -sf ${PWD}/zsh/zshenv -T ~/.zshenv
 	ln -sf ${PWD}/zsh/zshrc -T ${ZDOTDIR}/.zshrc
