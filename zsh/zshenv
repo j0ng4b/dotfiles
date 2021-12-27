@@ -20,6 +20,11 @@ export SAVEHIST=10000
 export ZLE_RPROMPT_INDENT=0
 
 ###
+### VIM
+###
+export VIMINIT="set nocompatible | source ${XDG_CONFIG_HOME}/vim/vimrc"
+
+###
 ### Editors
 ###
 export VISUAL=vim

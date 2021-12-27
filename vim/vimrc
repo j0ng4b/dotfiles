@@ -5,6 +5,11 @@ endif
 set cpoptions+=EgnW
 
 ""
+""" VIM XDG base directories
+""""
+source $XDG_CONFIG_HOME/vim/xdg.vim
+
+""
 """  Options
 """"
 runtime! options.vim

@@ -5,12 +5,16 @@
 
 # Install vim dotfiles and packges
 vim_dots() {
-	mkdir -p ~/.vim/undos/
+	mkdir -p ${XDG_CONFIG_HOME}/vim/
+	mkdir -p ${XDG_STATE_HOME}/vim/
+	mkdir -p ${XDG_CACHE_HOME}/vim/
+	mkdir -p ${XDG_DATA_HOME}/vim/
 
-	ln -sf ${PWD}/vim/vimrc -t ~/.vim/
-	ln -sf ${PWD}/vim/pack -t ~/.vim/
-	ln -sf ${PWD}/vim/options.vim -t ~/.vim/
-	ln -sf ${PWD}/vim/keymaps.vim -t ~/.vim/
+	ln -sf ${PWD}/vim/vimrc -t ${XDG_CONFIG_HOME}/vim/
+	ln -sf ${PWD}/vim/pack -t ${XDG_DATA_HOME}/vim/
+	ln -sf ${PWD}/vim/xdg.vim -t ${XDG_CONFIG_HOME}/vim/
+	ln -sf ${PWD}/vim/options.vim -t ${XDG_CONFIG_HOME}/vim/
+	ln -sf ${PWD}/vim/keymaps.vim -t ${XDG_CONFIG_HOME}/vim/
 
 	echo "VIM dotfiles installed!"
 

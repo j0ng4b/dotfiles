@@ -58,13 +58,11 @@ set textwidth=80
 set timeout
 set timeoutlen=500
 set ttimeoutlen=80
-set undodir=~/.vim/undos//
 set undofile
 set undolevels=250
 set updatecount=500
 set updatetime=100
 set viminfo='200,<200,h,s100
-set viminfofile=~/.vim/viminfo
 set wildignore=*.o,*.class
 set wildmenu
 set wildmode=longest:full
