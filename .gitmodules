@@ -1,24 +1,52 @@
 [submodule "gruvbox"]
 	path = vim/pack/colors/opt/gruvbox
 	url = https://github.com/morhetz/gruvbox.git
+	ignore = dirty
 [submodule "tokyonight-vim"]
 	path = vim/pack/colors/opt/tokyonight-vim
 	url = https://github.com/ghifarit53/tokyonight-vim.git
+	ignore = dirty
 [submodule "vim-polyglot"]
 	path = vim/pack/colors/start/vim-polyglot
 	url = https://github.com/sheerun/vim-polyglot
+	ignore = dirty
 [submodule "nerdcommenter"]
 	path = vim/pack/packages/start/nerdcommenter
 	url = https://github.com/preservim/nerdcommenter.git
+	ignore = dirty
 [submodule "repeat"]
 	path = vim/pack/packages/start/repeat
 	url = https://tpope.io/vim/repeat.git
+	ignore = dirty
 [submodule "editorconfig-vim"]
 	path = vim/pack/packages/start/editorconfig-vim
 	url = https://github.com/editorconfig/editorconfig-vim.git
+	ignore = dirty
 [submodule "surround"]
 	path = vim/pack/packages/start/surround
 	url = https://tpope.io/vim/surround.git
+	ignore = dirty
 [submodule "lexima.vim"]
 	path = vim/pack/packages/start/lexima.vim
 	url = https://github.com/cohama/lexima.vim.git
+	ignore = dirty
+[submodule "onedark.vim"]
+	path = vim/pack/colors/opt/onedark.vim
+	url = https://github.com/joshdick/onedark.vim.git
+	ignore = dirty
+[submodule "VimCompletesMe"]
+	path = vim/pack/packages/start/VimCompletesMe
+	url = https://github.com/ackyshake/VimCompletesMe.git
+	ignore = dirty
+[submodule "snipmate.vim"]
+	path = vim/pack/packages/start/snipmate.vim
+	url = https://github.com/msanders/snipmate.vim.git
+	ignore = dirty
+[submodule "vim-gitgutter"]
+	path = vim/pack/packages/start/vim-gitgutter
+	url = https://github.com/airblade/vim-gitgutter.git
+	ignore = dirty
+[submodule "everforest"]
+	path = vim/pack/colors/opt/everforest
+	url = https://github.com/sainnhe/everforest.git
+	ignore = dirty
