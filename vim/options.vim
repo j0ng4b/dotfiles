@@ -59,7 +59,7 @@ set timeout
 set timeoutlen=500
 set ttimeoutlen=80
 set undofile
-set undolevels=250
+set undolevels=2000
 set updatecount=500
 set updatetime=100
 set viminfo='200,<200,h,s100

@@ -15,6 +15,7 @@ vim_dots() {
 	ln -sf ${PWD}/vim/xdg.vim -t ${XDG_CONFIG_HOME}/vim/
 	ln -sf ${PWD}/vim/options.vim -t ${XDG_CONFIG_HOME}/vim/
 	ln -sf ${PWD}/vim/keymaps.vim -t ${XDG_CONFIG_HOME}/vim/
+	ln -sf ${PWD}/vim/autocmds.vim -t ${XDG_CONFIG_HOME}/vim/
 
 	echo "VIM dotfiles installed!"
 

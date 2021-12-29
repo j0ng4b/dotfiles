@@ -22,11 +22,7 @@ runtime! keymaps.vim
 ""
 """  Autocmds
 """"
-augroup HighlightSearch
-	autocmd!
-	autocmd CmdLineEnter /,? set hlsearch
-	autocmd CmdLineLeave /,? set nohlsearch
-augroup END
+runtime! autocmds.vim
 
 ""
 """  Colorschemes
