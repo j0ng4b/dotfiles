@@ -74,6 +74,18 @@ let g:gitgutter_sign_removed = '_'
 let g:gitgutter_sign_removed_first_line = '‾'
 let g:gitgutter_sign_removed_above_and_below = '_¯'
 let g:gitgutter_sign_modified_removed = '~_'
+let g:gitgutter_sign_allow_clobber = 0
+let g:gitgutter_sign_priority = 9
 let g:gitgutter_preview_win_floating = 1
 let g:gitgutter_use_location_list = 1
+
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+let g:syntastic_cursor_column = 0
+let g:syntastic_error_symbol = '✖'
+let g:syntastic_warning_symbol = '⚐'
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_jump = 3
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_loc_list_height = 5
 

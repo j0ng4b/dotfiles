@@ -43,7 +43,7 @@ set scrolljump=5
 set scrolloff=1
 set shiftwidth=0
 set shortmess=aoOstTIc
-set showbreak=
+set showbreak=⌊
 set showcmd
 set showtabline=2
 set signcolumn=number
@@ -55,8 +55,6 @@ set tabline=
 set tabstop=4
 set termguicolors
 set textwidth=80
-set timeout
-set timeoutlen=500
 set ttimeoutlen=80
 set undofile
 set undolevels=2000

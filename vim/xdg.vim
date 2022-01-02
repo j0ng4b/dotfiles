@@ -1,10 +1,6 @@
 ""
 """ VIM XDG directories compliance
 """
-if empty($MYVIMRC)
-	let $MYVIMRC = expand('<sfile>:t')
-endif
-
 if empty($XDG_CONFIG_HOME)
 	let $XDG_CONFIG_HOME = $HOME . '/.config'
 endif
@@ -19,6 +15,10 @@ endif
 
 if empty($XDG_DATA_HOME)
 	let $XDG_DATA_HOME = $HOME . '/.local/share'
+endif
+
+if empty($MYVIMRC)
+	let $MYVIMRC = $XDG_CONFIG_HOME . "/vim/vimrc"
 endif
 
 set runtimepath^=$XDG_CONFIG_HOME/vim

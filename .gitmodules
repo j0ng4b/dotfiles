@@ -50,3 +50,7 @@
 	path = vim/pack/colors/opt/everforest
 	url = https://github.com/sainnhe/everforest.git
 	ignore = dirty
+[submodule "syntastic"]
+	path = vim/pack/packages/start/syntastic
+	url = https://github.com/vim-syntastic/syntastic.git
+	ignore = dirty
