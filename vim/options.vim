@@ -28,7 +28,7 @@ set laststatus=2
 set lazyredraw
 set linebreak
 set list
-set listchars=eol:¬,tab:│\ ,lead:·,trail:*
+set listchars=tab:│\ ,lead:·,trail:*
 set mouse=ar
 set noexpandtab
 set noshowmode

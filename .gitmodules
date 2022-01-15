@@ -1,11 +1,3 @@
-[submodule "gruvbox"]
-	path = vim/pack/colors/opt/gruvbox
-	url = https://github.com/morhetz/gruvbox.git
-	ignore = dirty
-[submodule "tokyonight-vim"]
-	path = vim/pack/colors/opt/tokyonight-vim
-	url = https://github.com/ghifarit53/tokyonight-vim.git
-	ignore = dirty
 [submodule "vim-polyglot"]
 	path = vim/pack/colors/start/vim-polyglot
 	url = https://github.com/sheerun/vim-polyglot
@@ -53,4 +45,12 @@
 [submodule "syntastic"]
 	path = vim/pack/packages/start/syntastic
 	url = https://github.com/vim-syntastic/syntastic.git
+	ignore = dirty
+[submodule "lightline.vim"]
+	path = vim/pack/packages/start/lightline.vim
+	url = https://github.com/itchyny/lightline.vim.git
+	ignore = dirty
+[submodule "vim-devicons"]
+	path = vim/pack/packages/start/vim-devicons
+	url = https://github.com/ryanoasis/vim-devicons.git
 	ignore = dirty

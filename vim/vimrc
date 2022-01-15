@@ -40,20 +40,7 @@ let g:everforest_show_eob = 0
 let g:everforest_diagnostic_text_highlight = 1
 let g:everforest_better_performance = 1
 
-let g:gruvbox_italic = 0
-let g:gruvbox_contrast_dark = 'hard'
-let g:gruvbox_hls_cursor = 'red'
-let g:gruvbox_sign_column = 'bg0'
-let g:gruvbox_invert_selection = 0
-let g:gruvbox_invert_indent_guides = 1
-let g:gruvbox_improved_strings = 1
-let g:gruvbox_improved_warnings = 1
-
-let g:tokyonight_style = 'storm'
-let g:tokyonight_enable_italic = 0
-let g:tokyonight_disable_italic_comment = 1
-
-silent! colorscheme everforest
+silent! colorscheme onedark
 
 ""
 """ Plugins
@@ -79,13 +66,81 @@ let g:gitgutter_sign_priority = 9
 let g:gitgutter_preview_win_floating = 1
 let g:gitgutter_use_location_list = 1
 
-let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_cursor_column = 0
-let g:syntastic_error_symbol = '✖'
-let g:syntastic_warning_symbol = '⚐'
+let g:syntastic_error_symbol = ''
+let g:syntastic_warning_symbol = ''
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_jump = 3
 let g:syntastic_auto_loc_list = 1
-let g:syntastic_loc_list_height = 5
+let g:syntastic_loc_list_height = 10
+let g:syntastic_stl_format = "%E{" . g:syntastic_error_symbol . " %fe}"
+let g:syntastic_stl_format .= "%B{, }"
+let g:syntastic_stl_format .= "%W{" . g:syntastic_warning_symbol . " %fw}"
+
+function! SyntasticCheckHook(errors) abort
+	let l:max_size = g:syntastic_loc_list_height
+
+	if !empty(a:errors)
+		let g:syntastic_loc_list_height = min([len(a:errors), l:max_size])
+	endif
+
+	call lightline#update()
+endfunction
+
+let lightline = {}
+let lightline.colorscheme = g:colors_name
+let lightline.separator = { 'left': '', 'right': '' }
+let lightline.subseparator = { 'left': '', 'right': '', }
+let lightline.component = { 'lineinfo': '%3l  %02c ' }
+let lightline.component_type = { 'syntastic': 'error' }
+let lightline.component_expand = { 'syntastic': 'SyntasticStatuslineFlag' }
+let lightline.component_function = {
+\	'filename': 'LightlineFilename',
+\	'fileinfo': 'LightlineFileinfo'
+\}
+
+let lightline.active = {
+\	'left': [[ 'mode', 'paste' ], [ 'filename' ]],
+\	'right': [[ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileinfo' ]]
+\}
+
+let lightline.inactive = {
+\	'left': [[ 'filename' ]],
+\	'right': [[ 'lineinfo' ], [ 'percent' ], [ 'fileinfo' ]]
+\}
+
+let lightline.mode_map = {
+\	'n' : 'N',
+\	'i' : 'I',
+\	'R' : 'R',
+\	'v' : 'V',
+\	'V' : 'VL',
+\	"\<C-v>": 'VB',
+\	'c' : 'C',
+\	's' : 'S',
+\	'S' : 'SL',
+\	"\<C-s>": 'SB',
+\	't': 'T',
+\}
+
+function! LightlineFilename() abort
+	let l:modified = &modified ? ' ' : ''
+	let l:filename = expand('%:t') ==# '' ? '[No Name]' : expand('%:t')
+	let l:readonly = &readonly ? ' ' : ''
+
+	return l:modified . l:filename . l:readonly
+endfunction
+
+function! LightlineFileinfo() abort
+	let l:filetype = &filetype ==# '' ? 'no ft' : &filetype . ' '
+	\	. WebDevIconsGetFileTypeSymbol()
+
+	let l:fileformat = &fileformat . ' ' . WebDevIconsGetFileFormatSymbol()
+	let l:fileencoding = &fileencoding ==# '' ? &encoding : &fileencoding
+
+	let l:info = [ l:filetype, l:fileencoding, l:fileformat ]
+	return lightline#concatenate(l:info, 1)
+endfunction
 
