@@ -1,0 +1,171 @@
+#!/usr/bin/env sh
+
+# Helper variables
+_dotfiles=$(cd $(dirname $0) && pwd)
+
+_list_type=""
+_dotfiles_list=""
+_verbose="false"
+
+# Source some environment variables
+. $_dotfiles/zsh/.zshenv
+
+# General functoin for install or remove dotfiles
+_install_uninstall_dotfiles()
+{
+    # Create XDG base directories
+    mkdir -p ${XDG_CONFIG_HOME}
+    mkdir -p ${XDG_CACHE_HOME}
+    mkdir -p ${XDG_STATE_HOME}
+    mkdir -p ${XDG_DATA_HOME}
+
+    # Function to convert string to upper case
+    _to_upper()
+    {
+        _str=$1
+        _result=$(echo $_str | tr '[:lower:]' '[:upper:]')
+
+        echo $_result
+    }
+
+    # The real install or uninstall function
+    _install_or_uninstall()
+    {
+        _msg=""
+        _command=$1
+        _dotfile=$2
+        _dotfile_dir=$_dotfiles/$_dotfile
+
+        # Determine if should install or uninstall the dotfile
+        case $_command in
+            i)
+                _command="ln -sfT $_dotfile_dir/\$_dotfile_type"
+                _msg="\"Installing $_dotfile_dir/\$_dotfile_type\""
+                ;;
+
+            u)
+                _command="rm -rf"
+                _msg="\"Uninstalling $_dotfile_dir/\$_dotfile_type\""
+                ;;
+        esac
+
+        # Check if is a valid dotfile
+        if [ ! -d $_dotfile_dir ]
+        then
+            _show_error "dotfile directory named '$_dotfile' doesn't exits"
+        fi
+
+        # Install/Uninstall the dotfile to/from proper place
+        for _dotfile_type in config cache state data
+        do
+            _target_dir=\${XDG_$(_to_upper $_dotfile_type)_HOME}/$_dotfile
+
+            [ ! -d $_dotfile_dir/$_dotfile_type ] && continue
+
+            # TODO: skip proccess if already done
+
+            eval $_command $_target_dir
+            eval _show_msg $_msg verbose
+        done
+
+        # TODO: pseudo dotfile all for proccess all dotfiles
+
+        # Some file doesn't follow XDG structure, therefore, need to be placed
+        # on home directory (e.g. .zshenv)
+        _command="${_command%_type}"
+        _msg="${_msg%_type\"}\""
+        for _dotfile in $_dotfile_dir/.*
+        do
+            # Not install ./ or ../
+            [ ${_dotfile%.} != $_dotfile ] && continue
+
+            _dotfile=$(basename $_dotfile)
+            _target_dir=${HOME}/$_dotfile
+
+            eval $_command $_target_dir
+            eval _show_msg $_msg verbose
+        done
+    }
+
+    # Parse the list of dotfiles and determine their proccess type:
+    # installation or uninstallation
+    for _dotfile in $_dotfiles_list
+    do
+        _install_or_uninstall ${_dotfile##*@} ${_dotfile%@*}
+    done
+
+    _show_msg "All has been done!"
+}
+
+# Show script usage
+_show_usage()
+{
+    _prog_name=$(basename $0)
+
+    echo "Usage:"
+    echo "  $_prog_name"
+
+    # TODO: Add usage message
+}
+
+# Show error and exit
+_show_error()
+{
+    _prog_name=$(basename $0)
+
+    echo "$_prog_name: $1"
+    echo "Try '$_prog_name --help' for more information."
+
+    exit 1
+}
+
+# Show message on standard output if verbose is enabled
+_show_msg()
+{
+    eval _use_verbose=\$_$2
+    [ $_use_verbose = "false" ] && return
+    echo $1
+}
+
+# Parse command-line arguments
+[ $# -eq 0 ] && _show_usage
+while [ $# -gt 0 ]
+do
+    case $1 in
+        -i | --install)
+            _list_type="@i"
+            ;;
+
+        -u | --uninstall)
+            _list_type="@u"
+            ;;
+
+        -v | --verbose)
+            _verbose="true"
+            ;;
+
+        -l | --list)
+            # TODO: List available dorfiles
+            ;;
+
+        -h | --help)
+            _show_usage
+            exit 0
+            ;;
+
+        -* | --*)
+            _show_error "unkowning option '$1'"
+            ;;
+
+        *)
+            [ -z $_list_type ] && _show_error "unkowning argument '$1'"
+            _dotfiles_list="$_dotfiles_list $1${_list_type}"
+            ;;
+    esac
+
+    shift
+done
+
+# Start install and uninstall proccess
+_install_uninstall_dotfiles
+
