@@ -4,7 +4,6 @@
 [core]
 	editor = vim
 [commit]
-	template = /data/data/com.termux/files/home/.config/git/commit
 	verbose = 2
 [help]
 	autocorrect = 25

@@ -1,0 +1,36 @@
+" Compatibility
+if &compatible
+    set nocompatible
+endif
+set cpoptions+=EgnW
+
+""
+""" Vim XDG base directories
+""""
+source $XDG_CONFIG_HOME/vim/xdg.vim
+
+""
+"""  Options
+""""
+runtime! options.vim
+
+""
+"""  Key maps
+""""
+runtime! keymaps.vim
+
+""
+"""  Auto commands
+""""
+runtime! autocmds.vim
+
+""
+"""  Color schemes
+""""
+runtime! colorschemes.vim
+
+""
+"""  Packages
+""""
+runtime! packages.vim
+
