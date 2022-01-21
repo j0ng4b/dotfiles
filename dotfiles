@@ -10,7 +10,7 @@ _verbose="false"
 # Source some environment variables
 . $_dotfiles/zsh/.zshenv
 
-# General functoin for install or remove dotfiles
+# General function for install or remove dotfiles
 _install_uninstall_dotfiles()
 {
     # Create XDG base directories
@@ -62,13 +62,13 @@ _install_uninstall_dotfiles()
 
             [ ! -d $_dotfile_dir/$_dotfile_type ] && continue
 
-            # TODO: skip proccess if already done
+            # TODO: skip process if already done
 
             eval $_command $_target_dir
             eval _show_msg $_msg verbose
         done
 
-        # TODO: pseudo dotfile all for proccess all dotfiles
+        # TODO: pseudo dotfile all for process all dotfiles
 
         # Some file doesn't follow XDG structure, therefore, need to be placed
         # on home directory (e.g. .zshenv)
@@ -87,7 +87,7 @@ _install_uninstall_dotfiles()
         done
     }
 
-    # Parse the list of dotfiles and determine their proccess type:
+    # Parse the list of dotfiles and determine their process type:
     # installation or uninstallation
     for _dotfile in $_dotfiles_list
     do
@@ -102,10 +102,31 @@ _show_usage()
 {
     _prog_name=$(basename $0)
 
-    echo "Usage:"
-    echo "  $_prog_name"
+    # Auto descriptive
+    _fill_with_spaces()
+    {
+        _spaces="$(seq -s@ ${#_prog_name} | sed 's/[0-9]*@*/ /g')"
+        echo "$_spaces "
+    }
 
-    # TODO: Add usage message
+    _usage_msg=$(cat <<-EOF
+Usage:
+  $_prog_name [--install <list>] [--uninstall <list>] [--install-modules <list>]
+  $(_fill_with_spaces)[--uninstall-modules <list>] [--help] [--list] [--verbose]
+
+Options:
+  -h, --help                show this help message
+  -l, --list                list dotfiles
+  -i, --install             install single or multiples dotfiles
+  -u, --uninstall           uninstall single or multiples dotfiles
+  -m, --install-module      install modules of single or muitiples dotfiles
+  -M, --uninstall-module    uninstall modules of single or muitiples dotfiles
+  -v, --verbose             enable extra output
+
+EOF
+    )
+
+    echo "$_usage_msg"
 }
 
 # Show error and exit
@@ -140,12 +161,26 @@ do
             _list_type="@u"
             ;;
 
+        -m | --install-module)
+            # TODO: Install modules
+            echo "Not implemented"
+            exit 1
+            ;;
+
+        -M | --uninstall-module)
+            # TODO: Uninstall modules
+            echo "Not implemented"
+            exit 1
+            ;;
+
         -v | --verbose)
             _verbose="true"
             ;;
 
         -l | --list)
-            # TODO: List available dorfiles
+            # TODO: List available dotfiles
+            echo "Not implemented"
+            exit 1
             ;;
 
         -h | --help)
@@ -154,11 +189,11 @@ do
             ;;
 
         -* | --*)
-            _show_error "unkowning option '$1'"
+            _show_error "unknowing option '$1'"
             ;;
 
         *)
-            [ -z $_list_type ] && _show_error "unkowning argument '$1'"
+            [ -z $_list_type ] && _show_error "unknowing argument '$1'"
             _dotfiles_list="$_dotfiles_list $1${_list_type}"
             ;;
     esac
@@ -166,6 +201,6 @@ do
     shift
 done
 
-# Start install and uninstall proccess
+# Start install and uninstall process
 _install_uninstall_dotfiles
 
