@@ -134,7 +134,9 @@ let &scrolloff      = 1
 "" Spelling
 ""
 let &spell          = v:true
+let &spellfile      = g:xdg_vim_data . '/spell/words.utf-8.add'
 let &spelllang      = 'en'
+let &spellsuggest   = 'best,10'
 
 call mkdir(g:xdg_vim_data . '/spell', 'p', 0700)
 
