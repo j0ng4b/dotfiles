@@ -13,6 +13,11 @@ _verbose="false"
 # General function for install or remove dotfiles
 _install_uninstall_dotfiles()
 {
+    if [ -z "$_dotfiles_list" ]
+    then
+        _show_error "no dotfile provided"
+    fi
+
     # Create XDG base directories
     mkdir -p ${XDG_CONFIG_HOME}
     mkdir -p ${XDG_CACHE_HOME}
@@ -68,8 +73,6 @@ _install_uninstall_dotfiles()
             eval _show_msg $_msg verbose
         done
 
-        # TODO: pseudo dotfile all for process all dotfiles
-
         # Some file doesn't follow XDG structure, therefore, need to be placed
         # on home directory (e.g. .zshenv)
         _command="${_command%_type}"
@@ -86,6 +89,33 @@ _install_uninstall_dotfiles()
             eval _show_msg $_msg verbose
         done
     }
+
+    # Check if has meta dotfile named all, if it's present in list, process all
+    # dotfiles.
+    if [ "${_dotfiles_list##*all*}" != "$_dotfiles_list" ]
+    then
+        case ${_dotfiles_list##*all@} in
+            i*) _cmd="@i" ;;
+            u*) _cmd="@u" ;;
+        esac
+
+        _tmp_list=$(ls -d */ | sed "s/\//$_cmd/g")
+        for _dotfile in $_dotfiles_list
+        do
+            if [ ${_dotfile%*$_cmd*} != $_dotfile ]
+            then
+                [ $_dotfile = "all$_cmd" ] && continue
+
+                _show_msg "Ignoring dotfile '${_dotfile%@*}' included by 'all'"\
+                    verbose
+                continue
+            fi
+
+            _tmp_list="$_tmp_list $_dotfile"
+        done
+
+        _dotfiles_list="$_tmp_list"
+    fi
 
     # Parse the list of dotfiles and determine their process type:
     # installation or uninstallation
@@ -127,6 +157,7 @@ EOF
     )
 
     echo "$_usage_msg"
+    exit 0
 }
 
 # Show error and exit
@@ -185,7 +216,6 @@ do
 
         -h | --help)
             _show_usage
-            exit 0
             ;;
 
         -* | --*)
