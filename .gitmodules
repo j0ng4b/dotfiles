@@ -1,0 +1,12 @@
+[submodule "vim/dracula"]
+	path = vim/data/pack/colors/opt/dracula
+	url = https://github.com/dracula/vim.git
+[submodule "vim/everforest"]
+	path = vim/data/pack/colors/opt/everforest
+	url = https://github.com/sainnhe/everforest.git
+[submodule "vim/onedark.vim"]
+	path = vim/data/pack/colors/opt/onedark.vim
+	url = https://github.com/joshdick/onedark.vim.git
+[submodule "vim/vim-polyglot"]
+	path = vim/data/pack/colors/start/vim-polyglot
+	url = https://github.com/sheerun/vim-polyglot.git
