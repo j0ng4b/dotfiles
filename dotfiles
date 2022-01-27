@@ -38,7 +38,7 @@ _install_uninstall_dotfiles()
     {
         _msg=""
         _command=$1
-        _dotfile=$2
+        _dotfile=$(basename $2)
         _dotfile_dir=$_dotfiles/$_dotfile
 
         # Determine if should install or uninstall the dotfile
@@ -99,7 +99,7 @@ _install_uninstall_dotfiles()
             u*) _cmd="@u" ;;
         esac
 
-        _tmp_list=$(ls -d */ | sed "s/\//$_cmd/g")
+        _tmp_list="$(ls -d $_dotfiles/*/ | sed "s/\/$/$_cmd/g")"
         for _dotfile in $_dotfiles_list
         do
             if [ ${_dotfile%*$_cmd*} != $_dotfile ]
