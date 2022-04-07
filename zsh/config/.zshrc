@@ -2,7 +2,7 @@
 ## Source aliases
 ###
 for alias in ${ZDOTDIR}/aliases/*.sh; do
-	. ${alias}
+    . ${alias}
 done
 
 ###
