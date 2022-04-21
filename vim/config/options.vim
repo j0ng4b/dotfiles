@@ -50,7 +50,7 @@ let &showcmd        = v:true
 ""
 "" Insert mode completion
 ""
-let &completeopt    = 'menu,menuone,popup,noinsert,noselect'
+let &completeopt    = 'menuone,popup,noinsert,noselect'
 let &completepopup  = 'height:10,border:on'
 let &pumheight      = 10
 let &pumwidth       = 20
