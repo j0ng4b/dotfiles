@@ -19,6 +19,34 @@ let g:lsc_server_commands = {
 \   },
 \}
 
+""" Vsnip
+""""
+" Expand
+imap <expr> <C-j>   vsnip#expandable() ? '<Plug>(vsnip-expand)'         : '<C-j>'
+smap <expr> <C-j>   vsnip#expandable() ? '<Plug>(vsnip-expand)'         : '<C-j>'
+
+" Expand or jump
+imap <expr> <C-l>   vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+smap <expr> <C-l>   vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+
+" Jump forward or backward
+imap <expr> <Tab>   vsnip#jumpable(1)  ?
+\   '<Plug>(vsnip-jump-next)' : '<Plug>vim_completes_me_forward'
+
+smap <expr> <Tab>   vsnip#jumpable(1)  ?
+\   '<Plug>(vsnip-jump-next)' : '<Plug>vim_completes_me_forward'
+
+imap <expr> <S-Tab> vsnip#jumpable(-1) ?
+\   '<Plug>(vsnip-jump-prev)' : '<Plug>vim_completes_me_backward'
+
+smap <expr> <S-Tab> vsnip#jumpable(-1) ?
+\   '<Plug>(vsnip-jump-prev)' : '<Plug>vim_completes_me_backward'
+
+nmap        s   <Plug>(vsnip-select-text)
+xmap        s   <Plug>(vsnip-select-text)
+nmap        S   <Plug>(vsnip-cut-text)
+xmap        S   <Plug>(vsnip-cut-text)
+
 """
 """" Syntastic
 let g:syntastic_check_on_open = 0
