@@ -31,3 +31,15 @@ map! <C-S>   <Cmd>w<CR>
 map  <C-Q>   <Cmd>q<CR>
 map! <C-Q>   <Cmd>q<CR>
 
+"" Delete buffer
+map  bd      <Cmd>bdelete<CR>
+map  bw      <Cmd>bwipeout<CR>
+map  bu      <Cmd>bunload<CR>
+
+"" Move between buffers
+map  bn      <Cmd>bnext<CR>
+map  bp      <Cmd>bprevious<CR>
+
+map  bf      <Cmd>bfirst<CR>
+map  bl      <Cmd>blast<CR>
+
