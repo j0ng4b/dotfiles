@@ -31,6 +31,7 @@ map! <C-S>   <Cmd>w<CR>
 map  <C-Q>   <Cmd>q<CR>
 map! <C-Q>   <Cmd>q<CR>
 
+
 "" Delete buffer
 map  bd      <Cmd>bdelete<CR>
 map  bw      <Cmd>bwipeout<CR>

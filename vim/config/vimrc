@@ -7,7 +7,13 @@ set cpoptions+=EgnW
 ""
 """ Vim XDG base directories
 """"
-source $XDG_CONFIG_HOME/vim/xdg.vim
+if empty($XDG_CONFIG_HOME)
+    let g:xdg_vim_config = $HOME . '/.config'
+else
+    let g:xdg_vim_config = $XDG_CONFIG_HOME
+endif
+
+exe "source " . g:xdg_vim_config . '/vim/xdg.vim'
 
 ""
 """  Options

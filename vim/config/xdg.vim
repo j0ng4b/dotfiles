@@ -1,12 +1,6 @@
 ""
 """ Vim XDG directories compliance
 """
-if empty($XDG_CONFIG_HOME)
-    let g:xdg_vim_config = $HOME . '/.config'
-else
-    let g:xdg_vim_config = $XDG_CONFIG_HOME
-endif
-
 if empty($XDG_CACHE_HOME)
     let g:xdg_vim_cache = $HOME . '/.cache'
 else
