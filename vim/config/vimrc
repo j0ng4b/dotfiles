@@ -1,6 +1,6 @@
 " Compatibility
 if &compatible
-    set nocompatible
+  set nocompatible
 endif
 set cpoptions+=EgnW
 
@@ -8,9 +8,9 @@ set cpoptions+=EgnW
 """ Vim XDG base directories
 """"
 if empty($XDG_CONFIG_HOME)
-    let g:xdg_vim_config = $HOME . '/.config'
+  let g:xdg_vim_config = $HOME . '/.config'
 else
-    let g:xdg_vim_config = $XDG_CONFIG_HOME
+  let g:xdg_vim_config = $XDG_CONFIG_HOME
 endif
 
 exe "source " . g:xdg_vim_config . '/vim/xdg.vim'
