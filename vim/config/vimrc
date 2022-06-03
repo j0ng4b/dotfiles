@@ -313,5 +313,5 @@ let g:gruvbox_invert_tabline = 1
 let g:gruvbox_improved_strings = 1
 let g:gruvbox_improved_warnings = 1
 
-colorscheme gruvbox
+silent! colorscheme gruvbox
 
