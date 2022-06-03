@@ -28,3 +28,15 @@
 [submodule "vim/vim-polyglot"]
 	path = vim/data/pack/colors/start/vim-polyglot
 	url = https://github.com/sheerun/vim-polyglot.git
+[submodule "vim/molokai"]
+	path = vim/data/pack/colors/opt/molokai
+	url = https://github.com/tomasr/molokai.git
+[submodule "vim/gruvbox"]
+	path = vim/data/pack/colors/opt/gruvbox
+	url = https://github.com/morhetz/gruvbox.git
+[submodule "vim/tokyonight-vim"]
+	path = vim/data/pack/colors/opt/tokyonight-vim
+	url = https://github.com/ghifarit53/tokyonight-vim.git
+[submodule "vim/rainbow_parentheses.vim"]
+	path = vim/data/pack/packages/start/rainbow_parentheses.vim
+	url = https://github.com/kien/rainbow_parentheses.vim.git

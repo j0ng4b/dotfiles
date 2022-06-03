@@ -4,39 +4,314 @@ if &compatible
 endif
 set cpoptions+=EgnW
 
-""
-""" Vim XDG base directories
-""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""                                                                           ""
+""" Vim XDG base directories                                                """
+""                                                                           ""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if empty($XDG_CONFIG_HOME)
-  let g:xdg_vim_config = $HOME . '/.config'
+  let g:xdg_vim_config = $HOME . '/.config/vim'
 else
-  let g:xdg_vim_config = $XDG_CONFIG_HOME
+  let g:xdg_vim_config = $XDG_CONFIG_HOME . '/vim'
 endif
 
-exe "source " . g:xdg_vim_config . '/vim/xdg.vim'
+if empty($XDG_CACHE_HOME)
+  let g:xdg_vim_cache = $HOME . '/.cache/vim'
+else
+  let g:xdg_vim_cache = $XDG_CACHE_HOME . '/vim'
+endif
+
+if empty($XDG_STATE_HOME)
+  let g:xdg_vim_state = $HOME . '/.local/state/vim'
+else
+  let g:xdg_vim_state = $XDG_STATE_HOME . '/vim'
+endif
+
+if empty($XDG_DATA_HOME)
+  let g:xdg_vim_data = $HOME . '/.local/share/vim'
+else
+  let g:xdg_vim_data = $XDG_DATA_HOME . '/vim'
+endif
+
+if empty($MYVIMRC)
+  let $MYVIMRC = g:xdg_vim_config . '/vimrc'
+endif
 
 ""
-"""  Options
-""""
-runtime! options.vim
+"" Update runtime and pack path
+""
+let &runtimepath = g:xdg_vim_config . ',' . &runtimepath
+let &runtimepath .= ',' . g:xdg_vim_data
+let &runtimepath .= ',' . g:xdg_vim_config . '/after'
+
+let &packpath = g:xdg_vim_data . ',' . &packpath
+let &packpath .= ',' . g:xdg_vim_data . '/after'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""                                                                           ""
+"""  Options                                                                """
+""                                                                           ""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 ""
-"""  Key maps
-""""
-runtime! keymaps.vim
+"" Indent
+""
+let &autoindent     = v:true
+let &expandtab      = v:true
+let &shiftwidth     = 0
+let &tabstop        = 4
 
 ""
-"""  Auto commands
-""""
-runtime! autocmds.vim
+"" Files
+""
+let &autoread       = v:true
+let &confirm        = v:true
+let &hidden         = v:true
 
 ""
-"""  Color schemes
-""""
-runtime! colorschemes.vim
+"" TUI
+""
+let &background     = 'dark'
+let &colorcolumn    = '+1'
+let &cursorline     = v:true
+let &lazyredraw     = v:true
+let &termguicolors  = v:true
 
 ""
-"""  Packages
-""""
-runtime! packages.vim
+"" Backspace
+""
+let &backspace      = 'indent,eol,start'
+
+""
+"" Line break and wrap
+""
+let &breakindent    = v:true
+let &breakindentopt = 'sbr'
+let &linebreak      = v:true
+let &showbreak      = '⌊'
+let &wrap           = v:true
+
+""
+"" Command-line
+""
+let &cmdheight      = 2
+let &cmdwinheight   = 5
+let &showcmd        = v:true
+
+""
+"" Insert mode completion
+""
+let &completeopt    = 'menuone,popup,noinsert,noselect'
+let &completepopup  = 'height:10,border:on'
+let &pumheight      = 10
+let &pumwidth       = 20
+
+""
+"" Swap file
+""
+let &directory      = g:xdg_vim_cache . '/swap//'
+let &updatecount    = 500
+let &updatetime     = 100
+
+call mkdir(&directory[:-3], 'p', 0700)
+
+""
+"" Control how things must be showed
+""
+let &display        = 'lastline,uhex'
+let &fillchars      = 'vert:│,eob: '
+let &list           = v:true
+let &listchars      = 'tab:│ ,lead:·,trail:*'
+
+""
+"" Encoding and file format
+""
+let &encoding       = 'utf-8'
+let &fileencodings  = 'ucs-bom,utf-8,latin1'
+let &fileformats    = 'unix'
+
+""
+"" Window
+""
+let &helpheight     = 0
+let &splitbelow     = v:true
+let &splitright     = v:true
+
+""
+"" History
+""
+let &history        = 10000
+
+""
+"" Search
+""
+let &ignorecase     = v:true
+let &incsearch      = v:true
+let &smartcase      = v:true
+
+""
+"" Status line and Tab line
+""
+let &laststatus     = 2
+let &showtabline    = 2
+let &statusline     = ''
+let &tabline        = ''
+
+""
+"" Mouse
+""
+let &mouse          = 'ar'
+
+""
+"" Line numbering
+""
+let &number         = v:true
+let &numberwidth    = 3
+let &relativenumber = v:true
+
+""
+"" Preview window
+""
+let &previewheight  = 10
+let &previewpopup   = 'height:10,width:60'
+
+""
+"" Scroll
+""
+let &scrolljump     = 5
+let &scrolloff      = 1
+
+""
+"" Spelling
+""
+let &spell          = v:true
+let &spellfile      = g:xdg_vim_data . '/spell/words.utf-8.add'
+let &spelllang      = 'en'
+let &spellsuggest   = 'best,10'
+
+call mkdir(g:xdg_vim_data . '/spell', 'p', 0700)
+
+""
+"" Undo
+""
+let &undodir        = g:xdg_vim_state . '/undo//'
+let &undofile       = v:true
+let &undolevels     = 2000
+
+call mkdir(&undodir[:-3], 'p', 0700)
+
+""
+"" Vim info
+""
+let &viminfo        = "'200,<200,h,s100"
+let &viminfofile    = g:xdg_vim_state . '/viminfo'
+
+""
+"" Command-line completion
+""
+let &wildmenu       = v:true
+let &wildmode       = 'longest:full'
+
+""
+"" Miscellaneous
+""
+let &shortmess      = 'aoOstTIc'
+let &signcolumn     = 'number'
+let &textwidth      = 80
+let &ttimeoutlen    = 80
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""                                                                           ""
+"""  Key maps                                                               """
+""                                                                           ""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"" Change map leaderr
+let mapleader = '\'
+
+"" Near esc key
+imap jk      <Esc>
+vmap jk      <Esc>
+
+
+"" Disable arrow keys
+map  <Left>  <Nop>
+map  <Right> <Nop>
+map  <Up>    <Nop>
+map  <Down>  <Nop>
+
+imap <Left>  <Nop>
+imap <Right> <Nop>
+imap <Up>    <Nop>
+imap <Down>  <Nop>
+
+"" Save file
+map  <C-S>   <Cmd>w<CR>
+map! <C-S>   <Cmd>w<CR>
+
+
+"" Quit without save
+map  <C-Q>   <Cmd>q<CR>
+map! <C-Q>   <Cmd>q<CR>
+
+"" Delete buffer
+map  bd      <Cmd>bdelete<CR>
+map  bw      <Cmd>bwipeout<CR>
+map  bu      <Cmd>bunload<CR>
+
+"" Move between buffers
+map  bn      <Cmd>bnext<CR>
+map  bp      <Cmd>bprevious<CR>
+
+map  bf      <Cmd>bfirst<CR>
+map  bl      <Cmd>blast<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""                                                                           ""
+"""  Auto commands                                                          """
+""                                                                           ""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"" Highlight search only when searching
+augroup HighlightSearch
+  autocmd!
+  autocmd CmdLineEnter /,? set hlsearch
+  autocmd CmdLineLeave /,? set nohlsearch
+augroup END
+
+augroup Others
+  autocmd!
+  autocmd VimEnter * RainbowParenthesesToggle
+  autocmd Syntax * RainbowParenthesesLoadRound
+  autocmd Syntax * RainbowParenthesesLoadSquare
+  autocmd Syntax * RainbowParenthesesLoadBraces
+  autocmd Syntax * RainbowParenthesesLoadChevrons
+augroup END
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""                                                                           ""
+"""  Color schemes                                                          """
+""                                                                           ""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:molokai_original = 1
+
+let g:tokyonight_style = 'night'
+let g:tokyonight_enable_italic = 1
+let g:tokyonight_menu_selection_background = 'blue'
+
+let g:gruvbox_italic = 0
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_hls_cursor = 'blue'
+let g:gruvbox_sign_column = 'bg0'
+let g:gruvbox_invert_selection = 0
+let g:gruvbox_invert_signs = 0
+let g:gruvbox_invert_indent_guides = 1
+let g:gruvbox_invert_tabline = 1
+let g:gruvbox_improved_strings = 1
+let g:gruvbox_improved_warnings = 1
+
+colorscheme gruvbox
 
