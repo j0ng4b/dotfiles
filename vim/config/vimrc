@@ -267,6 +267,11 @@ map  bp      <Cmd>bprevious<CR>
 map  bf      <Cmd>bfirst<CR>
 map  bl      <Cmd>blast<CR>
 
+" Fix endwise with delimitMate
+if empty(maparg('<CR>', 'i'))
+  imap <CR> <Plug>delimitMateCR
+endif
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 ""                                                                           ""
@@ -314,4 +319,15 @@ let g:gruvbox_improved_strings = 1
 let g:gruvbox_improved_warnings = 1
 
 silent! colorscheme gruvbox
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""                                                                           ""
+"""  Packages                                                               """
+""                                                                           ""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let delimitMate_expand_cr = 2
+let delimitMate_expand_space = 1
+let delimitMate_jump_expansion = 1
+let delimitMate_balance_matchpairs = 1
 
