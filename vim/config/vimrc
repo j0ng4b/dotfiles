@@ -307,7 +307,7 @@ let g:tokyonight_style = 'night'
 let g:tokyonight_enable_italic = 1
 let g:tokyonight_menu_selection_background = 'blue'
 
-let g:gruvbox_italic = 0
+let g:gruvbox_italic = 1
 let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_hls_cursor = 'blue'
 let g:gruvbox_sign_column = 'bg0'
@@ -316,6 +316,7 @@ let g:gruvbox_invert_signs = 0
 let g:gruvbox_invert_indent_guides = 1
 let g:gruvbox_invert_tabline = 1
 let g:gruvbox_improved_strings = 1
+let g:gruvbox_italicize_strings = 1
 let g:gruvbox_improved_warnings = 1
 
 silent! colorscheme gruvbox
