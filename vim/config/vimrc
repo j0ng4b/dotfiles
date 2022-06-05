@@ -331,3 +331,16 @@ let delimitMate_expand_space = 1
 let delimitMate_jump_expansion = 1
 let delimitMate_balance_matchpairs = 1
 
+
+let g:gitgutter_highlight_linenrs = 1
+let g:gitgutter_use_location_list = 1
+let g:gitgutter_sign_allow_clobber = 0
+let g:gitgutter_preview_win_floating = 1
+
+let g:gitgutter_sign_added = '+'
+let g:gitgutter_sign_modified = '~'
+let g:gitgutter_sign_removed = '_'
+let g:gitgutter_sign_removed_first_line = '‾'
+let g:gitgutter_sign_removed_above_and_below = '_¯'
+let g:gitgutter_sign_modified_removed = '~_'
+
