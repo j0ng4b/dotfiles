@@ -344,3 +344,9 @@ let g:gitgutter_sign_removed_first_line = '‾'
 let g:gitgutter_sign_removed_above_and_below = '_¯'
 let g:gitgutter_sign_modified_removed = '~_'
 
+
+let NERDSpaceDelims = 1
+let NERDToggleCheckAllLines = 1
+let NERDTrimTrailingWhitespace = 1
+let NERDCommentWholeLinesInVMode = 2
+
