@@ -286,15 +286,6 @@ augroup HighlightSearch
   autocmd CmdLineLeave /,? set nohlsearch
 augroup END
 
-augroup Others
-  autocmd!
-  autocmd VimEnter * RainbowParenthesesToggle
-  autocmd Syntax * RainbowParenthesesLoadRound
-  autocmd Syntax * RainbowParenthesesLoadSquare
-  autocmd Syntax * RainbowParenthesesLoadBraces
-  autocmd Syntax * RainbowParenthesesLoadChevrons
-augroup END
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 ""                                                                           ""
