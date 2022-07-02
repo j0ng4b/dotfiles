@@ -351,3 +351,26 @@ let NERDToggleCheckAllLines = 1
 let NERDTrimTrailingWhitespace = 1
 let NERDCommentWholeLinesInVMode = 2
 
+
+let g:ale_echo_delay = 150
+let g:ale_disable_lsp = 1
+let g:ale_cursor_detail = 1
+let g:ale_close_preview_on_insert = 1
+let g:ale_change_sign_column_color = 1
+
+let g:ale_floating_preview = 1
+let g:ale_floating_window_border = [ '|', '─', '╭', '╮', '╯', '╰', '|', '─' ]
+
+let g:ale_lint_delay = 1500
+let g:ale_linters_explicita = 1
+let g:ale_lint_on_text_changed = 'always'
+
+let g:ale_echo_msg_info_str = '[I]'
+let g:ale_echo_msg_error_str = '[E]'
+let g:ale_echo_msg_warning_str = '[W]'
+let g:ale_echo_msg_format = '%severity%% - code:% %s <> %linter%'
+
+let g:ale_sign_info = 'i'
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '--'
+
