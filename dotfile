@@ -1,0 +1,184 @@
+#!/usr/bin/env sh
+
+# Root dotfile directory
+dotfiles_root=$(cd $(dirname $0); pwd)
+
+# Target install directories
+config_dir=${XDG_CONFIG_HOME:-$HOME/.config}
+cache_dir=${XDG_CACHE_HOME:-$HOME/.cache}
+state_dir=${XDG_STATE_HOME:-$HOME/.local/state}
+data_dir=${XDG_DATA_HOME:-$HOME/.local/share}
+home_dir=$HOME
+bin_dir=$HOME/.local/bin
+
+# Create the target directories if their not exists
+create_target_directories() {
+    for target in config cache state data bin; do
+        eval target_dir=\$${target}_dir
+
+        # Check if the target directory exists
+        [ -d $taget_dir ] && continue
+
+        mkdir -p $target_dir
+    done
+}
+
+# Check if the given dotfile was installed
+check_installed() {
+    dotfile_dir=$dotfiles_root/$1
+    status="uninstalled"
+
+    for target in $(ls $dotfile_dir | tr '\n' ' '); do
+        if [ "$target" = "home" -o "$target" = "bin" ]; then
+            for file in $(ls $dotfile_dir/$target | tr '\n' ' '); do
+                file_path=$dotfile_dir/$target/$file
+
+                [ $target = "home" ] && file=.$file
+
+                eval file_action_path=\$${target}_dir/$file
+
+                if [ -L "$file_action_path" ]; then
+                    status="installed"
+                elif [ "$status" = "installed" ]; then
+                    status="partial-installed"
+                    return
+                fi
+            done
+        else
+            eval dotfile_path=\$${target}_dir/$dotfile
+
+            if [ -L "$dotfile_path" ]; then
+                status="installed"
+            elif [ "$status" = "installed" ]; then
+                status="partial-installed"
+                return
+            fi
+        fi
+    done
+
+    echo "$status"
+}
+
+# Action functions
+install_dotfile() {
+    install_path=$1
+    file_path=$2
+
+    # Check if the file was installed
+    [ -L $install_path ] && return 1
+
+    ln -sfT $file_path $install_path
+    return 0
+}
+
+uninstall_dotfile() {
+    uninstall_path=$1
+
+    # Check if the file was not installed
+    [ ! -L $uninstall_path ] && return 1
+
+    rm -f $uninstall_path
+    return 0
+}
+
+# Install files for a target of dotfile
+dotfile_action_target_files() {
+    action=$1
+    target=$2
+    dotfile=$3
+    dotfile_dir=$4
+
+    # List of files to install
+    files="$(ls $dotfile_dir/$target | tr '\n' ' ')"
+
+    for file in $files; do
+        file_path=$dotfile_dir/$target/$file
+
+        # Files of target `home´ has a lead dot at their names
+        [ $target = "home" ] && file=.$file
+
+        eval file_action_path=\$${target}_dir/$file
+
+        # Act on the file
+        eval ${action}_dotfile $file_action_path $file_path
+    done
+}
+
+# Install the targets of a dotfile
+dotfile_action_target() {
+    action=$1
+    target=$2
+    dotfile=$3
+    dotfile_dir=$4
+
+    target_path=$dotfile_dir/$target
+
+    # Set install path
+    eval dotfile_path=\$${target}_dir/$dotfile
+
+    # Act on the file
+    eval ${action}_dotfile $dotfile_path $target_path
+}
+
+dotfile_action() {
+    # How process the dotfile, i.e. installing or uninstalling it
+    action=$1
+    shift
+
+    # List of dotfiles to act on
+    dotfiles=$@
+
+    # Act on dotfiles
+    for dotfile in $dotfiles; do
+        # Root of the dotfile
+        dotfile_dir=$dotfiles_root/$dotfile
+
+        # Skip non-directories because isn't dotfile
+        [ ! -d $dotfile ] && continue
+
+        # Target directories of installing dotfile
+        targets="$(ls $dotfile_dir | tr '\n' ' ')"
+
+        for target in $targets; do
+            action_method="dotfile_action_target"
+            [ $target = "home" -o $target = "bin" ] && action_method="${action_method}_files"
+
+            eval $action_method $action $target $dotfile $dotfile_dir
+        done
+    done
+
+    exit 0
+}
+
+dotfile_list() {
+    dotfiles="$(ls -d $dotfiles_root/*/)"
+
+    echo "Dotfiles:"
+    for dotfile in $dotfiles; do
+        dotfile=$(basename $dotfile)
+        echo "    $dotfile ($(check_installed $dotfile))"
+    done
+
+    exit 0
+}
+
+create_target_directories
+
+[ $# -eq 0 ] && exit 1
+while [ $# -gt 0 ]; do
+    case $1 in
+        install | uninstall)
+            dotfile_action $@ # no return
+            ;;
+
+        list)
+            dotfile_list # no return
+            ;;
+
+        *)
+            echo "Unknowing command $1\n"
+            exit 1
+            ;;
+    esac
+done
+
