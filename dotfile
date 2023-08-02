@@ -11,6 +11,10 @@ data_dir=${XDG_DATA_HOME:-$HOME/.local/share}
 home_dir=$HOME
 bin_dir=$HOME/.local/bin
 
+# Log functions
+error() { echo "\033[31m[Error]\033[0m $1"; }
+warn() { echo "\033[33m[Warning]\033[0m $1"; }
+
 # Create the target directories if their not exists
 create_target_directories() {
     for target in config cache state data bin; do
@@ -44,7 +48,7 @@ check_installed() {
                     return
                 fi
             done
-        else
+        elif [ "$target" != "post" ]; then
             eval dotfile_path=\$${target}_dir/$dotfile
 
             if [ -L "$dotfile_path" ]; then
@@ -91,6 +95,7 @@ dotfile_action_target_files() {
     # List of files to install
     files="$(ls $dotfile_dir/$target | tr '\n' ' ')"
 
+    action_result_error=0
     for file in $files; do
         file_path=$dotfile_dir/$target/$file
 
@@ -101,7 +106,16 @@ dotfile_action_target_files() {
 
         # Act on the file
         eval ${action}_dotfile $file_action_path $file_path
+
+        # Check for already (un)installed files
+        action_result=$?
+        if [ $action_result -gt 0 ]; then
+            action_result_error=1
+            error "File '$file' of '$dotfile/$target' already $action!"
+        fi
     done
+
+    return $action_result_error
 }
 
 # Install the targets of a dotfile
@@ -118,6 +132,11 @@ dotfile_action_target() {
 
     # Act on the file
     eval ${action}_dotfile $dotfile_path $target_path
+
+    # Check for already (un)installed target
+    action_result=$?
+    [ $action_result -gt 0 ] && error "Target '$target' of '$dotfile' already $action!"
+    return $action_result
 }
 
 dotfile_action() {
@@ -126,7 +145,11 @@ dotfile_action() {
     shift
 
     # List of dotfiles to act on
-    dotfiles=$@
+    dotfiles="$@"
+    if [ -z "$dotfiles" ]; then
+        error "$action must receive at least one argument!"
+        exit
+    fi
 
     # Act on dotfiles
     for dotfile in $dotfiles; do
@@ -134,17 +157,42 @@ dotfile_action() {
         dotfile_dir=$dotfiles_root/$dotfile
 
         # Skip non-directories because isn't dotfile
-        [ ! -d $dotfile ] && continue
+        if [ ! -d $dotfile ]; then
+            warn "The dotfile '$dotfile' doesn't exists! Skipping."
+            continue
+        fi
 
         # Target directories of installing dotfile
         targets="$(ls $dotfile_dir | tr '\n' ' ')"
 
+        action_result=0
         for target in $targets; do
-            action_method="dotfile_action_target"
-            [ $target = "home" -o $target = "bin" ] && action_method="${action_method}_files"
+            case $target in
+                home | bin)
+                    eval dotfile_action_target_files $action $target $dotfile $dotfile_dir
+                    [ $? -gt 0 ] && action_result=1
+                    ;;
 
-            eval $action_method $action $target $dotfile $dotfile_dir
+                config | cache | state | data)
+                    eval dotfile_action_target $action $target $dotfile $dotfile_dir
+                    [ $? -gt 0 ] && action_result=1
+                    ;;
+
+                post) ;;
+
+                *)
+                    warn "Unrecognized dotfile target '$target'! Skipping."
+                    ;;
+            esac
         done
+
+        # Execute post action script if any
+        if [ $action_result -eq 0 -a -x "$dotfile_dir/post" ]; then
+            eval \
+                ACTION=$action \
+                ROOT=$dotfile_dir \
+                $dotfile_dir/post
+        fi
     done
 
     exit 0
