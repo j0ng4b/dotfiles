@@ -157,7 +157,7 @@ dotfile_action() {
         dotfile_dir=$dotfiles_root/$dotfile
 
         # Skip non-directories because isn't dotfile
-        if [ ! -d $dotfile ]; then
+        if [ ! -d $dotfile_dir ]; then
             warn "The dotfile '$dotfile' doesn't exists! Skipping."
             continue
         fi
