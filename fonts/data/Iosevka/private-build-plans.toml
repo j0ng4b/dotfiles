@@ -6,49 +6,92 @@ no-cv-ss = false
 export-glyph-names = false
 
 [buildPlans.iosevka-j0ng4b.ligations]
-enable = [
-    "center-ops", "center-op-trigger-plus-minus-l",
-    "center-op-trigger-plus-minus-r", "center-op-trigger-equal-l",
-    "center-op-trigger-equal-r", "center-op-trigger-bar-l",
-    "center-op-trigger-bar-r", "center-op-trigger-angle-inside",
-    "arrow-l", "arrow-r", "trig", "eqeqeq", "eqeq", "lteq", "gteq", "exeqeqeq",
-	"exeqeq", "eqexeq", "exeq", "tildeeq", "eqslasheq",	"ltgt-diamond-tag",
-	"ltgt-slash-tag", "brst", "slash-asterisk", "plusplus", "kern-dotty",
-	"kern-bars", "logic", "llgg", "llggeq", "html-comment", "brace-bar",
-	"brack-bar", "connected-underscore", "connected-number-sign",
-    "connected-tilde-as-wave", "connected-hyphen"
+disables = [
+	"eqlt",
+	"exeqeq",
+	"eqexeq",
+	"eqslasheq",
+	"slasheq",
+	"ltgt-ne",
+	"ltgt-diamond",
+	"colon-greater-as-colon-arrow"
+]
+
+enables = [
+	"center-ops",
+	"center-op-trigger-plus-minus-l",
+	"center-op-trigger-plus-minus-r",
+	"center-op-trigger-equal-l",
+	"center-op-trigger-equal-r",
+	"center-op-trigger-bar-l",
+	"center-op-trigger-bar-r",
+	"center-op-trigger-angle-inside",
+	"center-op-trigger-angle-outside",
+	"center-op-influence-dot",
+	"center-op-influence-colon",
+	"arrow-l",
+	"arrow-r",
+	"counter-arrow-l",
+	"counter-arrow-r",
+	"trig",
+	"eqeqeq",
+	"eqeq",
+	"lteq",
+	"gteq",
+	"exeqeqeq",
+	"eqexeq-dl",
+	"exeq",
+	"tildeeq",
+	"ltgt-diamond-tag",
+	"ltgt-slash-tag",
+	"brst",
+	"slash-asterisk",
+	"plusplus",
+	"kern-dotty",
+	"kern-bars",
+	"logic",
+	"llgg",
+	"llggeq",
+	"html-comment",
+	"brace-bar",
+	"brack-bar",
+	"connected-underscore",
+	"connected-number-sign",
+	"connected-tilde-as-wave",
+	"connected-hyphen"
 ]
 
 [buildPlans.iosevka-j0ng4b.variants.design]
 digit-form = "old-style"
+apl-form = "enable"
 capital-a = "curly-top-serifed"
 capital-b = "more-asymmetric-interrupted-unilateral-serifed"
-capital-c = "bilateral-serifed"
+capital-c = "bilateral-inward-serifed"
 capital-d = "more-rounded-unilateral-serifed"
 capital-e = "top-left-serifed"
-capital-f = "top-left-serifed"
-capital-g = "toothless-rounded-serifed-hooked"
+capital-f = "serifed"
+capital-g = "toothless-corner-inward-serifed-hookless"
 capital-h = "top-left-bottom-right-serifed"
-capital-i = "serifless"
+capital-i = "short-serifed"
 capital-j = "descending-flat-hook-serifed"
-capital-k = "curly-top-left-and-bottom-right-serifed"
-capital-l = "serifed"
-capital-m = "slanted-sides-flat-bottom-motion-serifed"
+capital-k = "curly-top-left-serifed"
+capital-l = "motion-serifed"
+capital-m = "slanted-sides-hanging-motion-serifed"
 capital-n = "asymmetric-motion-serifed"
-capital-p = "open-serifed"
+capital-p = "closed-motion-serifed"
 capital-q = "open-swash"
-capital-r = "curly-open-motion-serifed"
-capital-s = "bilateral-serifed"
-capital-t = "motion-serifed"
+capital-r = "straight-open-serifed"
+capital-s = "bilateral-inward-serifed"
+capital-t = "serifed"
 capital-u = "toothless-corner-bilateral-motion-serifed"
 capital-v = "curly-motion-serifed"
-capital-w = "curly-serifed"
+capital-w = "straight-double-v-serifed"
 capital-x = "curly-serifed"
-capital-y = "curly-base-serifed"
+capital-y = "curly-serifed"
 capital-z = "cursive-with-crossbar"
-a = "single-storey-earless-corner-tailed"
+a = "single-storey-earless-rounded-tailed"
 b = "toothless-rounded-serifed"
-c = "bilateral-serifed"
+c = "bilateral-inward-serifed"
 d = "toothless-rounded-serifed"
 e = "rounded"
 f = "flat-hook-diagonal-tailed-crossbar-at-x-height"
@@ -58,41 +101,41 @@ i = "diagonal-tailed"
 j = "diagonal-tailed-serifless"
 k = "diagonal-tailed-cursive-top-left-serifed"
 l = "serifed-diagonal-tailed"
-m = "earless-single-arch-tailed-serifless"
+m = "earless-single-arch-tailed-serifed"
 n = "earless-corner-tailed-serifless"
-p = "earless-corner-serifed"
-q = "earless-corner-diagonal-tailed-serifless"
-r = "earless-corner-serifless"
-s = "bilateral-serifed"
+p = "earless-rounded-serifed"
+q = "earless-rounded-diagonal-tailed-serifless"
+r = "earless-rounded-serifless"
+s = "bilateral-inward-serifed"
 t = "diagonal-tailed-short-neck2"
-u = "toothless-rounded-serifed"
+u = "toothless-corner-serifed"
 v = "cursive-serifed"
 w = "cursive-serifed"
 x = "cursive"
-y = "cursive-motion-serifed"
+y = "cursive-flat-hook-motion-serifed"
 z = "cursive-with-crossbar"
-long-s = "bent-hook-diagonal-tailed"
-eszet = "longs-s-lig-tailed"
+long-s = "flat-hook-diagonal-tailed"
+eszet = "traditional-flat-hook"
 turn-v = "curly"
 lower-alpha = "crossing"
 lower-delta = "rounded"
-capital-gamma = "top-right-serifed"
-lower-iota = "diagonal-tailed"
+capital-gamma = "serifed"
+lower-iota = "serifed-diagonal-tailed"
 lower-lambda = "curly-turn"
-lower-mu = "toothless-rounded-serifed"
+lower-mu = "tailed-serifed"
 lower-xi = "flat-top"
-zero = "oval-slashed-cutout"
+zero = "slashed-cutout"
 one = "base-top-cut"
 two = "curly-neck"
 three = "flat-top"
 four = "open"
 five = "oblique-upper-left-bar"
-six = "straight-bar"
-seven = "bend-serifed-crossbar"
+six = "closed-contour"
+seven = "curly-serifed-crossbar"
 eight = "crossing-asymmetric"
-nine = "open-contour"
-diacritic-dot = "square"
-punctuation-dot = "square"
+nine = "closed-contour"
+diacritic-dot = "round"
+punctuation-dot = "round"
 tilde = "low"
 asterisk = "hex-low"
 underscore = "low"
@@ -104,21 +147,24 @@ ampersand = "et-tailed"
 at = "compact"
 dollar = "interrupted-cap"
 percent = "rings-segmented-slash"
-bar = "force-upright"
+bar = "natural-slope"
 ascii-single-quote = "raised-comma"
-ascii-grave = "raised-inverse-comma"
+ascii-grave = "raised-turn-comma"
 question = "corner-flat-hooked"
 pilcrow = "low"
 cent = "bar-interrupted"
-partial-derivative = "curly-bar"
-lower-eth = "curly-bar"
-micro-sign = "tailed-serifed"
+micro-sign = "toothless-rounded-serifed"
 lig-ltgteq = "slanted"
 lig-neq = "more-slanted-dotted"
 lig-equal-chain = "without-notch"
 lig-hyphen-chain = "without-notch"
 lig-double-arrow-bar = "without-notch"
 lig-single-arrow-bar = "without-notch"
+
+[buildPlans.iosevka-j0ng4b.weights.light]
+shape = 300
+menu = 300
+css = 300
 
 [buildPlans.iosevka-j0ng4b.weights.regular]
 shape = 400
@@ -129,6 +175,11 @@ css = 400
 shape = 500
 menu = 500
 css = 500
+
+[buildPlans.iosevka-j0ng4b.weights.semibold]
+shape = 600
+menu = 600
+css = 600
 
 [buildPlans.iosevka-j0ng4b.weights.bold]
 shape = 700
