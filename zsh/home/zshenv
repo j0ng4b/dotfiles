@@ -1,0 +1,43 @@
+###########################
+##  XDG Base directories ##
+###########################
+export XDG_CONFIG_HOME="$HOME/.config"
+export XDG_CACHE_HOME="$HOME/.cache"
+export XDG_STATE_HOME="$HOME/.local/state"
+export XDG_DATA_HOME="$HOME/.local/share"
+
+export PATH="$HOME/.local/bin:$PATH"
+
+###########################
+## XDG Runtime directory ##
+###########################
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+    export XDG_RUNTIME_DIR="/tmp/$USER-runtime"
+
+    if [ ! -d "$XDG_RUNTIME_DIR" ]; then
+        mkdir -pm 0700 "$XDG_RUNTIME_DIR"
+    fi
+fi
+
+###########################
+##          X11          ##
+###########################
+export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"
+
+###########################
+##          Zsh          ##
+###########################
+export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+
+export HISTFILE="$XDG_DATA_HOME/zsh/zhistory"
+export HISTSIZE=1000
+export SAVEHIST=1000
+
+export ZLE_RPROMPT_INDENT="0"
+
+###########################
+##    Common variables   ##
+###########################
+export VISUAL=nvim
+export EDITOR=nvim
+
