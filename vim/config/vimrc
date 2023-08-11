@@ -1,0 +1,193 @@
+vim9script
+
+#############################
+####     BASIC SETUP     ####
+#############################
+
+# Enable syntax highlight
+syntax enable
+
+# Enable file type detection
+filetype plugin indent on
+
+# Enable under curly
+if empty(&t_Cs) || empty(&t_Ce)
+    &t_Cs = "\e[4:3m"
+    &t_Ce = "\e[4:0m"
+endif
+
+# Set different cursors for different modes
+&t_SI = "\e[5 q"
+&t_SR = "\e[3 q"
+&t_EI = "\e[1 q"
+
+
+#############################
+####         XDG         ####
+#############################
+
+if empty($MYVIMRC)
+    $MYVIMRC = expand('<sfile>:p')
+endif
+
+# Vim XDG directories
+const vim_config_home = (empty($XDG_CONFIG_HOME) ? '$HOME/.config' : $XDG_CONFIG_HOME) .. '/vim'
+const vim_cache_home = (empty($XDG_CACHE_HOME) ? '$HOME/.cache' : $XDG_CACHE_HOME) .. '/vim'
+const vim_state_home = (empty($XDG_STATE_HOME) ? '$HOME/.local/state' : $XDG_STATE_HOME) .. '/vim'
+const vim_data_home = (empty($XDG_DATA_HOME) ? '$HOME/.local/share' : $XDG_DATA_HOME) .. '/vim'
+
+# Update runtime paths
+if stridx(&runtimepath, vim_config_home) == -1
+    &runtimepath = vim_config_home .. ',' .. &runtimepath
+    &runtimepath = &runtimepath .. ',' .. vim_data_home
+    &runtimepath = &runtimepath .. ',' .. vim_config_home .. '/after'
+endif
+
+# Update packages paths
+if stridx(&packpath, vim_data_home) == -1
+    &packpath = vim_data_home .. ',' .. &packpath
+    &packpath = &packpath .. ',' .. vim_data_home .. '/after'
+endif
+
+
+#############################
+####       OPTIONS       ####
+#############################
+
+# Compatibility
+if &compatible
+    &compatible = v:false
+endif
+&cpoptions = &cpoptions .. 'EMnW'
+
+# Indentation
+&autoindent = v:true
+&expandtab = v:true
+&shiftround = v:true
+&shiftwidth = 0
+&softtabstop = -1
+&tabstop = 4
+
+# Files and Buffer
+&autoread = v:true
+&confirm = v:true
+&hidden = v:true
+
+# UI and Colors
+&background = 'dark'
+&colorcolumn = '+1'
+&cursorline = v:true
+&display = 'truncate'
+&termguicolors = v:true
+
+# Behaviour
+&backspace = 'indent,eol,start'
+&belloff = 'all'
+&completeopt = 'menuone,popup,noinsert,noselect'
+&encoding = 'utf-8'
+&history = 250
+&scrolloff = 5
+&shortmess = 'astTcC'
+&showcmd = v:true
+&showmode = v:false
+&signcolumn = 'number'
+
+# Line break
+&breakindent = v:true
+&breakindentopt = 'sbr'
+&linebreak = v:true
+&showbreak = '> '
+
+# Command-line
+&cmdheight = 2
+&cmdwinheight = 5
+
+# Swap file
+&directory = vim_state_home .. '/swap//'
+&updatetime = 100
+mkdir(&directory[0 : -3], 'p', 0o700)
+
+# Special characters
+&fillchars = 'eob: ,vert:┊,lastline:+'
+&list = v:true
+&listchars = 'eol:¬,tab:┊ ,lead:·,leadmultispace:┊   ,trail:*'
+
+# Format
+&textwidth = 80
+
+# Window and Preview window
+&helpheight = 0
+&previewheight = 10
+&splitbelow = v:true
+&splitright = v:true
+
+# Search
+&ignorecase = v:true
+&incsearch = v:true
+&smartcase = v:true
+
+# Status line and Tab line
+&laststatus = 2
+&showtabline = 2
+&tabpagemax = 25
+
+# Mouse
+&mouse = 'ar'
+&mousemodel = 'popup' # setup a menu
+&ttymouse = 'sgr'
+
+# Line number
+&number = v:true
+&relativenumber = v:true
+
+# Spell check
+&spell = v:true
+&spelllang = 'en,pt_br'
+&spelloptions = 'camel'
+&spellsuggest = 'fast,10'
+mkdir(vim_data_home .. '/spell', 'p', 0o700)
+
+# Timeout
+&timeoutlen = 350
+&ttimeoutlen = 100
+
+# Undo
+&undodir = vim_state_home .. '/undo//'
+&undofile = v:true
+&undolevels = 250
+&undoreload = 2500
+mkdir(&undodir[0 : -3], 'p', 0o700)
+
+# Viminfo
+&viminfofile = vim_state_home .. '/viminfo'
+
+# Wild menu
+&wildmenu = v:true
+&wildmode = 'longest:full'
+&wildoptions = 'pum'
+
+
+#############################
+####       AUTOCMD       ####
+#############################
+
+augroup VimHightlightOnSearch
+    autocmd!
+    autocmd CmdlineEnter /,? set hlsearch
+    autocmd CmdlineLeave /,? set nohlsearch
+augroup END
+
+augroup VimCursor
+    autocmd!
+    autocmd VimEnter * silent !echo '\033[1 q'
+    autocmd VimLeave * silent !echo '\033[4 q'
+augroup END
+
+
+#############################
+####       KEYMAPS       ####
+#############################
+
+# Exit insert mode with `jk`
+imap jk <Esc>
+
