@@ -48,7 +48,7 @@ hc keybind $Super-Shift-q quit
 hc keybind $Super-Shift-r reload
 hc keybind $Super-Shift-c close
 
-hc keybind $Super-Return  spawn "${TERMINAL:-alacritty}"
+hc keybind $Super-Return  spawn "${TERMINAL:-st}"
 
 #########
 ### Monitor
@@ -169,7 +169,6 @@ hc set hide_covered_windows         on
 hc set mouse_recenter_gap           20
 hc set raise_on_focus               on
 hc set smart_window_surroundings    on
-hc set swap_monitors_to_get_tag     off
 hc set tree_style                   '╾│ ├└╼─┐'
 hc set update_dragged_clients       on
 hc set window_gap                   5
@@ -198,22 +197,20 @@ for mode in floating minimal tiling; do
     hc set_attr theme.$mode.title_color $foreground
     hc set_attr theme.$mode.title_depth 0
     hc set_attr theme.$mode.title_font ":pixelsize=1"
-    hc set_attr theme.$mode.title_height 15
+    hc set_attr theme.$mode.title_height 20
     hc set_attr theme.$mode.title_when always
 done
 
 #########
 ### Floating
-hc set_attr theme.floating.padding_bottom 5
+hc set_attr theme.floating.border_width 2
 
 #########
 ### Minimal
 
-for focus in active normal urgent; do
-    hc set_attr theme.minimal.$focus.outer_width 5
-    hc set_attr theme.minimal.$focus.outer_color $transparent
-    hc set_attr theme.minimal.$focus.tab_outer_width 0
-done
+hc set_attr theme.minimal.outer_width 5
+hc set_attr theme.minimal.outer_color $transparent
+hc set_attr theme.minimal.tab_outer_width 0
 
 # Active
 hc set_attr theme.minimal.active.color $color3
@@ -267,17 +264,8 @@ hc rule --windowtype='_NET_WM_WINDOW_TYPE_SPLASH' --floatplacement=center
 hc rule --windowtype='_NET_WM_WINDOW_TYPE_DIALOG' --focus=on
 
 
-# Unlock
+###################
+### More miscellaneous
 hc unlock
-
-# Detect monitors
 hc detect_monitors
-
-# find the panel
-#panel=~/.config/herbstluftwm/panel.sh
-#[ -x "$panel" ] || panel=/etc/xdg/herbstluftwm/panel.sh
-#for monitor in $(hc list_monitors | cut -d: -f1) ; do
-#    # start it on each monitor
-#    "$panel" "$monitor" &
-#done
 

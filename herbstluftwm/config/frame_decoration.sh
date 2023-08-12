@@ -11,6 +11,7 @@ get_value() {
 hc --idle | {
     while true; do
         IFS=$'\t' read -r cmd || break
+
         case $(get_value "$cmd" 1) in
             attribute_changed)
                 attr=$(get_value "$cmd" 2)
