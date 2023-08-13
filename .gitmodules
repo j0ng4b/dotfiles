@@ -1,0 +1,12 @@
+[submodule "vim/vim-polyglot"]
+	path = vim/data/pack/colors/start/vim-polyglot
+	url = https://github.com/sheerun/vim-polyglot
+	ignore = dirty
+[submodule "vim/gruvbox-material"]
+	path = vim/data/pack/colors/opt/gruvbox-material
+	url = https://github.com/sainnhe/gruvbox-material
+	ignore = dirty
+[submodule "vim/everforest"]
+	path = vim/data/pack/colors/opt/everforest
+	url = https://github.com/sainnhe/everforest
+	ignore = dirty

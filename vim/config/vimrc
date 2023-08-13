@@ -96,7 +96,7 @@ endif
 &breakindent = v:true
 &breakindentopt = 'sbr'
 &linebreak = v:true
-&showbreak = '> '
+&showbreak = '↳ '
 
 # Command line
 &cmdheight = 2
@@ -264,4 +264,43 @@ nmap tmh       <Cmd>tabmove -<CR>
 nmap tml       <Cmd>tabmove +<CR>
 
 nnoremap tt    t
+
+
+#############################
+####     COLORSCHEME     ####
+#############################
+
+packadd! gruvbox-material
+g:gruvbox_material_visual = 'reverse'
+g:gruvbox_material_show_eob = 0
+g:gruvbox_material_background = 'hard'
+g:gruvbox_material_foreground = 'original'
+g:gruvbox_material_enable_bold = 1
+g:gruvbox_material_ui_contrast = 'high'
+g:gruvbox_material_enable_italic = 1
+g:gruvbox_material_spell_foreground = 'colored'
+g:gruvbox_material_statusline_style = 'original'
+g:gruvbox_material_better_performance = 1
+g:gruvbox_material_disable_terminal_colors = 1
+g:gruvbox_material_menu_selection_background = 'orange'
+silent! colorscheme gruvbox-material
+
+packadd! everforest
+g:everforest_show_eob = 0
+g:everforest_background = 'hard'
+g:everforest_ui_contrast = 'high'
+g:everforest_enable_italic = 1
+g:everforest_spell_foreground = 'colored'
+g:everforest_better_performance = 1
+g:everforest_disable_terminal_colors = 1
+#silent! colorscheme everforest
+
+
+#############################
+####       PLUGINS       ####
+#############################
+
+# Disable Netrw
+g:loaded_netrw       = 1
+g:loaded_netrwPlugin = 1
 
