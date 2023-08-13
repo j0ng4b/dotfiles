@@ -41,3 +41,9 @@ export ZLE_RPROMPT_INDENT="0"
 export VISUAL=nvim
 export EDITOR=nvim
 
+###########################
+##         .NET          ##
+###########################
+export DOTNET_ROOT=$HOME/.dotnet
+export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+

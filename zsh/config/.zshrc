@@ -11,6 +11,13 @@ done
 . $ZDOTDIR/completion.sh
 
 #################
+##  UTILITIES  ##
+#################
+for utility in $ZDOTDIR/utils/*; do
+    . $utility
+done
+
+#################
 ##   HISTORY   ##
 #################
 histdir="$(dirname $HISTFILE)"
@@ -21,6 +28,7 @@ fi
 #################
 ##   OPTIONS   ##
 #################
+setopt AUTO_CD
 setopt AUTO_PUSHD
 setopt CD_SILENT
 setopt PUSHD_IGNORE_DUPS
