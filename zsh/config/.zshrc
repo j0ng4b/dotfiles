@@ -6,6 +6,11 @@ for alias in $ZDOTDIR/aliases/*; do
 done
 
 #################
+## COMPLETION  ##
+#################
+. $ZDOTDIR/completion.sh
+
+#################
 ##   HISTORY   ##
 #################
 histdir="$(dirname $HISTFILE)"
