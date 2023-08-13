@@ -98,7 +98,7 @@ endif
 &linebreak = v:true
 &showbreak = '> '
 
-# Command-line
+# Command line
 &cmdheight = 2
 &cmdwinheight = 5
 
@@ -162,6 +162,7 @@ mkdir(&undodir[0 : -3], 'p', 0o700)
 &viminfofile = vim_state_home .. '/viminfo'
 
 # Wild menu
+&wildcharm = 9             # 9 is <Tab>
 &wildmenu = v:true
 &wildmode = 'longest:full'
 &wildoptions = 'pum'
@@ -188,6 +189,79 @@ augroup END
 ####       KEYMAPS       ####
 #############################
 
-# Exit insert mode with `jk`
+# Exit back to normal mode with `jk`
 imap jk <Esc>
+vmap jk <Esc>
+
+
+# Disable arrow keys
+imap <Up>    <Nop>
+imap <Left>  <Nop>
+imap <Right> <Nop>
+imap <Down>  <Nop>
+
+map <Up>    <Nop>
+map <Left>  <Nop>
+map <Right> <Nop>
+map <Down>  <Nop>
+
+
+# Make Tab key scroll through the wildmenu
+cmap <expr> <Tab> pumvisible() ? '<Down>' : '<Tab>'
+
+
+# Save
+imap <C-s>     <Cmd>w<CR>
+imap <C-S-s>   <Cmd>wall<CR>
+
+map  <C-s>     <Cmd>w<CR>
+map  <C-S-s>   <Cmd>wall<CR>
+
+
+# Quit
+imap <C-q>     <Cmd>qall<CR>
+imap <C-S-q>   <Cmd>qall!<CR>
+
+map  <C-q>     <Cmd>qall<CR>
+map  <C-S-q>   <Cmd>qall!<CR>
+
+
+# Buffer
+nmap bo        <Cmd>enew<CR>
+nmap <expr> bc <Cmd>bdelete<CR>
+
+nmap bn        <Cmd>bnext<CR>
+nmap bp        <Cmd>bprevious<CR>
+
+
+# Window
+nmap ws        <Cmd>wincmd s<CR>
+nmap wv        <Cmd>wincmd v<CR>
+
+nmap wc        <Cmd>wincmd c<CR>
+
+nmap wh        <Cmd>wincmd h<CR>
+nmap wj        <Cmd>wincmd j<CR>
+nmap wk        <Cmd>wincmd k<CR>
+nmap wl        <Cmd>wincmd l<CR>
+
+nmap wmh       <Cmd>wincmd H<CR>
+nmap wmj       <Cmd>wincmd J<CR>
+nmap wmk       <Cmd>wincmd K<CR>
+nmap wml       <Cmd>wincmd L<CR>
+
+
+# Tab
+nmap to        <Cmd>tabnew<CR>
+nmap tc        <Cmd>tabclose<CR>
+
+nmap tn        <Cmd>tabnext<CR>
+nmap tp        <Cmd>tabprevious<CR>
+nmap tf        <Cmd>tabfirst<CR>
+nmap tl        <Cmd>tablast<CR>
+
+nmap tmh       <Cmd>tabmove -<CR>
+nmap tml       <Cmd>tabmove +<CR>
+
+nnoremap tt    t
 
