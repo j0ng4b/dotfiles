@@ -14,3 +14,11 @@
 	path = vim/data/pack/packages/start/nerdtree
 	url = https://github.com/preservim/nerdtree
 	ignore = dirty
+[submodule "vim/vim-devicons"]
+	path = vim/data/pack/packages/start/vim-devicons
+	url = https://github.com/ryanoasis/vim-devicons
+	ignore = dirty
+[submodule "vim/editorconfig-vim"]
+	path = vim/data/pack/packages/start/editorconfig-vim
+	url = https://github.com/editorconfig/editorconfig-vim
+	ignore = dirty

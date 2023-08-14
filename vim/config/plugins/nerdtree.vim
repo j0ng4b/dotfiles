@@ -13,13 +13,13 @@ g:NERDTreeWinSize = 40
 g:NERDTreeMinimalUI = 1
 g:NERDTreeShowHidden = 1
 g:NERDTreeNaturalSort = 1
-g:NERDTreeCaseSensitiveSort = 1
 g:NERDTreeBookmarksFile = xdg.vim_state_home .. '/NERDTreeBookmarks'
 g:NERDTreeBookmarksSort = 2
 g:NERDTreeMarkBookmarks = 0
 g:NERDTreeAutoDeleteBuffer = 1
-g:NERDTreeDirArrowExpandable = '>'
-g:NERDTreeDirArrowCollapsible = 'v'
+g:NERDTreeCaseSensitiveSort = 1
+g:NERDTreeDirArrowExpandable = ''
+g:NERDTreeDirArrowCollapsible = ''
 
 ####################
 ### FUNCTIONS
@@ -70,6 +70,9 @@ augroup END
 
 ####################
 ### KEYMAPS
-imap <C-n> <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
-nmap <C-n> <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
+imap <Leader>n <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
+imap <Leader>nf <Cmd>NERDTreeFocus<CR>
+
+nmap <Leader>n <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
+nmap <Leader>nf <Cmd>NERDTreeFocus<CR>
 
