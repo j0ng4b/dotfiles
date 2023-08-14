@@ -26,27 +26,10 @@ endif
 ####         XDG         ####
 #############################
 
+import './xdg.vim' as xdg
+
 if empty($MYVIMRC)
     $MYVIMRC = expand('<sfile>:p')
-endif
-
-# Vim XDG directories
-const vim_config_home = (empty($XDG_CONFIG_HOME) ? '$HOME/.config' : $XDG_CONFIG_HOME) .. '/vim'
-const vim_cache_home = (empty($XDG_CACHE_HOME) ? '$HOME/.cache' : $XDG_CACHE_HOME) .. '/vim'
-const vim_state_home = (empty($XDG_STATE_HOME) ? '$HOME/.local/state' : $XDG_STATE_HOME) .. '/vim'
-const vim_data_home = (empty($XDG_DATA_HOME) ? '$HOME/.local/share' : $XDG_DATA_HOME) .. '/vim'
-
-# Update runtime paths
-if stridx(&runtimepath, vim_config_home) == -1
-    &runtimepath = vim_config_home .. ',' .. &runtimepath
-    &runtimepath = &runtimepath .. ',' .. vim_data_home
-    &runtimepath = &runtimepath .. ',' .. vim_config_home .. '/after'
-endif
-
-# Update packages paths
-if stridx(&packpath, vim_data_home) == -1
-    &packpath = vim_data_home .. ',' .. &packpath
-    &packpath = &packpath .. ',' .. vim_data_home .. '/after'
 endif
 
 
@@ -103,7 +86,7 @@ endif
 &cmdwinheight = 5
 
 # Swap file
-&directory = vim_state_home .. '/swap//'
+&directory = xdg.vim_state_home .. '/swap//'
 &updatetime = 100
 mkdir(&directory[0 : -3], 'p', 0o700)
 
@@ -145,21 +128,21 @@ mkdir(&directory[0 : -3], 'p', 0o700)
 &spelllang = 'en,pt_br'
 &spelloptions = 'camel'
 &spellsuggest = 'fast,10'
-mkdir(vim_data_home .. '/spell', 'p', 0o700)
+mkdir(xdg.vim_data_home .. '/spell', 'p', 0o700)
 
 # Timeout
 &timeoutlen = 350
 &ttimeoutlen = 100
 
 # Undo
-&undodir = vim_state_home .. '/undo//'
+&undodir = xdg.vim_state_home .. '/undo//'
 &undofile = v:true
 &undolevels = 250
 &undoreload = 2500
 mkdir(&undodir[0 : -3], 'p', 0o700)
 
 # Viminfo
-&viminfofile = vim_state_home .. '/viminfo'
+&viminfofile = xdg.vim_state_home .. '/viminfo'
 
 # Wild menu
 &wildcharm = 9             # 9 is <Tab>
@@ -244,6 +227,7 @@ nmap wh        <Cmd>wincmd h<CR>
 nmap wj        <Cmd>wincmd j<CR>
 nmap wk        <Cmd>wincmd k<CR>
 nmap wl        <Cmd>wincmd l<CR>
+nmap wp        <Cmd>wincmd p<CR>
 
 nmap wmh       <Cmd>wincmd H<CR>
 nmap wmj       <Cmd>wincmd J<CR>
@@ -303,4 +287,7 @@ g:everforest_disable_terminal_colors = 1
 # Disable Netrw
 g:loaded_netrw       = 1
 g:loaded_netrwPlugin = 1
+
+# NERDTree
+runtime plugins/nerdtree.vim
 

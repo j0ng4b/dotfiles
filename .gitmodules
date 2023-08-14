@@ -10,3 +10,7 @@
 	path = vim/data/pack/colors/opt/everforest
 	url = https://github.com/sainnhe/everforest
 	ignore = dirty
+[submodule "vim/nerdtree"]
+	path = vim/data/pack/packages/start/nerdtree
+	url = https://github.com/preservim/nerdtree
+	ignore = dirty
