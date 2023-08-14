@@ -38,8 +38,8 @@ export ZLE_RPROMPT_INDENT="0"
 ###########################
 ##    Common variables   ##
 ###########################
-export VISUAL=nvim
-export EDITOR=nvim
+export VISUAL=vim
+export EDITOR=vim
 
 ###########################
 ##         .NET          ##

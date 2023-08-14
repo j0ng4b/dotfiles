@@ -1,0 +1,9 @@
+[user]
+	email = jonathagabrielns@gmail.com
+	name = Jonatha Gabriel
+[core]
+	editor = vim
+[init]
+	defaultBranch = main
+[diff]
+	ignoreSubmodules = dirty
