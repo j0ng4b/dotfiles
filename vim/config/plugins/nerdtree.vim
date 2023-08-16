@@ -3,11 +3,10 @@ vim9script
 import '../xdg.vim' as xdg
 
 #############################
-####      NERDTree       ####
+####    CONFIGURATION    ####
 #############################
 
-####################
-### CONFIGURATION
+### NERDTree
 g:NERDTreeUseTCD = 1
 g:NERDTreeWinSize = 40
 g:NERDTreeMinimalUI = 1
@@ -21,7 +20,7 @@ g:NERDTreeCaseSensitiveSort = 1
 g:NERDTreeDirArrowExpandable = ''
 g:NERDTreeDirArrowCollapsible = ''
 
-# NERDTreeGitStatus
+### NERDTreeGitStatus
 g:NERDTreeGitStatusIndicatorMapCustom = {
     'Modified':  '', # hex: 0xF069
     'Staged':    '', # hex: 0xF067
@@ -36,8 +35,10 @@ g:NERDTreeGitStatusIndicatorMapCustom = {
 }
 
 
-####################
-### FUNCTIONS
+#############################
+####      FUNCTIONS      ####
+#############################
+
 def NERDTreeOpener(vimEnter: bool): void
     if vimEnter
         if argc() == 1 && isdirectory(argv()[0]) && !exists('std_in')
@@ -72,8 +73,10 @@ def NERDTreeCloser(): void
 enddef
 
 
-####################
-### AUTOCMDS
+#############################
+####      AUTOCMDS       ####
+#############################
+
 augroup NERDTree
     autocmd!
     autocmd StdinReadPre * var std_in = 1
@@ -83,8 +86,10 @@ augroup NERDTree
 augroup END
 
 
-####################
-### KEYMAPS
+#############################
+####      KEYMAPS        ####
+#############################
+
 imap <Leader>nt <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
 imap <Leader>nf <Cmd>NERDTreeFocus<CR>
 

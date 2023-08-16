@@ -30,3 +30,11 @@
 	path = vim/data/pack/packages/start/nerdtree-git-plugin
 	url = https://github.com/xuyuanp/nerdtree-git-plugin
 	ignore = dirty
+[submodule "vim/delimitmate"]
+	path = vim/data/pack/packages/start/delimitmate
+	url = https://github.com/raimondi/delimitmate
+	ignore = dirty
+[submodule "vim/vim-endwise"]
+	path = vim/data/pack/packages/start/vim-endwise
+	url = https://github.com/tpope/vim-endwise
+	ignore = dirty

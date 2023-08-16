@@ -328,3 +328,6 @@ runtime plugins/nerdtree.vim
 # GitGutter
 runtime plugins/gitgutter.vim
 
+# delimitMate and vim-endwise
+runtime plugins/delimitmate.vim
+
