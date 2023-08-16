@@ -38,3 +38,11 @@
 	path = vim/data/pack/packages/start/vim-endwise
 	url = https://github.com/tpope/vim-endwise
 	ignore = dirty
+[submodule "vim/surround.vim"]
+	path = vim/data/pack/packages/start/surround.vim
+	url = https://github.com/tpope/vim-surround
+	ignore = dirty
+[submodule "vim/repeat.vim"]
+	path = vim/data/pack/packages/start/repeat.vim
+	url = https://github.com/tpope/vim-repeat
+	ignore = dirty
