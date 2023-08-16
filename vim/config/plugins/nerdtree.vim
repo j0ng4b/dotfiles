@@ -70,9 +70,9 @@ augroup END
 
 ####################
 ### KEYMAPS
-imap <Leader>n <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
+imap <Leader>nt <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
 imap <Leader>nf <Cmd>NERDTreeFocus<CR>
 
-nmap <Leader>n <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
+nmap <Leader>nt <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
 nmap <Leader>nf <Cmd>NERDTreeFocus<CR>
 

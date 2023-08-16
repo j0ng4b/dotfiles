@@ -152,6 +152,42 @@ mkdir(&undodir[0 : -3], 'p', 0o700)
 
 
 #############################
+####      FUNCTIONS      ####
+#############################
+def BufferClose(): void
+    var curBuffer = bufnr('%')
+
+    if getbufvar(curBuffer, '&modified')
+        echo "Can't close: the buffer was modified!"
+        return
+    endif
+
+    var windowsWithBuffer = filter(range(1, winnr('$')),
+        'winbufnr(v:val) == ' .. curBuffer)
+    var curWindow = winnr()
+
+    for window in windowsWithBuffer
+        execute ':' .. window .. 'wincmd w'
+
+        var listedBuffers = filter(range(1, bufnr('$')),
+            'buflisted(v:val) && v:val != ' .. curBuffer)
+
+        var hiddenBuffers = filter(copy(listedBuffers), 'bufwinnr(v:val) < 0')
+        var gotoBuffer = (hiddenBuffers + listedBuffers + [-1])[0]
+
+        if gotoBuffer > 0
+            execute 'buffer ' .. gotoBuffer
+        else
+            enew
+        endif
+    endfor
+
+    execute 'bdelete ' .. curBuffer
+    execute ':' .. curWindow .. 'wincmd w'
+enddef
+command! BufferClose call BufferClose()
+
+#############################
 ####       AUTOCMD       ####
 #############################
 
@@ -183,10 +219,10 @@ imap <Left>  <Nop>
 imap <Right> <Nop>
 imap <Down>  <Nop>
 
-map <Up>    <Nop>
-map <Left>  <Nop>
-map <Right> <Nop>
-map <Down>  <Nop>
+map  <Up>    <Nop>
+map  <Left>  <Nop>
+map  <Right> <Nop>
+map  <Down>  <Nop>
 
 
 # Make Tab key scroll through the wildmenu
@@ -210,45 +246,42 @@ map  <C-S-q>   <Cmd>qall!<CR>
 
 
 # Buffer
-nmap bo        <Cmd>enew<CR>
-nmap <expr> bc <Cmd>bdelete<CR>
+nmap <Leader>bo        <Cmd>enew<CR>
+nmap <Leader>bc        <Cmd>BufferClose<CR>
 
-nmap bn        <Cmd>bnext<CR>
-nmap bp        <Cmd>bprevious<CR>
+nmap <Leader>bn        <Cmd>bnext<CR>
+nmap <Leader>bp        <Cmd>bprevious<CR>
 
 
 # Window
-nmap ws        <Cmd>wincmd s<CR>
-nmap wv        <Cmd>wincmd v<CR>
+nmap <Leader>ws        <Cmd>wincmd s<CR>
+nmap <Leader>wv        <Cmd>wincmd v<CR>
 
-nmap wc        <Cmd>wincmd c<CR>
+nmap <Leader>wc        <Cmd>wincmd c<CR>
 
-nmap wh        <Cmd>wincmd h<CR>
-nmap wj        <Cmd>wincmd j<CR>
-nmap wk        <Cmd>wincmd k<CR>
-nmap wl        <Cmd>wincmd l<CR>
-nmap wp        <Cmd>wincmd p<CR>
+nmap <Leader>wh        <Cmd>wincmd h<CR>
+nmap <Leader>wj        <Cmd>wincmd j<CR>
+nmap <Leader>wk        <Cmd>wincmd k<CR>
+nmap <Leader>wl        <Cmd>wincmd l<CR>
+nmap <Leader>wp        <Cmd>wincmd p<CR>
 
-nmap wmh       <Cmd>wincmd H<CR>
-nmap wmj       <Cmd>wincmd J<CR>
-nmap wmk       <Cmd>wincmd K<CR>
-nmap wml       <Cmd>wincmd L<CR>
+nmap <Leader>wmh       <Cmd>wincmd H<CR>
+nmap <Leader>wmj       <Cmd>wincmd J<CR>
+nmap <Leader>wmk       <Cmd>wincmd K<CR>
+nmap <Leader>wml       <Cmd>wincmd L<CR>
 
 
 # Tab
-nmap to        <Cmd>tabnew<CR>
-nmap tc        <Cmd>tabclose<CR>
+nmap <Leader>to        <Cmd>tabnew<CR>
+nmap <Leader>tc        <Cmd>tabclose<CR>
 
-nmap tn        <Cmd>tabnext<CR>
-nmap tp        <Cmd>tabprevious<CR>
-nmap tf        <Cmd>tabfirst<CR>
-nmap tl        <Cmd>tablast<CR>
+nmap <Leader>tn        <Cmd>tabnext<CR>
+nmap <Leader>tp        <Cmd>tabprevious<CR>
+nmap <Leader>tf        <Cmd>tabfirst<CR>
+nmap <Leader>tl        <Cmd>tablast<CR>
 
-nmap tmh       <Cmd>tabmove -<CR>
-nmap tml       <Cmd>tabmove +<CR>
-
-nnoremap tt    t
-
+nmap <Leader>th       <Cmd>tabmove -<CR>
+nmap <Leader>tr       <Cmd>tabmove +<CR>
 
 #############################
 ####     COLORSCHEME     ####
