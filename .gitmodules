@@ -22,3 +22,11 @@
 	path = vim/data/pack/packages/start/editorconfig-vim
 	url = https://github.com/editorconfig/editorconfig-vim
 	ignore = dirty
+[submodule "vim/vim-gitgutter"]
+	path = vim/data/pack/packages/start/vim-gitgutter
+	url = https://github.com/airblade/vim-gitgutter
+	ignore = dirty
+[submodule "vim/nerdtree-git-plugin"]
+	path = vim/data/pack/packages/start/nerdtree-git-plugin
+	url = https://github.com/xuyuanp/nerdtree-git-plugin
+	ignore = dirty

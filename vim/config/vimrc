@@ -79,7 +79,7 @@ endif
 &breakindent = v:true
 &breakindentopt = 'sbr'
 &linebreak = v:true
-&showbreak = '↳ '
+&showbreak = '󱞩'
 
 # Command line
 &cmdheight = 2
@@ -93,7 +93,7 @@ mkdir(&directory[0 : -3], 'p', 0o700)
 # Special characters
 &fillchars = 'eob: ,vert:┊,lastline:+'
 &list = v:true
-&listchars = 'eol:¬,tab:┊ ,lead:·,leadmultispace:┊   ,trail:*'
+&listchars = 'eol:󱞣,tab:┊ ,lead:·,leadmultispace:┊   ,trail:*'
 
 # Format
 &textwidth = 80
@@ -186,6 +186,7 @@ def BufferClose(): void
     execute ':' .. curWindow .. 'wincmd w'
 enddef
 command! BufferClose call BufferClose()
+
 
 #############################
 ####       AUTOCMD       ####
@@ -321,6 +322,9 @@ g:everforest_disable_terminal_colors = 1
 g:loaded_netrw       = 1
 g:loaded_netrwPlugin = 1
 
-# NERDTree
+# NERDTree and NERDTreeGitStatus
 runtime plugins/nerdtree.vim
+
+# GitGutter
+runtime plugins/gitgutter.vim
 

@@ -21,6 +21,21 @@ g:NERDTreeCaseSensitiveSort = 1
 g:NERDTreeDirArrowExpandable = ''
 g:NERDTreeDirArrowCollapsible = ''
 
+# NERDTreeGitStatus
+g:NERDTreeGitStatusIndicatorMapCustom = {
+    'Modified':  '', # hex: 0xF069
+    'Staged':    '', # hex: 0xF067
+    'Untracked': '', # hex: 0xF128
+    'Renamed':   '', # hex: 0xF061
+    'Unmerged':  '', # hex: 0xEBAB
+    'Deleted':   '󰆴', # hex: 0xF01B4
+    'Dirty':     '', # hex: 0xF00D
+    'Ignored':   '󰈅', # hex: 0xF0205
+    'Clean':     '', # hex: 0xF00C
+    'Unknown':   '󰃤', # hex: 0xF00E4
+}
+
+
 ####################
 ### FUNCTIONS
 def NERDTreeOpener(vimEnter: bool): void
