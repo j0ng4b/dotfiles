@@ -331,3 +331,9 @@ runtime plugins/gitgutter.vim
 # delimitMate and vim-endwise
 runtime plugins/delimitmate.vim
 
+# Lsp
+runtime plugins/lsp.vim
+
+# Vsnip
+runtime plugins/vsnip.vim
+
