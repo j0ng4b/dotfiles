@@ -1,6 +1,11 @@
 # Create completion cache directory
 mkdir -p $XDG_CACHE_HOME/zsh/
 
+_complete_alias() {
+    [[ -n $PREFIX  ]] && compadd -- ${(M)${(k)galiases}:#$PREFIX*}
+    return 1
+}
+
 # Cache
 zstyle ':completion:*' use-cache true
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
@@ -26,8 +31,8 @@ zstyle ':completion:*' original true
 
 # Miscellaneous
 zstyle ':completion:*' add-space true
-zstyle ':completion:*' completer _expand _complete _ignored _match             \
-    _approximate _prefix
+zstyle ':completion:*' completer _expand _complete_alias _complete             \
+    _ignored _match _approximate _prefix
 zstyle ':completion:*' format $'\n%d'
 zstyle ':completion:*' expand prefix
 zstyle ':completion:*' group-name ''
