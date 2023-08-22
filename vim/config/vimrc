@@ -300,20 +300,16 @@ nnoremap tt   t
 ####     COLORSCHEME     ####
 #############################
 
-packadd! gruvbox-material
-g:gruvbox_material_visual = 'reverse'
-g:gruvbox_material_show_eob = 0
-g:gruvbox_material_background = 'hard'
-g:gruvbox_material_foreground = 'original'
-g:gruvbox_material_enable_bold = 1
-g:gruvbox_material_ui_contrast = 'high'
-g:gruvbox_material_enable_italic = 1
-g:gruvbox_material_spell_foreground = 'colored'
-g:gruvbox_material_statusline_style = 'original'
-g:gruvbox_material_better_performance = 1
-g:gruvbox_material_disable_terminal_colors = 1
-g:gruvbox_material_menu_selection_background = 'orange'
-silent! colorscheme gruvbox-material
+g:gruvbox_italic = 1
+g:gruvbox_contrast_dark = 'hard'
+g:gruvbox_hls_cursor = 'aqua'
+g:gruvbox_sign_column = 'bg0'
+g:gruvbox_italicize_strings = 1
+g:gruvbox_invert_signs = 0
+g:gruvbox_improved_strings = 1
+g:gruvbox_improved_warnings = 1
+g:gruvbox_guisp_fallback = 'fg'
+silent! colorscheme gruvbox
 
 packadd! everforest
 g:everforest_show_eob = 0
@@ -324,6 +320,8 @@ g:everforest_spell_foreground = 'colored'
 g:everforest_better_performance = 1
 g:everforest_disable_terminal_colors = 1
 #silent! colorscheme everforest
+
+#silent! colorscheme rosepine
 
 
 #############################
