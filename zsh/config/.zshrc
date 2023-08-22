@@ -1,29 +1,55 @@
+# Enable Powerlevel10k instant prompt
+if [ -r "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh" ]; then
+    source "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 #################
 ##   ALIASES   ##
 #################
 for alias in $ZDOTDIR/aliases/*; do
-    . $alias
+    source $alias
 done
+
 
 #################
 ## COMPLETION  ##
 #################
-. $ZDOTDIR/completion.sh
+source $ZDOTDIR/completion.zsh
+
 
 #################
 ##  UTILITIES  ##
 #################
 for utility in $ZDOTDIR/utils/*; do
-    . $utility
+    source $utility
 done
+
+
+#################
+##   PLUGINS   ##
+#################
+while IFS=" " read -r plugin; do
+    # Load plugin if exists
+    if [ -f "$ZDATADIR/plugins/$plugin" ]; then
+        source "$ZDATADIR/plugins/$plugin"
+
+        # Load plugin configuration if any
+        plugin_conf="$(dirname $plugin).zsh"
+        if [ -f "$ZDOTDIR/plugins.conf.d/$plugin_conf" ]; then
+            source "$ZDOTDIR/plugins.conf.d/$plugin_conf"
+        fi
+    fi
+done <<-EOF
+    powerlevel10k/powerlevel10k.zsh-theme
+    zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+EOF
+
 
 #################
 ##   HISTORY   ##
 #################
-histdir="$(dirname $HISTFILE)"
-if [ -n "$histdir" -a ! -d "$histdir" ]; then
-    mkdir -p "$histdir"
-fi
+mkdir -p $ZDATADIR
+
 
 #################
 ##   OPTIONS   ##

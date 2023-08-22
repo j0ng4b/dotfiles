@@ -62,3 +62,11 @@
 	path = vim/data/pack/colors/opt/rose-pine
 	url = https://github.com/rose-pine/vim
 	ignore = dirty
+[submodule "zsh/powerlevel10k"]
+	path = zsh/data/plugins/powerlevel10k
+	url = https://github.com/romkatv/powerlevel10k
+	ignore = dirty
+[submodule "zsh/zsh-syntax-highlighting"]
+	path = zsh/data/plugins/zsh-syntax-highlighting
+	url = https://github.com/zsh-users/zsh-syntax-highlighting
+	ignore = dirty

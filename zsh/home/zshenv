@@ -28,8 +28,9 @@ export XINITRC="$XDG_CONFIG_HOME/X11/xinitrc"
 ##          Zsh          ##
 ###########################
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+export ZDATADIR="$XDG_DATA_HOME/zsh"
 
-export HISTFILE="$XDG_DATA_HOME/zsh/zhistory"
+export HISTFILE="$ZDATADIR/zhistory"
 export HISTSIZE=1000
 export SAVEHIST=1000
 
