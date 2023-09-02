@@ -309,7 +309,7 @@ g:gruvbox_invert_signs = 0
 g:gruvbox_improved_strings = 1
 g:gruvbox_improved_warnings = 1
 g:gruvbox_guisp_fallback = 'fg'
-silent! colorscheme gruvbox
+#silent! colorscheme gruvbox
 
 packadd! everforest
 g:everforest_show_eob = 0
@@ -321,7 +321,7 @@ g:everforest_better_performance = 1
 g:everforest_disable_terminal_colors = 1
 #silent! colorscheme everforest
 
-#silent! colorscheme rosepine
+silent! colorscheme rosepine_moon
 
 
 #############################
