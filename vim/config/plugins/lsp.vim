@@ -65,6 +65,30 @@ def SetupLsp(): void
             path: 'clangd',
             args: [ '--background-index', '--clang-tidy' ],
         },
+        {
+            name: 'C# language server',
+            filetype: [ 'cs' ],
+            path: $HOME .. '/.omnisharp/OmniSharp',
+            args: [ '-z', '-lsp', '-e', 'utf-8', '-hpid', getpid(),
+                'DotNet:EnablePackageRestore=false',
+                'MsBuild:LoadProjectsOnDemand=true',
+                'Sdk:IncludePrereleases=true',
+
+                'FormattingOptions:EnableEditorConfigSupport=true',
+                'FormattingOptions:OrganizeImports=true',
+
+                'RoslynExtensionsOptions:EnableAnalyzersSupport=true',
+                'RoslynExtensionsOptions:AnalyzeOpenDocumentsOnly=true',
+                'RoslynExtensionsOptions:EnableImportCompletion=false',
+
+                'Script:Enabled=true',
+                'Script:DefaultTargetFramework=net6.0',
+                'Script:EnableScriptNuGetReferences=true',
+
+                'RenameOptions:RenameInComments=true',
+                'RenameOptions:RenameOverloads=true',
+            ]
+        },
     ])
 enddef
 
