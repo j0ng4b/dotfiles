@@ -1,0 +1,55 @@
+#
+#                    ███╗   ███╗ █████╗ ██╗  ██╗ ██████╗
+#                    ████╗ ████║██╔══██╗██║ ██╔╝██╔═══██╗
+#                    ██╔████╔██║███████║█████╔╝ ██║   ██║
+#                    ██║╚██╔╝██║██╔══██║██╔═██╗ ██║   ██║
+#                    ██║ ╚═╝ ██║██║  ██║██║  ██╗╚██████╔╝
+#                    ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝
+#
+#                ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+#               ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+#               ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+#               ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+#               ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+#                ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+#
+
+####################
+# # # Options
+
+## History
+max-history=15
+max-visible=3
+
+## Font
+font=IosevkaJ0ng4b Nerd Font Mono 14
+
+## Colors
+background-color=#232136
+text-color=#e0def4
+
+## Borders
+border-size=2
+border-color=#393552
+border-radius=5
+
+## Dimensions
+width=300
+height=150
+
+## Timeout
+default-timeout=4000
+
+## Positioning
+anchor=bottom-right
+margin=0,0,5,0
+padding=10
+outer-margin=10
+
+####################
+# # # Criteria
+[hidden]
+format=%h hidden notification(s)
+margin=5,0,0,0
+text-alignment=center
+
