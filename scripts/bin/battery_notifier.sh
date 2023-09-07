@@ -60,6 +60,9 @@ while true; do
             notify_low=$default_low
         # Notify when charger is disconnected
         elif [ "$new_status" = "Discharging" ]; then
+            # Update the capacity to display on notification
+            capacity=$(cat "$capacity_file")
+
             notify-send -u normal -t $default_timeout -w "Discharging Battery" "<b><span color='#3e8fb0' size='18pt'>$(battery_capacity_icon)</span> Charger disconnected</b>\n<span color='#3e8fb0' size='16pt'>$capacity%</span>"
 
             notify_low=$default_low
