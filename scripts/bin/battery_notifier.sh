@@ -44,7 +44,7 @@ while true; do
     if [ "$new_status" != "$status" ]; then
         # When the battery get fully charged
         if [ "$new_status" = "Full"  ]; then
-            notify-send -u normal -t $default_timeout -w "Full Battery" "<b><span color='#3e8fb0' size='18pt'>󰂄</span>Charging Full Battery</b>"
+            notify-send -u normal -t $default_timeout -w "Full Battery" "<b><span color='#3e8fb0' size='18pt'>󰂄</span> Charging Full Battery</b>"
         # Notify when charger is connected
         elif [ "$new_status" = "Charging"  ]; then
             notify-send -u normal -t $default_timeout -w "Charging Battery" "<b><span color='#3e8fb0' size='18pt'>󰂄</span> Charging Battery</b>"
