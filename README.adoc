@@ -1,0 +1,78 @@
+= Dotfiles
+:toc: preamble
+:toclevels: 5
+:toc-title: Sections
+
+My own configuration files.
+
+=== Overview
+[.lead]
+Collection of my config files for many tools,
+some of them could be installed without any problem
+but some other depends on another tool config and
+there's no way to keep track dependencies with the
+current `dotfile` installer script.
+
+{empty} +
+
+.[[tools-list]]Tools list
+[option=header,cols=2*]
+|===
+| Tool
+| Role
+
+| Foot
+| terminal emulator
+
+| Git
+| version control system
+
+| Hyprland
+| window manager
+
+| PipeWire
+| audio server
+
+| WirePlumber
+| audio session manager
+
+| Vim
+| code editor
+
+| Zsh
+| shell
+
+|===
+
+{empty} +
+
+==== Installing configs
+
+There's a script called `dotfile` in repository root
+that can be used to installing configurations.
+
+No help message yet, but the script commands are:
+
+`install`:: no magic, it will install a config given a name
+`uninstall`:: well, uninstall some config with this
+`list`:: will list the installable configs and their status
+
+Other way to list config files is using the `ls` command
+on repository root, all directories listed are installable
+configs.
+
+{empty} +
+
+IMPORTANT: All those configurations was/are being
+written to works on Void Linux.
+
+=== Requirements
+
+Besides the tools listed <<tools-list,here>> other requirements are:
+
+libnotify:: provides `notify-send`
+
+=== Installation
+
+No mistery, clone the repository and that's all. To install or
+uninstall configs see <<Installing Configs,Installing configs>>.
