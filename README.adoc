@@ -75,4 +75,4 @@ libnotify:: provides `notify-send`
 === Installation
 
 No mistery, clone the repository and that's all. To install or
-uninstall configs see <<Installing Configs,Installing configs>>.
+uninstall configs see <<installing-configs,installing configs>> section.
