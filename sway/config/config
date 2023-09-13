@@ -1,0 +1,277 @@
+#
+#            ███████╗██╗    ██╗ █████╗ ██╗   ██╗███████╗██╗  ██╗
+#            ██╔════╝██║    ██║██╔══██╗╚██╗ ██╔╝██╔════╝╚██╗██╔╝
+#            ███████╗██║ █╗ ██║███████║ ╚████╔╝ █████╗   ╚███╔╝
+#            ╚════██║██║███╗██║██╔══██║  ╚██╔╝  ██╔══╝   ██╔██╗
+#            ███████║╚███╔███╔╝██║  ██║   ██║   ██║     ██╔╝ ██╗
+#            ╚══════╝ ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝     ╚═╝  ╚═╝
+#
+#               ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+#              ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+#              ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+#              ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+#              ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+#               ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+#
+
+###  ┬┌┐┌┌─┐┬  ┬ ┬┌┬┐┌─┐┌─┐
+###  │││││  │  │ │ ││├┤ └─┐
+###  ┴┘└┘└─┘┴─┘└─┘─┴┘└─┘└─┘
+
+include "colors"
+
+
+###  ┬  ┬┌─┐┬─┐┬┌─┐┌┐ ┬  ┌─┐
+###  └┐┌┘├─┤├┬┘│├─┤├┴┐│  ├┤
+###   └┘ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘
+
+# Modifier
+set $super Mod4
+
+# Directional keys
+set $left  h
+set $down  j
+set $up    k
+set $right l
+
+# Terminal application
+set $term foot
+
+# Application launcher
+set $launcher wofi --show drun
+
+
+###  ╔═╗┬ ┬┌┬┐┌─┐┌─┐┌┬┐┌─┐┬─┐┌┬┐
+###  ╠═╣│ │ │ │ │└─┐ │ ├─┤├┬┘ │
+###  ╩ ╩└─┘ ┴ └─┘└─┘ ┴ ┴ ┴┴└─ ┴
+
+## Run a script to start everything that need to be started
+exec "~/.config/sway/scripts/autostart.sh &"
+
+
+###  ╔═╗┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
+###  ║ ║├─┘ │ ││ ││││└─┐
+###  ╚═╝┴   ┴ ┴└─┘┘└┘└─┘
+
+    ## Disable focus wrapping
+    focus_wrapping disable
+
+    ## Move mouse when focus change
+    mouse_warping container
+
+    ## I don't know but I'll keep this enable
+    scratchpad_minimize enable
+
+    default_orientation auto
+
+    ## Disable XWayland
+    xwayland disable
+
+
+###  ┌─┐┌─┐┌─┐┌─┐┌─┐┬─┐┌─┐┌┐┌┌─┐┌─┐
+###  ├─┤├─┘├─┘├┤ ├─┤├┬┘├─┤││││  ├┤
+###  ┴ ┴┴  ┴  └─┘┴ ┴┴└─┴ ┴┘└┘└─┘└─┘
+
+    ## Rounding border
+    corner_radius 5
+
+    ## Set opacity for all windows
+    for_window [class=".*"] opacity set 0.9
+
+    ## Set the border style
+    default_border pixel 2
+    default_floating_border pixel 2
+
+    ## Gaps
+    gaps inner 15
+
+    ## Blur
+    blur enable
+    blur_xray disable
+    blur_passes 3
+    blur_radius 3
+
+    ## Dimming
+    default_dim_inactive 0.8
+    dim_inactive_colors.unfocused $background
+    dim_inactive_colors.urgent $background
+
+    ## Shadows
+    shadows enable
+    shadows_on_csd enable
+    shadow_blur_radius 20
+    shadow_color $background
+
+    client.focused          $color3 $color3 $background $color3
+    client.focused_inactive $color8 $color8 $background $color8
+    client.unfocused        $color8 $color8 $background $color8
+    client.urgent           $color1 $color1 $background $color6
+
+
+###  ╦┌┐┌┌─┐┬ ┬┌┬┐
+###  ║│││├─┘│ │ │
+###  ╩┘└┘┴  └─┘ ┴
+
+    ## Keyboard
+    input type:keyboard {
+        xkb_layout br
+        xkb_numlock enable
+    }
+
+    ## Touchpad
+    input type:touchpad {
+        tap enable
+        natural_scroll enable
+    }
+
+
+###  ╔═╗┬ ┬┌┬┐┌─┐┬ ┬┌┬┐
+###  ║ ║│ │ │ ├─┘│ │ │
+###  ╚═╝└─┘ ┴ ┴  └─┘ ┴
+
+    ## Setting wallpaper
+    output * background wallpaper fill
+
+
+###  ╦╔═┌─┐┬ ┬┌┐ ┬┌┐┌┌┬┐┌─┐
+###  ╠╩╗├┤ └┬┘├┴┐││││ ││└─┐
+###  ╩ ╩└─┘ ┴ └─┘┴┘└┘─┴┘└─┘
+
+####################
+# # # Compositor binds
+
+    ## Exit
+    bindsym $super+Shift+q exit
+
+    ## Reload
+    bindsym $super+Shift+r reload
+
+
+####################
+# # # Run program binds
+
+    ## Start a terminal
+    bindsym $super+Return exec $term
+
+    # Start launcher
+    bindsym $super+r exec $launcher
+
+
+####################
+# # # Window binds
+
+    ## Focusing another window in a direction
+    bindsym $super+$left  focus left
+    bindsym $super+$down  focus down
+    bindsym $super+$up    focus up
+    bindsym $super+$right focus right
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $super+space focus mode_toggle
+
+    ## Moving current window in a direction
+    bindsym $super+Shift+$left  move left
+    bindsym $super+Shift+$down  move down
+    bindsym $super+Shift+$up    move up
+    bindsym $super+Shift+$right move right
+
+    ## Closes current window
+    bindsym $super+Shift+c kill
+
+
+####################
+# # # Resize binds
+
+    ## Factor
+    set $resize_factor 10px
+
+    ## Binds
+    bindsym $super+Control+$left  resize shrink width  $resize_factor
+    bindsym $super+Control+$down  resize grow   height $resize_factor
+    bindsym $super+Control+$up    resize shrink height $resize_factor
+    bindsym $super+Control+$right resize grow   width  $resize_factor
+
+
+####################
+# # # Workspace binds
+
+    ## Change current viewed workspace
+    bindsym $super+1 workspace number 1
+    bindsym $super+2 workspace number 2
+    bindsym $super+3 workspace number 3
+    bindsym $super+4 workspace number 4
+    bindsym $super+5 workspace number 5
+    bindsym $super+6 workspace number 6
+    bindsym $super+7 workspace number 7
+    bindsym $super+8 workspace number 8
+    bindsym $super+9 workspace number 9
+    bindsym $super+0 workspace number 10
+
+    ## Move current window to workspace
+    bindsym $super+Shift+1 move container to workspace number 1
+    bindsym $super+Shift+2 move container to workspace number 2
+    bindsym $super+Shift+3 move container to workspace number 3
+    bindsym $super+Shift+4 move container to workspace number 4
+    bindsym $super+Shift+5 move container to workspace number 5
+    bindsym $super+Shift+6 move container to workspace number 6
+    bindsym $super+Shift+7 move container to workspace number 7
+    bindsym $super+Shift+8 move container to workspace number 8
+    bindsym $super+Shift+9 move container to workspace number 9
+    bindsym $super+Shift+0 move container to workspace number 10
+
+    ## Toggle scratchpad
+    bindsym $super+m scratchpad show
+
+    ## Move current window to scratchpad
+    bindsym $super+Shift+m move container to scratchpad
+
+
+####################
+# # # Layout binds
+
+    ## Toggle floating
+    bindsym $super+s floating toggle
+
+    ## Toggle fullscreen
+    bindsym $super+f fullscreen
+
+    ## Split direction
+    bindsym $super+o splith
+    bindsym $super+u splitv
+
+    ## Toggle split orientation
+    bindsym $super+v layout toggle splith splitv
+
+
+####################
+# # # Monitor binds
+
+    ## Focusing
+    bindsym $super+period focus output right
+    bindsym $super+comma focus output left
+
+
+####################
+# # # Miscellaneous
+
+    ## Enable $super key with mouse button to move or drag windows
+    floating_modifier $super normal
+
+    # Move focus to the parent container
+    bindsym $super+a focus parent
+
+    # Move focus to the child container
+    bindsym $super+Shift+a focus child
+
+
+###  ┌─┐┌─┐┌─┐┌┬┐┬ ┬┬─┐┌─┐┌─┐
+###  │ ┬├┤ └─┐ │ │ │├┬┘├┤ └─┐
+###  └─┘└─┘└─┘ ┴ └─┘┴└─└─┘└─┘
+
+    ## Switch workspaces with swipe gesture
+    bindgesture swipe:left  workspace next
+    bindgesture swipe:up    workspace prev
+    bindgesture swipe:down  workspace next
+    bindgesture swipe:right workspace prev
+
+# vim: ft=swayconfig nospell

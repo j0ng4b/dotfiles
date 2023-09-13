@@ -34,6 +34,23 @@ battery_capacity_icon() {
          3) echo "󰁼" ;;
          2) echo "󰁻" ;;
          1) echo "󰁺" ;;
+         *) echo "󰂎" ;;
+    esac
+}
+
+battery_charging_icon() {
+    case "$(($capacity / 10))" in
+        10) echo "󰂅" ;;
+         9) echo "󰂋" ;;
+         8) echo "󰂊" ;;
+         7) echo "󰢞" ;;
+         6) echo "󰂉" ;;
+         5) echo "󰢝" ;;
+         4) echo "󰂈" ;;
+         3) echo "󰂇" ;;
+         2) echo "󰂆" ;;
+         1) echo "󰢜" ;;
+         *) echo "󰢟" ;;
     esac
 }
 
@@ -42,20 +59,24 @@ while true; do
     new_status=$(cat "$status_file")
 
     if [ "$new_status" != "$status" ]; then
+        # Update the capacity to display on notification
+        capacity=$(cat "$capacity_file")
+
         # When the battery get fully charged
         if [ "$new_status" = "Full"  ]; then
-            notify-send -u normal -t $default_timeout -w "Full Battery" "<b><span color='#3e8fb0' size='18pt'>󰂄</span> Charging Full Battery</b>"
+            if [ "$status" = "Discharging" ]; then
+                notify-send -u normal -t $default_timeout -w "Full Battery" "<b><span color='#3e8fb0' size='30pt' baseline_shift='-5pt'>$(battery_charging_icon)</span> Charging Full Battery</b>"
+            else
+                notify-send -u normal -t $default_timeout -w "Full Battery" "<b><span color='#3e8fb0' size='18pt'>󰂄</span> Full Battery</b>"
+            fi
         # Notify when charger is connected
         elif [ "$new_status" = "Charging"  ]; then
-            notify-send -u normal -t $default_timeout -w "Charging Battery" "<b><span color='#3e8fb0' size='18pt'>󰂄</span> Charging Battery</b>"
+            notify-send -u normal -t $default_timeout -w "Charging Battery" "<b><span color='#3e8fb0' size='30pt' baseline_shift='-5pt'>$(battery_charging_icon)</span> Charging Battery</b>"
 
             # Reset notification of low battery
             notify_low=$default_low
         # Notify when charger is disconnected
         elif [ "$new_status" = "Discharging" ]; then
-            # Update the capacity to display on notification
-            capacity=$(cat "$capacity_file")
-
             notify-send -u normal -t $default_timeout -w "Discharging Battery" "<b><span color='#3e8fb0' size='18pt'>$(battery_capacity_icon)</span> Charger disconnected</b>\n<span color='#3e8fb0' size='16pt'>$capacity%</span>"
 
             notify_low=$default_low
