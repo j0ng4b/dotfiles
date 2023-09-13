@@ -27,7 +27,7 @@ current `dotfile` installer script.
 | Git
 | version control system
 
-| Hyprland
+| SwayFX
 | window manager
 
 | PipeWire
