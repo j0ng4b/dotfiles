@@ -1,0 +1,3 @@
+ZSH_AUTOSUGGEST_STRATEGY=(completion history)
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=7,bg=8,bold"
+

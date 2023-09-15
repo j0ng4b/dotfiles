@@ -42,6 +42,7 @@ while IFS=" " read -r plugin; do
 done <<-EOF
     powerlevel10k/powerlevel10k.zsh-theme
     zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    zsh-autosuggestions/zsh-autosuggestions.zsh
 EOF
 
 
@@ -61,7 +62,6 @@ setopt PUSHD_IGNORE_DUPS
 setopt PUSHD_SILENT
 setopt PUSHD_TO_HOME
 
-setopt COMPLETE_ALIASES
 setopt COMPLETE_IN_WORD
 setopt GLOB_COMPLETE
 

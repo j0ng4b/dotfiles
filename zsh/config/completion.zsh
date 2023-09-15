@@ -30,9 +30,9 @@ zstyle ':completion:*' max-errors 5
 zstyle ':completion:*' original true
 
 # Miscellaneous
-zstyle ':completion:*' add-space true
-zstyle ':completion:*' completer _expand _complete_alias _complete             \
-    _ignored _match _approximate _prefix
+zstyle ':completion:*' add-space false
+zstyle ':completion:*' assign-list true
+zstyle ':completion:*' completer _complete _complete_alias _expand _match _prefix
 zstyle ':completion:*' format $'\n%d'
 zstyle ':completion:*' expand prefix
 zstyle ':completion:*' group-name ''
