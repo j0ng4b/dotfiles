@@ -66,6 +66,63 @@ def SetupLsp(): void
             args: [ '--background-index', '--clang-tidy' ],
         },
         {
+            name: '[Java|Type]Script language server',
+            filetype: [ 'javascript', 'typescript' ],
+            path: 'typescript-language-server',
+            args: [ '--stdio' ],
+            initializationOptions: {
+                preferences: {
+                    quotePreference: 'auto',
+
+                    allowTextChangesInNewFiles: true,
+
+                    includeInlayParameterNameHints: 'all',
+                    includeInlayParameterNameHintsWhenArgumentMatchesName: true,
+                    includeInlayFunctionParameterTypeHints: true,
+                    includeInlayVariableTypeHints: true,
+                    includeInlayVariableTypeHintsWhenTypeMatchesName: true,
+                    includeInlayPropertyDeclarationTypeHints: true,
+                    includeInlayFunctionLikeReturnTypeHints: true,
+                    includeInlayEnumMemberValueHints: true,
+                },
+            },
+        },
+        {
+            name: 'HTML language server',
+            filetype: [ 'html' ],
+            path: 'vscode-html-language-server',
+            args: [ '--stdio' ],
+        },
+        {
+            name: 'CSS language server',
+            filetype: [ 'css' ],
+            path: 'vscode-css-language-server',
+            args: [ '--stdio' ],
+        },
+        {
+            name: 'JSON language server',
+            filetype: [ 'json' ],
+            path: 'vscode-json-language-server',
+            args: [ '--stdio' ],
+        },
+        {
+            name: 'Markdown language server',
+            filetype: [ 'markdown' ],
+            path: 'vscode-markdown-language-server',
+            args: [ '--stdio' ],
+        },
+        {
+            name: 'Python language server',
+            filetype: [ 'python' ],
+            path: 'pyright-langserver',
+            args: [ '--stdio' ],
+            workspaceConfig: {
+                python: {
+                    pythonPath: 'python'
+                }
+            },
+        },
+        {
             name: 'C# language server',
             filetype: [ 'cs' ],
             path: $HOME .. '/.omnisharp/OmniSharp',
