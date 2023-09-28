@@ -73,23 +73,13 @@ def SetupLsp(): void
             initializationOptions: {
                 preferences: {
                     quotePreference: 'auto',
-
                     allowTextChangesInNewFiles: true,
-
-                    includeInlayParameterNameHints: 'all',
-                    includeInlayParameterNameHintsWhenArgumentMatchesName: true,
-                    includeInlayFunctionParameterTypeHints: true,
-                    includeInlayVariableTypeHints: true,
-                    includeInlayVariableTypeHintsWhenTypeMatchesName: true,
-                    includeInlayPropertyDeclarationTypeHints: true,
-                    includeInlayFunctionLikeReturnTypeHints: true,
-                    includeInlayEnumMemberValueHints: true,
                 },
             },
         },
         {
             name: 'HTML language server',
-            filetype: [ 'html' ],
+            filetype: [ 'html', 'jst', 'razor' ],
             path: 'vscode-html-language-server',
             args: [ '--stdio' ],
         },
@@ -125,26 +115,27 @@ def SetupLsp(): void
         {
             name: 'C# language server',
             filetype: [ 'cs' ],
-            path: $HOME .. '/.omnisharp/OmniSharp',
-            args: [ '-z', '-lsp', '-e', 'utf-8', '-hpid', getpid(),
-                'DotNet:EnablePackageRestore=false',
-                'MsBuild:LoadProjectsOnDemand=true',
-                'Sdk:IncludePrereleases=true',
+            path: 'csharp-ls',
+            #path: $HOME .. '/.omnisharp/OmniSharp',
+            #args: [ '-z', '-lsp', '-e', 'utf-8', '-hpid', getpid(),
+            #    'DotNet:EnablePackageRestore=false',
+            #    'MsBuild:LoadProjectsOnDemand=true',
+            #    'Sdk:IncludePrereleases=true',
 
-                'FormattingOptions:EnableEditorConfigSupport=true',
-                'FormattingOptions:OrganizeImports=true',
+            #    'FormattingOptions:EnableEditorConfigSupport=true',
+            #    'FormattingOptions:OrganizeImports=true',
 
-                'RoslynExtensionsOptions:EnableAnalyzersSupport=true',
-                'RoslynExtensionsOptions:AnalyzeOpenDocumentsOnly=true',
-                'RoslynExtensionsOptions:EnableImportCompletion=false',
+            #    'RoslynExtensionsOptions:EnableAnalyzersSupport=true',
+            #    'RoslynExtensionsOptions:AnalyzeOpenDocumentsOnly=true',
+            #    'RoslynExtensionsOptions:EnableImportCompletion=true',
 
-                'Script:Enabled=true',
-                'Script:DefaultTargetFramework=net6.0',
-                'Script:EnableScriptNuGetReferences=true',
+            #    'Script:Enabled=true',
+            #    'Script:DefaultTargetFramework=net6.0',
+            #    'Script:EnableScriptNuGetReferences=true',
 
-                'RenameOptions:RenameInComments=true',
-                'RenameOptions:RenameOverloads=true',
-            ]
+            #    'RenameOptions:RenameInComments=true',
+            #    'RenameOptions:RenameOverloads=true',
+            #]
         },
     ])
 enddef
