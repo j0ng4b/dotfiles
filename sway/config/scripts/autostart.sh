@@ -13,5 +13,5 @@ pgrep -fx "$dbus" || $dbus &
 pgrep -f mako || mako &
 
 ## Start battery notifier
-pgrep -f battery_notifier.sh || $root_dir/scripts/battery_notifier.sh &
+pgrep -f battery_notifier.sh || $root_dir/battery_notifier.sh &
 
