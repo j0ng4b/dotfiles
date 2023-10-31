@@ -11,7 +11,7 @@ def SetupLsp(): void
         noNewlineInCompletion: true,
         customCompletionKinds: true,
         completionTextEdit: true,
-        completionMatcher: 'fuzzy',
+        completionMatcher: 'icase',
         completionKinds: {
 			Text: '󰉿',
 			Method: '󰆧',
