@@ -21,7 +21,7 @@ create_target_directories() {
         eval target_dir=\$${target}_dir
 
         # Check if the target directory exists
-        [ -d $taget_dir ] && continue
+        [ -d $target_dir ] && continue
 
         mkdir -p $target_dir
     done
