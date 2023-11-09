@@ -54,7 +54,7 @@ def NERDTreeOpener(vimEnter: bool): void
         endif
     else
         if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+'
-                && winnr('$') > 1
+                && winnr('$') > 1 && winnr() == winnr('h')
             var buf = bufnr()
             execute 'buffer ' .. bufnr('#')
             wincmd w
