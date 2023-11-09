@@ -58,14 +58,18 @@ def SetupLsp(): void
         usePopupInCodeAction: true,
     })
 
-    g:LspAddServer([
-        {
+    var langServers: list<dict<any>> = []
+    if executable('clangd')
+        langServers += [ {
             name: 'C/C++ language server',
             filetype: [ 'c', 'cpp' ],
             path: 'clangd',
             args: [ '--background-index', '--clang-tidy' ],
-        },
-        {
+        }]
+    endif
+
+    if executable('typescript-language-server')
+        langServers += [ {
             name: '[Java|Type]Script language server',
             filetype: [ 'javascript', 'typescript' ],
             path: 'typescript-language-server',
@@ -76,32 +80,47 @@ def SetupLsp(): void
                     allowTextChangesInNewFiles: true,
                 },
             },
-        },
-        {
+        }]
+    endif
+
+    if executable('vscode-html-language-server')
+        langServers += [ {
             name: 'HTML language server',
             filetype: [ 'html', 'jst', 'razor' ],
             path: 'vscode-html-language-server',
             args: [ '--stdio' ],
-        },
-        {
+        }]
+    endif
+
+    if executable('vscode-css-language-server')
+        langServers += [ {
             name: 'CSS language server',
             filetype: [ 'css' ],
             path: 'vscode-css-language-server',
             args: [ '--stdio' ],
-        },
-        {
+        }]
+    endif
+
+    if executable('vscode-json-language-server')
+        langServers += [ {
             name: 'JSON language server',
             filetype: [ 'json' ],
             path: 'vscode-json-language-server',
             args: [ '--stdio' ],
-        },
-        {
+        }]
+    endif
+
+    if executable('vscode-markdown-language-server')
+        langServers += [ {
             name: 'Markdown language server',
             filetype: [ 'markdown' ],
             path: 'vscode-markdown-language-server',
             args: [ '--stdio' ],
-        },
-        {
+        }]
+    endif
+
+    if executable('pyright-langserver')
+        langServers += [ {
             name: 'Python language server',
             filetype: [ 'python' ],
             path: 'pyright-langserver',
@@ -111,33 +130,44 @@ def SetupLsp(): void
                     pythonPath: 'python'
                 }
             },
-        },
-        {
+        }]
+    endif
+
+    if executable('csharp-ls')
+        langServers += [ {
             name: 'C# language server',
             filetype: [ 'cs' ],
             path: 'csharp-ls',
-            #path: $HOME .. '/.omnisharp/OmniSharp',
-            #args: [ '-z', '-lsp', '-e', 'utf-8', '-hpid', getpid(),
-            #    'DotNet:EnablePackageRestore=false',
-            #    'MsBuild:LoadProjectsOnDemand=true',
-            #    'Sdk:IncludePrereleases=true',
+        }]
+    endif
 
-            #    'FormattingOptions:EnableEditorConfigSupport=true',
-            #    'FormattingOptions:OrganizeImports=true',
+    if executable($HOME .. '/.omnisharp/OmniSharp')
+        langServers += [ {
+            name: 'C# language server',
+            path: $HOME .. '/.omnisharp/OmniSharp',
+            args: [ '-z', '-lsp', '-e', 'utf-8', '-hpid', getpid(),
+                'DotNet:EnablePackageRestore=false',
+                'MsBuild:LoadProjectsOnDemand=true',
+                'Sdk:IncludePrereleases=true',
 
-            #    'RoslynExtensionsOptions:EnableAnalyzersSupport=true',
-            #    'RoslynExtensionsOptions:AnalyzeOpenDocumentsOnly=true',
-            #    'RoslynExtensionsOptions:EnableImportCompletion=true',
+                'FormattingOptions:EnableEditorConfigSupport=true',
+                'FormattingOptions:OrganizeImports=true',
 
-            #    'Script:Enabled=true',
-            #    'Script:DefaultTargetFramework=net6.0',
-            #    'Script:EnableScriptNuGetReferences=true',
+                'RoslynExtensionsOptions:EnableAnalyzersSupport=true',
+                'RoslynExtensionsOptions:AnalyzeOpenDocumentsOnly=true',
+                'RoslynExtensionsOptions:EnableImportCompletion=true',
 
-            #    'RenameOptions:RenameInComments=true',
-            #    'RenameOptions:RenameOverloads=true',
-            #]
-        },
-    ])
+                'Script:Enabled=true',
+                'Script:DefaultTargetFramework=net6.0',
+                'Script:EnableScriptNuGetReferences=true',
+
+                'RenameOptions:RenameInComments=true',
+                'RenameOptions:RenameOverloads=true',
+            ]
+        }]
+    endif
+
+    g:LspAddServer(langServers)
 enddef
 
 def SetupLspBuffer(): void
