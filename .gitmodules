@@ -6,9 +6,21 @@
 	path = vim/data/pack/colors/opt/everforest
 	url = https://github.com/sainnhe/everforest
 	ignore = dirty
+[submodule "vim/gruvbox"]
+	path = vim/data/pack/colors/opt/gruvbox
+	url = https://github.com/morhetz/gruvbox
+	ignore = dirty
+[submodule "vim/rose-pine"]
+	path = vim/data/pack/colors/opt/rose-pine
+	url = https://github.com/rose-pine/vim
+	ignore = dirty
 [submodule "vim/nerdtree"]
 	path = vim/data/pack/packages/start/nerdtree
 	url = https://github.com/preservim/nerdtree
+	ignore = dirty
+[submodule "vim/nerdtree-git-plugin"]
+	path = vim/data/pack/packages/start/nerdtree-git-plugin
+	url = https://github.com/xuyuanp/nerdtree-git-plugin
 	ignore = dirty
 [submodule "vim/vim-devicons"]
 	path = vim/data/pack/packages/start/vim-devicons
@@ -21,10 +33,6 @@
 [submodule "vim/vim-gitgutter"]
 	path = vim/data/pack/packages/start/vim-gitgutter
 	url = https://github.com/airblade/vim-gitgutter
-	ignore = dirty
-[submodule "vim/nerdtree-git-plugin"]
-	path = vim/data/pack/packages/start/nerdtree-git-plugin
-	url = https://github.com/xuyuanp/nerdtree-git-plugin
 	ignore = dirty
 [submodule "vim/delimitmate"]
 	path = vim/data/pack/packages/start/delimitmate
@@ -54,17 +62,12 @@
 	path = vim/data/pack/packages/start/vim-vsnip-integ
 	url = https://github.com/hrsh7th/vim-vsnip-integ
 	ignore = dirty
+[submodule "vim/friendly-snippets"]
+	path = vim/data/pack/packages/start/friendly-snippets
+	url = https://github.com/rafamadriz/friendly-snippets
 [submodule "vim/emmet-vim"]
 	path = vim/data/pack/packages/start/emmet-vim
 	url = https://github.com/mattn/emmet-vim
-	ignore = dirty
-[submodule "vim/gruvbox"]
-	path = vim/data/pack/colors/opt/gruvbox
-	url = https://github.com/morhetz/gruvbox
-	ignore = dirty
-[submodule "vim/rose-pine"]
-	path = vim/data/pack/colors/opt/rose-pine
-	url = https://github.com/rose-pine/vim
 	ignore = dirty
 [submodule "zsh/powerlevel10k"]
 	path = zsh/data/plugins/powerlevel10k
@@ -78,6 +81,3 @@
 	path = zsh/data/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions
 	ignore = dirty
-[submodule "vim/friendly-snippets"]
-	path = vim/data/pack/packages/start/friendly-snippets
-	url = https://github.com/rafamadriz/friendly-snippets
