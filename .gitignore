@@ -1,3 +1,7 @@
-vim/*/spell/*
+## Vim
+vim/*/spell/
+vim/**/packages/
+
+## Zsh
 zsh/data/zhistory
 

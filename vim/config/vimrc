@@ -41,7 +41,7 @@ g:gruvbox_improved_warnings = 1
 g:gruvbox_guisp_fallback = 'fg'
 silent! colorscheme gruvbox
 
-packadd! everforest
+silent! packadd! everforest
 g:everforest_show_eob = 0
 g:everforest_background = 'hard'
 g:everforest_ui_contrast = 'high'
@@ -62,6 +62,50 @@ g:everforest_disable_terminal_colors = 1
 g:loaded_netrw       = 1
 g:loaded_netrwPlugin = 1
 
+def PackInit(): void
+    packadd minpac
+
+    call minpac#init({ package_name: 'packages' })
+    call minpac#add('k-takata/minpac', { type: 'opt' })
+
+    ## Colors and syntax highlight
+    call minpac#add('sheerun/vim-polyglot')
+    call minpac#add('sainnhe/everforest', { type: 'opt' })
+    call minpac#add('morhetz/gruvbox', { type: 'opt' })
+    call minpac#add('rose-pine/vim', { type: 'opt', name: 'rosepine' })
+
+    ## Eye candy
+    call minpac#add('ryanoasis/vim-devicons')
+
+    ## File browser
+    call minpac#add('preservim/nerdtree')
+    call minpac#add('xuyuanp/nerdtree-git-plugin')
+
+    ## Auto closing
+    call minpac#add('raimondi/delimitmate')
+    call minpac#add('tpope/vim-endwise')
+
+    ## Formatting
+    call minpac#add('editorconfig/editorconfig-vim')
+    call minpac#add('mattn/emmet-vim')
+
+    ## Language server
+    call minpac#add('yegappan/lsp')
+
+    ## Snippets
+    call minpac#add('hrsh7th/vim-vsnip')
+    call minpac#add('hrsh7th/vim-vsnip-integ')
+    call minpac#add('rafamadriz/friendly-snippets')
+
+    ## Git
+    call minpac#add('airblade/vim-gitgutter')
+enddef
+
+command! PackUpdate source $MYVIMRC | call PackInit() | call minpac#update()
+command! PackClean  source $MYVIMRC | call PackInit() | call minpac#clean()
+command! PackStatus packadd minpac | call minpac#status()
+
+## Plugins configuration
 # NERDTree and NERDTreeGitStatus
 runtime plugins/nerdtree.vim
 
