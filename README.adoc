@@ -36,6 +36,9 @@ current `dotfile` installer script.
 | WirePlumber
 | audio session manager
 
+| mako
+| notification daemon
+
 | Vim
 | code editor
 
