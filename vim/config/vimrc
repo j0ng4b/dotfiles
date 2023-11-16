@@ -103,6 +103,7 @@ def PackInit(): void
 
     ## Git
     call minpac#add('airblade/vim-gitgutter')
+    call minpac#add('tpope/vim-fugitive')
 
     ## Utilities
     call minpac#add('tpope/vim-surround')

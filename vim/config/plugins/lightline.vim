@@ -11,7 +11,7 @@ g:lightline = {
     subseparator: { 'left': '', 'right': '' },
 
     active: {
-        left: [[ 'mode' ], [ 'filedata' ]],
+        left: [[ 'mode' ], [ 'branch', 'filedata' ]],
         right: [[ 'lineinfo' ], [ 'percent' ], [ 'fileinfo' ]],
     },
 
@@ -40,10 +40,15 @@ g:lightline = {
 
     component_function: {
         mode: 'LightlineMode',
+        branch: 'LightlineBranch',
         filedata: 'LightlineFileData',
         fileinfo: 'LightlineFileInfo',
         percent: 'LightlinePercent',
-    }
+    },
+
+    component_function_visible_condition: {
+        branch: 'g:FugitiveIsGitDir() && expand("%:p") !~# "NERD_tree"'
+    },
 }
 
 def g:LightlineMode(): string
@@ -54,6 +59,16 @@ def g:LightlineMode(): string
     endif
 
     return lightline#mode()
+enddef
+
+def g:LightlineBranch(): string
+    var branch: string = ''
+
+    if exists('*g:FugitiveHead') && expand('%:p') !~# 'NERD_tree'
+        branch = g:FugitiveHead()
+    endif
+
+    return branch .. (branch ==# '' ? '' : ' ')
 enddef
 
 def g:LightlineFileData(): string
