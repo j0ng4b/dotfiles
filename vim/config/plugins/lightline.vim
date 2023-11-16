@@ -12,12 +12,12 @@ g:lightline = {
 
     active: {
         left: [[ 'mode' ], [ 'branch', 'filedata' ]],
-        right: [[ 'lineinfo' ], [ 'percent' ], [ 'fileinfo' ]],
+        right: [[ 'lineinfo' ], [ 'fileinfo', 'percent' ]],
     },
 
     inactive: {
         left: [[ 'filedata' ]],
-        right: [[ 'lineinfo' ], [ 'fileinfo' ]],
+        right: [[ 'fileinfo' ]],
     },
 
     mode_map: {
@@ -97,8 +97,7 @@ enddef
 def g:LightlineFileInfo(): string
     var fformat = g:WebDevIconsGetFileFormatSymbol()
     var fencode = &fileencoding ==# '' ? &encoding : &fileencoding
-    var ftype = g:WebDevIconsGetFileTypeSymbol()
 
-    return $'{fformat} {fencode} {ftype}'
+    return $'{fformat} {fencode}'
 enddef
 
