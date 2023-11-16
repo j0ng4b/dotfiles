@@ -49,6 +49,16 @@ g:lightline = {
     component_function_visible_condition: {
         branch: 'g:FugitiveIsGitDir() && expand("%:p") !~# "NERD_tree"'
     },
+
+    tab: {
+        active: [ 'filedata' ],
+        inactive: [ 'filedata' ],
+    },
+
+    tab_component_function: {
+        filedata: 'LightlineTabFileData',
+    },
+
 }
 
 def g:LightlineMode(): string
@@ -99,5 +109,24 @@ def g:LightlineFileInfo(): string
     var fencode = &fileencoding ==# '' ? &encoding : &fileencoding
 
     return $'{fformat} {fencode}'
+enddef
+
+def g:LightlineTabFileData(n: number): string
+    var buflist = tabpagebuflist(n)
+    var winnr = tabpagewinnr(n)
+
+    var fname = expand('#' .. buflist[winnr - 1] .. ':t')
+    var ficon = g:WebDevIconsGetFileTypeSymbol()
+
+    var freadonly = getbufvar(buflist[winnr - 1], '&readonly') ? '󰌾 ' : ''
+    var fmodify = getbufvar(buflist[winnr - 1], '&modified') ? ' ' : ''
+
+    if fname == ''
+        fname = '[No Name]'
+    elseif fname =~# 'NERD_tree'
+        return 'NERDTree'
+    endif
+
+    return $'{freadonly}{fmodify}{fname} {ficon}'
 enddef
 
