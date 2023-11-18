@@ -27,6 +27,7 @@ include "colors"
 
 # Modifier
 set $super Mod4
+set $alt   Mod1
 
 # Directional keys
 set $left  h
@@ -39,6 +40,9 @@ set $term foot
 
 # Application launcher
 set $launcher wofi --show drun
+
+# Scripts path
+set $scripts "~/.config/sway/scripts"
 
 
 ###  ╔═╗┬ ┬┌┬┐┌─┐┌─┐┌┬┐┌─┐┬─┐┌┬┐
@@ -156,6 +160,9 @@ exec "~/.config/sway/scripts/autostart.sh &"
     # Start launcher
     bindsym $super+r exec $launcher
 
+    ## Screenshot
+    bindsym $super+Print exec "$scripts/screenshot.sh screen"
+    bindsym $super+$alt+Print exec "$scripts/screenshot.sh area"
 
 ####################
 # # # Window binds

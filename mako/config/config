@@ -58,3 +58,9 @@ format=%b
 anchor=top-center
 text-alignment=center
 
+[app-name="screenshot.sh"]
+width=515
+anchor=top-center
+max-icon-size=80
+font=IosevkaJ0ng4b Nerd Font Mono 12
+
