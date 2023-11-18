@@ -57,11 +57,10 @@ battery_charging_icon() {
 while true; do
     # Get new battery status
     new_status=$(cat "$status_file")
+    # Fetch battery capacity
+    capacity=$(cat "$capacity_file")
 
     if [ "$new_status" != "$status" ]; then
-        # Update the capacity to display on notification
-        capacity=$(cat "$capacity_file")
-
         # When the battery get fully charged
         if [ "$new_status" = "Full"  ]; then
             if [ "$status" = "Discharging" ]; then
@@ -74,13 +73,22 @@ while true; do
             notify-send -u normal -t $default_timeout -w "Charging Battery" "<b><span color='#3e8fb0' size='30pt' baseline_shift='-5pt'>$(battery_charging_icon)</span> Charging Battery</b>"
 
             # Reset notification of low battery
-            notify_low=$default_low
+            if [ "$capacity" -gt "$default_low" ]; then
+                notify_low="$default_low"
+            elif [ "$capactity" -gt "$lowest" ]; then
+                notify_low="$lowest"
+            fi
         # Notify when charger is disconnected
         elif [ "$new_status" = "Discharging" ]; then
             notify-send -u normal -t $default_timeout -w "Discharging Battery" "<b><span color='#3e8fb0' size='18pt'>$(battery_capacity_icon)</span> Charger disconnected</b>\n<span color='#3e8fb0' size='16pt'>$capacity%</span>"
 
-            notify_low=$default_low
-        # Any non valid is ignored
+            # Reset notification of low battery
+            if [ "$capacity" -gt "$default_low" ]; then
+                notify_low="$default_low"
+            elif [ "$capactity" -gt "$lowest" ]; then
+                notify_low="$lowest"
+            fi
+        # Any non valid status is ignored
         else
             sleep 1
             continue
@@ -91,9 +99,6 @@ while true; do
     fi
 
     if [ "$status" = "Discharging" ]; then
-        # Only is needed to update the capacity when the battery is discharging
-        capacity=$(cat "$capacity_file")
-
         if [ "$capacity" -le "$notify_low" ]; then
             notify-send -u critical -t $timeout -w "Low Battery" "<b><span color='#f6c177' size='18pt'>󰂃</span> Low Battery</b>\n<span color='#eb6f92' size='16pt'>$capacity%</span>"
 
