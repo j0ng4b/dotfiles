@@ -50,7 +50,7 @@ set $scripts "~/.config/sway/scripts"
 ###  ╩ ╩└─┘ ┴ └─┘└─┘ ┴ ┴ ┴┴└─ ┴
 
 ## Run a script to start everything that need to be started
-exec "~/.config/sway/scripts/autostart.sh &"
+exec "$scripts/autostart.sh &"
 
 
 ###  ╔═╗┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
@@ -157,7 +157,7 @@ exec "~/.config/sway/scripts/autostart.sh &"
     ## Start a terminal
     bindsym $super+Return exec $term
 
-    # Start launcher
+    ## Start launcher
     bindsym $super+r exec $launcher
 
     ## Screenshot
