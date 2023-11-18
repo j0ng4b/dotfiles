@@ -65,7 +65,7 @@ def g:LightlineMode(): string
     var fname = expand('%:p')
 
     if fname =~# 'NERD_tree'
-        return 'NERDTree'
+        return '󰙅 NERDTree'
     endif
 
     return lightline#mode()
@@ -101,14 +101,15 @@ def g:LightlinePercent(): string
 
     var symbol = float2nr(percent * (len(symbols) - 1))
 
-    return printf('%3.0f', percent * 100) .. ' ' .. symbols[symbol]
+    return expand('%:p') !~# 'NERD_tree' ?
+        printf('%3.0f', percent * 100) .. ' ' .. symbols[symbol] : ''
 enddef
 
 def g:LightlineFileInfo(): string
     var fformat = g:WebDevIconsGetFileFormatSymbol()
     var fencode = &fileencoding ==# '' ? &encoding : &fileencoding
 
-    return $'{fformat} {fencode}'
+    return expand('%:p') !~# 'NERD_tree' ? $'{fformat} {fencode}' : ''
 enddef
 
 def g:LightlineTabFileData(n: number): string
@@ -124,7 +125,7 @@ def g:LightlineTabFileData(n: number): string
     if fname == ''
         fname = '[No Name]'
     elseif fname =~# 'NERD_tree'
-        return 'NERDTree'
+        return '󰙅 NERDTree'
     endif
 
     return $'{freadonly}{fmodify}{fname} {ficon}'
