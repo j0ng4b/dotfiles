@@ -1,7 +1,8 @@
 # This will be used to spawn a terminal in current directory
-emulate -L zsh
+autoload -Uz add-zsh-hook
 
 function osc7-pwd() {
+    emulate -L zsh
     setopt extendedglob
 
     local LC_ALL=C

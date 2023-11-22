@@ -39,6 +39,7 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*' ignore-parents parent pwd
 zstyle ':completion:*' menu select=1
 zstyle ':completion:*' verbose true
+zstyle ':completion:*' rehash true
 
 # Enable completion
 autoload -Uz compinit
