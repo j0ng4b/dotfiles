@@ -111,7 +111,7 @@ dotfile_action_target_files() {
         action_result=$?
         if [ $action_result -gt 0 ]; then
             action_result_error=1
-            error "File '$file' of '$dotfile/$target' already $action!"
+            error "File '$file' of '$dotfile$target' already $action!"
         fi
     done
 
