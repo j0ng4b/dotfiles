@@ -25,12 +25,12 @@ max-visible=3
 font=IosevkaJ0ng4b Nerd Font Mono 14
 
 ## Colors
-background-color=#232136
-text-color=#e0def4
+background-color=#282828
+text-color=#ebdbb2
 
 ## Borders
 border-size=2
-border-color=#393552
+border-color=#fabd2f
 border-radius=5
 
 ## Dimensions

@@ -83,8 +83,8 @@ exec "$scripts/autostart.sh &"
     for_window [class=".*"] opacity set 0.9
 
     ## Set the border style
-    default_border pixel 2
-    default_floating_border pixel 2
+    default_border pixel 1
+    default_floating_border pixel 1
 
     ## Gaps
     gaps inner 15
@@ -92,7 +92,7 @@ exec "$scripts/autostart.sh &"
     ## Blur
     blur enable
     blur_xray disable
-    blur_passes 3
+    blur_passes 1
     blur_radius 3
 
     ## Dimming
