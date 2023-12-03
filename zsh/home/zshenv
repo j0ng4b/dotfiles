@@ -12,7 +12,12 @@ export PATH="$HOME/.local/bin:$PATH"
 ## XDG Runtime directory ##
 ###########################
 if [ -z "$XDG_RUNTIME_DIR" ]; then
-    export XDG_RUNTIME_DIR="/tmp/$USER-runtime"
+    # Check if running inside Termux, if so, use the Termux prefix
+    if [ -n "$(printenv | grep -i "termux")" ]; then
+        export XDG_RUNTIME_DIR="$PREFIX/tmp/$USER-runtime"
+    else
+        export XDG_RUNTIME_DIR="/tmp/$USER-runtime"
+    fi
 
     if [ ! -d "$XDG_RUNTIME_DIR" ]; then
         mkdir -pm 0700 "$XDG_RUNTIME_DIR"
