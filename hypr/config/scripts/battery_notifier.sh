@@ -65,7 +65,6 @@ while true; do
     # capacity file is one unit less than the real capacity
     capacity=$(cat "$capacity_file")
 
-    echo "$capacity as $status > $new_status"
     if [ "$new_status" != "$status" ]; then
         # When the battery get fully charged
         if [ "$new_status" = "Full"  ]; then
@@ -108,10 +107,8 @@ while true; do
         status="$new_status"
     fi
 
-    echo "for notify $capacity as $status > $new_status"
     if [ "$status" = "Discharging" ]; then
         if [ "$capacity" -le "$notify_low" ]; then
-            echo $capacity >> ~/log_battery_notifier
             notify-send -u critical -t $timeout -w "Low Battery" "<b><span color='#f6c177' size='18pt'>󰂃</span> Low Battery</b>\n<span color='#eb6f92' size='16pt'>$capacity%</span>"
 
             # Update the battery level threshold
