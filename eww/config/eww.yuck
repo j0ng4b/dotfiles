@@ -65,25 +65,29 @@
                 )
             )
         )
-        (box
-            :class "weather"
-            :halign "end"
-            :orientation "vertical"
-            :tooltip p_weather_description
-            :space-evenly false
-            ;; Needed to auto update weather
-            (label :text { p_weather_update } :visible false)
+        (eventbox
+            :cursor "pointer"
+            :onclick "scripts/weather.sh toggle-window"
             (box
-                :halign "center"
+                :class "weather-box"
+                :halign "end"
+                :orientation "vertical"
+                :tooltip p_weather_description
                 :space-evenly false
-                :orientation "horizontal"
-                (label
-                    :class "icon"
-                    :text p_weather_icon
-                )
-                (label
-                    :class "temperature"
-                    :text p_weather_temperature
+                ;; Needed to auto update weather
+                ;; (label :text { p_weather_update } :visible false)
+                (box
+                    :halign "center"
+                    :space-evenly false
+                    :orientation "horizontal"
+                    (label
+                        :class "icon"
+                        :text p_weather_icon
+                    )
+                    (label
+                        :class "temperature"
+                        :text p_weather_temperature
+                    )
                 )
             )
         )
@@ -96,6 +100,65 @@
         (eventbox
             :onhoverlost "scripts/calendar.sh toggle"
             (calendar)
+        )
+    )
+)
+
+(defwidget weather []
+    (eventbox
+        :onhoverlost "scripts/weather.sh toggle-window"
+        (box
+            :orientation "vertical"
+            :class "weather-wrapper"
+            ;; First weather information column
+            (box
+                :spacing 15
+                :space-evenly false
+                :orientation "horizontal"
+                (box
+                    :valign "center"
+                    :halign "start"
+                    :vexpand true
+                    :space-evenly false
+                    :orientation "horizontal"
+                    :class "weather-box"
+                    (label
+                        :class "icon"
+                        :text p_weather_icon
+                    )
+                    (label
+                        :class "temperature"
+                        :text p_weather_temperature
+                    )
+                )
+                (box
+                    :orientation "vertical"
+                    (label
+                        :halign "start"
+                        :valign "start"
+                        :class "city"
+                        :text p_weather_city
+                    )
+                    (label
+                        :halign "start"
+                        :valign "end"
+                        :class "description"
+                        :text p_weather_description
+                    )
+                )
+                (box
+                    :hexpand true
+                    :halign "end"
+                    (button
+                        :class "update-button"
+                        :onclick "scripts/weather.sh update"
+                        :timeout "5s"
+                        (label
+                            :text ""
+                        )
+                    )
+                )
+            )
         )
     )
 )
@@ -123,5 +186,16 @@
                   :anchor "top center"
               )
     (widget-calendar)
+)
+
+(defwindow weather
+    :monitor 0
+    :stacking "fg"
+    :exclusive false
+    :geometry (geometry
+                  :width "300px"
+                  :anchor "top center"
+              )
+    (weather)
 )
 

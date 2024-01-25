@@ -1,4 +1,4 @@
-.weather {
+.weather-box {
     .icon {
         margin: -25px 0px -40px 0px;
         font-size: 60px;
@@ -6,6 +6,44 @@
 
     .temperature {
         font-size: 12px;
+    }
+}
+
+.weather-wrapper {
+    margin: 5px;
+    padding: 5px;
+    box-shadow: 0px 0px 4px $background;
+    border-radius: 5px;
+    background-color: $background;
+
+    .weather-box {
+        .icon {
+            margin: -35px 0px -40px 0px;
+            font-size: 80px;
+        }
+
+        .temperature {
+            font-size: 25px;
+        }
+    }
+
+    .city {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .description {
+        font-size: 10px;
+        font-style: italic;
+    }
+
+    .update-button {
+        min-width: 20px;
+
+        label {
+            font-size: 25px;
+            font-weight: bold;
+        }
     }
 }
 

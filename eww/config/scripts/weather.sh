@@ -7,12 +7,18 @@ weather_city=$weather_cache_dir/city
 weather_description=$weather_cache_dir/description
 weather_temperature=$weather_cache_dir/temperature
 
+weather_window_lock=$weather_cache_dir/window_lock
+weather_window_status=$weather_cache_dir/window_status
+
 location_cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/eww/location
 location_latitude=$location_cache_dir/latitude
 location_longitude=$location_cache_dir/longitude
 
 if [ ! -d "$weather_cache_dir" ]; then
     mkdir -p "$weather_cache_dir"
+
+    echo "unlocked" > $weather_window_lock
+    echo "closed" > $weather_window_status
 fi
 
 if [ ! -d "$location_cache_dir" ]; then
@@ -110,6 +116,26 @@ case $1 in
 
     temperature)
         cat $weather_temperature
+        ;;
+
+    toggle-window)
+        if [ "$(cat $weather_window_lock)" = "unlocked" ]; then
+            echo "locked" > $weather_window_lock
+
+            # Only open when window is closed
+            if [ "$(cat $weather_window_status)" = "closed" ]; then
+                echo "opened" > $weather_window_status
+                eww open weather
+            fi
+        else
+            echo "unlocked" > $weather_window_lock
+
+            # Only close when window is opened
+            if [ "$(cat $weather_window_status)" = "opened" ]; then
+                echo "closed" > $weather_window_status
+                eww close weather
+            fi
+        fi
         ;;
 esac
 
