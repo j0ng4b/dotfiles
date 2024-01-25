@@ -5,3 +5,6 @@ vim/**/packages/
 ## Zsh
 zsh/data/zhistory
 
+## Ignore keys
+*_key
+

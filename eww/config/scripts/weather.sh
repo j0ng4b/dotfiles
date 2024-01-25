@@ -26,7 +26,7 @@ fi
 LATITUDE=$(cat $location_latitude)
 LONGITUDE=$(cat $location_longitude)
 
-APIKEY=5b1bea7b9068121aa1efc0c8d3e8cbbd
+APIKEY=$(cat "$(cd $(dirname $0); pwd)/openweather_key")
 
 get_location_data() {
     # Fetch coordinates from Mozilla Location Service
