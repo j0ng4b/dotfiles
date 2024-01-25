@@ -47,18 +47,22 @@
     (box
         :class "bar"
         :orientation "horizontal"
-        (box
-            :class "time"
-            :valign "center"
-            :orientation "vertical"
-            :space-evenly false
-            (label
-                :halign "start"
-                :text p_time
-            )
-            (label
-                :halign "start"
-                :text p_date
+        (eventbox
+            :cursor "pointer"
+            :onclick "scripts/calendar.sh toggle"
+            (box
+                :class "time"
+                :valign "center"
+                :orientation "vertical"
+                :space-evenly false
+                (label
+                    :halign "start"
+                    :text p_time
+                )
+                (label
+                    :halign "start"
+                    :text p_date
+                )
             )
         )
         (box
@@ -86,6 +90,16 @@
     )
 )
 
+(defwidget widget-calendar []
+    (box
+        :class "calendar-wrapper"
+        (eventbox
+            :onhoverlost "scripts/calendar.sh toggle"
+            (calendar)
+        )
+    )
+)
+
 ;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
 ;;   ║║║││││ │││ ││││└─┐
 ;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
@@ -98,5 +112,16 @@
                   :anchor "top center"
               )
     (date-weather)
+)
+
+(defwindow calendar
+    :monitor 0
+    :stacking "fg"
+    :exclusive false
+    :geometry (geometry
+                  :width "400px"
+                  :anchor "top center"
+              )
+    (widget-calendar)
 )
 

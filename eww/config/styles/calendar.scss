@@ -1,0 +1,25 @@
+.calendar-wrapper {
+    margin: 5px;
+    box-shadow: 0px 0px 4px $background;
+    border-radius: 5px;
+    background-color: $background;
+}
+
+calendar {
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 5px;
+
+    &.header, &:selected {
+        background-color: rgba($orange, 0.7);
+    }
+
+    &:indeterminate {
+        color: $gray;
+    }
+
+    &.highlight {
+        color: $orange;
+    }
+}
+
