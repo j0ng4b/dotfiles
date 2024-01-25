@@ -76,6 +76,7 @@ def PackInit(): void
     call minpac#add('sainnhe/everforest', { type: 'opt' })
     call minpac#add('morhetz/gruvbox', { type: 'opt' })
     call minpac#add('rose-pine/vim', { type: 'opt', name: 'rosepine' })
+    call minpac#add('elkowar/yuck.vim')
 
     ## Eye candy
     call minpac#add('ryanoasis/vim-devicons')

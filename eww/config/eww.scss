@@ -1,0 +1,32 @@
+// Helper styles
+@import "styles/colors.scss";
+
+// Widgets styles
+@import "styles/weather.scss";
+
+* {
+    all: unset;
+    color: $foreground;
+    font-size: 10px;
+}
+
+.bar {
+    box-shadow: 0px 0px 4px $background;
+    background-color: $background;
+
+    padding: 5px 10px;
+    margin: 5px;
+
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+tooltip {
+    background-color: rgba($background, 0.8);
+    border-radius: 5px;
+
+    label {
+        color: $foreground;
+    }
+}
+
