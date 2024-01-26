@@ -40,6 +40,11 @@
     "scripts/weather.sh temperature"
 )
 
+(defpoll p_weather_locked
+    :interval "5s"
+    "scripts/weather.sh locked"
+)
+
 ;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
 ;;   ║║║│ │││ ┬├┤  │ └─┐
 ;;   ╚╩╝┴─┴┘└─┘└─┘ ┴ └─┘
@@ -75,7 +80,7 @@
                 :tooltip p_weather_description
                 :space-evenly false
                 ;; Needed to auto update weather
-                ;; (label :text { p_weather_update } :visible false)
+                (label :text { p_weather_update } :visible false)
                 (box
                     :halign "center"
                     :space-evenly false
@@ -135,13 +140,13 @@
                     :orientation "vertical"
                     (label
                         :halign "start"
-                        :valign "start"
+                        :valign "center"
                         :class "city"
                         :text p_weather_city
                     )
                     (label
                         :halign "start"
-                        :valign "end"
+                        :valign "center"
                         :class "description"
                         :text p_weather_description
                     )
@@ -152,8 +157,9 @@
                     (button
                         :class "update-button"
                         :onclick "scripts/weather.sh update"
-                        :timeout "5s"
+                        :timeout "10s"
                         (label
+                            :style "color: ${p_weather_locked == "locked" ? '#928374' : '#ebdbb2'}"
                             :text ""
                         )
                     )

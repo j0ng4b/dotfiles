@@ -5,6 +5,7 @@ root=$(cd $(dirname $0); pwd)
 
 ## Cache
 weather_cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/eww/weather
+weather_lock=$weather_cache_dir/lock
 weather_icon=$weather_cache_dir/icon
 weather_city=$weather_cache_dir/city
 weather_description=$weather_cache_dir/description
@@ -18,6 +19,8 @@ location_longitude=$location_cache_dir/longitude
 
 if [ ! -d "$weather_cache_dir" ]; then
     mkdir -p "$weather_cache_dir"
+
+    echo "0" > $weather_lock
 
     echo "unlocked" > $weather_window_lock
 fi
@@ -97,10 +100,33 @@ get_weather_data() {
     echo $temperature > $weather_temperature
 }
 
+_locked_update() {
+    diff=$(( $(date +%s) - $(cat $weather_lock) ))
+
+    # Updates are locked for 10 minutes
+    if [ $diff -ge 553 ]; then
+        # Unlock updates
+        echo "0" > $weather_lock
+        return 0
+    fi
+
+    return 1
+}
+
 case $1 in
     update)
-        get_location_data
-        get_weather_data
+        _locked_update
+        if [ $? -eq 0 ]; then
+            # Lock updates
+            echo $(date +%s) > $weather_lock
+
+            get_location_data
+            get_weather_data
+
+            echo "weather updated"
+        else
+            echo "weather updates locked"
+        fi
         ;;
 
     icon)
@@ -117,6 +143,15 @@ case $1 in
 
     temperature)
         cat $weather_temperature
+        ;;
+
+    locked)
+        _locked_update
+        if [ $? -eq 0 ]; then
+            echo "unlocked"
+        else
+            echo "locked"
+        fi
         ;;
 
     close-window)
