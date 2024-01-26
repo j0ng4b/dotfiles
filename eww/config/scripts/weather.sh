@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+# Scripts directory root
+root=$(cd $(dirname $0); pwd)
+
 ## Cache
 weather_cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/eww/weather
 weather_icon=$weather_cache_dir/icon
@@ -8,7 +11,6 @@ weather_description=$weather_cache_dir/description
 weather_temperature=$weather_cache_dir/temperature
 
 weather_window_lock=$weather_cache_dir/window_lock
-weather_window_status=$weather_cache_dir/window_status
 
 location_cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/eww/location
 location_latitude=$location_cache_dir/latitude
@@ -18,7 +20,6 @@ if [ ! -d "$weather_cache_dir" ]; then
     mkdir -p "$weather_cache_dir"
 
     echo "unlocked" > $weather_window_lock
-    echo "closed" > $weather_window_status
 fi
 
 if [ ! -d "$location_cache_dir" ]; then
@@ -32,7 +33,7 @@ fi
 LATITUDE=$(cat $location_latitude)
 LONGITUDE=$(cat $location_longitude)
 
-APIKEY=$(cat "$(cd $(dirname $0); pwd)/openweather_key")
+APIKEY=$(cat "$root/openweather_key")
 
 get_location_data() {
     # Fetch coordinates from Mozilla Location Service
@@ -118,23 +119,23 @@ case $1 in
         cat $weather_temperature
         ;;
 
+    close-window)
+        if [ "$(cat $weather_window_lock)" = "locked" ]; then
+            echo "unlocked" > $weather_window_lock
+            eww close weather
+        fi
+        ;;
+
     toggle-window)
         if [ "$(cat $weather_window_lock)" = "unlocked" ]; then
             echo "locked" > $weather_window_lock
+            eww open weather
 
-            # Only open when window is closed
-            if [ "$(cat $weather_window_status)" = "closed" ]; then
-                echo "opened" > $weather_window_status
-                eww open weather
-            fi
+            # Close others windows
+            sh -c "$root/calendar.sh close"
         else
             echo "unlocked" > $weather_window_lock
-
-            # Only close when window is opened
-            if [ "$(cat $weather_window_status)" = "opened" ]; then
-                echo "closed" > $weather_window_status
-                eww close weather
-            fi
+            eww close weather
         fi
         ;;
 esac
