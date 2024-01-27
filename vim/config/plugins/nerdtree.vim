@@ -40,6 +40,10 @@ g:NERDTreeGitStatusIndicatorMapCustom = {
 #############################
 
 def NERDTreeOpener(vimEnter: bool): void
+    if !exists(':NERDTree')
+        return
+    endif
+
     if vimEnter
         if argc() == 1 && isdirectory(argv()[0]) && !exists('std_in')
             execute 'NERDTree ' .. argv()[0]
@@ -47,10 +51,14 @@ def NERDTreeOpener(vimEnter: bool): void
             enew
             execute 'cd ' .. argv()[0]
         elseif argc() > 0 || exists('std_in')
-            NERDTree
+            # Start NERDTree through execute command to avoid errors when vim
+            # compiles this function
+            execute 'NERDTree'
             wincmd p
         else
-            NERDTree
+            # Start NERDTree through execute command to avoid errors when vim
+            # compiles this function
+            execute 'NERDTree'
         endif
     else
         if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+'
@@ -90,6 +98,8 @@ augroup END
 ####      KEYMAPS        ####
 #############################
 
-nmap nt <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
-nmap nf <Cmd>NERDTreeFocus<CR>
+if exists(':NERDTree')
+    nmap nt <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
+    nmap nf <Cmd>NERDTreeFocus<CR>
+endif
 

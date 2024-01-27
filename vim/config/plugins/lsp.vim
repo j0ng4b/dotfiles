@@ -5,6 +5,10 @@ vim9script
 #############################
 
 def SetupLsp(): void
+    if !exists('*g:LspOptionsSet')
+        return
+    endif
+
     g:LspOptionsSet({
         autoHighlight: true,
 

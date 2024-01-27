@@ -4,8 +4,9 @@ vim9script
 ####    CONFIGURATION    ####
 #############################
 
+const colorscheme: string = get(g:, 'colors_name', '')
 g:lightline = {
-    colorscheme: g:colors_name,
+    colorscheme: colorscheme,
 
     separator: { 'left': '', 'right': '' },
     subseparator: { 'left': '', 'right': '' },
