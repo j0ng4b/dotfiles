@@ -137,6 +137,15 @@ def SetupLsp(): void
         }]
     endif
 
+    if executable('pylsp')
+        langServers += [ {
+            name: 'Python language server',
+            filetype: [ 'python' ],
+            path: 'pylsp',
+            args: [],
+        }]
+    endif
+
     if executable('csharp-ls')
         langServers += [ {
             name: 'C# language server',

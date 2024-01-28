@@ -157,7 +157,7 @@
                     (button
                         :class "update-button"
                         :onclick "scripts/weather.sh update"
-                        :timeout "10s"
+                        :timeout "20s"
                         (label
                             :style "color: ${p_weather_locked == "locked" ? '#928374' : '#ebdbb2'}"
                             :text ""
