@@ -41,7 +41,7 @@
 )
 
 (defpoll p_weather_locked
-    :interval "5s"
+    :interval "1s"
     "scripts/weather.sh locked"
 )
 

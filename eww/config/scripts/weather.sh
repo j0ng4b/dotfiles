@@ -42,10 +42,10 @@ get_location_data() {
     # Fetch coordinates from Mozilla Location Service
     location=$(curl --silent "https://location.services.mozilla.com/v1/geolocate?key=geoclue")
 
-    LATITUDE=$(echo $location | sed 's/.*"lat": \(-\?[0-9.]*\).*/\1/')
-    LONGITUDE=$(echo $location | sed 's/.*"lng": \(-\?[0-9.]*\).*/\1/')
+    LATITUDE=$(echo $location | jq '.location.lat')
+    LONGITUDE=$(echo $location | jq '.location.lng')
 
-    echo $LATITUDE  > $location_latitude
+    echo $LATITUDE > $location_latitude
     echo $LONGITUDE > $location_longitude
 }
 
@@ -53,9 +53,7 @@ get_weather_data() {
     weather=$(curl --silent "https://api.openweathermap.org/data/2.5/weather?lat=$LATITUDE&lon=$LONGITUDE&appid=$APIKEY&units=metric")
 
     if [ -n "$weather" ]; then
-        icon=$(echo $weather | sed -n 's/.*"icon":"\([0-9]\{2\}[d|n]\)".*/\1/p')
-
-        case $icon in
+        case $(echo $weather | jq -r '.weather[0].icon') in
             01d) icon="" ;;
             01n) icon="" ;;
 
@@ -84,9 +82,9 @@ get_weather_data() {
             50n) icon="" ;;
         esac
 
-        city="$(echo $weather | sed -n 's/.*"name":"\([a-zA-Z]*\)".*/\1/p')"
-        description="$(echo $weather | sed -n 's/.*"description":"\([a-zA-Z| ]*\)".*/\1/p')"
-        temperature="$(echo $weather | sed -n 's/.*"temp":\([0-9]*\).*/\1/p')°C"
+        city=$(echo $weather | jq -r '.name')
+        description=$(echo $weather | jq -r '.weather[0].description')
+        temperature=$(echo $weather | jq '.main.temp' | cut -d'.' -f1)°C
     else
         icon=""
         city=""
@@ -96,7 +94,7 @@ get_weather_data() {
 
     echo $icon > $weather_icon
     echo $city > $weather_city
-    echo $description  | sed 's/^[a-z]/\U&/' > $weather_description
+    echo $description | sed 's/^[a-z]/\U&/' > $weather_description
     echo $temperature > $weather_temperature
 }
 
