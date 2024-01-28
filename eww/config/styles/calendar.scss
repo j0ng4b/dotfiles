@@ -14,6 +14,10 @@ calendar {
         background-color: rgba($orange, 0.7);
     }
 
+    &:hover {
+        background-color: rgba($orange, 0.5);
+    }
+
     &:indeterminate {
         color: $gray;
     }

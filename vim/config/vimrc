@@ -57,10 +57,6 @@ silent! packadd! rosepine
 #############################
 ####       PLUGINS       ####
 #############################
-# Disable Netrw
-g:loaded_netrw       = 1
-g:loaded_netrwPlugin = 1
-
 def PackInit(): void
     packadd minpac
 
