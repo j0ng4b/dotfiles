@@ -5,7 +5,6 @@ import '../xdg.vim' as xdg
 #############################
 ####    CONFIGURATION    ####
 #############################
-
 ### NERDTree
 g:NERDTreeUseTCD = 1
 g:NERDTreeWinSize = 40
@@ -34,13 +33,11 @@ g:NERDTreeGitStatusIndicatorMapCustom = {
     'Unknown':   '󰃤', # hex: 0xF00E4
 }
 
-
 #############################
 ####      FUNCTIONS      ####
 #############################
-
 def NERDTreeOpener(vimEnter: bool): void
-    if !exists(':NERDTree')
+    if exists(':NERDTree') == 0
         return
     endif
 
@@ -80,26 +77,25 @@ def NERDTreeCloser(): void
     endif
 enddef
 
-
 #############################
 ####      AUTOCMDS       ####
 #############################
-
 augroup NERDTree
     autocmd!
     autocmd StdinReadPre * var std_in = 1
     autocmd VimEnter     * NERDTreeOpener(v:true)
+    autocmd VimEnter     * NERDTreeSetMaps()
     autocmd BufEnter     * NERDTreeCloser()
     autocmd BufEnter     * NERDTreeOpener(v:false)
 augroup END
 
-
 #############################
 ####      KEYMAPS        ####
 #############################
-
-if exists(':NERDTree')
-    nmap nt <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
-    nmap nf <Cmd>NERDTreeFocus<CR>
-endif
+def NERDTreeSetMaps(): void
+    if exists(':NERDTree') == 2
+        nmap nt <Cmd>NERDTreeToggle<CR><Cmd>silent NERDTreeMirror<CR>
+        nmap nf <Cmd>NERDTreeFocus<CR>
+    endif
+enddef
 
