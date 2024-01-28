@@ -3,7 +3,6 @@ vim9script
 #############################
 ####    CONFIGURATION    ####
 #############################
-
 const colorscheme: string = get(g:, 'colors_name', '')
 g:lightline = {
     colorscheme: colorscheme,

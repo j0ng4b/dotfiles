@@ -3,7 +3,6 @@ vim9script
 #############################
 ####    CONFIGURATION    ####
 #############################
-
 def SetupLsp(): void
     if !exists('*g:LspOptionsSet')
         return
@@ -57,6 +56,8 @@ def SetupLsp(): void
 
         outlineOnRight: true,
         outlineWinSize: 30,
+
+        semanticHighlight: true,
 
         showInlayHints: true,
         usePopupInCodeAction: true,
@@ -205,21 +206,17 @@ def SetupLspBuffer(): void
     endfor
 enddef
 
-
 #############################
 ####      AUTOCMDS       ####
 #############################
-
 augroup Lsp
     autocmd!
     autocmd VimEnter * SetupLsp()
     autocmd User LspAttached SetupLspBuffer()
 augroup END
 
-
 #############################
 ####      KEYMAPS        ####
 #############################
-
 imap <expr> <CR> pumvisible() ? '<C-y>' : '<Plug>delimitMateCR<Plug>DiscretionaryEnd'
 

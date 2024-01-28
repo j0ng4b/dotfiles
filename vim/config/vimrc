@@ -29,7 +29,6 @@ endif
 #############################
 ####     COLORSCHEME     ####
 #############################
-
 silent! packadd! gruvbox
 g:gruvbox_italic = 1
 g:gruvbox_contrast_dark = 'hard'
@@ -55,11 +54,9 @@ g:everforest_disable_terminal_colors = 1
 silent! packadd! rosepine
 #silent! colorscheme rosepine_moon
 
-
 #############################
 ####       PLUGINS       ####
 #############################
-
 # Disable Netrw
 g:loaded_netrw       = 1
 g:loaded_netrwPlugin = 1
@@ -72,11 +69,11 @@ def PackInit(): void
 
     call minpac#init({ package_name: 'packages' })
     ## Colors and syntax highlight
+    call minpac#add('elkowar/yuck.vim')
     call minpac#add('sheerun/vim-polyglot')
     call minpac#add('sainnhe/everforest', { type: 'opt' })
     call minpac#add('morhetz/gruvbox', { type: 'opt' })
     call minpac#add('rose-pine/vim', { type: 'opt', name: 'rosepine' })
-    call minpac#add('elkowar/yuck.vim')
 
     ## Eye candy
     call minpac#add('ryanoasis/vim-devicons')
