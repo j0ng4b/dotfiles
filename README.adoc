@@ -27,8 +27,11 @@ current `dotfile` installer script.
 | Git
 | version control system
 
-| SwayFX
-| window manager
+| Hyprland
+| wayland compositor
+
+| Eww
+| widget system
 
 | PipeWire
 | audio server
@@ -73,8 +76,18 @@ written to works on Void Linux.
 
 Besides the tools listed <<tools-list,here>> other requirements are:
 
+jq:: used to process json
 libnotify:: provides `notify-send`
 grim and slurp:: used to take screenshots
+
+.To install on Void run
+[%collapsible]
+====
+[,bash]
+----
+$ sudo xbps-install -S jq libnotify grim slurp
+----
+====
 
 === Installation
 
