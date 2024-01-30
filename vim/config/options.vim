@@ -1,6 +1,8 @@
 vim9script
 
-import './xdg.vim' as xdg
+if has('unix')
+    import './xdg.vim' as xdg
+endif
 
 # Vim Compatibility
 if &compatible
@@ -50,7 +52,11 @@ endif
 &cmdwinheight = 5
 
 # Swap file
-&directory = xdg.vim_state_home .. '/swap//'
+if has('unix')
+    &directory = xdg.vim_state_home .. '/swap//'
+elseif has('win32')
+    &directory = $HOME .. '/vimfiles/swap//'
+endif
 &updatetime = 100
 mkdir(&directory[0 : -3], 'p', 0o700)
 
@@ -89,25 +95,41 @@ mkdir(&directory[0 : -3], 'p', 0o700)
 
 # Spell check
 &spell = v:true
-&spellfile = xdg.vim_data_home .. '/spell/words.utf-8.add'
+if has('unix')
+    &spellfile = xdg.vim_data_home .. '/spell/words.utf-8.add'
+elseif has('win32')
+    &spellfile = $HOME .. '/vimfiles/spell/words.utf-8.add'
+endif
 &spelllang = 'en,pt_br'
 &spelloptions = 'camel'
 &spellsuggest = 'fast,10'
-mkdir(xdg.vim_data_home .. '/spell', 'p', 0o700)
+if has('unix')
+    mkdir(xdg.vim_data_home .. '/spell', 'p', 0o700)
+elseif has('win32')
+    mkdir($HOME .. '/vimfiles/spell', 'p', 0o700)
+endif
 
 # Timeout
 &timeoutlen = 350
 &ttimeoutlen = 100
 
 # Undo
-&undodir = xdg.vim_state_home .. '/undo//'
+if has('unix')
+    &undodir = xdg.vim_state_home .. '/undo//'
+elseif has('win32')
+    &undodir = $HOME .. '/vimfiles/undo//'
+endif
 &undofile = v:true
 &undolevels = 250
 &undoreload = 2500
 mkdir(&undodir[0 : -3], 'p', 0o700)
 
 # Viminfo
-&viminfofile = xdg.vim_state_home .. '/viminfo'
+if has('unix')
+    &viminfofile = xdg.vim_state_home .. '/viminfo'
+elseif has('win32')
+    &viminfofile = $HOME .. '/vimfiles/viminfo'
+endif
 
 # Wild menu
 &wildcharm = 9             # 9 is <Tab>
