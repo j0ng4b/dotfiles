@@ -30,6 +30,16 @@
     "scripts/weather.sh city"
 )
 
+(defpoll p_weather_humidity
+    :interval "5m"
+    "scripts/weather.sh humidity"
+)
+
+(defpoll p_weather_wind_speed
+    :interval "5m"
+    "scripts/weather.sh wind-speed"
+)
+
 (defpoll p_weather_description
     :interval "5m"
     "scripts/weather.sh description"
@@ -115,7 +125,8 @@
         (box
             :orientation "vertical"
             :class "weather-wrapper"
-            ;; First weather information column
+            :spacing 15
+            ;; First weather information row
             (box
                 :spacing 15
                 :space-evenly false
@@ -127,9 +138,12 @@
                     :space-evenly false
                     :orientation "horizontal"
                     :class "weather-box"
-                    (label
-                        :class "icon"
-                        :text p_weather_icon
+                    (box
+                        :class "icon-box"
+                        (label
+                            :class "icon"
+                            :text p_weather_icon
+                        )
                     )
                     (label
                         :class "temperature"
@@ -151,17 +165,57 @@
                         :text p_weather_description
                     )
                 )
-                (box
+                (button
+                    :class "update-button-box"
+                    :onclick "scripts/weather.sh update"
+                    :timeout "20s"
                     :hexpand true
                     :halign "end"
-                    (button
+                    (label
                         :class "update-button"
-                        :onclick "scripts/weather.sh update"
-                        :timeout "20s"
+                        :style "color: ${p_weather_locked == "locked" ? '#928374' : '#ebdbb2'}"
+                        :text ""
+                    )
+                )
+            )
+            ;; Third weather information row
+            (box
+                :class "weather-info-box"
+                :space-evenly false
+                :orientation "horizontal"
+                (box
+                    :class "weather-info"
+                    :halign "center"
+                    :hexpand true
+                    :space-evenly false
+                    :orientation "horizontal"
+                    (box
+                        :space-evenly false
+                        :halign "center"
+                        :hexpand true
                         (label
-                            :style "color: ${p_weather_locked == "locked" ? '#928374' : '#ebdbb2'}"
-                            :text ""
+                            :class "icon humidity"
+                            :text ""
                         )
+                        (label
+                            :class "text"
+                            :text p_weather_humidity
+                        )
+                    )
+                )
+                (box
+                    :class "weather-info"
+                    :halign "center"
+                    :hexpand true
+                    :space-evenly false
+                    :orientation "horizontal"
+                    (label
+                        :class "icon"
+                        :text ""
+                    )
+                    (label
+                        :class "text"
+                        :text p_weather_wind_speed
                     )
                 )
             )

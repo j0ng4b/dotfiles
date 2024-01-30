@@ -89,6 +89,7 @@ mkdir(&directory[0 : -3], 'p', 0o700)
 
 # Spell check
 &spell = v:true
+&spellfile = xdg.vim_data_home .. '/spell/words.utf-8.add'
 &spelllang = 'en,pt_br'
 &spelloptions = 'camel'
 &spellsuggest = 'fast,10'

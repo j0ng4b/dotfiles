@@ -8,6 +8,8 @@ weather_cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/eww/weather
 weather_lock=$weather_cache_dir/lock
 weather_icon=$weather_cache_dir/icon
 weather_city=$weather_cache_dir/city
+weather_humidity=$weather_cache_dir/humidity
+weather_wind_speed=$weather_cache_dir/wind_speed
 weather_description=$weather_cache_dir/description
 weather_temperature=$weather_cache_dir/temperature
 
@@ -21,7 +23,6 @@ if [ ! -d "$weather_cache_dir" ]; then
     mkdir -p "$weather_cache_dir"
 
     echo "0" > $weather_lock
-
     echo "unlocked" > $weather_window_lock
 fi
 
@@ -83,17 +84,23 @@ get_weather_data() {
         esac
 
         city=$(echo $weather | jq -r '.name')
+        humidity=$(echo $weather | jq -r '.main.humidity')%
+        wind_speed=$(echo $weather | jq -r '.wind.speed * 3.6')
         description=$(echo $weather | jq -r '.weather[0].description')
         temperature=$(echo $weather | jq '.main.temp' | cut -d'.' -f1)°C
     else
         icon=""
         city=""
+        humidity=50%
+        wind_speed=10
         description="Weather unavailable"
         temperature="--°C"
     fi
 
     echo $icon > $weather_icon
     echo $city > $weather_city
+    echo $humidity > $weather_humidity
+    echo $wind_speed | sed 's/\([0-9]*\.[0-9]\{0,2\}\).*/\1 km\/h/' > $weather_wind_speed
     echo $description | sed 's/^[a-z]/\U&/' > $weather_description
     echo $temperature > $weather_temperature
 }
@@ -133,6 +140,14 @@ case $1 in
 
     city)
         cat $weather_city
+        ;;
+
+    humidity)
+        cat $weather_humidity
+        ;;
+
+    wind-speed)
+        cat $weather_wind_speed
         ;;
 
     description)

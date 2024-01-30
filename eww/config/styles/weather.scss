@@ -17,12 +17,19 @@
     background-color: $background;
 
     .weather-box {
-        .icon {
-            margin: -35px 0px -40px 0px;
-            font-size: 80px;
+        .icon-box {
+            padding: 10px;
+            background-color: $orange;
+            border-radius: 5px;
+
+            .icon {
+                margin: -35px 0px -40px 0px;
+                font-size: 80px;
+            }
         }
 
         .temperature {
+            margin-left: 5px;
             font-size: 25px;
         }
     }
@@ -37,12 +44,44 @@
         font-style: italic;
     }
 
-    .update-button {
-        min-width: 20px;
+    .update-button-box {
+        padding: 0px 15px;
+        background-color: rgba($gray, 0.08);
+        border-radius: 5px;
 
-        label {
-            font-size: 25px;
+        .update-button {
+            font-size: 20px;
             font-weight: bold;
+        }
+    }
+
+    .weather-info-box {
+        margin: 0px 0px;
+        padding: 10px;
+        background-color: rgba($gray, 0.08);
+        border-radius: 5px;
+
+        .weather-info {
+            padding: 0px 8px;
+            background-color: rgba($gray, 0.08);
+            background-color: $orange;
+            min-width: 80px;
+            border-radius: 30px;
+
+            .icon {
+                margin: -35px 0px -35px 0px;
+                font-size: 35px;
+            }
+
+            .humidity {
+                margin-right: -5px;
+                font-size: 40px;
+            }
+
+            .text {
+                margin-left: 5px;
+                font-size: 12px;
+            }
         }
     }
 }

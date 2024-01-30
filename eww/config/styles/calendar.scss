@@ -11,11 +11,11 @@ calendar {
     border-radius: 5px;
 
     &.header, &:selected {
-        background-color: rgba($orange, 0.7);
+        background-color: $orange;
     }
 
     &:hover {
-        background-color: rgba($orange, 0.5);
+        background-color: $orange;
     }
 
     &:indeterminate {
