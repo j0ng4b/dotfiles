@@ -3,6 +3,9 @@
 # Scripts directory root
 root=$(cd $(dirname $0); pwd)
 
+# Load secret keys including OpenWeather key
+. $root/secret_keys
+
 ## Cache
 weather_cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/eww/weather
 weather_lock=$weather_cache_dir/lock
@@ -37,8 +40,6 @@ fi
 LATITUDE=$(cat $location_latitude)
 LONGITUDE=$(cat $location_longitude)
 
-APIKEY=$(cat "$root/openweather_key")
-
 get_location_data() {
     # Fetch coordinates from Mozilla Location Service
     location=$(curl --silent "https://location.services.mozilla.com/v1/geolocate?key=geoclue")
@@ -51,7 +52,7 @@ get_location_data() {
 }
 
 get_weather_data() {
-    weather=$(curl --silent "https://api.openweathermap.org/data/2.5/weather?lat=$LATITUDE&lon=$LONGITUDE&appid=$APIKEY&units=metric")
+    weather=$(curl --silent "https://api.openweathermap.org/data/2.5/weather?lat=$LATITUDE&lon=$LONGITUDE&appid=$WEATHER_API_KEY&units=metric")
 
     if [ -n "$weather" ]; then
         case $(echo $weather | jq -r '.weather[0].icon') in

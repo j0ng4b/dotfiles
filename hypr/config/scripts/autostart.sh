@@ -15,3 +15,9 @@ pgrep -f mako || mako &
 ## Start battery notifier
 pgrep -f battery_notifier.sh || $root_dir/battery_notifier.sh &
 
+## Start swww daemon
+pgrep -f swww-daemon || swww init
+
+## Start eww
+pgrep -f eww || eww daemon
+
