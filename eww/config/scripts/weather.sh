@@ -52,7 +52,13 @@ get_location_data() {
 }
 
 get_weather_data() {
-    weather=$(curl --silent "https://api.openweathermap.org/data/2.5/weather?lat=$LATITUDE&lon=$LONGITUDE&appid=$WEATHER_API_KEY&units=metric")
+    if [ -n $LANG ]; then
+        LANGUAGE="&lang=$(echo $LANG | sed 's/\([a-zA-Z_]*\).*/\1/')"
+    else
+        LANGUAGE=""
+    fi
+
+    weather=$(curl --silent "https://api.openweathermap.org/data/2.5/weather?lat=$LATITUDE&lon=$LONGITUDE&appid=$WEATHER_API_KEY&units=metric$LANGUAGE")
 
     if [ -n "$weather" ]; then
         case $(echo $weather | jq -r '.weather[0].icon') in
