@@ -1,6 +1,8 @@
 vim9script
 
-import '../xdg.vim' as xdg
+if has('unix')
+    import './xdg.vim' as xdg
+endif
 
 #############################
 ####    CONFIGURATION    ####
@@ -11,7 +13,13 @@ g:NERDTreeWinSize = 40
 g:NERDTreeMinimalUI = 1
 g:NERDTreeShowHidden = 1
 g:NERDTreeNaturalSort = 1
-g:NERDTreeBookmarksFile = xdg.vim_state_home .. '/NERDTreeBookmarks'
+
+if has('unix')
+    g:NERDTreeBookmarksFile = xdg.vim_state_home .. '/NERDTreeBookmarks'
+elseif has('win32')
+    g:NERDTreeBookmarksFile = $HOME .. '/vimfiles/NERDTreeBookmarks'
+endif
+
 g:NERDTreeBookmarksSort = 2
 g:NERDTreeMarkBookmarks = 0
 g:NERDTreeAutoDeleteBuffer = 1

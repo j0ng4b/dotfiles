@@ -1,6 +1,9 @@
 vim9script
 
-import './xdg.vim'
+if has('unix')
+    import './xdg.vim' as xdg
+endif
+
 import './options.vim'
 import './autocmd.vim'
 import './keymaps.vim'
