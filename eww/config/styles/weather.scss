@@ -1,11 +1,11 @@
 .weather-box {
     .icon {
-        margin: -25px 0px -40px 0px;
-        font-size: 60px;
+        margin: -30px 0px -45px 0px;
+        font-size: 80px;
     }
 
     .temperature {
-        font-size: 12px;
+        font-size: 18px;
     }
 }
 
@@ -23,24 +23,24 @@
             border-radius: 5px;
 
             .icon {
-                margin: -35px 0px -40px 0px;
-                font-size: 80px;
+                margin: -50px 0px -50px 0px;
+                font-size: 100px;
             }
         }
 
         .temperature {
             margin-left: 5px;
-            font-size: 25px;
+            font-size: 30px;
         }
     }
 
     .city {
-        font-size: 14px;
+        font-size: 18px;
         font-weight: bold;
     }
 
     .description {
-        font-size: 10px;
+        font-size: 14px;
         font-style: italic;
     }
 
@@ -50,7 +50,7 @@
         border-radius: 5px;
 
         .update-button {
-            font-size: 20px;
+            font-size: 28px;
             font-weight: bold;
         }
     }
@@ -70,17 +70,17 @@
 
             .icon {
                 margin: -35px 0px -35px 0px;
-                font-size: 35px;
+                font-size: 40px;
             }
 
             .humidity {
-                margin-right: -5px;
-                font-size: 40px;
+                margin-right: -10px;
+                font-size: 60px;
             }
 
             .text {
                 margin-left: 5px;
-                font-size: 12px;
+                font-size: 16px;
             }
         }
     }

@@ -102,6 +102,9 @@ get_weather_data() {
         wind_speed=10
         description="Weather unavailable"
         temperature="--°C"
+
+        # Unlock updates on failure
+        echo "0" > $weather_lock
     fi
 
     echo $icon > $weather_icon
@@ -135,9 +138,9 @@ case $1 in
             get_location_data
             get_weather_data
 
-            echo "weather updated"
-        else
-            echo "weather updates locked"
+            if [ $2 = "--reload-eww" ]; then
+                eww reload
+            fi
         fi
         ;;
 

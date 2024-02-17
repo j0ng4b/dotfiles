@@ -87,7 +87,6 @@
                 :class "weather-box"
                 :halign "end"
                 :orientation "vertical"
-                :tooltip p_weather_description
                 :space-evenly false
                 ;; Needed to auto update weather
                 (label :text { p_weather_update } :visible false)
@@ -167,7 +166,7 @@
                 )
                 (button
                     :class "update-button-box"
-                    :onclick "scripts/weather.sh update"
+                    :onclick "scripts/weather.sh update --reload-eww"
                     :timeout "20s"
                     :hexpand true
                     :halign "end"
@@ -242,7 +241,7 @@
     :stacking "fg"
     :exclusive false
     :geometry (geometry
-                  :width "400px"
+                  :width "500px"
                   :anchor "top center"
               )
     (widget-calendar)
@@ -253,7 +252,7 @@
     :stacking "fg"
     :exclusive false
     :geometry (geometry
-                  :width "300px"
+                  :width "400px"
                   :anchor "top center"
               )
     (weather)

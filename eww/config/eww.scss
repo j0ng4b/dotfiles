@@ -8,7 +8,7 @@
 * {
     all: unset;
     color: $foreground;
-    font-size: 10px;
+    font-size: 15px;
 }
 
 .bar {
@@ -20,14 +20,5 @@
 
     font-weight: bold;
     border-radius: 5px;
-}
-
-tooltip {
-    background-color: rgba($background, 0.8);
-    border-radius: 5px;
-
-    label {
-        color: $foreground;
-    }
 }
 
