@@ -138,9 +138,6 @@ case $1 in
             get_location_data
             get_weather_data
 
-            if [ $2 = "--reload-eww" ]; then
-                eww reload
-            fi
         fi
         ;;
 

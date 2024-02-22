@@ -58,9 +58,31 @@
 ;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
 ;;   ║║║│ │││ ┬├┤  │ └─┐
 ;;   ╚╩╝┴─┴┘└─┘└─┘ ┴ └─┘
-(defwidget date-weather []
+(defwidget bar []
     (box
         :class "bar"
+        :space-evenly true
+        (box
+            :halign "start"
+            :vexpand true
+            (launcher)
+        )
+        (box
+            :halign "center"
+            :vexpand true
+            (date-weather)
+        )
+        (box
+            :halign "end"
+            :vexpand true
+            (launcher)
+        )
+    )
+)
+
+(defwidget date-weather []
+    (box
+        :class "bar-box"
         :orientation "horizontal"
         (eventbox
             :cursor "pointer"
@@ -103,6 +125,22 @@
                         :text p_weather_temperature
                     )
                 )
+            )
+        )
+    )
+)
+
+(defwidget launcher []
+    (box
+        :class "bar-box"
+        :spacing 5
+        :orientation "horizontal"
+        (button
+            :class "launcher-btn"
+            :onclick "rofi -show drun"
+            (label
+                :class "launcher-icon"
+                :text ""
             )
         )
     )
@@ -225,15 +263,16 @@
 ;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
 ;;   ║║║││││ │││ ││││└─┐
 ;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
-(defwindow date-weather
+(defwindow bar
     :monitor 0
     :stacking "fg"
     :exclusive true
     :namespace "bar"
     :geometry (geometry
+                  :width "100%"
                   :anchor "top center"
               )
-    (date-weather)
+    (bar)
 )
 
 (defwindow calendar
