@@ -1,7 +1,7 @@
 vim9script
 
 if has('unix')
-    import './xdg.vim' as xdg
+    import '../xdg.vim' as xdg
 endif
 
 #############################
