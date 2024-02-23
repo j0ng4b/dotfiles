@@ -6,294 +6,347 @@
 ;;   ╠═╝│ ││  │  └─┐
 ;;   ╩  └─┘┴─┘┴─┘└─┘
 (defpoll p_time
-    :interval "10s"
-    "date +'%H:%M'"
+  :interval "10s"
+  "date +'%H:%M'"
 )
 
 (defpoll p_date
-    :interval "10s"
-    "date +'%A, %B %d'"
+  :interval "10s"
+  "date +'%A, %B %d'"
 )
 
 (defpoll p_weather_update
-    :interval "1h"
-    "scripts/weather.sh update"
+  :interval "1h"
+  "scripts/weather.sh update"
 )
 
 (defpoll p_weather_icon
-    :interval "5m"
-    "scripts/weather.sh icon"
+  :interval "5m"
+  "scripts/weather.sh icon"
 )
 
 (defpoll p_weather_city
-    :interval "5m"
-    "scripts/weather.sh city"
+  :interval "5m"
+  "scripts/weather.sh city"
 )
 
 (defpoll p_weather_humidity
-    :interval "5m"
-    "scripts/weather.sh humidity"
+  :interval "5m"
+  "scripts/weather.sh humidity"
 )
 
 (defpoll p_weather_wind_speed
-    :interval "5m"
-    "scripts/weather.sh wind-speed"
+  :interval "5m"
+  "scripts/weather.sh wind-speed"
 )
 
 (defpoll p_weather_description
-    :interval "5m"
-    "scripts/weather.sh description"
+  :interval "5m"
+  "scripts/weather.sh description"
 )
 
 (defpoll p_weather_temperature
-    :interval "5m"
-    "scripts/weather.sh temperature"
+  :interval "5m"
+  "scripts/weather.sh temperature"
 )
 
 (defpoll p_weather_locked
-    :interval "1s"
-    "scripts/weather.sh locked"
+  :interval "1s"
+  "scripts/weather.sh locked"
+)
+
+;;   ╦  ┬┌─┐┌┬┐┌─┐┌┐┌┬┌┐┌┌─┐┌─┐
+;;   ║  │└─┐ │ ├┤ ││││││││ ┬└─┐
+;;   ╩═╝┴└─┘ ┴ └─┘┘└┘┴┘└┘└─┘└─┘
+(deflisten l_active_workspace
+  :initial 0
+  "scripts/active_workspace.sh"
+)
+
+(deflisten l_workspaces
+  :initial '[{"num":0, "active":false}, {"num":1, "active":false}, {"num":2, "active":false}, {"num":3, "active":false}, {"num":4, "active":false}, {"num":5, "active":false}, {"num":6, "active":false}, {"num":7, "active":false}, {"num":8, "active":false}, {"num":9, "active":false}]'
+  "scripts/workspaces.sh"
 )
 
 ;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
 ;;   ║║║│ │││ ┬├┤  │ └─┐
 ;;   ╚╩╝┴─┴┘└─┘└─┘ ┴ └─┘
 (defwidget bar []
+  (box
+    :class "bar"
+    :space-evenly true
     (box
-        :class "bar"
-        :space-evenly true
-        (box
-            :halign "start"
-            :vexpand true
-            (launcher)
-        )
-        (box
-            :halign "center"
-            :vexpand true
-            (date-weather)
-        )
-        (box
-            :halign "end"
-            :vexpand true
-            (launcher)
-        )
+      :halign "start"
+      :vexpand true
+      :space-evenly false
+      (launcher)
+      (workspaces)
     )
+    (box
+      :halign "center"
+      :vexpand true
+      (date-weather)
+    )
+    (box
+      :halign "end"
+      :vexpand true
+    )
+  )
 )
 
 (defwidget date-weather []
-    (box
-        :class "bar-box"
-        :orientation "horizontal"
-        (eventbox
-            :cursor "pointer"
-            :onclick "scripts/calendar.sh toggle"
-            (box
-                :class "time"
-                :valign "center"
-                :orientation "vertical"
-                :space-evenly false
-                (label
-                    :halign "start"
-                    :text p_time
-                )
-                (label
-                    :halign "start"
-                    :text p_date
-                )
-            )
+  (box
+    :class "bar-box"
+    :orientation "horizontal"
+    (eventbox
+      :cursor "pointer"
+      :onclick "scripts/calendar.sh toggle"
+      (box
+        :class "time"
+        :valign "center"
+        :orientation "vertical"
+        :space-evenly false
+        (label
+          :halign "start"
+          :text p_time
         )
-        (eventbox
-            :cursor "pointer"
-            :onclick "scripts/weather.sh toggle-window"
-            (box
-                :class "weather-box"
-                :halign "end"
-                :orientation "vertical"
-                :space-evenly false
-                ;; Needed to auto update weather
-                (label :text { p_weather_update } :visible false)
-                (box
-                    :halign "center"
-                    :space-evenly false
-                    :orientation "horizontal"
-                    (label
-                        :class "icon"
-                        :text p_weather_icon
-                    )
-                    (label
-                        :class "temperature"
-                        :text p_weather_temperature
-                    )
-                )
-            )
+        (label
+          :halign "start"
+          :text p_date
         )
+      )
     )
+    (eventbox
+      :cursor "pointer"
+      :onclick "scripts/weather.sh toggle-window"
+      (box
+        :class "weather-box"
+        :halign "end"
+        :orientation "vertical"
+        :space-evenly false
+        ;; Needed to auto update weather
+        (label :text { p_weather_update } :visible false)
+        (box
+          :halign "center"
+          :space-evenly false
+          :orientation "horizontal"
+          (label
+            :class "icon"
+            :text p_weather_icon
+          )
+          (label
+            :class "temperature"
+            :text p_weather_temperature
+          )
+        )
+      )
+    )
+  )
 )
 
 (defwidget launcher []
-    (box
-        :class "bar-box"
-        :spacing 5
-        :orientation "horizontal"
-        (button
-            :class "launcher-btn"
-            :onclick "rofi -show drun"
-            (label
-                :class "launcher-icon"
-                :text ""
-            )
-        )
+  (box
+    :class "bar-box"
+    :spacing 5
+    :orientation "horizontal"
+    (button
+      :class "launcher-btn"
+      :onclick ""
+      (label
+        :class "launcher-icon"
+        :text ""
+      )
     )
+  )
+)
+
+(defwidget workspaces []
+  (box
+    :class "bar-box"
+    :spacing 0
+    :orientation "horizontal"
+    :style "padding: 10px"
+    (for w in l_workspaces
+      (button
+        :onclick 'hyprctl dispatch workspace ${w.num + 1}'
+        (label
+          :class "workspace-txt ${l_active_workspace == w.num ? "workspace-txt-active" : ""} workspace-txt-${
+            w.active ? (
+              w.num == 0 ? (
+                l_workspaces[w.num + 1].active ? "left" : "alone"
+              ) : (
+                w.num == 9 ? (
+                  l_workspaces[w.num - 1].active ?
+                    "right" : "alone"
+                ) : (
+                  l_workspaces[w.num - 1].active
+                      && l_workspaces[w.num + 1].active ?
+                    "middle" : (
+                      l_workspaces[w.num - 1].active ?
+                        "right" : (
+                          l_workspaces[w.num + 1].active ?
+                            "left" : "alone"
+                        )
+                    )
+                )
+              )
+          ) : "inactive"}"
+          :style "min-width: 16px"
+          :text {l_active_workspace == w.num ? "•" : w.num + 1}
+        )
+      )
+    )
+  )
 )
 
 (defwidget widget-calendar []
-    (box
-        :class "calendar-wrapper"
-        (eventbox
-            :onhoverlost "scripts/calendar.sh toggle"
-            (calendar)
-        )
+  (box
+    :class "calendar-wrapper"
+    (eventbox
+      :onhoverlost "scripts/calendar.sh toggle"
+      (calendar)
     )
+  )
 )
 
 (defwidget weather []
-    (eventbox
-        :onhoverlost "scripts/weather.sh toggle-window"
+  (eventbox
+    :onhoverlost "scripts/weather.sh toggle-window"
+    (box
+      :orientation "vertical"
+      :class "weather-wrapper"
+      :spacing 15
+      ;; First weather information row
+      (box
+        :spacing 15
+        :space-evenly false
+        :orientation "horizontal"
         (box
-            :orientation "vertical"
-            :class "weather-wrapper"
-            :spacing 15
-            ;; First weather information row
-            (box
-                :spacing 15
-                :space-evenly false
-                :orientation "horizontal"
-                (box
-                    :valign "center"
-                    :halign "start"
-                    :vexpand true
-                    :space-evenly false
-                    :orientation "horizontal"
-                    :class "weather-box"
-                    (box
-                        :class "icon-box"
-                        (label
-                            :class "icon"
-                            :text p_weather_icon
-                        )
-                    )
-                    (label
-                        :class "temperature"
-                        :text p_weather_temperature
-                    )
-                )
-                (box
-                    :orientation "vertical"
-                    (label
-                        :halign "start"
-                        :valign "center"
-                        :class "city"
-                        :text p_weather_city
-                    )
-                    (label
-                        :halign "start"
-                        :valign "center"
-                        :class "description"
-                        :text p_weather_description
-                    )
-                )
-                (button
-                    :class "update-button-box"
-                    :onclick "scripts/weather.sh update --reload-eww"
-                    :timeout "20s"
-                    :hexpand true
-                    :halign "end"
-                    (label
-                        :class "update-button"
-                        :style "color: ${p_weather_locked == "locked" ? '#928374' : '#ebdbb2'}"
-                        :text ""
-                    )
-                )
+          :valign "center"
+          :halign "start"
+          :vexpand true
+          :space-evenly false
+          :orientation "horizontal"
+          :class "weather-box"
+          (box
+            :class "icon-box"
+            (label
+              :class "icon"
+              :text p_weather_icon
             )
-            ;; Third weather information row
-            (box
-                :class "weather-info-box"
-                :space-evenly false
-                :orientation "horizontal"
-                (box
-                    :class "weather-info"
-                    :halign "center"
-                    :hexpand true
-                    :space-evenly false
-                    :orientation "horizontal"
-                    (box
-                        :space-evenly false
-                        :halign "center"
-                        :hexpand true
-                        (label
-                            :class "icon humidity"
-                            :text ""
-                        )
-                        (label
-                            :class "text"
-                            :text p_weather_humidity
-                        )
-                    )
-                )
-                (box
-                    :class "weather-info"
-                    :halign "center"
-                    :hexpand true
-                    :space-evenly false
-                    :orientation "horizontal"
-                    (label
-                        :class "icon"
-                        :text ""
-                    )
-                    (label
-                        :class "text"
-                        :text p_weather_wind_speed
-                    )
-                )
-            )
+          )
+          (label
+            :class "temperature"
+            :text p_weather_temperature
+          )
         )
+        (box
+          :orientation "vertical"
+          (label
+            :halign "start"
+            :valign "center"
+            :class "city"
+            :text p_weather_city
+          )
+          (label
+            :halign "start"
+            :valign "center"
+            :class "description"
+            :text p_weather_description
+          )
+        )
+        (button
+          :class "update-button-box"
+          :onclick "scripts/weather.sh update --reload-eww"
+          :timeout "20s"
+          :hexpand true
+          :halign "end"
+          (label
+            :class "update-button"
+            :style "color: ${p_weather_locked == "locked" ? '#928374' : '#ebdbb2'}"
+            :text ""
+          )
+        )
+      )
+      ;; Third weather information row
+      (box
+        :class "weather-info-box"
+        :space-evenly false
+        :orientation "horizontal"
+        (box
+          :class "weather-info"
+          :halign "center"
+          :hexpand true
+          :space-evenly false
+          :orientation "horizontal"
+          (box
+            :space-evenly false
+            :halign "center"
+            :hexpand true
+            (label
+              :class "icon humidity"
+              :text ""
+            )
+            (label
+              :class "text"
+              :text p_weather_humidity
+            )
+          )
+        )
+        (box
+          :class "weather-info"
+          :halign "center"
+          :hexpand true
+          :space-evenly false
+          :orientation "horizontal"
+          (label
+            :class "icon"
+            :text ""
+          )
+          (label
+            :class "text"
+            :text p_weather_wind_speed
+          )
+        )
+      )
     )
+  )
 )
 
 ;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
 ;;   ║║║││││ │││ ││││└─┐
 ;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
 (defwindow bar
-    :monitor 0
-    :stacking "fg"
-    :exclusive true
-    :namespace "bar"
-    :geometry (geometry
-                  :width "100%"
-                  :anchor "top center"
-              )
-    (bar)
+  :monitor 0
+  :stacking "fg"
+  :exclusive true
+  :namespace "bar"
+  :geometry (geometry
+              :width "100%"
+              :anchor "top center"
+            )
+  (bar)
 )
 
 (defwindow calendar
-    :monitor 0
-    :stacking "fg"
-    :exclusive false
-    :geometry (geometry
-                  :width "500px"
-                  :anchor "top center"
-              )
-    (widget-calendar)
+  :monitor 0
+  :stacking "fg"
+  :exclusive false
+  :geometry (geometry
+              :width "500px"
+              :anchor "top center"
+            )
+  (widget-calendar)
 )
 
 (defwindow weather
-    :monitor 0
-    :stacking "fg"
-    :exclusive false
-    :geometry (geometry
-                  :width "400px"
-                  :anchor "top center"
-              )
-    (weather)
+  :monitor 0
+  :stacking "fg"
+  :exclusive false
+  :geometry (geometry
+              :width "400px"
+              :anchor "top center"
+            )
+  (weather)
 )
 
