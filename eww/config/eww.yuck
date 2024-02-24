@@ -151,7 +151,7 @@
     :orientation "horizontal"
     (button
       :class "launcher-btn"
-      :onclick ""
+      :onclick "scripts/launcher.sh"
       (label
         :class "launcher-icon"
         :text ""
