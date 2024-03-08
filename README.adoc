@@ -86,7 +86,7 @@ grim and slurp:: used to take screenshots
 ====
 [,bash]
 ----
-$ sudo xbps-install -S jq libnotify grim slurp
+$ sudo xbps-install -S jq socat libnotify grim slurp
 ----
 ====
 
