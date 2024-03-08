@@ -8,6 +8,11 @@ import './options.vim'
 import './autocmd.vim'
 import './keymaps.vim'
 
+# Running in GUI mode
+if has('gui_running')
+    import './gui_options.vim'
+endif
+
 # Enable syntax highlight
 syntax enable
 
