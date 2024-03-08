@@ -1,4 +1,4 @@
-# This will be used to spawn a terminal in current directory
+# This will be used to spawn a new terminal in current directory
 autoload -Uz add-zsh-hook
 
 function osc7-pwd() {

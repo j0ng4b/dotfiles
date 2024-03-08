@@ -1,6 +1,4 @@
-###########################
-##  XDG Base directories ##
-###########################
+## XDG Base directories
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
@@ -8,9 +6,8 @@ export XDG_DATA_HOME="$HOME/.local/share"
 
 export PATH="$HOME/.local/bin:$PATH"
 
-###########################
-## XDG Runtime directory ##
-###########################
+
+## XDG Runtime directory
 if [ -z "$XDG_RUNTIME_DIR" ]; then
     # Check if running inside Termux, if so, use the Termux prefix
     if [ -n "$(printenv | grep -i "termux")" ]; then
@@ -24,9 +21,8 @@ if [ -z "$XDG_RUNTIME_DIR" ]; then
     fi
 fi
 
-###########################
-##          Zsh          ##
-###########################
+
+## Zsh environment variables
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export ZDATADIR="$XDG_DATA_HOME/zsh"
 
@@ -36,15 +32,8 @@ export SAVEHIST=1000
 
 export ZLE_RPROMPT_INDENT="0"
 
-###########################
-##    Common variables   ##
-###########################
-export VISUAL=vim
-export EDITOR=vim
 
-###########################
-##         .NET          ##
-###########################
-export DOTNET_ROOT=$HOME/.dotnet
-export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+## Common variables
+export EDITOR=vim
+export VISUAL=gvim
 

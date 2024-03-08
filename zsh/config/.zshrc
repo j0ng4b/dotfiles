@@ -1,33 +1,24 @@
-# Enable Powerlevel10k instant prompt
-if [ -r "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh" ]; then
-    source "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh"
+if [ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]; then
+  source "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-#################
-##   ALIASES   ##
-#################
+## Aliases
 for alias in $ZDOTDIR/aliases/*; do
     source $alias
 done
 
 
-#################
-## COMPLETION  ##
-#################
+## Completion
 source $ZDOTDIR/completion.zsh
 
 
-#################
-##  UTILITIES  ##
-#################
+## Utilities
 for utility in $ZDOTDIR/utils/*; do
     source $utility
 done
 
 
-#################
-##   PLUGINS   ##
-#################
+## Plugins
 while IFS=" " read -r plugin; do
     # Load plugin if exists
     if [ -f "$ZDATADIR/plugins/$plugin" ]; then
@@ -46,15 +37,11 @@ done <<-EOF
 EOF
 
 
-#################
-##   HISTORY   ##
-#################
+## History
 mkdir -p $ZDATADIR
 
 
-#################
-##   OPTIONS   ##
-#################
+## Options
 setopt AUTO_CD
 setopt AUTO_PUSHD
 setopt CD_SILENT
@@ -82,4 +69,8 @@ setopt INC_APPEND_HISTORY_TIME
 
 setopt PROMPT_SUBST
 setopt TRANSIENT_RPROMPT
+
+
+## Binds
+bindkey -v
 
