@@ -7,5 +7,10 @@
 # opens.
 sleep 0.15
 
+# On some cases its needed to set current work directory to home directory
+# otherwise applications current work directory will be the eww configuration
+# directory (e.g. GVim).
+cd $HOME
+
 rofi -show drun -terminal foot &
 
