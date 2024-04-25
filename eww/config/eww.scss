@@ -2,24 +2,7 @@
 @import "styles/colors.scss";
 
 // Widgets styles
-@import "styles/launcher.scss";
-@import "styles/workspaces.scss";
-@import "styles/weather.scss";
+@import "styles/bar.scss";
+@import "styles/corner.scss";
 @import "styles/calendar.scss";
 
-* {
-    all: unset;
-    color: $foreground;
-    font-size: 15px;
-}
-
-.bar-box {
-    box-shadow: 0px 0px 4px $background;
-    background-color: $background;
-
-    padding: 5px 10px;
-    margin: 5px;
-
-    font-weight: bold;
-    border-radius: 5px;
-}

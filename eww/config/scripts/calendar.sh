@@ -9,11 +9,17 @@ calendar_lock=$calendar_cache_dir/lock
 
 if [ ! -d "$calendar_cache_dir" ]; then
     mkdir -p "$calendar_cache_dir"
-
     echo "unlocked" > $calendar_lock
 fi
 
 case $1 in
+    open)
+        if [ "$(cat $calendar_lock)" = "unlocked" ]; then
+            echo "locked" > $calendar_lock
+            eww open calendar
+        fi
+        ;;
+
     close)
         if [ "$(cat $calendar_lock)" = "locked" ]; then
             echo "unlocked" > $calendar_lock
@@ -25,9 +31,6 @@ case $1 in
         if [ "$(cat $calendar_lock)" = "unlocked" ]; then
             echo "locked" > $calendar_lock
             eww open calendar
-
-            # Close others windows
-            sh -c "$root/weather.sh close-window"
         else
             echo "unlocked" > $calendar_lock
             eww close calendar
