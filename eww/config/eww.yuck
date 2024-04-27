@@ -14,7 +14,8 @@
   :interval "5s"
   "date +'%A, %d %B' | sed 's/[^ ]*/\\u&/g'"
 )
- (defpoll p_month
+
+(defpoll p_month
    :interval "5m"
    "date +'%B' | sed 's/[^ ]*/\\u&/g'"
 )
@@ -55,7 +56,6 @@
       :cursor "pointer"
       :onclick "scripts/calendar.sh toggle"
       (box
-        :class "time"
         :valign "center"
         :spacing 15
         :space-evenly false
@@ -150,6 +150,7 @@
   :stacking "fg"
   :exclusive false
   :geometry (geometry
+              :y "5px"
               :width "500px"
               :anchor "top center"
             )
