@@ -123,7 +123,6 @@
   :stacking "fg"
   :namespace "corner"
   :geometry (geometry
-              :y "3px"
               :anchor "top left"
             )
   (box
@@ -136,7 +135,6 @@
   :stacking "fg"
   :namespace "corner"
   :geometry (geometry
-              :y "3px"
               :anchor "top right"
             )
   (box
