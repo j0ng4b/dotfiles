@@ -28,7 +28,7 @@ case $1 in
         grim -g "$(slurp -d -F "IosevkaJ0ng4b Nerd Font Mono")" $screenshot_path
 
         if [ $? -gt 0 ]; then
-            notify-send -w -a "screenshot.sh" "Screenshot canceled" ""
+            notify-send -w -a "screenshot.sh" "Screenshot aborted" ""
             exit 1
         fi
         ;;
