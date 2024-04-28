@@ -50,23 +50,21 @@
 )
 
 (defwidget date-time []
-  (box
+  (eventbox
+    :cursor "pointer"
+    :onclick "scripts/calendar.sh open"
     :class "bar-component"
-    (eventbox
-      :cursor "pointer"
-      :onclick "scripts/calendar.sh toggle"
-      (box
-        :valign "center"
-        :spacing 15
-        :space-evenly false
-        (label
-          :halign "start"
-          :text p_date
-        )
-        (label
-          :halign "start"
-          :text p_time
-        )
+    (box
+      :valign "center"
+      :spacing 15
+      :space-evenly false
+      (label
+        :halign "start"
+        :text p_date
+      )
+      (label
+        :halign "start"
+        :text p_time
       )
     )
   )
@@ -147,6 +145,7 @@
   :monitor 0
   :stacking "fg"
   :exclusive false
+  :namespace "calendar"
   :geometry (geometry
               :y "5px"
               :width "500px"
