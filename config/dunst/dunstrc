@@ -1,0 +1,95 @@
+#
+#                 ██████╗ ██╗   ██╗███╗   ██╗███████╗████████╗
+#                 ██╔══██╗██║   ██║████╗  ██║██╔════╝╚══██╔══╝
+#                 ██║  ██║██║   ██║██╔██╗ ██║███████╗   ██║
+#                 ██║  ██║██║   ██║██║╚██╗██║╚════██║   ██║
+#                 ██████╔╝╚██████╔╝██║ ╚████║███████║   ██║
+#                 ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝
+#
+#                ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+#               ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+#               ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+#               ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+#               ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+#                ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+#
+
+[global]
+    ## Font
+    font = "IosevkaJ0ng4b Nerd Font Mono 12"
+
+    ## Colors
+    background = "#1d2021"
+    foreground = "#ebdbb2"
+
+    ## Dimensions
+    width=(300, 515)
+    height=300
+
+    ## Borders
+    frame_width = 2
+    frame_color = "#fe8019"
+    corners = all
+    corner_radius = 5
+
+    ## Location
+    origin = bottom-right
+    offset = 10x10
+    padding = 10
+    gap_size = 5
+
+    ## Progress bar
+    progress_bar = true
+    progress_bar_horizontal_alignment = center
+    progress_bar_height = 15
+
+    ### Borders and Corners
+    progress_bar_frame_width = 0
+    progress_bar_corners = all
+    progress_bar_corner_radius = 15 # This will clamp to half of progress bar height
+
+    ## Icon
+    icon_corners = all
+    icon_corner_radius = 5
+
+    ## History
+    history_length = 15
+
+    ## Visible notifications
+    indicate_hidden = true
+    notification_limit = 3
+
+    ## Timeout
+    timeout=5s
+
+    ## Miscellaneous
+    layer = top
+    enable_posix_regex = true
+    show_indicators = false
+    override_pause_level = 50
+
+[battery]
+    ## Filter
+    appname = "battery_notifier.sh"
+
+    ## Modifications
+    format = "%b"
+    alignment = center
+
+[screenshot_aborted]
+    ## Filter
+    appname = "screenshot.sh"
+    summary = "aborted"
+
+    ## Modifications
+    alignment = center
+
+[screenshot]
+    ## Filter
+    appname = "screenshot.sh"
+
+    ## Modifications
+    markup = full
+    max_icon_size = 120
+
+# vim: ft=cfg

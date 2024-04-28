@@ -93,11 +93,11 @@ dotfile_action_target_files() {
     dotfile_dir=$4
 
     # List of files to install
-    files="$(ls $dotfile_dir/$target | tr '\n' ' ')"
+    files="$(ls $dotfile_dir | tr '\n' ' ')"
 
     action_result_error=0
     for file in $files; do
-        file_path=$dotfile_dir/$target/$file
+        file_path=$dotfile_dir/$file
 
         # Files of target `home´ has a lead dot at their names
         [ $target = "home" ] && file=.$file
@@ -111,7 +111,7 @@ dotfile_action_target_files() {
         action_result=$?
         if [ $action_result -gt 0 ]; then
             action_result_error=1
-            error "File '$file' of '$dotfile/$target' already $action!"
+            error "File '$file' of '$dotfile' already ${action}ed!"
         fi
     done
 
@@ -125,17 +125,18 @@ dotfile_action_target() {
     dotfile=$3
     dotfile_dir=$4
 
-    target_path=$dotfile_dir/$target
-
     # Set install path
     eval dotfile_path=\$${target}_dir/$dotfile
 
     # Act on the file
-    eval ${action}_dotfile $dotfile_path $target_path
+    eval ${action}_dotfile $dotfile_path $dotfile_dir
 
     # Check for already (un)installed target
     action_result=$?
-    [ $action_result -gt 0 ] && error "Target '$target' of '$dotfile' already $action!"
+    if [ $action_result -gt 0 ]; then
+        error "$dotfile already ${action}ed from/in $dotfile_path!"
+    fi
+
     return $action_result
 }
 
@@ -155,64 +156,70 @@ dotfile_action() {
     for dotfile in $dotfiles; do
         # Remove tail / if any
         dotfile="$(basename $dotfile)"
-
-        # Root of the dotfile
-        dotfile_dir=$dotfiles_root/$dotfile
-
-        # Skip non-directories because isn't dotfile
-        if [ ! -d $dotfile_dir ]; then
-            warn "The dotfile '$dotfile' doesn't exists! Skipping."
-            continue
+        if [ $action = "install" ]; then
+            echo "Installing $dotfile... "
+        else
+            echo "Uninstalling $dotfile... "
         fi
 
-        # Target directories of installing dotfile
-        targets="$(ls $dotfile_dir | tr '\n' ' ')"
+        ## Root of the dotfile
+        #dotfile_dir=$dotfiles_root/$dotfile
+
+        ## Skip non-directories because isn't dotfile
+        #if [ ! -d $dotfile_dir ]; then
+        #    warn "The dotfile '$dotfile' doesn't exists! Skipping."
+        #    continue
+        #fi
+
+        ## Target directories of installing dotfile
+        #targets="$(ls $dotfile_dir | tr '\n' ' ')"
 
         action_result=0
-        for target in $targets; do
+        found_dotfile=0
+        for target in home config data bin; do
+            # Root of the dotfile by target
+            dotfile_dir=$dotfiles_root/$target/$dotfile
+            if [ ! -d $dotfile_dir ]; then
+                continue
+            fi
+            found_dotfile=1
+
             case $target in
                 home | bin)
                     eval dotfile_action_target_files $action $target $dotfile $dotfile_dir
-                    [ $? -gt 0 ] && action_result=1
                     ;;
 
-                config | cache | state | data)
+                config | data)
                     eval dotfile_action_target $action $target $dotfile $dotfile_dir
-                    [ $? -gt 0 ] && action_result=1
-                    ;;
-
-                post) ;;
-
-                *)
-                    warn "Unrecognized dotfile target '$target'! Skipping."
                     ;;
             esac
         done
 
-        # Execute post action script if any
-        if [ $action_result -eq 0 -a -x "$dotfile_dir/post" ]; then
-            eval \
-                ACTION=$action \
-                ROOT=$dotfile_dir \
-                $dotfile_dir/post
+        if [ $found_dotfile -eq 0 ]; then
+            warn "The dotfile '$dotfile' doesn't exists! Skipping."
         fi
+        echo
     done
 
     exit 0
 }
 
 dotfile_list() {
-    dotfiles="$(ls -d $dotfiles_root/*/)"
+    # WIP
+    exit 1
 
-    echo "Dotfiles:"
-    for dotfile in $dotfiles; do
-        dotfile=$(basename $dotfile)
-        echo "    $dotfile ($(check_installed $dotfile))"
-    done
+    #dotfiles="$(ls -d $dotfiles_root/*/)"
 
-    exit 0
+    #echo "Dotfiles:"
+    #for dotfile in $dotfiles; do
+    #    dotfile=$(basename $dotfile)
+    #    echo "    $dotfile ($(check_installed $dotfile))"
+    #done
+
+    #exit 0
 }
 
+# Create XDG Directories
 create_target_directories
 
 [ $# -eq 0 ] && exit 1

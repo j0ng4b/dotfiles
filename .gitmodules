@@ -1,12 +1,12 @@
 [submodule "zsh/powerlevel10k"]
-	path = zsh/data/plugins/powerlevel10k
+	path = data/zsh/plugins/powerlevel10k
 	url = https://github.com/romkatv/powerlevel10k
 	ignore = dirty
 [submodule "zsh/zsh-syntax-highlighting"]
-	path = zsh/data/plugins/zsh-syntax-highlighting
+	path = data/zsh/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting
 	ignore = dirty
 [submodule "zsh/zsh-autosuggestions"]
-	path = zsh/data/plugins/zsh-autosuggestions
+	path = data/zsh/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions
 	ignore = dirty
