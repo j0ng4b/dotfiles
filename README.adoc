@@ -21,14 +21,17 @@ current `dotfile` installer script.
 | Tool
 | Role
 
+| Hyprland
+| wayland compositor
+
+| Rofi
+| application launcher
+
 | Foot
 | terminal emulator
 
-| Git
-| version control system
-
-| Hyprland
-| wayland compositor
+| Vim/Gvim
+| code editor
 
 | Eww
 | widget system
@@ -39,16 +42,31 @@ current `dotfile` installer script.
 | WirePlumber
 | audio session manager
 
-| mako
+| Dunst
 | notification daemon
 
-| Vim
-| code editor
+| Git
+| version control system
 
 | Zsh
 | shell
 
 |===
+
+.To install on Void run
+[%collapsible]
+====
+Some of dependencies can't be installed from default Void repositories, I've my
+own repository with some of the dependencies packages (e.g. Hyprland).
+
+NOTE: the bellow command will install all dependencies even that required by
+scripts as show on <<requirements,requirements>> section.
+
+[,bash]
+----
+$ sudo ./dotfile install-deps
+----
+====
 
 {empty} +
 
@@ -62,10 +80,7 @@ No help message yet, but the script commands are:
 `install`:: no magic, it will install a config given a name
 `uninstall`:: well, uninstall some config with this
 `list`:: will list the installable configs and their status
-
-Other way to list config files is using the `ls` command
-on repository root, all directories listed are installable
-configs.
+`install-deps`:: install all dependencies and requirements
 
 {empty} +
 
@@ -76,19 +91,8 @@ written to works on Void Linux.
 
 Besides the tools listed <<tools-list,here>> other requirements are:
 
-jq:: used to process json
-socat:: sockets communication
 libnotify:: provides `notify-send`
 grim and slurp:: used to take screenshots
-
-.To install on Void run
-[%collapsible]
-====
-[,bash]
-----
-$ sudo xbps-install -S jq socat libnotify grim slurp
-----
-====
 
 === Installation
 

@@ -219,6 +219,22 @@ dotfile_list() {
     #exit 0
 }
 
+dotfile_install_deps() {
+    if [ $(whoami) != 'root' ]; then
+        error 'To install dependencies root is required!'
+        exit 1
+    fi
+
+    if [ "$@x" != "x" ]; then
+        error "To many argumentes, expected 0, given $#!"
+        exit 1
+    fi
+
+    # WIP
+
+    exit 0
+}
+
 # Create XDG Directories
 create_target_directories
 
@@ -231,6 +247,11 @@ while [ $# -gt 0 ]; do
 
         list)
             dotfile_list # no return
+            ;;
+
+        install-deps)
+            shift
+            dotfile_install_deps $@ # no return
             ;;
 
         *)
