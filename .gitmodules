@@ -1,12 +1,18 @@
-[submodule "zsh/powerlevel10k"]
-	path = data/zsh/plugins/powerlevel10k
-	url = https://github.com/romkatv/powerlevel10k
-	ignore = dirty
-[submodule "zsh/zsh-syntax-highlighting"]
-	path = data/zsh/plugins/zsh-syntax-highlighting
-	url = https://github.com/zsh-users/zsh-syntax-highlighting
-	ignore = dirty
-[submodule "zsh/zsh-autosuggestions"]
+[submodule "zsh/typewritten"]
+	path = data/zsh/plugins/typewritten
+	url = https://github.com/reobin/typewritten.git
+[submodule "zsh/fast-syntax-highlighting"]
+	path = data/zsh/plugins/fast-syntax-highlighting
+	url = https://github.com/zdharma-continuum/fast-syntax-highlighting.git
+[submodule "zsh/colored-man-pages_mod"]
+	path = data/zsh/plugins/colored-man-pages_mod
+	url = https://github.com/zuxfoucault/colored-man-pages_mod.git
+[submodule "zsh/autosuggestions"]
 	path = data/zsh/plugins/zsh-autosuggestions
-	url = https://github.com/zsh-users/zsh-autosuggestions
-	ignore = dirty
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
+[submodule "zsh/autocomplete"]
+	path = data/zsh/plugins/zsh-autocomplete
+	url = https://github.com/marlonrichert/zsh-autocomplete.git
+[submodule "zsh/autopair"]
+	path = data/zsh/plugins/zsh-autopair
+	url = https://github.com/hlissner/zsh-autopair.git

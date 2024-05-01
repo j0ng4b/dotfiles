@@ -1,7 +1,3 @@
-if [ -r "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh" ]; then
-  source "${XDG_CACHE_HOME}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 ## Aliases
 for alias in $ZDOTDIR/aliases/*; do
     source $alias
@@ -16,25 +12,6 @@ source $ZDOTDIR/completion.zsh
 for utility in $ZDOTDIR/utils/*; do
     source $utility
 done
-
-
-## Plugins
-while IFS=" " read -r plugin; do
-    # Load plugin if exists
-    if [ -f "$ZDATADIR/plugins/$plugin" ]; then
-        source "$ZDATADIR/plugins/$plugin"
-
-        # Load plugin configuration if any
-        plugin_conf="$(dirname $plugin).zsh"
-        if [ -f "$ZDOTDIR/plugins.conf.d/$plugin_conf" ]; then
-            source "$ZDOTDIR/plugins.conf.d/$plugin_conf"
-        fi
-    fi
-done <<-EOF
-    powerlevel10k/powerlevel10k.zsh-theme
-    zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-    zsh-autosuggestions/zsh-autosuggestions.zsh
-EOF
 
 
 ## History
@@ -70,7 +47,38 @@ setopt INC_APPEND_HISTORY_TIME
 setopt PROMPT_SUBST
 setopt TRANSIENT_RPROMPT
 
+setopt SH_WORD_SPLIT
+
 
 ## Binds
 bindkey -v
+
+
+## Plugins
+plugins="$(ls -d $ZDATADIR/plugins/*)"
+
+for plugin in $plugins; do
+    plugin_name="$(basename $plugin)"
+    plugin_path="$plugin/$plugin_name.plugin.zsh"
+
+    plugin_pre_conf="$ZDOTDIR/plugins.conf.d/pre/$plugin_name.conf.zsh"
+    plugin_post_conf="$ZDOTDIR/plugins.conf.d/post/$plugin_name.conf.zsh"
+
+    if [ -f $plugin_path ]; then
+        # load plugin pre configuration
+        if [ -f $plugin_pre_conf ]; then
+            source "$plugin_pre_conf"
+        fi
+
+        # load plugin
+        source "$plugin_path"
+
+        # load plugin post configuration
+        if [ -f $plugin_post_conf ]; then
+            source "$plugin_post_conf"
+        fi
+    else
+        echo "failed to load plugin: can't find '$plugin_path'"
+    fi
+done
 
