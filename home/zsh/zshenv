@@ -22,6 +22,10 @@ if [ -z "$XDG_RUNTIME_DIR" ]; then
 fi
 
 
+## DBUS session address
+export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
+
+
 ## Zsh environment variables
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export ZDATADIR="$XDG_DATA_HOME/zsh"

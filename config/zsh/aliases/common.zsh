@@ -1,7 +1,7 @@
 ## ls
-alias -g ls="ls --color=auto -AF"
-alias -g ll="ls --color=auto -lh"
-alias -g lr="ls --color=auto -R"
+alias -g ls="ls --color=auto -AF --group-directories-first"
+alias -g ll="ls --color=auto -lh --group-directories-first"
+alias -g lr="ls --color=auto -R --group-directories-first"
 
 
 ## mkdir
