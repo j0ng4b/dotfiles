@@ -23,6 +23,10 @@
 ;;   ╦  ┬┌─┐┌┬┐┌─┐┌┐┌┬┌┐┌┌─┐┌─┐
 ;;   ║  │└─┐ │ ├┤ ││││││││ ┬└─┐
 ;;   ╩═╝┴└─┘ ┴ └─┘┘└┘┴┘└┘└─┘└─┘
+(deflisten l_systray_items_count
+  :initial 0
+  'scripts/systray_items_count.sh'
+)
 
 
 ;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
@@ -45,6 +49,18 @@
     (box
       :halign "end"
       :vexpand true
+      (eventbox
+        :class "systray-container"
+        :cursor "pointer"
+        :visible {l_systray_items_count > 0}
+        (systray
+          :visible {l_systray_items_count > 0}
+          :class "systray"
+          :icon-size 20
+          :spacing 10
+          :space-evenly true
+        )
+      )
     )
   )
 )
