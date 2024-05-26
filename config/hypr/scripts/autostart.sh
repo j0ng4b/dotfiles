@@ -2,6 +2,12 @@
 
 root_dir=$(cd $(dirname $0); pwd)
 
+## Start dbus user session
+dbus="dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS"
+if [ -z $(pgrep -f "$dbus")]; then
+    $dbus &
+fi
+
 ## Start pipewire
 if [ -z $(pgrep -f pipewire) ]; then
     # With this PipeWire will automatic start pipewire-pulse and wireplumber
