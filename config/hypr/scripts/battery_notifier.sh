@@ -5,7 +5,7 @@ capacity_file="/sys/class/power_supply/BAT0/capacity"
 status_file="/sys/class/power_supply/BAT0/status"
 
 # Battery status
-status=$(cat "$status_file")
+old_status=$(cat "$status_file")
 
 # First low level of battery to notify
 default_low=10
@@ -77,7 +77,7 @@ while true; do
     if [ "$new_status" != "$old_status" ]; then
         if [ -n "$old_status" ]; then
             # When the battery get fully charged
-            if [ "$new_status" = "Full"  ]; then
+            if [ "$new_status" = "Full" -o "$new_status" = "Not charging" ]; then
                 # From Discharging to Full
                 if [ "$old_status" = "Discharging" ]; then
                     notify normal "<b><span color='#3e8fb0' size='30pt' baseline_shift='-5pt'>$(battery_charging_icon "$capacity")</span> Charging Full Battery</b>"
