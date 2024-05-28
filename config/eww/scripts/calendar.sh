@@ -34,7 +34,33 @@ case $1 in
         else
             echo "unlocked" > $calendar_lock
             eww close calendar
+            eww update v_month_offset=0
         fi
+        ;;
+
+    month)
+        offset=$(eww get v_month_offset)
+        name=$(date --date="$(date +%Y-%m-15) $offset month" +'%B' | sed 's/[^ ]*/\u&/g')
+        num=$(date --date="$(date +%Y-%m-15) $offset month" +'%m')
+
+        echo "{\"name\": \"$name\", \"num\": \"$num\"}"
+        ;;
+
+    year)
+        offset=$(eww get v_month_offset)
+        num=$(date --date="$(date +%Y-%m-15) $offset month" +'%Y' | sed 's/[^ ]*/\u&/g')
+
+        echo "{\"num\": \"$num\"}"
+        ;;
+
+    next-month)
+        offset=$(eww get v_month_offset)
+        eww update v_month_offset=$(($offset + 1))
+        ;;
+
+    prev-month)
+        offset=$(eww get v_month_offset)
+        eww update v_month_offset=$(($offset - 1))
         ;;
 esac
 

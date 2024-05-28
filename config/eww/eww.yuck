@@ -1,6 +1,7 @@
 ;;   ╦  ╦┌─┐┬─┐┬┌─┐┌┐ ┬  ┌─┐┌─┐
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
+(defvar v_month_offset 0)
 
 ;;   ╔═╗┌─┐┬  ┬  ┌─┐
 ;;   ╠═╝│ ││  │  └─┐
@@ -16,8 +17,15 @@
 )
 
 (defpoll p_month
-   :interval "5m"
-   "date +'%B' | sed 's/[^ ]*/\\u&/g'"
+  :interval "1s"
+  :initial '{"name": 0 , "num": 0}'
+  "scripts/calendar.sh month"
+)
+
+(defpoll p_year
+  :interval "1s"
+  :initial '{"num": 0}'
+  "scripts/calendar.sh year"
 )
 
 ;;   ╦  ┬┌─┐┌┬┐┌─┐┌┐┌┬┌┐┌┌─┐┌─┐
@@ -68,16 +76,17 @@
 (defwidget date-time []
   (eventbox
     :cursor "pointer"
-    :onclick "scripts/calendar.sh open"
+    :onclick "scripts/calendar.sh toggle"
     :class "bar-component"
     (box
       :valign "center"
-      :spacing 15
+      :spacing 5
       :space-evenly false
       (label
         :halign "start"
         :text p_date
       )
+      (label :text "")
       (label
         :halign "start"
         :text p_time
@@ -90,16 +99,45 @@
   (box
     :class "calendar"
     (eventbox
-      :onhoverlost "scripts/calendar.sh close"
       (box
         :orientation "vertical"
         :space-evenly false
         (box
           :orientation "vertical"
           :class "calendar-header"
-          (label
-            :class "calendar-month"
-            :text {p_month}
+          (overlay
+            (overlay
+              (label
+                :class "calendar-month"
+                :text {p_month.name}
+              )
+              (box
+                :orientation "horizontal"
+                :spacing 10
+                :space-evenly true
+                :class "calendar-month-controller-box icon-bold"
+                (eventbox
+                  :onclick "scripts/calendar.sh prev-month"
+                  :cursor "pointer"
+                  :halign "center"
+                  :valign "center"
+                  :class "calendar-month-controller"
+                  ""
+                )
+                (eventbox
+                  :onclick "scripts/calendar.sh next-month"
+                  :cursor "pointer"
+                  :halign "center"
+                  :valign "center"
+                  :class "calendar-month-controller"
+                  ""
+                )
+              )
+            )
+            (label
+              :class "calendar-year"
+              :text {p_year.num}
+            )
           )
           (box
             :class "calendar-day-names"
@@ -109,6 +147,8 @@
         )
         (calendar
           :active false
+          :month {p_month.num}
+          :year {p_year.num}
           :show-heading false
           :show-day-names false
         )
