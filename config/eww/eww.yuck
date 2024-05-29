@@ -1,323 +1,35 @@
 ;;   ╦  ╦┌─┐┬─┐┬┌─┐┌┐ ┬  ┌─┐┌─┐
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
-(defvar v_month_offset 0)
-
-
-;;   ╔═╗┌─┐┬  ┬  ┌─┐
-;;   ╠═╝│ ││  │  └─┐
-;;   ╩  └─┘┴─┘┴─┘└─┘
-(defpoll p_time
-  :interval "5s"
-  "date +'%H:%M'"
-)
-
-(defpoll p_date
-  :interval "5s"
-  "date +'%A, %d %B' | sed 's/[^ ]*/\\u&/g'"
-)
-
-(defpoll p_month
-  :interval "1s"
-  :initial '{"name": 0 , "num": 0}'
-  "scripts/calendar.sh month"
-)
-
-(defpoll p_year
-  :interval "1s"
-  :initial '{"num": 0}'
-  "scripts/calendar.sh year"
-)
-
-
-;; INDICATORS
-;;;;;; NETWORK
-(defpoll p_ethernet_indicator
-  :interval "500ms"
-  :initial '{ "enable": "0" }'
-  'scripts/indicator/network.sh ethernet info'
-)
-
-(defpoll p_wifi_indicator
-  :interval "500ms"
-  :initial '{ "enable": "0" }'
-  'scripts/indicator/network.sh wifi info'
-)
-
-(defpoll p_bluetooth_indicator
-  :interval "1s"
-  :initial '{ "enable": "0" }'
-  'scripts/indicator/network.sh bluetooth info'
-)
-
-;;;;;; MULTIMEDIA
-(defpoll p_multimedia_indicator
-  :interval "200ms"
-  :initial '{"speaker": 0, "microphone": 0}'
-  'scripts/indicator/multimedia.sh status'
-)
-
-;;;;;; BATTERY
-(defpoll p_battery_indicator
-  :interval "200ms"
-  :initial '{ "status": "full" }'
-  'scripts/indicator/battery.sh'
-)
-
-
-;;   ╦  ┬┌─┐┌┬┐┌─┐┌┐┌┬┌┐┌┌─┐┌─┐
-;;   ║  │└─┐ │ ├┤ ││││││││ ┬└─┐
-;;   ╩═╝┴└─┘ ┴ └─┘┘└┘┴┘└┘└─┘└─┘
-(deflisten l_systray_items_count
-  :initial 0
-  'scripts/systray_items_count.sh'
-)
+(include "./yuck/variables/bar.yuck")
+(include "./yuck/variables/calendar.yuck")
 
 
 ;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
 ;;   ║║║│ │││ ┬├┤  │ └─┐
 ;;   ╚╩╝┴─┴┘└─┘└─┘ ┴ └─┘
-(defwidget bar []
-  (box
-    :class "bar"
-    :space-evenly true
-    (box
-      :halign "start"
-      :vexpand true
-      :space-evenly false
-    )
-    (box
-      :halign "center"
-      :vexpand true
-      (date-time)
-    )
-    (box
-      :halign "end"
-      :vexpand true
-      :spacing 10
-      :space-evenly false
-      (system-systray)
-      (indicators)
-    )
-  )
-)
 
-(defwidget date-time []
-  (eventbox
-    :cursor "pointer"
-    :onclick "scripts/calendar.sh open"
-    :class "bar-component"
-    (box
-      :valign "center"
-      :spacing 5
-      :space-evenly false
-      (label
-        :halign "start"
-        :text p_date
-      )
-      (label :text "")
-      (label
-        :halign "start"
-        :text p_time
-      )
-    )
-  )
-)
+;; Bar & Bar components
+(include "./yuck/widgets/bar/main.yuck")
 
-(defwidget widget-calendar []
-  (box
-    :class "calendar"
-    (eventbox
-      :onhoverlost "scripts/calendar.sh close"
-      (box
-        :orientation "vertical"
-        :space-evenly false
-        (box
-          :orientation "vertical"
-          :class "calendar-header"
-          (overlay
-            (overlay
-              (label
-                :class "calendar-month"
-                :text {p_month.name}
-              )
-              (box
-                :orientation "horizontal"
-                :spacing 10
-                :space-evenly true
-                :class "calendar-month-controller-box icon-bold"
-                (eventbox
-                  :onclick "scripts/calendar.sh prev-month"
-                  :cursor "pointer"
-                  :halign "center"
-                  :valign "center"
-                  :class "calendar-month-controller"
-                  ""
-                )
-                (eventbox
-                  :onclick "scripts/calendar.sh next-month"
-                  :cursor "pointer"
-                  :halign "center"
-                  :valign "center"
-                  :class "calendar-month-controller"
-                  ""
-                )
-              )
-            )
-            (label
-              :class "calendar-year"
-              :text {p_year.num}
-            )
-          )
-          (box
-            :class "calendar-day-names"
-            :spacing 0
-            "Dom" "Seg" "Ter" "Qua" "Qui" "Sex" "Sáb"
-          )
-        )
-        (calendar
-          :active false
-          :month {p_month.num}
-          :year {p_year.num}
-          :show-heading false
-          :show-day-names false
-        )
-      )
-    )
-  )
-)
+;;; Left-side components
 
-(defwidget system-systray []
-    (eventbox
-      :class "systray-container"
-      :cursor "pointer"
-      :visible {l_systray_items_count > 0}
-      (systray
-        :visible {l_systray_items_count > 0}
-        :class "systray"
-        :icon-size 20
-        :spacing 10
-      )
-    )
-)
+;;; Center-side components
+(include "./yuck/widgets/bar/date-time.yuck")
 
-(defwidget indicator [?class visible value]
-  (label
-    :visible visible
-    :hexpand true
-    :class "sys-indicator ${class}"
-    :text value
-  )
-)
+;;; Right-side components
+(include "./yuck/widgets/bar/systray.yuck")
+(include "./yuck/widgets/bar/indicators.yuck")
 
-(defwidget indicators []
-  (eventbox
-    :class "bar-component"
-    :cursor "pointer"
-    (box
-      :class "sys-indicator-box icon-bold"
-      :spacing 10
-      :space-evenly false
-      (indicator
-        :visible {p_ethernet_indicator.enable == 1}
-        :value {p_wifi_indicator.quality == 'noconnection' ? "" : ""}
-      )
-      (indicator
-        :class "icon-fill"
-        :visible {p_wifi_indicator.enable == 1}
-        :value {p_wifi_indicator.quality == 'high' ? "" :
-                p_wifi_indicator.quality == 'good' ? "" :
-                p_wifi_indicator.quality == 'low' ? "" :
-                p_wifi_indicator.quality == 'bad' ? "" : ""}
-      )
-      (indicator
-        :visible {p_bluetooth_indicator.enable == 1}
-        :value {p_bluetooth_indicator.status == 'connected' ? "" : ""}
-      )
-      (indicator
-        :visible false
-        :value ""
-      )
-      (indicator
-        :visible true
-        :value {p_multimedia_indicator.speaker == "muted" ? "" :
-                p_multimedia_indicator.speaker < 0.33 ? "" :
-                p_multimedia_indicator.speaker < 0.66 ? "" : ""}
-      )
-      (indicator
-        :visible true
-        :value {p_multimedia_indicator.microphone == "muted" ? "" : ""}
-      )
-      (indicator
-        :visible false
-        :value ""
-      )
-      (indicator
-        :visible true
-        :value {p_battery_indicator.status == 'full' ? "" :
-                p_battery_indicator.status == 'not charging' ? "" :
-                p_battery_indicator.status == 'charging' ? "" :
-                p_battery_indicator.status == 'discharging' ? (
-                  p_battery_indicator.capacity < 15 ? "" :
-                  p_battery_indicator.capacity < 45 ? "" :
-                  p_battery_indicator.capacity < 65 ? "" :
-                  p_battery_indicator.capacity < 95 ? "" : ""
-                ) : ""}
-      )
-    )
-  )
-)
+
+;; Calendar
+(include "./yuck/widgets/calendar/main.yuck")
+
 
 ;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
 ;;   ║║║││││ │││ ││││└─┐
 ;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
-(defwindow bar
-  :monitor 0
-  :stacking "fg"
-  :exclusive true
-  :namespace "bar"
-  :geometry (geometry
-              :width "100%"
-              :anchor "top center"
-            )
-  (bar)
-)
-
-(defwindow corner-left
-  :monitor 0
-  :stacking "fg"
-  :namespace "corner"
-  :geometry (geometry
-              :anchor "top left"
-            )
-  (box
-    :class "corner left"
-  )
-)
-
-(defwindow corner-right
-  :monitor 0
-  :stacking "fg"
-  :namespace "corner"
-  :geometry (geometry
-              :anchor "top right"
-            )
-  (box
-    :class "corner right"
-  )
-)
-
-
-(defwindow calendar
-  :monitor 0
-  :stacking "fg"
-  :exclusive false
-  :namespace "calendar"
-  :geometry (geometry
-              :y "5px"
-              :width "500px"
-              :anchor "top center"
-            )
-  (widget-calendar)
-)
+(include "./yuck/windows/bar.yuck")
+(include "./yuck/windows/corners.yuck")
+(include "./yuck/windows/calendar.yuck")
 

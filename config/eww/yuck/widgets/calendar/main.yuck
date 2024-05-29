@@ -1,0 +1,62 @@
+(defwidget _calendar []
+  (box
+    :class "calendar"
+    (eventbox
+      :onhoverlost "scripts/calendar.sh close"
+      (box
+        :orientation "vertical"
+        :space-evenly false
+        (box
+          :orientation "vertical"
+          :class "calendar-header"
+          (overlay
+            (overlay
+              (label
+                :class "calendar-month"
+                :text {month.name}
+              )
+              (box
+                :orientation "horizontal"
+                :spacing 10
+                :space-evenly true
+                :class "calendar-month-controller-box icon-bold"
+                (eventbox
+                  :onclick "scripts/calendar.sh prev-month"
+                  :cursor "pointer"
+                  :halign "center"
+                  :valign "center"
+                  :class "calendar-month-controller"
+                  ""
+                )
+                (eventbox
+                  :onclick "scripts/calendar.sh next-month"
+                  :cursor "pointer"
+                  :halign "center"
+                  :valign "center"
+                  :class "calendar-month-controller"
+                  ""
+                )
+              )
+            )
+            (label
+              :class "calendar-year"
+              :text {year.num}
+            )
+          )
+          (box
+            :class "calendar-day-names"
+            :spacing 0
+            "Dom" "Seg" "Ter" "Qua" "Qui" "Sex" "Sáb"
+          )
+        )
+        (calendar
+          :active false
+          :month {month.num}
+          :year {year.num}
+          :show-heading false
+          :show-day-names false
+        )
+      )
+    )
+  )
+)

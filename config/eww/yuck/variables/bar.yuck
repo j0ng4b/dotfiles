@@ -1,0 +1,44 @@
+(defpoll time
+  :interval "5s"
+  "date +'%H:%M'"
+)
+
+(defpoll date
+  :interval "5s"
+  "date +'%A, %d %B' | sed 's/[^ ]*/\\u&/g'"
+)
+
+(defpoll ethernet
+  :interval "500ms"
+  :initial '{ "enable": "0" }'
+  'scripts/indicator/network.sh ethernet info'
+)
+
+(defpoll wifi
+  :interval "500ms"
+  :initial '{ "enable": "0" }'
+  'scripts/indicator/network.sh wifi info'
+)
+
+(defpoll bluetooth
+  :interval "1s"
+  :initial '{ "enable": "0" }'
+  'scripts/indicator/network.sh bluetooth info'
+)
+
+(defpoll multimedia
+  :interval "200ms"
+  :initial '{"speaker": 0, "microphone": 0}'
+  'scripts/indicator/multimedia.sh status'
+)
+
+(defpoll battery
+  :interval "200ms"
+  :initial '{ "status": "full" }'
+  'scripts/indicator/battery.sh'
+)
+
+(deflisten systray_items_count
+  :initial 0
+  'scripts/systray_items_count.sh'
+)

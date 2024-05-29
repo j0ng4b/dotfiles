@@ -24,7 +24,7 @@ case $1 in
         if [ "$(cat $calendar_lock)" = "locked" ]; then
             echo "unlocked" > $calendar_lock
             eww close calendar
-            eww update v_month_offset=0
+            eww update month_offset=0
         fi
         ;;
 
@@ -35,7 +35,7 @@ case $1 in
         else
             echo "unlocked" > $calendar_lock
             eww close calendar
-            eww update v_month_offset=0
+            eww update month_offset=0
         fi
         ;;
 
@@ -56,12 +56,12 @@ case $1 in
 
     next-month)
         offset=$(eww get v_month_offset)
-        eww update v_month_offset=$(($offset + 1))
+        eww update month_offset=$(($offset + 1))
         ;;
 
     prev-month)
         offset=$(eww get v_month_offset)
-        eww update v_month_offset=$(($offset - 1))
+        eww update month_offset=$(($offset - 1))
         ;;
 esac
 

@@ -1,0 +1,66 @@
+(defwidget indicator [?class visible value]
+  (label
+    :visible visible
+    :hexpand true
+    :class "indicator ${class}"
+    :text value
+  )
+)
+
+(defwidget indicators []
+  (eventbox
+    :class "bar-component"
+    :cursor "pointer"
+    (box
+      :class "indicator-container icon-bold"
+      :spacing 10
+      :space-evenly false
+      (indicator
+        :visible {ethernet.enable == 1}
+        :value {wifi.quality == 'noconnection' ? "" : ""}
+      )
+      (indicator
+        :class "icon-fill"
+        :visible {wifi.enable == 1}
+        :value {wifi.quality == 'high' ? "" :
+                wifi.quality == 'good' ? "" :
+                wifi.quality == 'low' ? "" :
+                wifi.quality == 'bad' ? "" : ""}
+      )
+      (indicator
+        :visible {bluetooth.enable == 1}
+        :value {bluetooth.status == 'connected' ? "" : ""}
+      )
+      (indicator
+        :visible false
+        :value ""
+      )
+      (indicator
+        :visible true
+        :value {multimedia.speaker == "muted" ? "" :
+                multimedia.speaker < 0.33 ? "" :
+                multimedia.speaker < 0.66 ? "" : ""}
+      )
+      (indicator
+        :visible true
+        :value {multimedia.microphone == "muted" ? "" : ""}
+      )
+      (indicator
+        :visible false
+        :value ""
+      )
+      (indicator
+        :visible true
+        :value {battery.status == 'full' ? "" :
+                battery.status == 'not charging' ? "" :
+                battery.status == 'charging' ? "" :
+                battery.status == 'discharging' ? (
+                  battery.capacity < 15 ? "" :
+                  battery.capacity < 45 ? "" :
+                  battery.capacity < 65 ? "" :
+                  battery.capacity < 95 ? "" : ""
+                ) : ""}
+      )
+    )
+  )
+)
