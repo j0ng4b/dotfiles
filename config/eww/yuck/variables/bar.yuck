@@ -10,19 +10,19 @@
 
 (defpoll ethernet
   :interval "500ms"
-  :initial '{ "enable": "0" }'
+  :initial '{ "enable": 0 }'
   'scripts/indicator/network.sh ethernet info'
 )
 
 (defpoll wifi
   :interval "500ms"
-  :initial '{ "enable": "0" }'
+  :initial '{ "enable": 0 }'
   'scripts/indicator/network.sh wifi info'
 )
 
 (defpoll bluetooth
   :interval "1s"
-  :initial '{ "enable": "0" }'
+  :initial '{ "enable": 0 }'
   'scripts/indicator/network.sh bluetooth info'
 )
 
@@ -34,7 +34,7 @@
 
 (defpoll battery
   :interval "200ms"
-  :initial '{ "status": "full" }'
+  :initial '{ "enable": 0 }'
   'scripts/indicator/battery.sh'
 )
 

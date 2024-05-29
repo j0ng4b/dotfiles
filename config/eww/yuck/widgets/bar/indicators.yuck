@@ -32,10 +32,6 @@
         :value {bluetooth.status == 'connected' ? "" : ""}
       )
       (indicator
-        :visible false
-        :value ""
-      )
-      (indicator
         :visible true
         :value {multimedia.speaker == "muted" ? "" :
                 multimedia.speaker < 0.33 ? "" :
@@ -46,11 +42,7 @@
         :value {multimedia.microphone == "muted" ? "" : ""}
       )
       (indicator
-        :visible false
-        :value ""
-      )
-      (indicator
-        :visible true
+        :visible {battery.enable == 1}
         :value {battery.status == 'full' ? "" :
                 battery.status == 'not charging' ? "" :
                 battery.status == 'charging' ? "" :
