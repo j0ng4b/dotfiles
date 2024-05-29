@@ -3,6 +3,7 @@
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
 (defvar v_month_offset 0)
 
+
 ;;   ╔═╗┌─┐┬  ┬  ┌─┐
 ;;   ╠═╝│ ││  │  └─┐
 ;;   ╩  └─┘┴─┘┴─┘└─┘
@@ -27,6 +28,42 @@
   :initial '{"num": 0}'
   "scripts/calendar.sh year"
 )
+
+
+;; INDICATORS
+;;;;;; NETWORK
+(defpoll p_ethernet_indicator
+  :interval "500ms"
+  :initial '{ "enable": "0" }'
+  'scripts/indicator/network.sh ethernet info'
+)
+
+(defpoll p_wifi_indicator
+  :interval "500ms"
+  :initial '{ "enable": "0" }'
+  'scripts/indicator/network.sh wifi info'
+)
+
+(defpoll p_bluetooth_indicator
+  :interval "1s"
+  :initial '{ "enable": "0" }'
+  'scripts/indicator/network.sh bluetooth info'
+)
+
+;;;;;; MULTIMEDIA
+(defpoll p_multimedia_indicator
+  :interval "200ms"
+  :initial '{"speaker": 0, "microphone": 0}'
+  'scripts/indicator/multimedia.sh status'
+)
+
+;;;;;; BATTERY
+(defpoll p_battery_indicator
+  :interval "200ms"
+  :initial '{ "status": "full" }'
+  'scripts/indicator/battery.sh'
+)
+
 
 ;;   ╦  ┬┌─┐┌┬┐┌─┐┌┐┌┬┌┐┌┌─┐┌─┐
 ;;   ║  │└─┐ │ ├┤ ││││││││ ┬└─┐
@@ -57,18 +94,10 @@
     (box
       :halign "end"
       :vexpand true
-      (eventbox
-        :class "systray-container"
-        :cursor "pointer"
-        :visible {l_systray_items_count > 0}
-        (systray
-          :visible {l_systray_items_count > 0}
-          :class "systray"
-          :icon-size 20
-          :spacing 10
-          :space-evenly true
-        )
-      )
+      :spacing 10
+      :space-evenly false
+      (system-systray)
+      (indicators)
     )
   )
 )
@@ -76,7 +105,7 @@
 (defwidget date-time []
   (eventbox
     :cursor "pointer"
-    :onclick "scripts/calendar.sh toggle"
+    :onclick "scripts/calendar.sh open"
     :class "bar-component"
     (box
       :valign "center"
@@ -99,6 +128,7 @@
   (box
     :class "calendar"
     (eventbox
+      :onhoverlost "scripts/calendar.sh close"
       (box
         :orientation "vertical"
         :space-evenly false
@@ -152,6 +182,87 @@
           :show-heading false
           :show-day-names false
         )
+      )
+    )
+  )
+)
+
+(defwidget system-systray []
+    (eventbox
+      :class "systray-container"
+      :cursor "pointer"
+      :visible {l_systray_items_count > 0}
+      (systray
+        :visible {l_systray_items_count > 0}
+        :class "systray"
+        :icon-size 20
+        :spacing 10
+      )
+    )
+)
+
+(defwidget indicator [?class visible value]
+  (label
+    :visible visible
+    :hexpand true
+    :class "sys-indicator ${class}"
+    :text value
+  )
+)
+
+(defwidget indicators []
+  (eventbox
+    :class "bar-component"
+    :cursor "pointer"
+    (box
+      :class "sys-indicator-box icon-bold"
+      :spacing 10
+      :space-evenly false
+      (indicator
+        :visible {p_ethernet_indicator.enable == 1}
+        :value {p_wifi_indicator.quality == 'noconnection' ? "" : ""}
+      )
+      (indicator
+        :class "icon-fill"
+        :visible {p_wifi_indicator.enable == 1}
+        :value {p_wifi_indicator.quality == 'high' ? "" :
+                p_wifi_indicator.quality == 'good' ? "" :
+                p_wifi_indicator.quality == 'low' ? "" :
+                p_wifi_indicator.quality == 'bad' ? "" : ""}
+      )
+      (indicator
+        :visible {p_bluetooth_indicator.enable == 1}
+        :value {p_bluetooth_indicator.status == 'connected' ? "" : ""}
+      )
+      (indicator
+        :visible false
+        :value ""
+      )
+      (indicator
+        :visible true
+        :value {p_multimedia_indicator.speaker == "muted" ? "" :
+                p_multimedia_indicator.speaker < 0.33 ? "" :
+                p_multimedia_indicator.speaker < 0.66 ? "" : ""}
+      )
+      (indicator
+        :visible true
+        :value {p_multimedia_indicator.microphone == "muted" ? "" : ""}
+      )
+      (indicator
+        :visible false
+        :value ""
+      )
+      (indicator
+        :visible true
+        :value {p_battery_indicator.status == 'full' ? "" :
+                p_battery_indicator.status == 'not charging' ? "" :
+                p_battery_indicator.status == 'charging' ? "" :
+                p_battery_indicator.status == 'discharging' ? (
+                  p_battery_indicator.capacity < 15 ? "" :
+                  p_battery_indicator.capacity < 45 ? "" :
+                  p_battery_indicator.capacity < 65 ? "" :
+                  p_battery_indicator.capacity < 95 ? "" : ""
+                ) : ""}
       )
     )
   )

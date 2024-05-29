@@ -24,6 +24,7 @@ case $1 in
         if [ "$(cat $calendar_lock)" = "locked" ]; then
             echo "unlocked" > $calendar_lock
             eww close calendar
+            eww update v_month_offset=0
         fi
         ;;
 
