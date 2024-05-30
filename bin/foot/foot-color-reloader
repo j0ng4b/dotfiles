@@ -1,0 +1,34 @@
+#!/usr/bin/env sh
+
+color_file=${XDG_CONFIG_HOME:-$HOME/.config}/foot/colors.ini
+
+# Create empty foot color file if not exists
+if [ ! -f "$color_file" ]; then
+    touch "$color_file"
+fi
+
+# Watch changes on foot color file
+inotifywait --quiet --monitor --event modify "$color_file" |
+    while read _; do
+        # Update normal colors
+        sed -nr 's/.*(regular|bright)([0-9])=([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$color_file" |
+            while read type num color; do
+                [ "$type" = "bright" ] && num=$(($num + 8))
+                printf "\033]4;$num;#$color\a"
+            done
+
+        # Update foreground color
+        sed -nr 's/.*foreground=([a-zA-Z0-9]{6}).*/\1/p' "$color_file" |
+            while read color; do
+                printf "\033]10;#$color\a"
+            done
+
+        # Update background color
+        sed -nr 's/.*background=([a-zA-Z0-9]{6}).*/\1/p' "$color_file" |
+            while read color; do
+                printf "\033]11;#$color\a"
+            done
+    done &
+
+exec "$SHELL"
+
