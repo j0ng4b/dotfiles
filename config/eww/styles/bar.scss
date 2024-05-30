@@ -1,6 +1,6 @@
 .bar {
-    color: $fg0;
-    background-color: $bg0;
+    color: $primary;
+    background-color: $surface;
 
     padding: 5px;
 
@@ -11,10 +11,10 @@
 
 .bar-component {
     border-radius: 5px;
-    background-color: $bg2;
+    background-color: $surface-container;
 
     &:hover {
-        background-color: $bg1;
+        background-color: $surface-variant;
     }
 
     & > box {

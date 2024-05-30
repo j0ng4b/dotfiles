@@ -1,24 +1,24 @@
 .calendar {
-    color: $fg0;
+    color: $primary;
     border-radius: 10px;
-    background-color: $bg0;
+    background-color: $surface;
     padding: 5px;
     font-family: "Poppins", "IosevkaJ0ng4b Nerd Font Mono";
 
     .calendar-header {
         border-radius: 8px 8px 0px 0px;
-        background-color: $bg2;
+        background-color: $surface-container;
 
         .calendar-month {
             font-size: 22px;
-            color: $yellow;
+            color: $secondary;
             padding: 16px 16px 8px;
             margin-left: -25px;
         }
 
         .calendar-year {
             font-size: 16px;
-            color: $yellow;
+            color: $secondary;
             padding: 16px 16px 8px;
             margin-top: 22px;
             margin-left: 65px;
@@ -27,7 +27,7 @@
         .calendar-day-names {
             font-weight: bold;
             font-size: 14px;
-            color: $yellow;
+            color: $secondary;
             padding: 5px 5px;
         }
 
@@ -35,7 +35,7 @@
             padding: 5px;
 
             .calendar-month-controller {
-                color: $yellow;
+                color: $secondary;
                 font-size: 20px;
                 border-radius: 50%;
 
@@ -48,28 +48,30 @@
                 }
 
                 &:active {
-                    color: $dark_yellow;
+                    color: $secondary-container;
                 }
             }
         }
     }
 
     calendar {
-        box-shadow: inset 0px 8px 5px -10px $bg0;
+        box-shadow: inset 0px 6px 10px -15px $surface;
         border-radius: 0px 0px 8px 8px;
-        border-color: $bg1;
-        color: $fg0;
-        background-color: $bg1;
+        border-color: $surface-variant;
+        color: $primary;
+        background-color: $surface-variant;
         padding: 0.2em;
 
         &:selected {
-            box-shadow: none;
-            color: $yellow;
+            border-radius: 0px;
+            box-shadow: inset 0px 0px 6px 0px $surface;
+            color: $secondary;
         }
 
         &:indeterminate {
             font-weight: normal;
-            color: $dark_grey;
+            color: $surface-dim;
         }
     }
 }
+
