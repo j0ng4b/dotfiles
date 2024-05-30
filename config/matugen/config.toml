@@ -1,0 +1,15 @@
+[config]
+# Nothing
+
+[templates.hyprland]
+input_path = '~/.config/matugen/templates/hyprland.conf'
+output_path = '~/.config/hypr/colors.conf'
+
+[templates.eww]
+input_path = '~/.config/matugen/templates/eww.scss'
+output_path = '~/.config/eww/styles/colors.scss'
+
+[templates.foot]
+input_path = '~/.config/matugen/templates/foot.ini'
+output_path = '~/.config/foot/colors.ini'
+
