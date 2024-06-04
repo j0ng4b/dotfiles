@@ -70,7 +70,7 @@
 
 [battery]
     ## Filter
-    appname = "battery_notifier.sh"
+    appname = "battery_notifier"
 
     ## Modifications
     format = "%b"

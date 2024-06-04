@@ -2,14 +2,14 @@
 # Nothing
 
 [templates.hyprland]
-input_path = '~/.config/matugen/templates/hyprland.conf'
-output_path = '~/.config/hypr/colors.conf'
+input_path = '~/.config/matugen/templates/hyprland'
+output_path = '~/.cache/colors/hyprland.conf'
 
 [templates.eww]
-input_path = '~/.config/matugen/templates/eww.scss'
+input_path = '~/.config/matugen/templates/eww'
 output_path = '~/.config/eww/styles/colors.scss'
 
 [templates.foot]
-input_path = '~/.config/matugen/templates/foot.ini'
-output_path = '~/.config/foot/colors.ini'
+input_path = '~/.config/matugen/templates/foot'
+output_path = '~/.cache/colors/foot.ini'
 
