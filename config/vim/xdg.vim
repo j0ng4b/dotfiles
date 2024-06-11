@@ -11,7 +11,7 @@ export const vim_state_home = (empty($XDG_STATE_HOME) ? '$HOME/.local/state' : $
 export const vim_data_home = (empty($XDG_DATA_HOME) ? '$HOME/.local/share' : $XDG_DATA_HOME) .. '/vim'
 
 # Update runtime paths
-if stridx(&runtimepath, vim_config_home) == - 1 ||
+if stridx(&runtimepath, vim_config_home) == -1 ||
         stridx(&runtimepath, substitute(vim_config_home, $HOME, '~', '')) == -1
     &runtimepath = vim_config_home .. ',' .. &runtimepath
     &runtimepath = &runtimepath .. ',' .. vim_data_home

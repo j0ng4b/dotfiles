@@ -9,12 +9,14 @@ def SetupLsp(): void
     endif
 
     g:LspOptionsSet({
+        aleSupport: true,
         autoHighlight: true,
 
         noNewlineInCompletion: true,
+        completionTextEdit: false,
+        completionMatcher: 'fuzzy',
+
         customCompletionKinds: true,
-        completionTextEdit: true,
-        completionMatcher: 'icase',
         completionKinds: {
 			Text: '󰉿',
 			Method: '󰆧',
@@ -44,13 +46,6 @@ def SetupLsp(): void
 			Buffer: '',
         },
 
-        diagSignErrorText: '',
-        diagSignHintText: '󰌵',
-        diagSignInfoText: '',
-        diagSignWarningText: '󰉀',
-        diagVirtualTextAlign: 'after',
-        showDiagWithVirtualText: true,
-
         snippetSupport: v:true,
         vsnipSupport: v:true,
 
@@ -61,6 +56,8 @@ def SetupLsp(): void
 
         showInlayHints: true,
         usePopupInCodeAction: true,
+
+        filterCompletionDuplicates: true,
     })
 
     var langServers: list<dict<any>> = []
@@ -81,8 +78,16 @@ def SetupLsp(): void
             args: [ '--stdio' ],
             initializationOptions: {
                 preferences: {
-                    quotePreference: 'auto',
+                    quotePreference: 'single',
                     allowTextChangesInNewFiles: true,
+                    includeInlayParameterNameHints: 'all',
+                    includeInlayParameterNameHintsWhenArgumentMatchesName: true,
+                    includeInlayFunctionParameterTypeHints: true,
+                    includeInlayVariableTypeHints: true,
+                    includeInlayVariableTypeHintsWhenTypeMatchesName: true,
+                    includeInlayPropertyDeclarationTypeHints: true,
+                    includeInlayFunctionLikeReturnTypeHints: true,
+                    includeInlayEnumMemberValueHints: true,
                 },
             },
         }]
@@ -204,6 +209,24 @@ def SetupLspBuffer(): void
     for [key, value] in items(maps)
         execute 'nmap <buffer> <silent> ' .. key .. ' <Cmd>' .. value .. '<CR>'
     endfor
+
+    # Fix delimitMate with LSP
+    var pairs = split(get(g:, 'delimitMate_matchpairs', []), ',')
+    for pair in pairs
+        var char = pair[0]
+        var map = maparg(char, 'i', false, true)
+
+        # Check for existing LspShowSignature maps that conflict with
+        # delimitMate maps
+        if stridx(map.rhs, '<C-R>=g:LspShowSignature()<CR>') > -1
+            execute $'inoremap <silent> <buffer> {char} {char}'
+                .. $'<Plug>delimitMate{char}<C-R>=g:LspShowSignature()<CR><BS>'
+        endif
+    endfor
+
+    # Show hover information about a symbol when hold cursor
+    var ext = expand('%:e')
+    execute $'autocmd CursorHold *.{ext} silent LspHover'
 enddef
 
 #############################

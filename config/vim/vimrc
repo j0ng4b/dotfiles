@@ -95,8 +95,9 @@ def PackInit(): void
     call minpac#add('editorconfig/editorconfig-vim')
     call minpac#add('mattn/emmet-vim')
 
-    ## Language server
+    ## Language server and Linter
     call minpac#add('yegappan/lsp')
+    call minpac#add('dense-analysis/ale')
 
     ## Snippets
     call minpac#add('hrsh7th/vim-vsnip')
@@ -126,8 +127,9 @@ runtime plugins/gitgutter.vim
 # delimitMate and vim-endwise
 runtime plugins/delimitmate.vim
 
-# Lsp
+# Lsp & Linter
 runtime plugins/lsp.vim
+runtime plugins/ale.vim
 
 # Vsnip
 runtime plugins/vsnip.vim

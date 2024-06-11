@@ -57,7 +57,7 @@ if has('unix')
 elseif has('win32')
     &directory = $HOME .. '/vimfiles/swap//'
 endif
-&updatetime = 100
+&updatetime = 1000
 mkdir(&directory[0 : -3], 'p', 0o700)
 
 # Special characters
