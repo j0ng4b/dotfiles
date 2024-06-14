@@ -34,8 +34,8 @@ lualine.setup({
                 symbols = {
                     modified = '●',
                     readonly = '󰌾',
-                    unnamed = '[No Name]',
-                    newfile = '[New]',
+                    unnamed = ' [No Name]',
+                    newfile = ' [New]',
                 },
             },
             { '%=', separator = '' },
