@@ -2,7 +2,7 @@
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
 (include "./yuck/variables/bar.yuck")
-(include "./yuck/variables/calendar.yuck")
+(include "./yuck/variables/info-center.yuck")
 
 
 ;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
@@ -23,7 +23,7 @@
 
 
 ;; Calendar
-(include "./yuck/widgets/calendar/main.yuck")
+(include "./yuck/widgets/info-center/main.yuck")
 
 
 ;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
@@ -31,5 +31,5 @@
 ;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
 (include "./yuck/windows/bar.yuck")
 (include "./yuck/windows/corners.yuck")
-(include "./yuck/windows/calendar.yuck")
+(include "./yuck/windows/info-center.yuck")
 

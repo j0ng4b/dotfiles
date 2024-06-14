@@ -1,4 +1,4 @@
-(defwindow calendar
+(defwindow info-center
   :monitor 0
   :stacking "fg"
   :exclusive false
@@ -8,6 +8,6 @@
               :width "500px"
               :anchor "top center"
             )
-  (_calendar)
+  (info-center)
 )
 
