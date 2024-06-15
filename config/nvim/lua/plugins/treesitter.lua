@@ -5,13 +5,15 @@ end
 
 treesitter.setup({
     ensure_installed = {
-        'c', 'cpp',
+        'c', 'cpp', 'cmake', 'make',
 
         'html', 'css', 'javascript',
 
         'lua',
         'python',
         'typescript',
+
+        'dockerfile',
     },
 
     highlight = {

@@ -118,7 +118,7 @@ set.undoreload = 2500
 -- Wild menu
 set.wildcharm = 9 -- Used to enable use of tab in floating window
 set.wildmenu = true
-set.wildmode = 'full'
+set.wildmode = 'longest:full'
 set.wildoptions = 'pum'
 
 
