@@ -5,64 +5,69 @@ local buffer = require('utils.buffer')
 --   ╠╩╗├┤ └┬┘│││├─┤├─┘└─┐
 --   ╩ ╩└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
 
+vim.g.mapleader = '\\'
+
 -- Sane mode switcher from insert/visual/select to normal mode
-map.i('jk', '<Esc>')
-map.v('jk', '<Esc>')
+map({ 'i', 'v' }, 'jk', '<Esc>', { desc = 'Sane mode switcher from insert/visual/select to normal mode' })
+
 
 -- Disable arrow keys
-map.i('<Up>', '<Nop>')
-map.i('<Left>', '<Nop>')
-map.i('<Right>', '<Nop>')
-map.i('<Down>', '<Nop>')
+map({ 'i', '' },    '<Up>', '<Nop>', { desc = 'Disable up arrow key' })
+map({ 'i', '' },  '<Left>', '<Nop>', { desc = 'Disable left arrow key' })
+map({ 'i', '' }, '<Right>', '<Nop>', { desc = 'Disable right arrow key' })
+map({ 'i', '' },  '<Down>', '<Nop>', { desc = 'Disable down arrow key' })
 
-map('<Up>', '<Nop>')
-map('<Left>', '<Nop>')
-map('<Right>', '<Nop>')
-map('<Down>', '<Nop>')
 
 -- Save
-map.i('<C-s>', '<Cmd>w<CR>')
-map.i('<C-S-s>', '<Cmd>wall<CR>')
+map({ 'i', 'n' },   '<C-s>',    '<Cmd>w<CR>', { desc = 'Save current buffer changes' })
+map({ 'i', 'n' }, '<C-S-s>', '<Cmd>wall<CR>', { desc = 'Save all buffers changes' })
 
-map('<C-s>', '<Cmd>w<CR>')
-map('<C-S-s>', '<Cmd>wall<CR>')
 
 -- Quit
-map.i('<C-q>', '<Cmd>qall<CR>')
-map.i('<C-S-q>', '<Cmd>qall!<CR>')
+map({ 'n' },   '<C-q>',  '<Cmd>qall<CR>', { desc = 'Quit' })
+map({ 'n' }, '<C-S-q>', '<Cmd>qall!<CR>', { desc = 'Force quit, changes are lost!' })
 
-map('<C-q>', '<Cmd>qall<CR>')
-map('<C-S-q>', '<Cmd>qall!<CR>')
 
 -- Buffer
-map.n('bo', '<Cmd>enew<CR>') -- Open a new buffer
-map.n('bd', function() buffer.close() end) -- Close a buffer without close window
+map({ 'n' }, 'bo', '<Cmd>enew<CR>', { desc = 'Open a new buffer' })
+map({ 'n' }, 'bd', function()
+    buffer.close()
+end, { desc = 'Close a buffer without close window' })
 
-map.n('bn', function() buffer.move('bnext') end) -- Move to next non-terminal buffer
-map.n('bp', function() buffer.move('bprevious') end) -- Move to previous non-terminal buffer
+map({ 'n' }, 'bn', function()
+    buffer.move('bnext')
+end, { desc = 'Move to next non-terminal buffer' })
+
+map({ 'n' }, 'bp', function()
+    buffer.move('bprevious')
+end, { desc = 'Move to previous non-terminal buffer' })
+
 
 -- Window
-map.n('we', '<Cmd>wincmd =<CR>') -- Equalize all window high and wide
+map({ 'n' }, 'we', '<Cmd>wincmd =<CR>', { desc = 'Equalize all window high and wide' })
 
-map.n('ws', '<Cmd>wincmd s<CR>') -- Split horizontally
-map.n('wv', '<Cmd>wincmd v<CR>') -- Split vertically
+map({ 'n' }, 'ws', '<Cmd>wincmd s<CR>', { desc = 'Split horizontally' })
+map({ 'n' }, 'wv', '<Cmd>wincmd v<CR>', { desc = 'Split vertically' })
 
-map.n('wc', '<Cmd>wincmd c<CR>') -- Close window
-map.n('wo', '<Cmd>wincmd o<CR>') -- Close others windows
+map({ 'n' }, 'wc', '<Cmd>wincmd c<CR>', { desc = 'Close window' })
+map({ 'n' }, 'wo', '<Cmd>wincmd o<CR>', { desc = 'Close others windows' })
 
-map.n('wh', '<Cmd>wincmd h<CR>') -- Focus on left window
-map.n('wj', '<Cmd>wincmd j<CR>') -- Focus on bottom window
-map.n('wk', '<Cmd>wincmd k<CR>') -- Focus on top window
-map.n('wl', '<Cmd>wincmd l<CR>') -- Focus on right window
-map.n('wp', '<Cmd>wincmd p<CR>') -- Focus on previous window
+map({ 'n' }, 'wh', '<Cmd>wincmd h<CR>', { desc = 'Focus on left window' })
+map({ 'n' }, 'wj', '<Cmd>wincmd j<CR>', { desc = 'Focus on bottom window' })
+map({ 'n' }, 'wk', '<Cmd>wincmd k<CR>', { desc = 'Focus on top window' })
+map({ 'n' }, 'wl', '<Cmd>wincmd l<CR>', { desc = 'Focus on right window' })
+map({ 'n' }, 'wp', '<Cmd>wincmd p<CR>', { desc = 'Focus on previous window' })
 
-map.n('wmh', '<Cmd>wincmd H<CR>') -- Move window to left
-map.n('wmj', '<Cmd>wincmd J<CR>') -- Move window to bottom
-map.n('wmk', '<Cmd>wincmd K<CR>') -- Move window to top
-map.n('wml', '<Cmd>wincmd L<CR>') -- Move window to right
-map.n('wmt', '<Cmd>wincmd T<CR>') -- Move window to new tab
+map({ 'n' }, 'wH', '<Cmd>wincmd H<CR>', { desc = 'Move window to left' })
+map({ 'n' }, 'wJ', '<Cmd>wincmd J<CR>', { desc = 'Move window to bottom' })
+map({ 'n' }, 'wK', '<Cmd>wincmd K<CR>', { desc = 'Move window to top' })
+map({ 'n' }, 'wL', '<Cmd>wincmd L<CR>', { desc = 'Move window to right' })
+map({ 'n' }, 'wT', '<Cmd>wincmd T<CR>', { desc = 'Move window to new tab' })
 
--- Neotree
-map.n('nt', '<Cmd>Neotree toggle<CR>')
-map.n('nf', '<Cmd>Neotree focus source=last<CR>')
+
+-- Explorer
+map({ 'n' }, '<leader>ef', '<Cmd>Neotree<CR>', { desc = 'Open Neotree to show files' })
+map({ 'n' }, '<leader>eb', '<Cmd>Neotree<CR>', { desc = 'Open Neotree to show buffer' })
+map({ 'n' }, '<leader>eg', '<Cmd>Neotree<CR>', { desc = 'Open Neotree to show Git changes' })
+map({ 'n' }, '<leader>es', '<Cmd>Neotree<CR>', { desc = 'Open Neotree to show symbols' })
 
