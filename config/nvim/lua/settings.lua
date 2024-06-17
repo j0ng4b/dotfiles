@@ -107,7 +107,10 @@ set.spelloptions = 'camel'
 set.spellsuggest = 'fast,10'
 
 -- Timeout
-set.timeoutlen = 350
+auto.group('ChangeTimeoutLenOnInsert')
+auto.cmd('InsertEnter', '*', 'set timeoutlen=350', 'ChangeTimeoutLenOnInsert')
+auto.cmd('InsertLeave', '*', 'set timeoutlen&', 'ChangeTimeoutLenOnInsert')
+
 set.ttimeoutlen = 100
 
 -- Undo

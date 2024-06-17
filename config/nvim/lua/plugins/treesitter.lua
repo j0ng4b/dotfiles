@@ -13,7 +13,13 @@ treesitter.setup({
         'python',
         'typescript',
 
+        'yaml',
         'dockerfile',
+
+        -- Others
+        'hyprlang',
+        'rasi',
+        'yuck',
     },
 
     highlight = {
