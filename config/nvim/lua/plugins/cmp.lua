@@ -8,6 +8,7 @@ local icons = require('utils.icons')
 cmp.setup({
     snippet = {
         expand = function(args)
+            vim.snippet.expand(args.body)
         end,
     },
 
@@ -31,6 +32,8 @@ cmp.setup({
         ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_next_item()
+            elseif vim.snippet.active({ direction = 1 }) then
+                vim.snippet.jump(1)
             else
                 fallback()
             end
@@ -38,6 +41,8 @@ cmp.setup({
         ['<S-Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
                 cmp.select_prev_item()
+            elseif vim.snippet.active({ direction = -1 }) then
+                vim.snippet.jump(-1)
             else
                 fallback()
             end
@@ -72,11 +77,15 @@ cmp.setup({
         end
     },
 
-    sources = {
-        { name = 'nvim_lsp' },
-        { name = 'nvim_lsp_signature_help' },
-        { name = 'buffer' },
-    },
+    sources = cmp.config.sources(
+        {
+            { name = 'nvim_lsp' },
+            { name = 'nvim_lsp_signature_help' },
+        }, {
+            { name = 'snippets' },
+            { name = 'buffer' },
+        }
+    ),
 })
 
 local names = {

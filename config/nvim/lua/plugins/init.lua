@@ -21,6 +21,7 @@ require('lazy').setup({
     -- Language server setup
     {
         'neovim/nvim-lspconfig',
+        version = '*',
         config = function()
             require('plugins.lsp')
         end,
@@ -36,6 +37,22 @@ require('lazy').setup({
         },
         config = function()
             require('plugins.cmp')
+        end,
+    },
+
+    -- Snippets
+    {
+        'garymjr/nvim-snippets',
+        version = '*',
+        dependencies = {
+            'rafamadriz/friendly-snippets',
+        },
+        config = function()
+            require('snippets').setup({
+                highlight_preview = true,
+                create_cmp_source = true,
+                friendly_snippets = true,
+            })
         end,
     },
 
