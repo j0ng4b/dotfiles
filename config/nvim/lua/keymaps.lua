@@ -66,8 +66,8 @@ map({ 'n' }, 'wT', '<Cmd>wincmd T<CR>', { desc = 'Move window to new tab' })
 
 
 -- Explorer
-map({ 'n' }, '<leader>ef', '<Cmd>Neotree<CR>', { desc = 'Open Neotree to show files' })
-map({ 'n' }, '<leader>eb', '<Cmd>Neotree<CR>', { desc = 'Open Neotree to show buffer' })
-map({ 'n' }, '<leader>eg', '<Cmd>Neotree<CR>', { desc = 'Open Neotree to show Git changes' })
-map({ 'n' }, '<leader>es', '<Cmd>Neotree<CR>', { desc = 'Open Neotree to show symbols' })
+map({ 'n' }, '<leader>ef', '<Cmd>Neotree source=filesystem<CR>', { desc = 'Open Neotree to show files' })
+map({ 'n' }, '<leader>eb', '<Cmd>Neotree source=buffers<CR>', { desc = 'Open Neotree to show buffer' })
+map({ 'n' }, '<leader>eg', '<Cmd>Neotree source=git_status<CR>', { desc = 'Open Neotree to show Git changes' })
+map({ 'n' }, '<leader>es', '<Cmd>Neotree source=document_symbols<CR>', { desc = 'Open Neotree to show symbols' })
 
