@@ -3,6 +3,7 @@ if not status then
     return
 end
 
+local icons = require('utils.icons')
 local helpers = require('incline.helpers')
 local devicons = require('nvim-web-devicons')
 
@@ -26,8 +27,8 @@ local render = function(props)
         ' ',
         { filename, gui = modified and 'bold,italic' or '' },
         ' ',
-        modified and { '●  ' } or '',
-        readonly and '󰌾 ' or ''
+        modified and icons.file.modified .. ' ' or '',
+        readonly and icons.file.readonly .. ' ' or ''
     }
 end
 

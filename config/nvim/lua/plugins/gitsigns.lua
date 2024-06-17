@@ -4,6 +4,22 @@ if not status then
 end
 
 gitsigns.setup({
+    signs = {
+        add          = { text = '┃' },
+        change       = { text = '┃' },
+        delete       = { text = '_' },
+        topdelete    = { text = '‾' },
+        changedelete = { text = '~' },
+        untracked    = { text = '┆' },
+    },
+    signs_staged = {
+        add          = { text = '┃' },
+        change       = { text = '┃' },
+        delete       = { text = '_' },
+        topdelete    = { text = '‾' },
+        changedelete = { text = '~' },
+    },
+    signs_staged_enable = false,
     on_attach = function(bufnr)
         local function map(mode, lhs, rhs, opts)
             opts = vim.tbl_extend('force', { noremap = true, silent = true }, opts or {})

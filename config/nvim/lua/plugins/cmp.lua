@@ -3,41 +3,7 @@ if not status then
     return
 end
 
-local kind_icons = {
-    Text = '',
-    Method = '󰆧',
-    Boolean = '',
-    Null = '󰟢',
-    Function = '󰊕',
-    Constructor = '',
-    Package = '󰏖',
-    Field = '',
-    Variable = '',
-    Class = '󰠱',
-    Interface = '',
-    Module = '',
-    Property = '󰜢',
-    Unit = '',
-    Value = '󰎠',
-    Array = '󰅪',
-    String = '󰀬',
-    Number = '󰎠',
-    Enum = '󰒻',
-    Keyword = '󰌋',
-    Snippet = '',
-    Color = '󰏘',
-    File = '󰈙',
-    Reference = '',
-    Folder = '󰉋',
-    EnumMember = '',
-    Constant = '󰏿',
-    Struct = '󰌗',
-    Event = '',
-    Object = '󰅩',
-    Key = '󰌋',
-    Operator = '󰆕',
-    TypeParameter = '󰅲',
-}
+local icons = require('utils.icons')
 
 cmp.setup({
     snippet = {
@@ -100,7 +66,7 @@ cmp.setup({
         fields = { 'kind', 'abbr', 'menu' },
         format = function(entry, vim_item)
             vim_item.menu = '       (' .. (vim_item.kind or '') .. ')  '
-            vim_item.kind = ' ' .. (kind_icons[vim_item.kind] or '') .. ' '
+            vim_item.kind = ' ' .. (icons.kinds[vim_item.kind] or '') .. ' '
 
             return vim_item
         end
@@ -147,6 +113,7 @@ local names = {
     'CmpItemKindColor',
     'CmpItemKindTypeParameter',
 }
+
 for _, name in ipairs(names) do
     vim.cmd.highlight({ name, 'term=reverse', 'cterm=reverse', 'gui=reverse' })
 end

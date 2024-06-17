@@ -3,6 +3,8 @@ if not status then
     return
 end
 
+local icons = require('utils.icons')
+
 lualine.setup({
     options = {
         icons_enabled = true,
@@ -32,8 +34,8 @@ lualine.setup({
                 separator = '',
                 padding = 0,
                 symbols = {
-                    modified = '●',
-                    readonly = '󰌾',
+                    modified = icons.file.modified,
+                    readonly = icons.file.readonly,
                     unnamed = ' [No Name]',
                     newfile = ' [New]',
                 },
@@ -44,12 +46,7 @@ lualine.setup({
                 separator = '',
                 sources = { 'nvim_diagnostic', 'nvim_lsp' },
                 sections = { 'error', 'warn', 'info', 'hint' },
-                symbols = {
-                    error = '',
-                    warn = '󰉀',
-                    info = '',
-                    hint = '󰌵'
-                },
+                symbols = icons.diagnostics,
             },
         },
 

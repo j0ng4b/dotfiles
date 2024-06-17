@@ -4,6 +4,8 @@ if not status then
     return
 end
 
+local icons = require('utils.icons')
+
 neotree.setup({
     close_if_last_window = true,
 
@@ -41,35 +43,16 @@ neotree.setup({
         },
 
         modified = {
-            symbol = '● ',
+            symbol = icons.file.modified,
             highlight = 'NeoTreeModified',
         },
 
         git_status = {
-            symbols = {
-                -- Change type
-                added     = '',
-                deleted   = '󰆴',
-                modified  = '',
-                renamed   = '󰁕',
-
-                -- Status type
-                untracked = '',
-                ignored   = '󰈅',
-                unstaged  = '󰄱',
-                staged    = '',
-                conflict  = '',
-            },
+            symbols = icons.git,
         },
 
         diagnostics = {
-            symbols = {
-                hint = '󰌵',
-                info = '',
-                warn = '󰉀',
-                error = '',
-            },
-
+            symbols = icons.diagnostics,
             highlights = {
                 hint = 'DiagnosticSignHint',
                 info = 'DiagnosticSignInfo',
