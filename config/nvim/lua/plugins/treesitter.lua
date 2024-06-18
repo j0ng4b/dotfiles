@@ -13,6 +13,8 @@ treesitter.setup({
         'python',
         'typescript',
 
+        'vim', 'vimdoc',
+
         'yaml',
         'dockerfile',
 
