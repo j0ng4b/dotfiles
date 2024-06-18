@@ -27,6 +27,16 @@ require('lazy').setup({
         end,
     },
 
+    {
+        'SmiteshP/nvim-navic',
+        dependencies = {
+            'neovim/nvim-lspconfig',
+        },
+        config = function()
+            require('plugins.navic')
+        end,
+    },
+
     -- Autocomplete
     {
         'hrsh7th/nvim-cmp',
@@ -59,6 +69,7 @@ require('lazy').setup({
     -- Treesitter
     {
         'nvim-treesitter/nvim-treesitter',
+        version = '*',
         config = function()
             require('plugins.treesitter')
         end,

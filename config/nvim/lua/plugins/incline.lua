@@ -4,6 +4,7 @@ if not status then
 end
 
 local icons = require('utils.icons')
+local navic = require('nvim-navic')
 local helpers = require('incline.helpers')
 local devicons = require('nvim-web-devicons')
 
@@ -17,7 +18,7 @@ local render = function(props)
     local modified = vim.bo[props.buf].modified
     local readonly = vim.bo[props.buf].readonly
 
-    return {
+    local winbar = {
         ft_icon and {
             ' ', ft_icon,  ' ',
             guibg = ft_color,
@@ -30,6 +31,18 @@ local render = function(props)
         modified and icons.file.modified .. ' ' or '',
         readonly and icons.file.readonly .. ' ' or ''
     }
+
+    if props.focused then
+        for _, item in ipairs(navic.get_data(props.buf) or {}) do
+            table.insert(winbar, {
+                { ' > ', group = 'NavicSeparator' },
+                { item.icon .. ' ', group = 'NavicIcons' .. item.type },
+                { item.name, group = 'NavicText' },
+            })
+        end
+    end
+
+    return winbar
 end
 
 incline.setup({
