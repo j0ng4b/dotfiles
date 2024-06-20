@@ -3,10 +3,7 @@
   :stacking "fg"
   :exclusive true
   :namespace "bar"
-  :geometry (geometry
-              :width "100%"
-              :anchor "top center"
-            )
+  :geometry (geometry :width "100%" :anchor "top center")
   (bar)
 )
 

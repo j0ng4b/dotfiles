@@ -4,37 +4,37 @@
 root=$(cd $(dirname $0); pwd)
 
 ## Cache
-calendar_cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/eww/calendar
-calendar_lock=$calendar_cache_dir/lock
+infocenter_cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/eww/infocenter
+infocenter_lock=$infocenter_cache_dir/lock
 
-if [ ! -d "$calendar_cache_dir" ]; then
-    mkdir -p "$calendar_cache_dir"
-    echo "unlocked" > $calendar_lock
+if [ ! -d "$infocenter_cache_dir" ]; then
+    mkdir -p "$infocenter_cache_dir"
+    echo "unlocked" > $infocenter_lock
 fi
 
 case $1 in
     open)
-        if [ "$(cat $calendar_lock)" = "unlocked" ]; then
-            echo "locked" > $calendar_lock
-            eww open calendar
+        if [ "$(cat $infocenter_lock)" = "unlocked" ]; then
+            echo "locked" > $infocenter_lock
+            eww open infocenter
         fi
         ;;
 
     close)
-        if [ "$(cat $calendar_lock)" = "locked" ]; then
-            echo "unlocked" > $calendar_lock
-            eww close calendar
+        if [ "$(cat $infocenter_lock)" = "locked" ]; then
+            echo "unlocked" > $infocenter_lock
+            eww close infocenter
             eww update month_offset=0
         fi
         ;;
 
     toggle)
-        if [ "$(cat $calendar_lock)" = "unlocked" ]; then
-            echo "locked" > $calendar_lock
-            eww open calendar
+        if [ "$(cat $infocenter_lock)" = "unlocked" ]; then
+            echo "locked" > $infocenter_lock
+            eww open infocenter
         else
-            echo "unlocked" > $calendar_lock
-            eww close calendar
+            echo "unlocked" > $infocenter_lock
+            eww close infocenter
             eww update month_offset=0
         fi
         ;;

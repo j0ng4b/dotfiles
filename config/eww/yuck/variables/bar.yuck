@@ -39,6 +39,7 @@
 )
 
 (deflisten systray_items_count
-  :initial 0
+  :initial "0"
   'scripts/systray_items_count.sh'
 )
+

@@ -2,7 +2,7 @@
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
 (include "./yuck/variables/bar.yuck")
-(include "./yuck/variables/info-center.yuck")
+(include "./yuck/variables/infocenter.yuck")
 
 
 ;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
@@ -13,6 +13,7 @@
 (include "./yuck/widgets/bar/main.yuck")
 
 ;;; Left-side components
+(include "./yuck/widgets/bar/workspaces.yuck")
 
 ;;; Center-side components
 (include "./yuck/widgets/bar/date-time.yuck")
@@ -22,8 +23,8 @@
 (include "./yuck/widgets/bar/indicators.yuck")
 
 
-;; Calendar
-(include "./yuck/widgets/info-center/main.yuck")
+;; Info center
+(include "./yuck/widgets/infocenter/main.yuck")
 
 
 ;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
@@ -31,5 +32,6 @@
 ;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
 (include "./yuck/windows/bar.yuck")
 (include "./yuck/windows/corners.yuck")
-(include "./yuck/windows/info-center.yuck")
+
+(include "./yuck/windows/infocenter.yuck")
 

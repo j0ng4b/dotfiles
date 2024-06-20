@@ -2,9 +2,7 @@
   :monitor 0
   :stacking "fg"
   :namespace "corner"
-  :geometry (geometry
-              :anchor "top left"
-            )
+  :geometry (geometry :anchor "top left")
   (box
     :class "corner left"
   )
@@ -14,9 +12,7 @@
   :monitor 0
   :stacking "fg"
   :namespace "corner"
-  :geometry (geometry
-              :anchor "top right"
-            )
+  :geometry (geometry :anchor "top right")
   (box
     :class "corner right"
   )

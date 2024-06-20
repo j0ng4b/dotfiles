@@ -3,9 +3,8 @@
 @import "styles/common.scss";
 
 // Widgets styles
-@import "styles/bar.scss";
-@import "styles/systray.scss";
-@import "styles/indicators.scss";
-@import "styles/corner.scss";
-@import "styles/calendar.scss";
+@import "styles/bar/main.scss";
+@import "styles/infocenter/main.scss";
+
+@import "styles/corner/main.scss";
 
