@@ -97,6 +97,11 @@ neotree.setup({
         {
             event = 'neo_tree_buffer_enter',
             handler = function()
+                -- Workaround for error when re-enter neotree buffer after a
+                -- pop-up leave
+                map({ 'i' }, '<Left>', '<Nop>')
+                map({ 'i' }, '<Right>', '<Nop>')
+
                 -- On NeoTree buffers movement with left and right arrows are
                 -- needed to move on pop-up
                 map.del({ 'i' }, '<Left>')
@@ -116,6 +121,15 @@ neotree.setup({
 
                 vim.cmd 'highlight! Cursor blend=0'
             end
+        },
+
+        {
+            event = 'neo_tree_popup_buffer_leave',
+            handler = function(args)
+                print('here')
+                map({ 'i' }, '<Left>', '<Nop>')
+                map({ 'i' }, '<Right>', '<Nop>')
+            end,
         },
 
         -- Equalize windows sizes when open or close
