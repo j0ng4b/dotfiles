@@ -4,8 +4,8 @@
 
 local M = {}
 
-function M.close()
-    local bufnr = vim.fn.bufnr()
+function M.close(bufnum)
+    local bufnr = bufnum or vim.fn.bufnr()
     local winnr = vim.fn.winnr()
 
     if vim.fn.getbufvar(bufnr, '&modified') ~= 0 then

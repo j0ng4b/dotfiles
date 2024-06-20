@@ -10,11 +10,16 @@ _G.__get_selector = function()
   return _G.__cached_neo_tree_selector
 end
 
+local buffer = require('utils.buffer')
+
 bufferline.setup({
     options = {
         themable = false,
         separator_style = 'slant',
         modified_icon = icons.file.modified,
+
+        close_command = function(bufnr) buffer.close(bufnr) end,
+        right_mouse_command = function(bufnr) buffer.close(bufnr) end,
 
         offsets = {
             {
