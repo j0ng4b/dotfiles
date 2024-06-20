@@ -5,7 +5,9 @@
 local M = {}
 
 M.del = function(modes, left)
-    vim.api.nvim_del_keymap(modes, left)
+    for _, mode in ipairs(modes) do
+        vim.api.nvim_del_keymap(mode, left)
+    end
 end
 
 setmetatable(M, {
