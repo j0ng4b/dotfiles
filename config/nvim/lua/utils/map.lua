@@ -15,16 +15,18 @@ setmetatable(M, {
         local opts = opts or {}
 
         if opts.buffer then
+            local buffer = opts.buffer
+
             -- Don't pass buffer value to neovim function
             opts.buffer = nil
 
             if type(right) == 'function' then
-                opts.calback = right
+                opts.callback = right
                 right = ''
             end
 
             for _, mode in ipairs(modes) do
-                vim.api.nvim_buf_set_keymap(mode, left, right, opts)
+                vim.api.nvim_buf_set_keymap(buffer, mode, left, right, opts)
             end
         else
             if type(right) == 'function' then
