@@ -97,6 +97,11 @@ neotree.setup({
         {
             event = 'neo_tree_buffer_enter',
             handler = function()
+                -- On NeoTree buffers movement with left and right arrows are
+                -- needed to move on pop-up
+                map.del({ 'i' }, '<Left>')
+                map.del({ 'i' }, '<Right>')
+
                 vim.cmd 'highlight! Cursor blend=100'
             end
         },
@@ -104,6 +109,11 @@ neotree.setup({
         {
             event = 'neo_tree_buffer_leave',
             handler = function()
+                -- On others buffers disable movement with left and right arrows
+                -- in insert mode
+                map({ 'i' }, '<Left>', '<Nop>')
+                map({ 'i' }, '<Right>', '<Nop>')
+
                 vim.cmd 'highlight! Cursor blend=0'
             end
         },
@@ -139,23 +149,6 @@ neotree.setup({
                         end
                     end)
                 end
-            end,
-        },
-
-        -- Re-enable arrow keys on pup-up
-        {
-            event = 'neo_tree_popup_buffer_enter',
-            handler = function(args)
-                map.del_i('<Left>')
-                map.del_i('<Right>')
-            end,
-        },
-
-        {
-            event = 'neo_tree_popup_buffer_leave',
-            handler = function(args)
-                map.i('<Left>', '<Nop>')
-                map.i('<Right>', '<Nop>')
             end,
         },
     },
