@@ -7,12 +7,11 @@
     border-radius: 100%;
 
     &.left {
-        box-shadow: -26px -26px 0 0 $surface;
+        box-shadow: -26px -26px 0 0 $background;
     }
 
     &.right {
-        box-shadow: 26px -26px 0 0 $surface
-        ;
+        box-shadow: 26px -26px 0 0 $background;
     }
 }
 

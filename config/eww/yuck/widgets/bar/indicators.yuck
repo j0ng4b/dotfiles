@@ -9,7 +9,7 @@
 
 (defwidget indicators []
   (eventbox
-    :class "bar-component"
+    :class "bar-component bar-component-hover"
     :cursor "pointer"
     (box
       :class "indicator-container icon-bold"

@@ -1,13 +1,13 @@
 .infocenter {
     color: $primary;
     border-radius: 10px;
-    background-color: $surface;
+    background-color: blue;
     padding: 5px;
     font-family: "Poppins", "IosevkaJ0ng4b Nerd Font Mono";
 
     .infocenter-header {
         border-radius: 8px 8px 0px 0px;
-        background-color: $surface-container;
+        background-color: magenta;
 
         .calendar-month {
             font-size: 22px;
@@ -27,7 +27,7 @@
         .calendar-day-names {
             font-weight: bold;
             font-size: 14px;
-            color: $secondary;
+            color: burlywood;
             padding: 5px 5px;
         }
 
@@ -35,7 +35,7 @@
             padding: 5px;
 
             .calendar-month-controller {
-                color: $secondary;
+                color: green;
                 font-size: 20px;
                 border-radius: 50%;
 
@@ -48,29 +48,29 @@
                 }
 
                 &:active {
-                    color: $secondary-container;
+                    color: cyan;
                 }
             }
         }
     }
 
     calendar {
-        box-shadow: inset 0px 6px 10px -15px $surface;
+        box-shadow: inset 0px 6px 10px -15px black;
         border-radius: 0px 0px 8px 8px;
-        border-color: $surface-variant;
-        color: $primary;
-        background-color: $surface-variant;
+        border-color: white;
+        color: green;
+        background-color: purple;
         padding: 0.2em;
 
         &:selected {
             border-radius: 0px;
-            box-shadow: inset 0px 0px 6px 0px $surface;
-            color: $secondary;
+            box-shadow: inset 0px 0px 6px 0px peru;
+            color: olivedrab;
         }
 
         &:indeterminate {
             font-weight: normal;
-            color: $surface-dim;
+            color: coral;
         }
     }
 }

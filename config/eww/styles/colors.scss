@@ -1,82 +1,31 @@
-//=//=//   ╔═╗┌─┐┬  ┌─┐┬─┐┌─┐
-//=//=//   ║  │ ││  │ │├┬┘└─┐
-//=//=//   ╚═╝└─┘┴─┘└─┘┴└─└─┘
+///   ╔═╗┌─┐┬  ┌─┐┬─┐┌─┐
+///   ║  │ ││  │ │├┬┘└─┐
+///   ╚═╝└─┘┴─┘└─┘┴└─└─┘
 
-// Background
-$background: #111318;
-$on-background: #e2e2e9;
+$background: #1E1E2E;
+$foreground: #CDD6F4;
 
-// On
-//=// Primary
-$on-primary: #102f60;
-$on-primary-container: #d8e2ff;
-$on-primary-fixed: #001a41;
-$on-primary-fixed-variant: #2b4678;
+$color0: #45475A;
+$color8: #585B70;
 
-//=// Secondary
-$on-secondary: #293041;
-$on-secondary-container: #dbe2f9;
-$on-secondary-fixed: #141b2c;
-$on-secondary-fixed-variant: #3f4759;
+$color1: #F38BA8;
+$color9: #F38BA8;
 
-//=// Tertiary
-$on-tertiary: #402843;
-$on-tertiary-container: #fbd7fc;
-$on-tertiary-fixed: #29132d;
-$on-tertiary-fixed-variant: #583e5b;
+$color2: #A6E3A1;
+$color10: #A6E3A1;
 
-//=// Surface
-$on-surface: #e2e2e9;
-$on-surface-variant: #c4c6d0;
+$color3: #F9E2AF;
+$color11: #F9E2AF;
 
-//=// Error
-$on-error: #690005;
-$on-error-container: #ffdad6;
+$color4: #89B4FA;
+$color12: #89B4FA;
 
-// Primary
-$primary: #adc6ff;
-$primary-container: #2b4678;
-$primary-fixed: #d8e2ff;
-$primary-fixed-dim: #adc6ff;
+$color5: #F5C2E7;
+$color13: #F5C2E7;
 
-// Secondary
-$secondary: #bfc6dc;
-$secondary-container: #bfc6dc;
-$secondary-fixed: #dbe2f9;
-$secondary-fixed-dim: #bfc6dc;
+$color6: #94E2D5;
+$color14: #94E2D5;
 
-// Tertiary
-$tertiary: #debcdf;
-$tertiary-container: #583e5b;
-$tertiary-fixed: #fbd7fc;
-$tertiary-fixed-dim: #debcdf;
-
-// Surface
-$surface: #111318;
-$surface-bright: #37393e;
-$surface-container: #1e1f25;
-$surface-container-high: #282a2f;
-$surface-container-highest: #33353a;
-$surface-container-low: #1a1b20;
-$surface-container-lowest: #0c0e13;
-$surface-dim: #111318;
-$surface-variant: #44474f;
-
-// Error
-$error: #ffb4ab;
-$error-container: #93000a;
-
-// Outline
-$outline: #8e9099;
-$outline-variant: #44474f;
-
-// Inverse
-$inverse-primary: #445e91;
-$inverse-surface: #e2e2e9;
-$inverse-on-surface: #2f3036;
-
-// Others
-$shadow: #000000;
-$scrim: #000000;
-$source-color: #4285f4;
+$color7: #BAC2DE;
+$color15: #A6ADC8;
 

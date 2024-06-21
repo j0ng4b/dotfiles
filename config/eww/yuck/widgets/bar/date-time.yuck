@@ -2,7 +2,7 @@
   (eventbox
     :cursor "pointer"
     :onclick "scripts/infocenter.sh open"
-    :class "bar-component"
+    :class "bar-component bar-component-hover"
     (box
       :valign "center"
       :spacing 5
