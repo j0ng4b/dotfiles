@@ -6,6 +6,7 @@
       :halign "start"
       :vexpand true
       :space-evenly false
+      (workspaces)
     )
     (box
       :halign "center"

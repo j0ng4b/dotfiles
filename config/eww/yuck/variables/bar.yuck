@@ -43,3 +43,8 @@
   'scripts/systray_items_count.sh'
 )
 
+(deflisten workspaces
+  :initial '{ "all": [], "current": 0 }'
+  'scripts/workspaces.sh'
+)
+
