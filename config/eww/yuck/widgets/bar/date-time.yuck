@@ -1,15 +1,15 @@
 (defwidget date-time []
   (eventbox
-    :cursor "pointer"
-    :onclick "scripts/infocenter.sh open"
-    :class "bar-component bar-component-hover"
+    :cursor 'pointer'
+    :onclick 'scripts/infocenter.sh open'
+    :class 'bar-component bar-component-hover'
     (box
-      :valign "center"
+      :valign 'center'
       :spacing 5
       :space-evenly false
       (label :text date)
-      (label :text "")
-      (label :text time)
+      (label :text '')
+      (label :text '${hour}:${minute}')
     )
   )
 )
