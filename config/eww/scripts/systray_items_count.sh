@@ -19,11 +19,7 @@ if [ $(( ($current_time - $system_uptime) / 60 )) -le 5 ]; then
     echo "0" > $systray_count
 fi
 
-count=$(cat $systray_count)
-if [ -z "$count" ]; then
-    count=0
-fi
-
+export count=$(cat $systray_count)
 dbus-monitor --session "interface='org.kde.StatusNotifierWatcher'" |
     while read -r signal; do
         case "$signal" in
