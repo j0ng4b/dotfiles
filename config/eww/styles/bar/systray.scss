@@ -1,22 +1,19 @@
 .systray {
     background-color: $background;
-    padding: 5px 15px;
+    padding: 5px 10px;
 
     window decoration {
         box-shadow: none;
     }
 
     menu {
-        margin: 0px;
-        padding: 0px;
-
         color: $foreground;
         background-color: transparent;
 
         separator {
             margin-right: 25px;
-            margin-left: 15px;
-            background-color: green;
+            margin-left: 25px;
+            background-color: $foreground;
         }
 
         menuitem {

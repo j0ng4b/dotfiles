@@ -1,11 +1,11 @@
 (defwidget _systray []
   (eventbox
-    :class "systray-container"
-    :cursor "pointer"
+    :class 'systray-container'
+    :cursor 'pointer'
     :visible {systray_items_count > 0}
     (systray
       :visible {systray_items_count > 0}
-      :class "systray"
+      :class 'systray'
       :icon-size 20
       :spacing 10
     )
