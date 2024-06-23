@@ -10,3 +10,7 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
+# Eww configuration files
+[*.yuck]
+indent_size = 2
+
