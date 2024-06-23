@@ -9,13 +9,13 @@
 )
 
 (defpoll ethernet
-  :interval '500ms'
+  :interval '1s'
   :initial '{ "enable": 0 }'
   'scripts/indicator/network.sh ethernet info'
 )
 
 (defpoll wifi
-  :interval '500ms'
+  :interval '1s'
   :initial '{ "enable": 0 }'
   'scripts/indicator/network.sh wifi info'
 )
@@ -27,13 +27,13 @@
 )
 
 (defpoll multimedia
-  :interval '200ms'
+  :interval '100ms'
   :initial '{"speaker": 0, "microphone": 0}'
   'scripts/indicator/multimedia.sh status'
 )
 
 (defpoll battery
-  :interval '200ms'
+  :interval '100ms'
   :initial '{ "enable": 0 }'
   'scripts/indicator/battery.sh'
 )

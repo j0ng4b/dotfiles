@@ -1,57 +1,63 @@
-(defwidget indicator [?class visible value]
+(defwidget indicator [?class ?tooltip visible value]
   (label
+    :tooltip tooltip
     :visible visible
     :hexpand true
-    :class "indicator ${class}"
+    :class 'indicator ${class}'
     :text value
   )
 )
 
 (defwidget indicators []
   (eventbox
-    :class "bar-component bar-component-hover"
-    :cursor "pointer"
+    :class 'bar-component bar-component-hover'
+    :cursor 'pointer'
     (box
-      :class "indicator-container icon-bold"
+      :class 'indicator-container icon-bold'
       :spacing 10
       :space-evenly false
       (indicator
         :visible {ethernet.enable == 1}
-        :value {wifi.quality == 'noconnection' ? "" : ""}
+        :value {wifi.quality == 'noconnection' ? '' : ''}
       )
       (indicator
-        :class "icon-fill"
+        :class 'icon-fill'
         :visible {wifi.enable == 1}
-        :value {wifi.quality == 'high' ? "" :
-                wifi.quality == 'good' ? "" :
-                wifi.quality == 'low' ? "" :
-                wifi.quality == 'bad' ? "" : ""}
+        :value {wifi.quality == 'high' ? '' :
+                wifi.quality == 'good' ? '' :
+                wifi.quality == 'low' ? '' :
+                wifi.quality == 'bad' ? '' : ''}
       )
       (indicator
         :visible {bluetooth.enable == 1}
-        :value {bluetooth.status == 'connected' ? "" : ""}
+        :value {bluetooth.status == 'connected' ? '' : ''}
       )
       (indicator
+        :tooltip {multimedia.speaker == 'muted' ? 'muted' :
+                  multimedia.speaker * 100 + '%'}
         :visible true
-        :value {multimedia.speaker == "muted" ? "" :
-                multimedia.speaker < 0.33 ? "" :
-                multimedia.speaker < 0.66 ? "" : ""}
+        :value {multimedia.speaker == 'muted' ? '' :
+                multimedia.speaker < 0.33 ? '' :
+                multimedia.speaker < 0.66 ? '' : ''}
       )
       (indicator
+        :tooltip '${multimedia.microphone == 'muted' ? 'muted' :
+                  multimedia.microphone * 100}'
         :visible true
-        :value {multimedia.microphone == "muted" ? "" : ""}
+        :value {multimedia.microphone == 'muted' ? '' : ''}
       )
       (indicator
+        :tooltip '${battery.capacity}%'
         :visible {battery.enable == 1}
-        :value {battery.status == 'full' ? "" :
-                battery.status == 'not charging' ? "" :
-                battery.status == 'charging' ? "" :
+        :value {battery.status == 'full' ? '' :
+                battery.status == 'not charging' ? '' :
+                battery.status == 'charging' ? '' :
                 battery.status == 'discharging' ? (
-                  battery.capacity < 15 ? "" :
-                  battery.capacity < 45 ? "" :
-                  battery.capacity < 65 ? "" :
-                  battery.capacity < 95 ? "" : ""
-                ) : ""}
+                  battery.capacity < 15 ? '' :
+                  battery.capacity < 45 ? '' :
+                  battery.capacity < 65 ? '' :
+                  battery.capacity < 95 ? '' : ''
+                ) : ''}
       )
     )
   )
