@@ -1,5 +1,12 @@
+.workspace-color1 { color: $color1; }
+.workspace-color2 { color: $color2; }
+.workspace-color3 { color: $color3; }
+.workspace-color4 { color: $color4; }
+.workspace-color5 { color: $color5; }
+.workspace-color6 { color: $color6; }
+
 .workspaces {
-    .entry {
+    .workspace-entry {
         label {
             margin: -10px 0px;
             font-size: 28px;
@@ -15,16 +22,11 @@
         }
     }
 
-    // Should define classes always in this order
-    .occupied {
-        color: $color4;
-    }
-
-    .empty {
+    .workspace-empty {
         color: rgba($color0, 0.35);
     }
 
-    .current {
+    .workspace-current {
         color: $color3;
     }
 }
