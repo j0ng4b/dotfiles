@@ -45,15 +45,15 @@ net_get_info() {
 
         if [ -n "$carrier" ]; then
             connected=$carrier
-        elif [ "$operstate" = 'up' ]; then
+        elif [ "$operstate" = "up" ]; then
             # Maybe this isn't needed, if interface is up carrier will never be
             # empty
             connected=1
-        elif [ "$operstate" = 'down' ]; then
+        elif [ "$operstate" = "down" ]; then
             # This is when the interface is "soft" down, i.e., using ip link, in
             # this case the carrier will be empty
             connected=0
-        elif [ "$operstate" = 'unknown' ]; then
+        elif [ "$operstate" = "unknown" ]; then
             # Maybe this isn't needed too, if interface operational state is
             # unknown carrier also will never be empty
             connected=$carrier

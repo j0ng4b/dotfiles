@@ -5,29 +5,27 @@
 .workspace-color5 { color: $color5; }
 .workspace-color6 { color: $color6; }
 
-.workspaces {
-    .workspace-entry {
+.workspace-entry {
+    label {
+        margin: -10px 0px;
+        font-size: 28px;
+        padding: 5px 5px;
+    }
+
+    &:hover {
         label {
-            margin: -10px 0px;
-            font-size: 28px;
-            padding: 5px 5px;
-        }
-
-        &:hover {
-            label {
-                padding: 0px;
-                font-size: 40px;
-                margin: -18px 0px;
-            }
+            padding: 0px;
+            font-size: 40px;
+            margin: -18px 0px;
         }
     }
+}
 
-    .workspace-empty {
-        color: rgba($color0, 0.35);
-    }
+.workspace-empty {
+    color: rgba($color0, 0.35);
+}
 
-    .workspace-current {
-        color: $color3;
-    }
+.workspace-current {
+    color: $color3;
 }
 

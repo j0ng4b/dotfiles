@@ -1,20 +1,16 @@
 (defwindow corner-left
   :monitor 0
-  :stacking "fg"
-  :namespace "corner"
-  :geometry (geometry :anchor "top left")
-  (box
-    :class "corner left"
-  )
+  :stacking 'fg'
+  :namespace 'corner'
+  :geometry (geometry :anchor 'top left')
+  (box :class 'corner')
 )
 
 (defwindow corner-right
   :monitor 0
-  :stacking "fg"
-  :namespace "corner"
-  :geometry (geometry :anchor "top right")
-  (box
-    :class "corner right"
-  )
+  :stacking 'fg'
+  :namespace 'corner'
+  :geometry (geometry :anchor 'top right')
+  (box :class 'corner')
 )
 

@@ -1,24 +1,23 @@
 (defwidget bar []
   (box
-    :class "bar"
     :space-evenly true
     (box
-      :halign "start"
+      :halign 'start'
       :vexpand true
       :space-evenly false
       (workspaces)
     )
     (box
-      :halign "center"
+      :halign 'center'
       :vexpand true
       (date-time)
     )
     (box
-      :halign "end"
+      :halign 'end'
       :vexpand true
       :spacing 10
       :space-evenly false
-      (_systray)
+      (tray)
       (indicators)
     )
   )

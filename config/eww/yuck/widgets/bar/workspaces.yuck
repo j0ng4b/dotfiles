@@ -1,20 +1,18 @@
 (defwidget workspaces []
   (eventbox
-    :onscroll 'scripts/change-active-workspace {} ${workspaces.current}'
     :class 'bar-component'
     (box
-      :class 'workspaces'
       :space-evenly true
       (for workspace in {workspaces.all}
         (eventbox
           :cursor 'pointer'
           :onclick 'hyprctl dispatch workspace ${workspace.id} >/dev/null'
           :class 'workspace-entry workspace-${workspace.windows > 0 ?
-            workspace.color : 'empty'} ${workspace.id ==
-            workspaces.current ? 'workspace-current' : ''}'
+            workspace.color : 'empty'} ${workspace.id == workspaces.current ?
+                                         'workspace-current' : ''}'
           (label
-            :text {workspace.id == workspaces.current ? "󰮯" :
-                   workspace.windows > 0 ? "󰊠" : ""})
+            :text {workspace.id == workspaces.current ? '󰮯' :
+                   workspace.windows > 0 ? '󰊠' : ''})
         )
       )
     )

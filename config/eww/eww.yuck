@@ -1,7 +1,7 @@
 ;;   ╦  ╦┌─┐┬─┐┬┌─┐┌┐ ┬  ┌─┐┌─┐
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
-(include "./yuck/variables.yuck")
+(include './yuck/variables.yuck')
 
 
 ;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
@@ -9,28 +9,16 @@
 ;;   ╚╩╝┴─┴┘└─┘└─┘ ┴ └─┘
 
 ;; Bar & Bar components
-(include "./yuck/widgets/bar/main.yuck")
-
-;;; Left-side components
-(include "./yuck/widgets/bar/workspaces.yuck")
-
-;;; Center-side components
-(include "./yuck/widgets/bar/date-time.yuck")
-
-;;; Right-side components
-(include "./yuck/widgets/bar/systray.yuck")
-(include "./yuck/widgets/bar/indicators.yuck")
-
-
-;; Info center
-(include "./yuck/widgets/infocenter/main.yuck")
+(include './yuck/widgets/bar/main.yuck')
+(include './yuck/widgets/bar/workspaces.yuck')
+(include './yuck/widgets/bar/date-time.yuck')
+(include './yuck/widgets/bar/tray.yuck')
+(include './yuck/widgets/bar/indicators.yuck')
 
 
 ;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
 ;;   ║║║││││ │││ ││││└─┐
 ;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
-(include "./yuck/windows/bar.yuck")
-(include "./yuck/windows/corners.yuck")
-
-(include "./yuck/windows/infocenter.yuck")
+(include './yuck/windows/bar.yuck')
+(include './yuck/windows/corners.yuck')
 

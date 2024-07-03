@@ -1,0 +1,62 @@
+;;   ╦  ╦┌─┐┬─┐┬┌─┐┌┐ ┬  ┌─┐┌─┐
+;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
+;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
+
+;; Time & Date
+(defpoll hour
+  :interval '1s'
+  'date +"%H"'
+)
+
+(defpoll minute
+  :interval '1s'
+  'date +"%M"'
+)
+
+(defpoll date
+  :interval '5s'
+  'date +"%A, %d %B" | sed "s/[^ ]*/\\u&/g"'
+)
+
+
+;; Indicators
+(defpoll ethernet
+  :interval '1s'
+  :initial '{ "enable": 0 }'
+  'scripts/indicator/network.sh ethernet info'
+)
+
+(defpoll wifi
+  :interval '1s'
+  :initial '{ "enable": 0 }'
+  'scripts/indicator/network.sh wifi info'
+)
+
+(defpoll bluetooth
+  :interval '1s'
+  :initial '{ "enable": 0 }'
+  'scripts/indicator/network.sh bluetooth info'
+)
+
+(defpoll multimedia
+  :interval '100ms'
+  :initial '{"speaker": 0, "microphone": 0}'
+  'scripts/indicator/multimedia.sh status'
+)
+
+(defpoll battery
+  :interval '100ms'
+  :initial '{ "enable": 0 }'
+  'scripts/indicator/battery.sh'
+)
+
+(deflisten systray_items_count
+  :initial '0'
+  'scripts/systray_items_count.sh'
+)
+
+(deflisten workspaces
+  :initial '{ "all": [], "current": 0 }'
+  'scripts/workspaces.sh'
+)
+

@@ -1,17 +1,16 @@
-.corner-left, .corner-right {
-    background-color: transparent;
-}
-
 .corner {
     padding: 30px;
     border-radius: 100%;
+    background-color: transparent;
+}
 
-    &.left {
-        box-shadow: -26px -26px 0 0 $background;
-    }
+.corner-left {
+    box-shadow: -26px -26px 0 0 $background;
+    background-color: transparent;
+}
 
-    &.right {
-        box-shadow: 26px -26px 0 0 $background;
-    }
+.corner-right {
+    box-shadow: 26px -26px 0 0 $background;
+    background-color: transparent;
 }
 

@@ -6,7 +6,7 @@
 
     font-size: 14px;
     font-weight: normal;
-    font-family: "Poppins", "IosevkaJ0ng4b Nerd Font Mono";
+    font-family: 'Poppins', 'IosevkaJ0ng4b Nerd Font Mono';
 }
 
 .bar-component {
@@ -26,7 +26,7 @@
 }
 
 // Bar components styles
-@import "./workspaces.scss";
-@import "./systray.scss";
-@import "./indicator.scss";
+@import './workspaces.scss';
+@import './tray.scss';
+@import './indicator.scss';
 

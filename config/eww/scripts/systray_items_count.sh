@@ -32,7 +32,7 @@ dbus-monitor --session "interface='org.kde.StatusNotifierWatcher'" |
                 ;;
         esac
 
-        [ "$count" -lt 0 ] && count=0
+        [ -z "$count" -o "$count" -lt 0 ] && count=0
         echo "$count" | tee $systray_count
     done
 

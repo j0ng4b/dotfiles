@@ -2,7 +2,6 @@
   (label
     :tooltip tooltip
     :visible visible
-    :hexpand true
     :class 'indicator ${class}'
     :text value
   )
@@ -18,7 +17,7 @@
       :space-evenly false
       (indicator
         :visible {ethernet.enable == 1}
-        :value {wifi.quality == 'noconnection' ? '' : ''}
+        :value {ethernet.quality == 'noconnection' ? '' : ''}
       )
       (indicator
         :class 'icon-fill'
@@ -41,8 +40,8 @@
                 multimedia.speaker < 0.66 ? '' : ''}
       )
       (indicator
-        :tooltip '${multimedia.microphone == 'muted' ? 'muted' :
-                  multimedia.microphone * 100}'
+        :tooltip {multimedia.microphone == 'muted' ? 'muted' :
+                  multimedia.microphone * 100 + '%'}
         :visible true
         :value {multimedia.microphone == 'muted' ? '' : ''}
       )
