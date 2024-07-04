@@ -8,17 +8,18 @@
 ;;   ║║║│ │││ ┬├┤  │ └─┐
 ;;   ╚╩╝┴─┴┘└─┘└─┘ ┴ └─┘
 
-;; Bar & Bar components
+;; Bar
 (include './yuck/widgets/bar/main.yuck')
-(include './yuck/widgets/bar/workspaces.yuck')
-(include './yuck/widgets/bar/date-time.yuck')
-(include './yuck/widgets/bar/tray.yuck')
-(include './yuck/widgets/bar/indicators.yuck')
+
+;; System menu
+(include './yuck/widgets/menu/main.yuck')
 
 
 ;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
 ;;   ║║║││││ │││ ││││└─┐
 ;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
+
 (include './yuck/windows/bar.yuck')
+
 (include './yuck/windows/corners.yuck')
 

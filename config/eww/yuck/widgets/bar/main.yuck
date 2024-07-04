@@ -1,3 +1,8 @@
+(include './yuck/widgets/bar/workspaces.yuck')
+(include './yuck/widgets/bar/date-time.yuck')
+(include './yuck/widgets/bar/tray.yuck')
+(include './yuck/widgets/bar/indicators.yuck')
+
 (defwidget bar []
   (box
     :space-evenly true
