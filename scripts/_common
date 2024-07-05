@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+# Log functions
+error() { echo "\033[31m[Error]\033[0m $1"; }
+warn() { echo "\033[33m[Warning]\033[0m $1"; }
+
+# Helper functions
+can_call_api() {
+    timefile=$1
+    if [ ! -e $timefile ]; then
+        echo '1'
+        return
+    fi
+
+    time=$(cat $timefile)
+    if [ -z "$time" ]; then
+        time=0
+        echo $time > $timefile
+    fi
+
+    diff=$(( $(date +%s) - $time ))
+
+    # Check if last API call was 10 minutes before
+    if [ $diff -ge 600 ]; then
+        echo '0' | tee $timefile
+    else
+        # Cannot call API
+        echo '1'
+        return
+    fi
+
+    # Lock next API calls
+    echo $(date +%s) > $timefile
+}
+
+# vim ft=bash
