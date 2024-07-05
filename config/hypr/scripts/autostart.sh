@@ -41,3 +41,6 @@ eww open corner-left
 eww open corner-right
 eww reload # needed to adjusts the window corners
 
+## Restore brightness
+brightnessctl --restore
+
