@@ -5,7 +5,6 @@ root=$(cd $(dirname $0); pwd)
 
 # Source Commons & Keys
 . $root/_common
-. $root/_keys
 
 
 ## Cache
@@ -37,16 +36,34 @@ _get_dotfiles_root() {
 _run_script() {
     script=$1
 
-    # Get script arguments
+    # Get script arguments. As scripts are run as sub-shell it will inherits
+    # all arguments passed to _runner so a simple shift of argument list will
+    # pass the correct arguments to script that will be run.
     shift
-    args=$@
 
     # Try find scripts directory
     if [ -e "$root/$script.sh" ]; then
         if [ -x "$root/$script.sh" ]; then
-            export SCRIPT_CACHE_DIR=$sr_cache_dir/$script
+            (
+                export SCRIPT_CACHE_DIR=$sr_cache_dir/$script
 
-            sh "$root/$script.sh" $args
+                # Common script
+                . $root/_common
+                . $root/_keys
+
+                # Run script
+                . $root/$script.sh
+            )
+            # WARNING: Do not remove!
+            #
+            # Never should be echoed after script execution. Immediately exit
+            # the runner script!
+            #
+            # If some script call another script (e.g. weather calls location)
+            # through this script (_runner) the output of this script (_runner)
+            # will be passed to caller script alongside with callee script
+            # output.
+            exit 0
         else
             error "Script hasn't executable permission!"
         fi

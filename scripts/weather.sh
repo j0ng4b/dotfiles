@@ -1,12 +1,7 @@
 #!/usr/bin/env sh
 
-# Scripts directory root
-root=$(cd $(dirname $0); pwd)
-
-# Source Commons & Keys
-. $root/_common
-. $root/_keys
-
+# NOTE: _runner already define some commons, if definition is not here
+# probably its on _runner.
 
 # Cache
 if [ -z "$SCRIPT_CACHE_DIR" ]; then

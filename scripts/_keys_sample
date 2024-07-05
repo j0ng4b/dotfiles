@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+# OpenWeather key
+WEATHER_API_KEY=
+
+# vim ft=bash
