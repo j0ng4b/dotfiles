@@ -23,31 +23,31 @@
 (defpoll ethernet
   :interval '1s'
   :initial '{ "enable": 0 }'
-  'scripts/indicator/network.sh ethernet info'
+  'scripts/script-runner network ethernet info'
 )
 
 (defpoll wifi
   :interval '1s'
   :initial '{ "enable": 0 }'
-  'scripts/indicator/network.sh wifi info'
+  'scripts/script-runner network wifi info'
 )
 
 (defpoll bluetooth
   :interval '1s'
   :initial '{ "enable": 0 }'
-  'scripts/indicator/network.sh bluetooth info'
+  'scripts/script-runner network bluetooth info'
 )
 
 (defpoll multimedia
   :interval '100ms'
   :initial '{"speaker": 0, "microphone": 0}'
-  'scripts/indicator/multimedia.sh status'
+  'scripts/script-runner multimedia status'
 )
 
 (defpoll battery
   :interval '100ms'
   :initial '{ "enable": 0 }'
-  'scripts/indicator/battery.sh'
+  'scripts/script-runner battery status'
 )
 
 (deflisten systray_items_count
