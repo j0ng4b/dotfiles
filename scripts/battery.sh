@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+# NOTE: _runner already define some commons, if definition is not here
+# probably its on _runner.
+
 batteries=$(find /sys/class/power_supply/ -name "BAT*")
 if [ $(echo $batteries | wc -l) -gt 0 ]; then
     enable=1
@@ -19,8 +22,8 @@ if [ $enable -eq 1 ]; then
     status=$(cat "$status_file" | sed -e 's/.*/\L&/')
     capacity=$(cat "$capacity_file")
 else
-    error 'No battery!'
-    exit 1
+    warn 'No battery!'
+    exit 0
 fi
 
 _battery_capacity_icon() {

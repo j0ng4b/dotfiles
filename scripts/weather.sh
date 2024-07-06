@@ -4,16 +4,21 @@
 # probably its on _runner.
 
 # Cache
-if [ -z "$SCRIPT_CACHE_DIR" ]; then
+cache_dir=$SCRIPT_CACHE_DIR
+
+cache_time=$cache_dir/time
+cache_json=$cache_dir/json
+
+if [ -z "$cache_dir" ]; then
     exit 1
-elif [ ! -d "$SCRIPT_CACHE_DIR" ]; then
-    mkdir -p $SCRIPT_CACHE_DIR
+elif [ ! -d "$cache_dir" ]; then
+    mkdir -p $cache_dir
 
     # Timestamp of last API call
-    touch $SCRIPT_CACHE_DIR/time
+    touch $cache_time
 
     # Last response API json
-    touch $SCRIPT_CACHE_DIR/json
+    touch $cache_json
 fi
 
 _get() {
@@ -22,11 +27,11 @@ _get() {
 
     url="https://api.openweathermap.org/data/2.5/weather?lat=$LAT&lon=$LON&appid=$WEATHER_API_KEY&units=metric"
 
-    json=$(cat $SCRIPT_CACHE_DIR/json)
+    json=$(cat $cache_json)
     if [ -z "$json" ]; then
-        json=$(curl -s $url | tee $SCRIPT_CACHE_DIR/json)
-    elif [ $(can_call_api $SCRIPT_CACHE_DIR/time) -eq 0 ]; then
-        json=$(curl -s $url | tee $SCRIPT_CACHE_DIR/json)
+        json=$(curl -s $url | tee $cache_json)
+    elif [ $(can_call_api $cache_time) -eq 0 ]; then
+        json=$(curl -s $url | tee $cache_json)
     fi
 
     echo $json

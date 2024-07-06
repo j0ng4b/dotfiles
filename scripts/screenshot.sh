@@ -3,15 +3,6 @@
 # NOTE: _runner already define some commons, if definition is not here
 # probably its on _runner.
 
-# Check if grim and slurp installed
-if [ ! -e "$(which grim)" ]; then
-    error "grim not found!"
-    exit 1
-elif [ ! -e "$(which slurp)" ]; then
-    error "slurp not found!"
-    exit 1
-fi
-
 # Real screenshot path
 screenshot_path="$(xdg-user-dir PICTURES)/$(date +'Screenshot-%d%m%Y-%H%M%S.png')"
 
