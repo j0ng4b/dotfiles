@@ -10,11 +10,11 @@ _get_status() {
     speaker_enable=0
     speaker_volume=$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
 
-    if [ -n "$(wpctl get-volume @DEFAULT_SOURCE@ | sed -ne 's/.*\(MUTED\).*/\L\1/p')" ]; then
+    if [ -z "$(wpctl get-volume @DEFAULT_SOURCE@ | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
         mic_enable=1
     fi
 
-    if [ -n "$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\(MUTED\).*/\L\1/p')" ]; then
+    if [ -z "$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
         speaker_enable=1
     fi
 
