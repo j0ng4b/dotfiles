@@ -4,14 +4,35 @@
 # probably its on _runner.
 
 _get_status() {
-    mic=$(wpctl get-volume @DEFAULT_SOURCE@ | sed -ne 's/.*\(MUTED\).*/\L\1/p')
-    speaker=$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\(MUTED\).*/\L\1/p')
+    mic_enable=0
+    mic_volume=$(wpctl get-volume @DEFAULT_SOURCE@ | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
 
-    if [ -z $speaker ]; then
-        speaker=$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
+    speaker_enable=0
+    speaker_volume=$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
+
+    if [ -n "$(wpctl get-volume @DEFAULT_SOURCE@ | sed -ne 's/.*\(MUTED\).*/\L\1/p')" ]; then
+        mic_enable=1
     fi
 
-    echo "{\"speaker\": \"$speaker\", \"microphone\": \"$mic\"}"
+    if [ -n "$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\(MUTED\).*/\L\1/p')" ]; then
+        speaker_enable=1
+    fi
+
+    printf '{'
+
+    # Speaker
+    printf '"speaker": {'
+    printf '"enable": %s,' $speaker_enable
+    printf '"volume": %s' $speaker_volume
+    printf '},'
+
+    # Microphone
+    printf '"microphone": {'
+    printf '"enable": %s,' $mic_enable
+    printf '"volume": %s' $mic_volume
+    printf '}'
+
+    printf '}\n'
 }
 
 case $1 in

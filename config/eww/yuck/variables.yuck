@@ -40,7 +40,7 @@
 
 (defpoll multimedia
   :interval '100ms'
-  :initial '{"speaker": 0, "microphone": 0}'
+  :initial '{"speaker": { "enable": 0 }, "microphone": { "enable": 0 }}'
   'scripts/script-runner multimedia status'
 )
 

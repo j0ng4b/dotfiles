@@ -32,18 +32,18 @@
         :value {bluetooth.status == 'connected' ? '' : ''}
       )
       (indicator
-        :tooltip {multimedia.speaker == 'muted' ? 'muted' :
-                  multimedia.speaker * 100 + '%'}
+        :tooltip {multimedia.speaker.enable == 0 ? 'muted' :
+                  multimedia.speaker.volume * 100 + '%'}
         :visible true
-        :value {multimedia.speaker == 'muted' ? '' :
-                multimedia.speaker < 0.33 ? '' :
-                multimedia.speaker < 0.66 ? '' : ''}
+        :value {multimedia.speaker.enable == 0 ? '' :
+                multimedia.speaker.volume < 0.33 ? '' :
+                multimedia.speaker.volume < 0.66 ? '' : ''}
       )
       (indicator
-        :tooltip {multimedia.microphone == 'muted' ? 'muted' :
-                  multimedia.microphone * 100 + '%'}
+        :tooltip {multimedia.microphone.enable == 0 ? 'muted' :
+                  multimedia.microphone.volume * 100 + '%'}
         :visible true
-        :value {multimedia.microphone == 'muted' ? '' : ''}
+        :value {multimedia.microphone.enable == 0 ? '' : ''}
       )
       (indicator
         :tooltip '${battery.capacity}%'
