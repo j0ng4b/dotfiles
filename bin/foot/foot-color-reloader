@@ -1,34 +1,53 @@
 #!/usr/bin/env sh
 
-color_file=${XDG_CACHE_HOME:-$HOME/.cache}/colors/foot.ini
+color_file=${XDG_CONFIG_HOME:-$HOME/.config}/foot/colors.ini
 
-# Create empty foot color file if not exists
-if [ ! -f "$color_file" ]; then
-    touch "$color_file"
-fi
+_color_reloader() {
+    # Update normal colors
+    sed -nr 's/.*(regular|bright)([0-9])\s*=\s*([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$color_file" |
+        while read type num color; do
+            [ "$type" = "bright" ] && num=$(($num + 8))
+            printf "\033]4;$num;#$color\a"
+        done
 
-# Watch changes on foot color file
-inotifywait --quiet --monitor --event modify "$color_file" |
-    while read _; do
-        # Update normal colors
-        sed -nr 's/.*(regular|bright)([0-9])\s*=\s*([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$color_file" |
-            while read type num color; do
-                [ "$type" = "bright" ] && num=$(($num + 8))
-                printf "\033]4;$num;#$color\a"
-            done
+    # Update foreground color
+    sed -nr 's/.*foreground\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$color_file" |
+        while read color; do
+            printf "\033]10;#$color\a"
+        done
 
-        # Update foreground color
-        sed -nr 's/.*foreground\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$color_file" |
-            while read color; do
-                printf "\033]10;#$color\a"
-            done
+    # Update background color
+    sed -nr 's/.*background\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$color_file" |
+        while read color; do
+            printf "\033]11;#$color\a"
+        done
+}
 
-        # Update background color
-        sed -nr 's/.*background\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$color_file" |
-            while read color; do
-                printf "\033]11;#$color\a"
-            done
-    done &
+# Watch changes on foot color file (only once)
+pid_file=$(mktemp /tmp/inotifywait_modify_pid.XXXXXXX) || exit 1
+while true; do
+    inotifywait --quiet --event modify "$color_file" &
+
+    # Copy inotifywait pid to stop if needed
+    echo $! > $pid_file
+
+    # Wait until modify event finish or be stopped
+    while kill -0 $! 2>/dev/null; do
+        sleep 1
+    done
+
+    _color_reloader
+done &
+
+# Watch changes on foot color file (symbolic link)
+while true; do
+    inotifywait --quiet --no-dereference --event delete_self "$color_file" | {
+        _color_reloader
+
+        # Kill old modify process
+        kill -9 $(cat $pid_file) 2>/dev/null
+    }
+done &
 
 exec "$SHELL"
 
