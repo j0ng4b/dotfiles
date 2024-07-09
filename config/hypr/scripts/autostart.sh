@@ -22,7 +22,6 @@ fi
 
 ## Start battery notifier
 if [ -z "$(pgrep -f battery_notifier.sh)" ]; then
-    echo $root_dir
     $root_dir/battery_notifier.sh &
 fi
 
@@ -42,5 +41,13 @@ eww open corner-right
 eww reload # needed to adjusts the window corners
 
 ## Restore brightness
-brightnessctl --restore
+brightnessctl --restore 2>&1 >/dev/null
+
+## Start foot server and always restart if closed
+(
+    while true; do
+        foot --server --override=shell=foot-color-reloader &
+        wait $!
+    done
+) &
 
