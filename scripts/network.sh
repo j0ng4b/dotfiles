@@ -9,12 +9,17 @@ cache_dir=$SCRIPT_CACHE_DIR
 cache_dir_wifi=$cache_dir/wifi
 cache_wifi_quality=$cache_dir_wifi/quality
 
+cache_dir_bluetooth=$cache_dir/bluetooth
+cache_bluetooth_power=$cache_dir_wifi/power
+
 if [ -z "$cache_dir" ]; then
     exit 1
 elif [ ! -d "$cache_dir" ]; then
     mkdir -p $cache_dir
     mkdir -p $cache_dir_wifi
+    mkdir -p $cache_dir_bluetooth
 
+    # WiFi
     touch $cache_wifi_quality
 
     for i in $(seq 1 5); do
@@ -153,6 +158,7 @@ _bl_get_info() {
         status="unknown"
     fi
 
+    echo $enable > $cache_bluetooth_power
     echo "{ \"enable\": \"$enable\", \"status\": \"$status\"}"
 }
 
@@ -178,6 +184,21 @@ case $1 in
         case $2 in
             info)
                 _bl_get_info
+                ;;
+
+            on | off | toggle)
+                cmd=$2
+                if [ "$cmd" = "toggle" ]; then
+                    enable=$(cat $cache_bluetooth_power)
+                    if [ "$enable" -eq 1 ]; then
+                        cmd="off"
+                    else
+                        cmd="on"
+                    fi
+                fi
+
+                bluetoothctl power $cmd >/dev/null
+                echo $cmd > $cache_bluetooth_power
                 ;;
         esac
         ;;
