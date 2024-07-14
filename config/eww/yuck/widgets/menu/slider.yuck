@@ -1,0 +1,55 @@
+(defwidget menu-slider [?max icon ?icon-type value enable ?onchange ?onclick ?onleft ?onright]
+  (box
+    :orientation 'horizontal'
+    :space-evenly false
+    :spacing 10
+    ;; Icon
+    (eventbox
+      :onclick {onclick}
+      :cursor 'pointer'
+      (label
+        :class 'icon-${icon-type == '' ? 'regular' : icon-type} menu-slider-icon'
+        :halign 'start'
+        :text {icon}
+      )
+    )
+    (scale
+      :class 'menu-slider-scale ${enable ? '' : 'inactive'}'
+      :orientation 'horizontal'
+      :max {max == '' ? 101 : max + 1}
+      :min 0
+      :value {value}
+      :hexpand true
+      :active {enable}
+      :onchange {onchange}
+    )
+    ;; Control buttons
+    (box
+      :orientation 'horizontal'
+      :space-evenly false
+      :spacing 10
+      :halign 'end'
+      (eventbox
+        :onclick {onleft}
+        :visible {onleft != ''}
+        :cursor 'pointer'
+        :active {enable}
+        (label
+          :class 'icon-fill menu-slider-button'
+          :text ''
+        )
+      )
+      (eventbox
+        :onclick {onright}
+        :visible {onright != ''}
+        :cursor 'pointer'
+        :active {enable}
+        (label
+          :class 'icon-fill menu-slider-button'
+          :text ''
+        )
+      )
+    )
+  )
+)
+

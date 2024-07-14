@@ -23,3 +23,5 @@
 
 (include './yuck/windows/corners.yuck')
 
+(include './yuck/windows/menu.yuck')
+

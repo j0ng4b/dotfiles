@@ -1,0 +1,29 @@
+.menu-button {
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.menu-button.active {
+    background-color: $color3;
+    color: $background;
+}
+
+.menu-button.inactive {
+    border: 1px solid $color3;
+}
+
+
+.menu-button-separator {
+    min-width: 2px;
+    margin: 2px 5px;
+}
+
+.menu-button-separator.active {
+    background-color: $background;
+}
+
+.menu-button-separator.inactive {
+    background-color: $foreground;
+}
+

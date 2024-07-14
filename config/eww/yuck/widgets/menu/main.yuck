@@ -1,0 +1,189 @@
+(include './yuck/widgets/menu/button.yuck')
+(include './yuck/widgets/menu/slider.yuck')
+
+
+(defwidget separator []
+  (box
+    :class 'menu-separator'
+  )
+)
+
+(defwidget menu []
+  (eventbox
+    :onhoverlost 'scripts/script-runner wm window close menu'
+    (box
+      :orientation 'vertical'
+      :space-evenly false
+      :spacing 20
+      :class 'menu-wrapper'
+      ;; First row
+      (box
+        :orientation 'horizontal'
+        (box
+          :orientation 'vertical'
+          :space-evenly false
+          :valign 'center'
+          (box
+            :orientation 'horizontal'
+            :space-evenly false
+            (label
+              :class 'icon-bold'
+              :halign 'start'
+              :text '${battery.status == 'full' ? '' :
+                      battery.status == 'not charging' ? '' :
+                      battery.status == 'charging' ? '' :
+                      battery.status == 'discharging' ? (
+                        battery.capacity < 15 ? '' :
+                        battery.capacity < 45 ? '' :
+                        battery.capacity < 65 ? '' :
+                        battery.capacity < 95 ? '' : ''
+                      ) : ''}'
+            )
+            (label
+              :text '${battery.capacity}%'
+            )
+          )
+          (box
+            :orientation 'horizontal'
+            :space-evenly false
+            (label
+              :class 'icon-bold'
+              :halign 'start'
+              :text ''
+            )
+            (label
+              :text '${uptime.days > 1 ? uptime.days + 'd ' :
+                ''}${uptime.hours > 0 ? uptime.hours + 'h ' : ''}${uptime.mins}m'
+            )
+          )
+        )
+        (box
+          :orientation 'horizontal'
+          :space-evenly false
+          :spacing 10
+          :halign 'end'
+          :valign 'center'
+          (eventbox
+            :class 'menu-power-button'
+            :cursor 'pointer'
+            :onclick 'scripts/script-runner wm lock'
+            (label
+              :class 'icon-fill'
+              :text ''
+            )
+          )
+          (eventbox
+            :class 'menu-power-button'
+            :cursor 'pointer'
+            (label
+              :class 'icon-fill'
+              :text ''
+            )
+          )
+          (eventbox
+            :class 'menu-power-button'
+            :cursor 'pointer'
+            (label
+              :class 'icon-regular'
+              :text ''
+            )
+          )
+        )
+      )
+      (separator)
+      ;; Second row
+      (box
+        :orientation 'vertical'
+        :space-evenly false
+        :class 'menu-row'
+        ;; Speaker
+        (menu-slider
+          :icon {multimedia.speaker.enable == 0 ? '' :
+                multimedia.speaker.volume < 0.33 ? '' :
+                multimedia.speaker.volume < 0.66 ? '' : ''}
+          :value {multimedia.speaker.volume * 100}
+          :enable {multimedia.speaker.enable == 1}
+          :onclick 'scripts/script-runner multimedia speaker toggle-mute'
+          :onchange 'scripts/script-runner multimedia speaker set {}'
+          :onleft 'scripts/script-runner multimedia speaker set -5%'
+          :onright 'scripts/script-runner multimedia speaker set +5%'
+        )
+        ;; Brightness
+        (menu-slider
+          :max {brightness.max}
+          :icon ''
+          :icon-type 'fill'
+          :value {brightness.value}
+          :enable true
+          :onchange 'scripts/script-runner brightness set {}'
+        )
+      )
+      ;; Third row
+      (box
+        :class 'menu-row'
+        :orientation 'vertical'
+        :spacing 10
+        (box
+          :orientation 'horizontal'
+          :spacing 15
+          (menu-button
+            :icon {wifi.enable == 0 ? '' :
+                  wifi.quality == 'high' ? '' :
+                  wifi.quality == 'good' ? '' :
+                  wifi.quality == 'low' ? '' :
+                  wifi.quality == 'bad' ? '' : ''}
+            :icon-type 'fill'
+            :value {wifi.enable == 1 ? wifi.name : 'Disabled'}
+            :enable {wifi.enable == 1}
+          )
+          (menu-button
+            :icon {bluetooth.enable == 0 ? '' :
+                   bluetooth.status == 'connected' ? '' : ''}
+            :value {bluetooth.enable == 0 ? 'Disabled' :
+                    bluetooth.status == 'connected' ?
+                      'Connected' : 'Disconnected'}
+            :enable {bluetooth.enable == 1}
+            :onclick 'scripts/script-runner network bluetooth toggle'
+          )
+        )
+        (box
+          :orientation 'horizontal'
+          :spacing 15
+          (menu-button
+            :icon ''
+            :value 'Balanced'
+            :enable false
+          )
+          (menu-button
+            :icon {color-temperature.icons.phosphor}
+            :icon-type 'fill'
+            :value {color-temperature.mode == 'auto' ? 'Auto' :
+                    color-temperature.mode == 'low' ? 'Night' : 'Day'}
+            :enable {color-temperature.mode != 'high'}
+            :onclick 'scripts/script-runner color-temperature cycle-mode'
+          )
+        )
+        (box
+          :orientation 'horizontal'
+          :spacing 15
+          (menu-button
+            :icon {multimedia.microphone.enable == 1 ? '' : '' }
+            :icon-type 'fill'
+            :value {multimedia.microphone.enable == 1 ? 'Mute' : 'Unmute' }
+            :onclick 'scripts/script-runner multimedia microphone toggle-mute'
+            :enable {multimedia.microphone.enable == 1}
+          )
+          (menu-button
+            :icon {notification.icons.phosphor}
+            :icon-type 'fill'
+            :value {notification.Level}
+            :onclick 'scripts/script-runner notification set toggle'
+            :enable {notification.level == 'noisy' || notification.level ==
+              'important'}
+          )
+        )
+      )
+    )
+  )
+)
+

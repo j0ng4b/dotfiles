@@ -45,9 +45,13 @@ brightnessctl --restore 2>&1 >/dev/null
 
 ## Start foot server and always restart if closed
 (
-    while true; do
-        foot --server --override=shell=foot-color-reloader &
-        wait $!
-    done
+    if [ -z "$(pgrep -f 'foot --server')" ]; then
+        while true; do
+            foot --server --override=shell=foot-color-reloader &
+            wait $!
+        done
+    fi
 ) &
+
+sh $root_dir/script-runner color-temperature run &
 

@@ -1,0 +1,30 @@
+.menu-slider-scale trough {
+    background-color: $background;
+
+    border: none;
+    border-radius: 15px;
+
+    padding: 0px;
+}
+
+.menu-slider-scale highlight {
+    background-color: $color3;
+
+    border: none;
+    border-radius: 15px;
+
+    padding: 5px;
+    margin: 0px;
+}
+
+.menu-slider-scale slider {
+    margin: 0px;
+    min-height: 0px;
+    min-width: 0px;
+    border-width: 0px;
+}
+
+.menu-slider-scale.inactive highlight {
+    background-color: $color3;
+}
+
