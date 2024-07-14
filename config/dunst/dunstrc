@@ -52,7 +52,7 @@
 
     ## Visible notifications
     indicate_hidden = true
-    notification_limit = 3
+    notification_limit = 4
 
     ## Timeout
     timeout = 5s
@@ -63,7 +63,6 @@
     follow = mouse
     enable_posix_regex = true
     show_indicators = false
-    override_pause_level = 50
 
 [urgency_low]
     background = "#1E1E2E"
@@ -87,6 +86,8 @@
     ## Modifications
     format = "%b"
     alignment = center
+
+    override_pause_level = 100
 
 [screenshot_aborted]
     ## Filter
