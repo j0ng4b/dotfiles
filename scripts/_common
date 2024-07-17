@@ -33,4 +33,16 @@ can_call_api() {
     echo $(date +%s) > $timefile
 }
 
+str_contains() {
+    case $1 in
+        *"$2"*)
+            return 1
+            ;;
+
+        *)
+            return 0
+            ;;
+    esac
+}
+
 # vim ft=bash
