@@ -84,3 +84,8 @@
   'scripts/workspaces.sh'
 )
 
+(deflisten player
+  :initial '{ "status": "" }'
+  'scripts/script-runner multimedia player subscribe'
+)
+
