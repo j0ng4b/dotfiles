@@ -22,17 +22,27 @@ fi
 export count=$(cat $systray_count)
 dbus-monitor --session "interface='org.kde.StatusNotifierWatcher'" |
     while read -r signal; do
+        new_count=""
         case "$signal" in
             *"StatusNotifierItemRegistered"*)
-                count=$(($count + 1))
+                new_count=$(( $count + 1 ))
                 ;;
 
             *"StatusNotifierItemUnregistered"*)
-                count=$(($count - 1))
+                new_count=$(( $count - 1 ))
                 ;;
         esac
 
-        [ -z "$count" -o "$count" -lt 0 ] && count=0
-        echo "$count" | tee $systray_count
+        if [ -n "$new_count" ]; then
+            if [ -z "$new_count" -o "$new_count" -lt 0 ]; then
+                count=0
+            else
+                count=$new_count
+            fi
+
+            echo "$count" | tee $systray_count
+        else
+            echo "$count"
+        fi
     done
 

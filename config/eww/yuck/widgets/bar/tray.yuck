@@ -4,6 +4,7 @@
     :cursor 'pointer'
     :visible {systray_items_count > 0}
     (systray
+      :class 'systray'
       :visible {systray_items_count > 0}
       :icon-size 20
       :spacing 10
