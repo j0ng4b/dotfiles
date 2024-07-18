@@ -75,6 +75,25 @@ require('lazy').setup({
         end,
     },
 
+    -- Fold
+    {
+        'razak17/tailwind-fold.nvim',
+        version = '*',
+        dependencies = 'nvim-treesitter/nvim-treesitter',
+        opts = {
+            symbol = '󱏿',
+            highlight = {
+                fg = '#38BDF8',
+            },
+        },
+        ft = {
+            'php',
+            'html',
+            'javascriptreact',
+            'typescriptreact',
+        },
+    },
+
     -- Tree viewer
     {
         'nvim-neo-tree/neo-tree.nvim',
@@ -100,7 +119,6 @@ require('lazy').setup({
 
     {
         'windwp/nvim-ts-autotag',
-        config = true,
         event = { 'BufReadPre', 'BufNewFile' },
         dependencies = 'nvim-treesitter/nvim-treesitter',
         config = function()
