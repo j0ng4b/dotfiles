@@ -51,6 +51,22 @@ _get_status() {
 }
 
 # Player
+_player_exist() {
+    players=$(_player_list)
+    if [ -z "$players" ]; then
+        return 1
+    fi
+
+    player=$1
+    if [ -z "$player" ]; then
+        return 1
+    elif ! str_contains "$players" "$player"; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 _player_get_icon() {
     player=$1
     case $player in
@@ -75,11 +91,11 @@ _player_get_icon() {
 _player_subscribe() {
     while true; do
         player=$(cat $cache_player_current)
-        if [ -z "$player" ]; then
+        if ! _player_exist "$player"; then
             player="%any"
         fi
 
-        raw_data=$(playerctl metadata --player=$player --format '{{playerName}}@{{title}}@{{artist}}@{{mpris:artUrl}}@{{lc(status)}}@{{mpris:length}}@{{duration(mpris:length)}}@{{position}}@{{duration(position)}}')
+        raw_data=$(playerctl metadata --player=$player --format '{{playerName}}@{{title}}@{{artist}}@{{mpris:artUrl}}@{{lc(status)}}@{{mpris:length}}@{{duration(mpris:length)}}@{{position}}@{{duration(position)}}' 2>/dev/null)
 
         name=$(echo $raw_data | cut -d@ -f1)
         title=$(echo $raw_data | cut -d@ -f2)
@@ -99,7 +115,7 @@ _player_subscribe() {
         data=$(jq --null-input \
             --compact-output \
             --arg name "$name" \
-            --arg icon "$(_player_get_icon $player)" \
+            --arg icon "$(_player_get_icon $name)" \
             --arg title "$title" \
             --arg artist "$artist" \
             --arg cover "$cover" \
@@ -120,11 +136,21 @@ _player_set_position() {
     value=$(echo $1 | sed -ne 's/[^0-9]*\([0-9]*\).*/\1/p')
 
     player=$(cat $cache_player_current)
-    if [ -z "$player" ]; then
+    if ! _player_exist "$player"; then
         player="%any"
     fi
 
-    playerctl position --player=$player $value$signal
+    playerctl position --player=$player $value$signal 2>/dev/null
+}
+
+_player_list() {
+    players=''
+
+    for player in $(playerctl --list-all 2>/dev/null); do
+        players="$players$(echo $player | sed -ne 's/\([a-zA-Z0-9]\+\)\(\..\+\)*$/\1/p')\n"
+    done
+
+    echo $players
 }
 
 cmd=$1
@@ -146,29 +172,33 @@ case $cmd in
 
             next | previous)
                 player=$(cat $cache_player_current)
-                if [ -z "$player" ]; then
+                if ! _player_exist "$player"; then
                     player="%any"
                 fi
 
-                playerctl $subcmd --player=$player
+                playerctl $subcmd --player=$player 2>/dev/null
                 ;;
 
             play | pause)
                 player=$(cat $cache_player_current)
-                if [ -z "$player" ]; then
+                if ! _player_exist "$player"; then
                     player="%any"
                 fi
 
-                playerctl $subcmd --player=$player
+                playerctl $subcmd --player=$player 2>/dev/null
                 ;;
 
             toggle-play)
                 player=$(cat $cache_player_current)
-                if [ -z "$player" ]; then
+                if ! _player_exist "$player"; then
                     player="%any"
                 fi
 
-                playerctl play-pause --player=$player
+                playerctl play-pause --player=$player 2>/dev/null
+                ;;
+
+            list)
+                _player_list
                 ;;
 
             *)
