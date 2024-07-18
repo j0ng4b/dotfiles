@@ -22,6 +22,7 @@ elif [ ! -d "$cache_dir" ]; then
 fi
 
 _get() {
+    # NOTE: location script will block until can fetch location data
     LAT=$(sh $root/_runner location latitude)
     LON=$(sh $root/_runner location longitude)
 
@@ -41,5 +42,46 @@ case $1 in
     temperature)
         printf '%.0f\n' $(echo $(_get) | jq --raw-output '.main.temp')
         ;;
+
+    icon)
+        case $(echo $(_get) | jq --raw-output '.weather[0].icon') in
+            # Clear sky
+            01d) icon='󰖨' ;;
+            01n) icon='' ;;
+
+            # Few clouds
+            02d) icon='' ;;
+            02n) icon='' ;;
+
+            # Scattered clouds
+            03d) icon='' ;;
+            03n) icon='' ;;
+
+            # Broken clouds
+            04d) icon='' ;;
+            04n) icon='' ;;
+
+            # Shower rain
+            09d) icon='' ;;
+            09n) icon='' ;;
+
+            # Rain
+            10d) icon='' ;;
+            10n) icon='' ;;
+
+            # Thunderstorm
+            11d) icon='' ;;
+            11n) icon='' ;;
+
+            # Snow
+            13d) icon='' ;;
+            13n) icon='' ;;
+
+            # Mist
+            50d) icon='' ;;
+            50n) icon='' ;;
+        esac
+
+        echo $icon
 esac
 
