@@ -22,14 +22,20 @@ elif [ ! -d "$cache_dir" ]; then
 fi
 
 _get() {
-    json=$(cat $cache_json)
-    if [ -z "$json" ]; then
-        json=$(curl -s http://ip-api.com/json | tee $cache_json)
-    elif [ $(can_call_api $cache_time) -eq 0 ]; then
-        json=$(curl -s http://ip-api.com/json | tee $cache_json)
-    fi
+    while true; do
+        json=$(cat $cache_json)
+        if [ -z "$json" ]; then
+            json=$(curl -s http://ip-api.com/json)
+        elif [ $(can_call_api $cache_time) -eq 0 ]; then
+            json=$(curl -s http://ip-api.com/json)
+        fi
 
-    echo $json
+        # Only output json when successfully fetch data
+        if [ -n "$json" ]; then
+            echo $json | tee $cache_json
+            break
+        fi
+    done
 }
 
 case $1 in
