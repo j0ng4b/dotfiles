@@ -1,0 +1,84 @@
+.player-box {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+
+    min-height: 150px;
+    border-radius: 10px;
+}
+
+.player {
+    background: linear-gradient(to right, $background, transparent),
+                linear-gradient(to bottom left, $background, transparent);
+    padding: 5px 10px;
+    margin: 0px -2px; // The gradient puts some white junk at corner left
+    min-height: inherit;
+    border-radius: 10px;
+}
+
+.player-title {
+    color: $color3;
+
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.player-artist {
+    color: $foreground;
+
+    font-size: 16px;
+    font-style: italic;
+}
+
+.player-control-button {
+    color: $color3;
+
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.player-control-button:hover label {
+    padding: 0px 3px;
+    font-size: 20px;
+}
+
+.player-name-icon {
+    font-size: 40px;
+    margin: 0px 5px;
+}
+
+.player-time-bar {
+    padding: 0px;
+}
+
+.player-time-bar trough {
+    background-color: $color0;
+
+    border: none;
+    border-radius: 15px;
+
+    padding: 0px;
+}
+
+.player-time-bar highlight {
+    background-color: $color3;
+
+    border: none;
+    border-radius: 15px;
+
+    padding: 5px;
+    margin: 0px;
+}
+
+.player-time-bar slider {
+    margin: 0px;
+    min-height: 0px;
+    min-width: 0px;
+    border-width: 0px;
+}
+
+.player-time {
+    font-weight: bold;
+    font-size: 12px;
+}
+
