@@ -1,0 +1,111 @@
+(defvar player_time_hover false)
+
+(defwidget player-controls []
+  (box
+    :orientation 'horizontal'
+    :space-evenly false
+    :spacing 10
+    :halign {player.length != '' ? 'center' : 'end'}
+    (eventbox
+      :cursor 'pointer'
+      :class 'player-control-button icon-fill'
+      :onclick 'scripts/script-runner multimedia player previous'
+      ''
+    )
+    (eventbox
+      :cursor 'pointer'
+      :class 'player-control-button icon-fill'
+      :onclick 'scripts/script-runner multimedia player toggle-play'
+      {player.status == 'playing' ? '' : ''}
+    )
+    (eventbox
+      :cursor 'pointer'
+      :class 'player-control-button icon-fill'
+      :onclick 'scripts/script-runner multimedia player next'
+      ''
+    )
+  )
+)
+
+(defwidget player []
+  (box
+    :class 'player-box'
+    :orientation 'vertical'
+    :space-evenly false
+    :style 'background-image: url("${player.cover}")'
+    (box
+      :orientation 'vertical'
+      :class 'player'
+      (box
+        :orientation 'horizontal'
+        ;; Audio info (title & artist)
+        (box
+          :orientation 'vertical'
+          :space-evenly false
+          :halign 'start'
+          (label
+            :limit-width 20
+            :class 'player-title'
+            :halign 'start'
+            :text {player.title}
+          )
+          (label
+            :limit-width 20
+            :class 'player-artist'
+            :halign 'start'
+            :text {player.artist}
+          )
+        )
+        ;; Player icon
+        (label
+          :valign 'start'
+          :halign 'end'
+          :class 'player-name-icon'
+          :text {player.icon}
+        )
+      )
+      ;; Controls
+      (box
+        :orientation 'vertical'
+        :space-evenly false
+        :spacing 5
+        :valign 'end'
+        ;; Time bar
+        (eventbox
+          :cursor 'pointer'
+          :onhover 'eww update player_time_hover=true'
+          :onhoverlost 'eww update player_time_hover=false'
+          (scale
+            :min 0
+            :max {player.length != '' ? player.length : 0}
+            :value {player.position != '' ? player.position : 0}
+            :visible {player.length != ''}
+            :class 'player-time-bar'
+            :onchange {player_time_hover ? 'scripts/script-runner multimedia player set-position {}' : ''}
+          )
+        )
+        (box
+          :orientation 'horizontal'
+          ;; Current time
+          (label
+            :valign 'start'
+            :halign 'start'
+            :visible {player.length != ''}
+            :class 'player-time'
+            :text {player.time}
+          )
+          (player-controls)
+          ;; Total time
+          (label
+            :valign 'start'
+            :halign 'end'
+            :visible {player.length != ''}
+            :class 'player-time'
+            :text {player.duration}
+          )
+        )
+      )
+    )
+  )
+)
+

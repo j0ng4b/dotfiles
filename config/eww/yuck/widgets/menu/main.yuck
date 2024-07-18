@@ -1,6 +1,6 @@
 (include './yuck/widgets/menu/button.yuck')
 (include './yuck/widgets/menu/slider.yuck')
-
+(include './yuck/widgets/menu/player.yuck')
 
 (defwidget separator []
   (box
@@ -103,10 +103,7 @@
                 multimedia.speaker.volume < 0.66 ? '' : ''}
           :value {multimedia.speaker.volume * 100}
           :enable {multimedia.speaker.enable == 1}
-          :onclick 'scripts/script-runner multimedia speaker toggle-mute'
           :onchange 'scripts/script-runner multimedia speaker set {}'
-          :onleft 'scripts/script-runner multimedia speaker set -5%'
-          :onright 'scripts/script-runner multimedia speaker set +5%'
         )
         ;; Brightness
         (menu-slider
@@ -157,8 +154,8 @@
           (menu-button
             :icon {color-temperature.icons.phosphor}
             :icon-type 'fill'
-            :value {color-temperature.mode == 'auto' ? 'Auto' :
-                    color-temperature.mode == 'low' ? 'Night' : 'Day'}
+            :value '${color-temperature.mode == 'auto' ? 'Auto' :
+                    color-temperature.mode == 'low' ? 'Night' : 'Day'} Light'
             :enable {color-temperature.mode != 'high'}
             :onclick 'scripts/script-runner color-temperature cycle-mode'
           )
@@ -181,6 +178,17 @@
             :enable {notification.level == 'noisy' || notification.level ==
               'important'}
           )
+        )
+      )
+      ;; Fourth row
+      (box
+        :class 'menu-row'
+        :visible {player.status != ''}
+        (revealer
+          :transition 'slidedown'
+          :reveal {player.status != ''}
+          :duration '1s'
+          (player)
         )
       )
     )
