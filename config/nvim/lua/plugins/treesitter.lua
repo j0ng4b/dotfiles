@@ -24,8 +24,19 @@ treesitter.setup({
         'yuck',
     },
 
+    auto_install = true,
+
     highlight = {
         enable = true,
+
+        -- See: https://www.reddit.com/r/neovim/comments/1cyta15/neovim_crash_on_editing_html_with_exit_code_139/
+        disable = function(lang, buf)
+            if lang == 'html' then
+                return true
+            end
+
+            return false
+        end
     },
 
     incremental_selection = {
@@ -40,6 +51,15 @@ treesitter.setup({
 
     indent = {
         enable = true,
+
+        -- See: https://www.reddit.com/r/neovim/comments/1cyta15/neovim_crash_on_editing_html_with_exit_code_139/
+        disable = function(lang, buf)
+            if lang == 'html' then
+                return true
+            end
+
+            return false
+        end
     },
 })
 
