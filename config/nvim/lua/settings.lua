@@ -51,10 +51,6 @@ set.showbreak = '󱞪'
 -- Command-line
 set.cmdwinheight = 5
 
--- Conceal
-set.concealcursor = ''
-set.conceallevel = 2
-
 -- Swap
 set.updatecount = 500
 set.updatetime = 500
