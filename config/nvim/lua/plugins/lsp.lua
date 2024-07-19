@@ -15,6 +15,10 @@ local servers = {
     'html',
     'tsserver',
 
+    -- NOTE: tailwindcss language server only works if a configuration file
+    -- exists.
+    'tailwindcss',
+
     'pylsp',
     'pyright',
 
