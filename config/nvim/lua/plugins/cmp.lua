@@ -69,11 +69,27 @@ cmp.setup({
 
     formatting = {
         fields = { 'kind', 'abbr', 'menu' },
-        format = function(entry, vim_item)
-            vim_item.menu = '       (' .. (vim_item.kind or '') .. ')  '
-            vim_item.kind = ' ' .. (icons.kinds[vim_item.kind] or '') .. ' '
+        format = function(entry, item)
+            local color_item = require('nvim-highlight-colors').format(entry, { kind = item.kind })
 
-            return vim_item
+            item.menu = '       (' .. (item.kind or '') .. ')  '
+            item.kind = ' ' .. (icons.kinds[item.kind] or '') .. ' '
+
+            if color_item.abbr_hl_group then
+                item.kind_hl_group = 'cmp-item-' .. color_item.abbr_hl_group
+
+                local hl_attrs = {}
+                for k, v in pairs(vim.api.nvim_get_hl(0, { name = color_item.abbr_hl_group })) do
+                    hl_attrs[k] = v
+                end
+
+                hl_attrs.reverse = true
+                hl_attrs.force = true
+
+                vim.api.nvim_set_hl(0, item.kind_hl_group, hl_attrs)
+            end
+
+            return item
         end
     },
 
