@@ -8,7 +8,7 @@ treesitter.setup({
         -- Programming languages
         'c',
         'cpp',
-        'go'
+        'go',
         'javascript',
         'lua',
         'python',
