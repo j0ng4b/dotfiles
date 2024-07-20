@@ -42,6 +42,7 @@ require('lazy').setup({
             'hrsh7th/cmp-nvim-lsp',
             'hrsh7th/cmp-nvim-lsp-signature-help',
             'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-calc',
         },
         config = function()
             require('plugins.configs.cmp')
@@ -88,6 +89,15 @@ require('lazy').setup({
             'javascriptreact',
             'typescriptreact',
         },
+    },
+
+    {
+        'kevinhwang91/nvim-ufo',
+        version = '*',
+        dependencies = 'kevinhwang91/promise-async',
+        config = function()
+            require('plugins.configs.ufo')
+        end,
     },
 
     -- Tree viewer
