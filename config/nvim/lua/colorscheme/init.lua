@@ -5,7 +5,8 @@ local colorscheme = 'catppuccin'
 local configs = vim.api.nvim_get_runtime_file('lua/colorscheme/config/*.lua', true)
 for _, config in ipairs(configs) do
     if vim.fn.filereadable(config) == 1 then
-        require(config:match('.+/([^/]+%.lua)'):gsub('.lua', ''))
+        local filename = config:match('.+/([^/]+%.lua)'):gsub('.lua', '')
+        require('colorscheme.config.' .. filename)
     end
 end
 
