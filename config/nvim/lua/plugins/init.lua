@@ -23,17 +23,15 @@ require('lazy').setup({
         'neovim/nvim-lspconfig',
         version = '*',
         config = function()
-            require('plugins.lsp')
+            require('plugins.configs.lsp')
         end,
     },
 
     {
         'SmiteshP/nvim-navic',
-        dependencies = {
-            'neovim/nvim-lspconfig',
-        },
+        dependencies = 'neovim/nvim-lspconfig',
         config = function()
-            require('plugins.navic')
+            require('plugins.configs.navic')
         end,
     },
 
@@ -46,7 +44,7 @@ require('lazy').setup({
             'hrsh7th/cmp-buffer',
         },
         config = function()
-            require('plugins.cmp')
+            require('plugins.configs.cmp')
         end,
     },
 
@@ -54,9 +52,7 @@ require('lazy').setup({
     {
         'garymjr/nvim-snippets',
         version = '*',
-        dependencies = {
-            'rafamadriz/friendly-snippets',
-        },
+        dependencies = 'rafamadriz/friendly-snippets',
         config = function()
             require('snippets').setup({
                 highlight_preview = true,
@@ -71,7 +67,7 @@ require('lazy').setup({
         'nvim-treesitter/nvim-treesitter',
         version = '*',
         config = function()
-            require('plugins.treesitter')
+            require('plugins.configs.treesitter')
         end,
     },
 
@@ -104,7 +100,7 @@ require('lazy').setup({
             'nvim-tree/nvim-web-devicons',
         },
         config = function()
-            require('plugins.neotree')
+            require('plugins.configs.neotree')
         end,
     },
 
@@ -113,7 +109,7 @@ require('lazy').setup({
         'windwp/nvim-autopairs',
         event = 'InsertEnter',
         config = function()
-            require('plugins.autopairs')
+            require('plugins.configs.autopairs')
         end,
     },
 
@@ -129,8 +125,9 @@ require('lazy').setup({
     -- Git
     {
         'lewis6991/gitsigns.nvim',
+        version = '*',
         config = function()
-            require('plugins.gitsigns')
+            require('plugins.configs.gitsigns')
         end,
     },
 
@@ -150,9 +147,6 @@ require('lazy').setup({
     {
         'catppuccin/nvim',
         name = 'catppuccin',
-        config = function()
-            require('plugins.colorscheme.catppuccin')
-        end,
     },
 
     -- Eye-candy
@@ -160,7 +154,7 @@ require('lazy').setup({
         'nvim-lualine/lualine.nvim',
         dependencies = 'nvim-tree/nvim-web-devicons',
         config = function()
-            require('plugins.lualine')
+            require('plugins.configs.lualine')
         end,
     },
 
@@ -169,7 +163,7 @@ require('lazy').setup({
         version = "*",
         dependencies = 'nvim-tree/nvim-web-devicons',
         config = function()
-            require('plugins.bufferline')
+            require('plugins.configs.bufferline')
         end,
     },
 
@@ -178,7 +172,7 @@ require('lazy').setup({
         event = 'VeryLazy',
         dependencies = 'nvim-tree/nvim-web-devicons',
         config = function()
-            require('plugins.incline')
+            require('plugins.configs.incline')
         end,
     },
 
@@ -195,11 +189,6 @@ require('lazy').setup({
     },
 
     {
-        'nvim-tree/nvim-web-devicons',
-        lazy = true,
-    },
-
-    {
         'brenoprata10/nvim-highlight-colors',
         config = function()
             require('nvim-highlight-colors').setup({
@@ -213,6 +202,9 @@ require('lazy').setup({
                 enable_rgb = true,
                 enable_hex = true,
                 enable_hsl = true,
+
+                -- NOTE: If tailwind language server is installed then this
+                -- option will not take any effect, LSP has priority.
                 enable_tailwind = true,
                 enable_var_usage = true,
                 enable_short_hex = true,

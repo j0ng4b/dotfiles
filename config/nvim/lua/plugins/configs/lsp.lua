@@ -8,6 +8,15 @@ local navic = require('nvim-navic')
 -- Add additional capabilities supported by nvim-cmp
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
+capabilities.textDocument.colorProvider = {
+    dynamicRegistration = true
+}
+
+capabilities.textDocument.foldingRange = {
+    dynamicRegistration = true,
+    lineFoldingOnly = true
+}
+
 local servers = {
     'clangd',
 
