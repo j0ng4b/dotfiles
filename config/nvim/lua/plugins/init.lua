@@ -21,7 +21,6 @@ require('lazy').setup({
     -- Language server setup
     {
         'neovim/nvim-lspconfig',
-        version = '*',
         config = function()
             require('plugins.configs.lsp')
         end,
@@ -52,7 +51,6 @@ require('lazy').setup({
     -- Snippets
     {
         'garymjr/nvim-snippets',
-        version = '*',
         dependencies = 'rafamadriz/friendly-snippets',
         config = function()
             require('snippets').setup({
@@ -80,7 +78,6 @@ require('lazy').setup({
     -- Fold
     {
         'razak17/tailwind-fold.nvim',
-        version = '*',
         dependencies = 'nvim-treesitter/nvim-treesitter',
         opts = {
             symbol = '󱏿',
@@ -98,7 +95,6 @@ require('lazy').setup({
 
     {
         'kevinhwang91/nvim-ufo',
-        version = '*',
         dependencies = 'kevinhwang91/promise-async',
         config = function()
             require('plugins.configs.ufo')
@@ -108,7 +104,6 @@ require('lazy').setup({
     -- Tree viewer
     {
         'nvim-neo-tree/neo-tree.nvim',
-        version = '*',
         dependencies = {
             'nvim-lua/plenary.nvim',
             'MunifTanjim/nui.nvim',
@@ -140,7 +135,6 @@ require('lazy').setup({
     -- Git
     {
         'lewis6991/gitsigns.nvim',
-        version = '*',
         config = function()
             require('plugins.configs.gitsigns')
         end,
@@ -149,7 +143,6 @@ require('lazy').setup({
     -- Others useful plugins
     {
         'kylechui/nvim-surround',
-        version = '*',
         event = 'VeryLazy',
         config = function()
             require('nvim-surround').setup({
@@ -175,7 +168,6 @@ require('lazy').setup({
 
     {
         'akinsho/bufferline.nvim',
-        version = "*",
         dependencies = 'nvim-tree/nvim-web-devicons',
         config = function()
             require('plugins.configs.bufferline')
