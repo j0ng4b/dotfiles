@@ -66,7 +66,12 @@ require('lazy').setup({
     -- Treesitter
     {
         'nvim-treesitter/nvim-treesitter',
-        version = '*',
+        -- WARN: Treesitter tagged version should note be used see:
+        -- https://github.com/tree-sitter/tree-sitter-html/issues/102
+        --
+        -- When using tagged version the parsers get less updates
+        -- therefore it's more easier to get compatibilities issues.
+        -- version = '*',
         config = function()
             require('plugins.configs.treesitter')
         end,

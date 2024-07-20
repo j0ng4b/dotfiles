@@ -5,38 +5,41 @@ end
 
 treesitter.setup({
     ensure_installed = {
-        'c', 'cpp', 'cmake', 'make',
-
-        'html', 'css', 'javascript',
-
+        -- Programming languages
+        'c',
+        'cpp',
+        'go'
+        'javascript',
         'lua',
         'python',
         'typescript',
-
-        'vim', 'vimdoc',
-
-        'yaml',
-        'dockerfile',
-
-        -- Others
-        'hyprlang',
-        'rasi',
         'yuck',
+
+        -- Others languages(?)
+        'html',
+        'css',
+
+        -- Build
+        'cmake',
+        'make',
+        'gomod',
+
+        -- Configuration files
+        'dockerfile',
+        'hyprlang',
+        'json',
+        'rasi',
+        'yaml',
+
+        -- Vim
+        'vim',
+        'vimdoc',
     },
 
     auto_install = true,
 
     highlight = {
         enable = true,
-
-        -- See: https://www.reddit.com/r/neovim/comments/1cyta15/neovim_crash_on_editing_html_with_exit_code_139/
-        disable = function(lang, buf)
-            if lang == 'html' then
-                return true
-            end
-
-            return false
-        end
     },
 
     incremental_selection = {
@@ -51,15 +54,6 @@ treesitter.setup({
 
     indent = {
         enable = true,
-
-        -- See: https://www.reddit.com/r/neovim/comments/1cyta15/neovim_crash_on_editing_html_with_exit_code_139/
-        disable = function(lang, buf)
-            if lang == 'html' then
-                return true
-            end
-
-            return false
-        end
     },
 })
 
