@@ -26,6 +26,8 @@ function M.cmd(events, pattern, cmd, group)
     local opts = { group = group }
     if type(pattern) == 'string' and string.find(pattern, ',') then
         opts.pattern = split(pattern, ',')
+    else
+        opts.pattern = pattern
     end
 
     if type(cmd) == 'function' then
