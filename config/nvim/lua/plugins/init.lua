@@ -177,7 +177,7 @@ require('lazy').setup({
     {
         'luukvbaal/statuscol.nvim',
         config = function()
-            require('plugins.config.statuscol')
+            require('plugins.configs.statuscol')
         end,
     },
 
