@@ -23,6 +23,9 @@ set.autoread = true
 set.confirm = true
 set.hidden = true
 
+-- Clipboard
+set.clipboard = { 'unnamedplus' }
+
 -- File encoding
 set.encoding = 'utf-8'
 
