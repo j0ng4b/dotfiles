@@ -117,9 +117,21 @@ set.spelloptions = 'camel'
 set.spellsuggest = 'fast,10'
 
 -- Timeout
-auto.group('ChangeTimeoutLenOnInsert')
-auto.cmd('InsertEnter', '*', 'set timeoutlen=350', 'ChangeTimeoutLenOnInsert')
-auto.cmd('InsertLeave', '*', 'set timeoutlen&', 'ChangeTimeoutLenOnInsert')
+auto.group('ChangeTimeoutLenByMode')
+
+-- On enter some modes set timeoutlen to a lower value
+auto.cmd(
+    'ModeChanged', '*:[vV\x16iR]*',
+    'set timeoutlen=250',
+    'ChangeTimeoutLenByMode'
+)
+
+-- On leave some modes reset timeoutlen to default value
+auto.cmd(
+    'ModeChanged', '[vV\x16iR]*:*',
+    'set timeoutlen&',
+    'ChangeTimeoutLenByMode'
+)
 
 set.ttimeoutlen = 100
 
