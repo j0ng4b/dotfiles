@@ -175,6 +175,13 @@ require('lazy').setup({
     },
 
     {
+        'luukvbaal/statuscol.nvim',
+        config = function()
+            require('plugins.config.statuscol')
+        end,
+    },
+
+    {
         'b0o/incline.nvim',
         event = 'VeryLazy',
         dependencies = 'nvim-tree/nvim-web-devicons',

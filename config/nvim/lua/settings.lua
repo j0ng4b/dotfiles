@@ -68,7 +68,7 @@ set.foldcolumn = '1'
 set.foldenable = true
 set.foldlevel = 99
 set.foldlevelstart = 99
-set.fillchars:append('fold: ,foldopen:,foldsep: ,foldclose:')
+set.fillchars:append('fold: ,foldopen:,foldsep: ,foldclose:')
 
 -- Format
 set.textwidth = 80
