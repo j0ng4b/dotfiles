@@ -63,7 +63,7 @@ neotree.setup({
     },
 
     source_selector = {
-        winbar = false,
+        winbar = true,
         statusline = false,
         content_layout = 'center',
         tabs_layout = 'equal',
@@ -149,21 +149,6 @@ neotree.setup({
                     vim.cmd('wincmd =')
                 end
             end
-        },
-
-        -- Bufferline integration
-        {
-            event = 'after_render',
-            handler = function(args)
-                if args.current_position == 'left' or args.current_position == 'right' then
-                    vim.api.nvim_win_call(args.winid, function()
-                        local str = require('neo-tree.ui.selector').get()
-                        if str then
-                            _G.__cached_neo_tree_selector = str
-                        end
-                    end)
-                end
-            end,
         },
     },
 

@@ -4,12 +4,6 @@ if not status then
 end
 
 local icons = require('utils.icons')
-
-_G.__cached_neo_tree_selector = nil
-_G.__get_selector = function()
-  return _G.__cached_neo_tree_selector
-end
-
 local buffer = require('utils.buffer')
 
 bufferline.setup({
@@ -24,7 +18,8 @@ bufferline.setup({
         offsets = {
             {
                 filetype = 'neo-tree',
-                raw = ' %{%v:lua.__get_selector()%} ',
+                text = 'Explore',
+                text_align = 'center',
                 separator = false,
             }
         },
