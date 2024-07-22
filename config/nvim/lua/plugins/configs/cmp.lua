@@ -105,12 +105,9 @@ cmp.setup({
         {
             { name = 'nvim_lsp' },
             { name = 'nvim_lsp_signature_help' },
-            { name = 'snippets' },
-            { name = 'calc' },
         }, {
             { name = 'snippets' },
             { name = 'buffer' },
-            { name = 'calc' },
         }
     ),
 })

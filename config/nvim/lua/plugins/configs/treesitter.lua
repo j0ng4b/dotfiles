@@ -36,8 +36,6 @@ treesitter.setup({
         'vimdoc',
     },
 
-    auto_install = true,
-
     highlight = {
         enable = true,
     },
