@@ -47,7 +47,7 @@ brightnessctl --restore 2>&1 >/dev/null
 (
     if [ -z "$(pgrep -f 'foot --server')" ]; then
         while true; do
-            foot --server --override=shell=foot-color-reloader &
+            foot --server --override shell=$root_dir/foot-color-reloader &
             wait $!
         done
     fi
