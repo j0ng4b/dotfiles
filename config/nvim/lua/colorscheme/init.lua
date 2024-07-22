@@ -2,11 +2,11 @@
 local colorscheme = 'catppuccin'
 
 -- Load colorscheme configurations
-local configs = vim.api.nvim_get_runtime_file('lua/colorscheme/config/*.lua', true)
+local configs = vim.api.nvim_get_runtime_file('lua/colorscheme/configs/*.lua', true)
 for _, config in ipairs(configs) do
     if vim.fn.filereadable(config) == 1 then
         local filename = config:match('.+/([^/]+%.lua)'):gsub('.lua', '')
-        require('colorscheme.config.' .. filename)
+        require('colorscheme.configs.' .. filename)
     end
 end
 
