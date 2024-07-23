@@ -7,6 +7,7 @@
 cache_dir=$SCRIPT_CACHE_DIR
 
 cache_dir_player=$cache_dir/player
+cache_player_cover=$cache_dir_player/cover
 cache_player_current=$cache_dir_player/current
 
 if [ -z "$cache_dir" ]; then
@@ -15,6 +16,7 @@ elif [ ! -d "$cache_dir" ]; then
     mkdir -p $cache_dir
     mkdir -p $cache_dir_player
 
+    touch $cache_player_cover
     touch $cache_player_current
 fi
 
@@ -110,6 +112,13 @@ _player_subscribe() {
         if [ -n "$length" ]; then
             length=$(( $length / 1000000 ))
             position=$(( $position / 1000000 ))
+        fi
+
+        if str_contains "$cover" "file://"; then
+            cover=$(echo "$cover" | sed -ne 's/file:\/\///gp')
+        else
+            curl --silent $cover --output $cache_player_cover
+            cover=$cache_player_cover
         fi
 
         data=$(jq --null-input \
