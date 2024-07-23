@@ -61,7 +61,7 @@ set.updatetime = 500
 -- Special characters
 set.fillchars = 'eob: '
 set.list = true
-set.listchars = 'trail:󰀦'
+set.listchars = 'tab:▎ ,trail:󰀦'
 
 -- Fold
 set.foldcolumn = '1'
