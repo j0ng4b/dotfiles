@@ -5,10 +5,10 @@
 local M = {}
 
 function M.group(name)
-    vim.api.nvim_create_augroup(name, { clear = true })
+    return vim.api.nvim_create_augroup(name, { clear = true })
 end
 
-function M.cmd(events, pattern, cmd, group)
+function M.cmd(events, pattern, cmd, opts)
     local split = function(input, sep)
         local res = {}
 
@@ -23,10 +23,14 @@ function M.cmd(events, pattern, cmd, group)
         events = split(events, ',')
     end
 
-    local opts = { group = group }
+    local opts = opts or {}
+    if type(opts) == 'string' then
+        opts = { group = opts }
+    end
+
     if type(pattern) == 'string' and string.find(pattern, ',') then
         opts.pattern = split(pattern, ',')
-    else
+    elseif type(pattern) == 'table' then
         opts.pattern = pattern
     end
 
