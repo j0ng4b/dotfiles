@@ -80,7 +80,14 @@ cmp.setup({
         format = function(entry, item)
             local color_item = require('nvim-highlight-colors').format(entry, { kind = item.kind })
 
-            item.menu = '       (' .. (item.kind or '') .. ')  '
+            item.menu = ' · ' .. ({
+                nvim_lsp = '[Lsp]',
+                nvim_lsp_signature_help = '[LspSig]',
+                snippets = '[Snippet]',
+                buffer = '[Buffer]',
+                emmet_vim = '[Emmet]',
+            })[entry.source.name]
+
             item.kind = ' ' .. (icons.kinds[item.kind] or '') .. ' '
 
             if color_item.abbr_hl_group then
@@ -108,6 +115,7 @@ cmp.setup({
         }, {
             { name = 'snippets' },
             { name = 'buffer' },
+            { name = 'emmet_vim' },
         }
     ),
 })

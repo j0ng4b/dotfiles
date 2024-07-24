@@ -85,7 +85,6 @@ require('lazy').setup({
             },
         },
         ft = {
-            'php',
             'html',
             'javascriptreact',
             'typescriptreact',
@@ -148,6 +147,22 @@ require('lazy').setup({
                 move_cursor = 'stick',
             })
         end
+    },
+
+    {
+        'mattn/emmet-vim',
+        ft = {
+            'html',
+            'css',
+            'scss',
+            'javascriptreact',
+            'typescriptreact',
+        },
+    },
+
+    {
+        'dcampos/cmp-emmet-vim',
+        dependencies = 'mattn/emmet-vim',
     },
 
     -- Colorschemes
