@@ -12,6 +12,7 @@ treesitter.setup({
         'javascript',
         'lua',
         'python',
+        'tsx',
         'typescript',
         'yuck',
 

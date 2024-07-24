@@ -49,7 +49,7 @@ end
 
 -- JavaScript family arrow functions
 npairs.add_rule(
-    Rule('%(.*%)%s*%=>$', ' {  }', { 'typescript', 'typescriptreact', 'javascript' })
+    Rule('%(.*%)%s*%=>$', ' {  }', { 'typescript', 'typescriptreact', 'javascript', 'javascriptreact' })
         :use_regex(true)
         :set_end_pair_length(2)
 )
