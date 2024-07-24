@@ -21,7 +21,7 @@
         :orientation 'horizontal'
         :max {max == '' ? 101 : max + 1}
         :min 0
-        :value {value}
+        :value {enable ? value : 0}
         :hexpand true
         :active {enable}
         :onchange {onchange}

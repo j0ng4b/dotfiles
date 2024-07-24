@@ -26,7 +26,7 @@ notify_low="$default_low"
 timeout="$default_timeout"
 
 notify() {
-    appname="battery_notifier"
+    appname="battery_notifier.sh"
     urgency=$1
     body=$2
 
