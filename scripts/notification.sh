@@ -6,27 +6,21 @@
 # Cache
 cache_dir=$SCRIPT_CACHE_DIR
 
-# Notifications level
-level_silent=100
-level_important=60
-level_noisy=0
+# Notification mode
+mode_normal="default"
+mode_dnd="do-not-disturb"
 
 
 _get_status() {
-    case $(dunstctl get-pause-level) in
-        $level_silent)
+    mode=$(makoctl mode)
+    case $mode in
+        *$mode_dnd*)
             nerd="󰂛"
             phosphor=""
             pause_level="silent"
             ;;
 
-        $level_important)
-            nerd="󰂚"
-            phosphor=""
-            pause_level="important"
-            ;;
-
-        $level_noisy)
+        *$mode_normal*)
             nerd="󰂞"
             phosphor=""
             pause_level="noisy"
@@ -52,29 +46,24 @@ case $cmd in
     set)
         subcmd=$2
         case $subcmd in
-            silent | important | noisy | toggle)
+            silent | noisy | toggle)
                 if [ "$subcmd" = "toggle" ]; then
-                    case $(dunstctl get-pause-level) in
-                        $level_silent)
-                            subcmd=important
+                    mode=$(makoctl mode)
+                    case $mode in
+                        *$mode_dnd*)
+                            subcmd="-r do-not-disturb"
                             ;;
 
-                        $level_important)
-                            subcmd=noisy
-                            ;;
-
-                        $level_noisy)
-                            subcmd=silent
+                        *$mode_normal*)
+                            subcmd="-a do-not-disturb"
                             ;;
                     esac
                 fi
 
-                eval "dunstctl set-pause-level \$level_$subcmd"
-
                 # Close any displayed notification
-                for _ in $(seq 1 $(dunstctl count displayed)); do
-                    dunstctl close
-                done
+                makoctl dismiss --all
+
+                eval "makoctl mode $subcmd"
                 ;;
         esac
 esac
