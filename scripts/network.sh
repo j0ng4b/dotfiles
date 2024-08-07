@@ -99,7 +99,7 @@ _net_get_info() {
             fi
 
             # Update WiFi quality file
-            sed -if '1d' $cache_wifi_quality
+            sed -if '1d' "$cache_wifi_quality"
             echo "$quality" >> $cache_wifi_quality
 
             # Calculate average WiFi quality
@@ -137,7 +137,7 @@ _net_get_info() {
     printf '"quality": "%s"' $quality
     if [ -n "$name" ]; then
         printf ','
-        printf '"name": "%s"' $name
+        printf '"name": "%s"' "$name"
     fi
     printf '}\n'
 }
