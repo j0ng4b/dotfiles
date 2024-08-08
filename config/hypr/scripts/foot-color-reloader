@@ -36,6 +36,8 @@ _color_reloader() {
 
 pid_file=$(mktemp /tmp/inotifywait_modify_pid.XXXXXXX) || exit 1
 while true; do
+    _color_reloader
+
     inotifywait --quiet --event modify "$config_file" &
 
     # Copy inotifywait pid to stop if needed
@@ -45,8 +47,6 @@ while true; do
     while kill -0 $! 2>/dev/null; do
         sleep 1
     done
-
-    _color_reloader
 done &
 
 # Watch changes on foot color file (symbolic link)
