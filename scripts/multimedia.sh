@@ -114,7 +114,9 @@ _player_subscribe() {
             position=$(( $position / 1000000 ))
         fi
 
-        if str_contains "$cover" "file://"; then
+        if [ -z "$cover" ]; then
+            cover=
+        elif str_contains "$cover" "file://"; then
             cover=$(echo "$cover" | sed -ne 's/file:\/\///gp')
         else
             curl --silent $cover --output $cache_player_cover
