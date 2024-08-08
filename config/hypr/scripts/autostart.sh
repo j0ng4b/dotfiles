@@ -16,8 +16,8 @@ if [ -z "$(pgrep -f pipewire)" ]; then
 fi
 
 ## Start dunst notification server
-if [ -z "$(pgrep -f dunst)" ]; then
-    dunst &
+if [ -z "$(pgrep -f mako)" ]; then
+    mako &
 fi
 
 ## Start battery notifier
