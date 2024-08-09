@@ -12,3 +12,6 @@ chpwd-recent-dirs
 ## Script keys
 scripts/_keys
 
+## This is a symbolic link
+config/eww/*/colors.scss
+
