@@ -47,11 +47,12 @@ brightnessctl --restore 2>&1 >/dev/null
 (
     if [ -z "$(pgrep -f 'foot --server')" ]; then
         while true; do
-            foot --server --override shell=$root_dir/foot-color-reloader &
+            foot --server --override shell="$root_dir/script-runner color-reloader foot" &
             wait $!
         done
     fi
 ) &
 
 sh $root_dir/script-runner color-temperature run &
+sh $root_dir/script-runner color-reloader eww nvim &
 

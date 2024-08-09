@@ -1,16 +1,16 @@
 #!/usr/bin/env sh
 
+# TODO: block multiple script spawn
+
 config_file=${XDG_CONFIG_HOME:-$HOME/.config}/system-configs.json
 
-color_dir=${XDG_CONFIG_HOME:-$HOME/.config}/foot/themes
-color_file=$color_dir/gruvbox
-
-_color_reloader() {
+_foot() {
     theme_name=$(cat $config_file | jq --raw-output '.theme')
     if [ -z "$theme_name" ]; then
         return
     fi
 
+    color_dir=${XDG_CONFIG_HOME:-$HOME/.config}/foot/themes
     color_file=$color_dir/$theme_name
 
     # Update normal colors
@@ -33,10 +33,38 @@ _color_reloader() {
         done
 }
 
+_eww() {
+    theme_name=$(cat $config_file | jq --raw-output '.theme')
+    if [ -z "$theme_name" ]; then
+        return
+    fi
+
+    color_dir=${XDG_CONFIG_HOME:-$HOME/.config}/eww/styles/themes
+    color_file=$color_dir/$theme_name.scss
+
+    ln -sf $color_file ${XDG_CONFIG_HOME:-$HOME/.config}/eww/styles/colors.scss
+}
+
+_nvim() {
+    :
+}
+
+reloaders=""
+while [ $# -gt 0 ]; do
+    [ "$1" = "eww" ] && reloaders="_eww;$reloaders"
+    [ "$1" = "foot" ] && reloaders="_foot;$reloaders"
+    [ "$1" = "nvim" ] && reloaders="_nvim;$reloaders"
+
+    shift
+done
+
+if [ -z "$reloaders" ]; then
+    exit 0
+fi
 
 pid_file=$(mktemp /tmp/inotifywait_modify_pid.XXXXXXX) || exit 1
 while true; do
-    _color_reloader
+    eval "$reloaders"
 
     inotifywait --quiet --event modify "$config_file" &
 
@@ -57,5 +85,10 @@ while true; do
     }
 done &
 
-exec "$SHELL"
+
+case $reloaders in
+    *foot*)
+        exec "$SHELL"
+        ;;
+esac
 
