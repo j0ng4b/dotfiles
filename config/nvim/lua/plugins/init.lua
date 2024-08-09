@@ -171,6 +171,11 @@ require('lazy').setup({
         name = 'catppuccin',
     },
 
+    {
+        'sainnhe/gruvbox-material',
+        name = 'gruvbox',
+    },
+
     -- Eye-candy
     {
         'rachartier/tiny-devicons-auto-colors.nvim',

@@ -29,6 +29,8 @@ treesitter.setup({
         'dockerfile',
         'hyprlang',
         'json',
+        'json5',
+        'jsonc',
         'rasi',
         'yaml',
 

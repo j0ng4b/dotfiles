@@ -11,6 +11,14 @@ for _, config in ipairs(configs) do
 end
 
 -- Load colorscheme
+local remap = {
+    gruvbox = 'gruvbox-material',
+}
+
+if remap[colorscheme] then
+    colorscheme = remap[colorscheme]
+end
+
 local status, _ = pcall(vim.cmd, 'colorscheme ' .. colorscheme)
 if not status then
     return
