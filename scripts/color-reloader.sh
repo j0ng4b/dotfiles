@@ -46,7 +46,19 @@ _eww() {
 }
 
 _nvim() {
-    :
+    theme_name=$(cat $config_file | jq --raw-output '.theme')
+    if [ -z "$theme_name" ]; then
+        return
+    fi
+
+    runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+	for sock in "$runtime_dir"/nvim.*.0; do
+		nvim --clean --headless --server "$sock" \
+			--remote-send \
+                "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' | \
+                    silent! colorscheme $theme_name | \
+                endif<CR>" +'qa!' 2>/dev/null
+	done
 }
 
 reloaders=""
