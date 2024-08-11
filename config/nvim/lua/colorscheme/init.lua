@@ -30,6 +30,10 @@ end
 auto.group('ColorschemeReloader')
 auto.cmd('Colorscheme', '', function()
     vim.schedule(function()
+        if vim.g._update_colorscheme then
+            return
+        end
+
         local config_home = os.getenv('XDG_CONFIG_HOME') or '~/.config/'
         local config_file = vim.fs.joinpath(config_home, 'system-configs.json')
         local config = json.read(config_file)

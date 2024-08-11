@@ -55,8 +55,10 @@ _nvim() {
 	for sock in "$runtime_dir"/nvim.*.0; do
 		nvim --clean --headless --server "$sock" \
 			--remote-send \
-                "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' | \
-                    silent! colorscheme $theme_name | \
+                "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' |\
+                    let g:_update_colorscheme=1                       |\
+                    silent! colorscheme $theme_name                   |\
+                    unlet g:_update_colorscheme                       |\
                 endif<CR>" +'qa!' 2>/dev/null
 	done
 }
