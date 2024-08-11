@@ -58,7 +58,6 @@ _nvim() {
                 "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' |\
                     let g:_update_colorscheme=1                       |\
                     silent! colorscheme $theme_name                   |\
-                    unlet g:_update_colorscheme                       |\
                 endif<CR>" +'qa!' 2>/dev/null
 	done
 }

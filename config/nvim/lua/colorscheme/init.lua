@@ -31,6 +31,7 @@ auto.group('ColorschemeReloader')
 auto.cmd('Colorscheme', '', function()
     vim.schedule(function()
         if vim.g._update_colorscheme then
+            vim.g._update_colorscheme = nil
             return
         end
 
