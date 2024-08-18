@@ -62,11 +62,16 @@ _nvim() {
 	done
 }
 
+_wm() {
+    :
+}
+
 reloaders=""
 while [ $# -gt 0 ]; do
     [ "$1" = "eww" ] && reloaders="_eww;$reloaders"
     [ "$1" = "foot" ] && reloaders="_foot;$reloaders"
     [ "$1" = "nvim" ] && reloaders="_nvim;$reloaders"
+    [ "$1" = "wm" ] && reloaders="_wm;$reloaders"
 
     shift
 done

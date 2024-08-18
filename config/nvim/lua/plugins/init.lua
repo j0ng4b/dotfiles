@@ -76,22 +76,6 @@ require('lazy').setup({
 
     -- Fold
     {
-        'razak17/tailwind-fold.nvim',
-        dependencies = 'nvim-treesitter/nvim-treesitter',
-        opts = {
-            symbol = '󱏿',
-            highlight = {
-                fg = '#38BDF8',
-            },
-        },
-        ft = {
-            'html',
-            'javascriptreact',
-            'typescriptreact',
-        },
-    },
-
-    {
         'kevinhwang91/nvim-ufo',
         dependencies = 'kevinhwang91/promise-async',
         config = function()

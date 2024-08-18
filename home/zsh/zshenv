@@ -38,6 +38,6 @@ export ZLE_RPROMPT_INDENT="0"
 
 
 ## Common variables
-export EDITOR=vim
-export VISUAL=gvim
+export EDITOR=nvim
+export VISUAL=nvim
 

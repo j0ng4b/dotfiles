@@ -10,9 +10,6 @@
 [submodule "zsh/autosuggestions"]
 	path = data/zsh/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
-[submodule "zsh/autocomplete"]
-	path = data/zsh/plugins/zsh-autocomplete
-	url = https://github.com/marlonrichert/zsh-autocomplete.git
 [submodule "zsh/autopair"]
 	path = data/zsh/plugins/zsh-autopair
 	url = https://github.com/hlissner/zsh-autopair.git
