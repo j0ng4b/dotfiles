@@ -82,18 +82,20 @@ _net_get_info() {
 
     # Get connection quality
     if [ "$type" = "wifi" ]; then
+        if [ -n "$(command -pv wpa_cli)" ]; then
+            # Get WiFi name from wpa_supplicant
+            name=$(wpa_cli status | tr '\n' ';' | cut -d';' -f4 | cut -d'=' -f2)
+        else
+            # Fallback when no wpa_supplicant is found
+            name="No name"
+        fi
+
         _net_check_connection
         if [ $? -gt 0 ]; then
             if [ -n "$(command -pv wpa_cli)" ]; then
-                # Get WiFi name from wpa_supplicant
-                name=$(wpa_cli status | tr '\n' ';' | cut -d';' -f4 | cut -d'=' -f2)
-
                 # Get WiFi quality from wpa_supplicant
                 quality=$(wpa_cli signal_poll | tr '\n' ';' | cut -d';' -f8 | cut -d'=' -f2)
             else
-                # Fallback when no wpa_supplicant is found
-                name=""
-
                 # Get WiFi quality from Linux
                 quality=$(cat /proc/net/wireless | sed -ne 's/.*\(-[0-9]\{2,4\}\)\..*/\1/p')
             fi
