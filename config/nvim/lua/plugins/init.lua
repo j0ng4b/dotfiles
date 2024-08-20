@@ -160,6 +160,10 @@ require('lazy').setup({
         name = 'gruvbox',
     },
 
+    {
+        'echasnovski/mini.base16',
+    },
+
     -- Eye-candy
     {
         'rachartier/tiny-devicons-auto-colors.nvim',
