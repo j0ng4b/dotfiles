@@ -1,5 +1,3 @@
-local auto = require('utils.autocmd')
-
 --   ╔═╗┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
 --   ║ ║├─┘ │ ││ ││││└─┐
 --   ╚═╝┴   ┴ ┴└─┘┘└┘└─┘
@@ -10,7 +8,7 @@ local cmd = vim.cmd
 -- Vim compatibility
 set.cpoptions:append('EnW')
 
--- Identation
+-- Indentation
 set.autoindent = true
 set.expandtab = true
 set.shiftround = true
@@ -45,13 +43,13 @@ set.shortmess = 'astTcC'
 set.showmode = false
 set.signcolumn = 'number'
 
--- Linebreak
+-- Line break
 set.breakindent = true
 set.breakindentopt = 'sbr'
 set.linebreak = true
 set.showbreak = '󱞪'
 
--- Command-line
+-- Command line
 set.cmdwinheight = 5
 
 -- Swap
@@ -68,7 +66,7 @@ set.foldcolumn = '1'
 set.foldenable = true
 set.foldlevel = 99
 set.foldlevelstart = 99
-set.fillchars:append('fold: ,foldopen:,foldsep: ,foldclose:')
+set.fillchars:append('fold: ,foldopen:,foldsep: ,foldclose:')
 
 -- Format
 set.textwidth = 80
@@ -86,11 +84,7 @@ set.ignorecase = true
 set.incsearch = true
 set.smartcase = true
 
-auto.group('VimHighlightOnSearch')
-auto.cmd('CmdlineEnter', '/,?', 'set hlsearch', 'VimHighlightOnSearch')
-auto.cmd('CmdlineLeave', '/,?', 'set nohlsearch', 'VimHighlightOnSearch')
-
--- Status-line & Tab-line
+-- Status line & Tab line
 set.laststatus = 3
 set.showtabline = 2
 set.tabpagemax = 10
@@ -117,22 +111,6 @@ set.spelloptions = 'camel'
 set.spellsuggest = 'fast,10'
 
 -- Timeout
-auto.group('ChangeTimeoutLenByMode')
-
--- On enter some modes set timeoutlen to a lower value
-auto.cmd(
-    'ModeChanged', '*:[vV\x16iR]*',
-    'set timeoutlen=250',
-    'ChangeTimeoutLenByMode'
-)
-
--- On leave some modes reset timeoutlen to default value
-auto.cmd(
-    'ModeChanged', '[vV\x16iR]*:*',
-    'set timeoutlen&',
-    'ChangeTimeoutLenByMode'
-)
-
 set.ttimeoutlen = 100
 
 -- Undo
@@ -143,7 +121,6 @@ set.undoreload = 2500
 -- Wild menu
 set.wildcharm = 9 -- Used to enable use of tab in floating window
 set.wildmenu = true
-set.wildmode = 'longest:full'
+set.wildmode = 'longest:full,full'
 set.wildoptions = 'pum'
-
 

@@ -1,18 +1,9 @@
-local auto = require('utils.autocmd')
-local json = require('utils.json')
-
--- Load colorscheme configurations
-local configs = vim.api.nvim_get_runtime_file('lua/colorscheme/configs/*.lua', true)
-for _, config in ipairs(configs) do
-    if vim.fn.filereadable(config) == 1 then
-        local filename = config:match('.+/([^/]+%.lua)'):gsub('.lua', '')
-        require('colorscheme.configs.' .. filename)
-    end
-end
+local auto = require('core.utils.autocmd')
+local json = require('core.utils.json')
 
 -- Load colorscheme
 -- Default colorscheme
-local colorscheme = 'gruvbox-material'
+local colorscheme = 'everblush'
 
 local config_home = os.getenv('XDG_CONFIG_HOME') or '~/.config/'
 local config_file = vim.fs.joinpath(config_home, 'system-configs.json')
