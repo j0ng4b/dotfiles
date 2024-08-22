@@ -1,3 +1,5 @@
+#!/bin/env sh
+
 # batteries list
 batteries=''
 
@@ -23,30 +25,30 @@ status_battery() {
         if [ "$status" = "charging"  ]; then
             case "$(($capacity / 10))" in
                 10) icon='󰂅' ;;
-                9) icon='󰂋' ;;
-                8) icon='󰂊' ;;
-                7) icon='󰢞' ;;
-                6) icon='󰂉' ;;
-                5) icon='󰢝' ;;
-                4) icon='󰂈' ;;
-                3) icon='󰂇' ;;
-                2) icon='󰂆' ;;
-                1) icon='󰢜' ;;
-                *) icon='󰢟' ;;
+                 9) icon='󰂋' ;;
+                 8) icon='󰂊' ;;
+                 7) icon='󰢞' ;;
+                 6) icon='󰂉' ;;
+                 5) icon='󰢝' ;;
+                 4) icon='󰂈' ;;
+                 3) icon='󰂇' ;;
+                 2) icon='󰂆' ;;
+                 1) icon='󰢜' ;;
+                 *) icon='󰢟' ;;
             esac
         elif [ "$status" = "discharging" ]; then
             case "$(($capacity / 10))" in
                 10) icon='󰁹' ;;
-                9) icon='󰂂' ;;
-                8) icon='󰂁' ;;
-                7) icon='󰂀' ;;
-                6) icon='󰁿' ;;
-                5) icon='󰁾' ;;
-                4) icon='󰁽' ;;
-                3) icon='󰁼' ;;
-                2) icon='󰁻' ;;
-                1) icon='󰁺' ;;
-                *) icon='󰂎' ;;
+                 9) icon='󰂂' ;;
+                 8) icon='󰂁' ;;
+                 7) icon='󰂀' ;;
+                 6) icon='󰁿' ;;
+                 5) icon='󰁾' ;;
+                 4) icon='󰁽' ;;
+                 3) icon='󰁼' ;;
+                 2) icon='󰁻' ;;
+                 1) icon='󰁺' ;;
+                 *) icon='󰂎' ;;
             esac
         elif [ "$status" = "not charging" ]; then
             icon='󱈑'
