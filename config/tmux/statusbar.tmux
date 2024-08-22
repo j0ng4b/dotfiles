@@ -12,8 +12,10 @@ config_root="$(cd $(dirname $0); pwd)"
 ##
 
 STATUS_LEFT=''
-STATUS_MIDDLE=''
 STATUS_RIGHT=''
+
+WINDOW_ACTIVE=''
+WINDOW_INACTIVE=''
 
 
 get_option() {
@@ -38,6 +40,14 @@ status() {
     fi
 }
 
+window() {
+    if [ -z "$(get_option window-status-format)" ]; then
+        WINDOW_INACTIVE="$WINDOW_INACTIVE$@"
+    elif [ -z "$(get_option window-status-current-format)" ]; then
+        WINDOW_ACTIVE="$WINDOW_ACTIVE$@"
+    fi
+}
+
 
 ##
 ## Styling
@@ -59,6 +69,9 @@ set_option -s status-justify absolute-centre
 # Default status bar colors
 set_option -g status-style "fg=$base07, bg=$base00"
 
+
+##
+## Status sides
 
 # Status (left side)
 set_option -g status-left '' # reset
@@ -88,7 +101,6 @@ set_option -g status-right "$STATUS_RIGHT"
 
 ##
 ## Window list
-##
 
 # No separator between windows in the status line
 set_option -g window-status-separator ''
@@ -111,4 +123,14 @@ window "#[fg=$base04 bg=$base0B bold] #{window_index}:#{window_name}#{window_fla
 window "#[fg=$base0B bg=$base03 nobold]#[fg=$base03 bg=$base00]"
 
 set_option -g window-status-current-format "$WINDOW_ACTIVE"
+
+
+##
+## Clock mode
+
+# Color
+set_option -g clock-mode-colour "${base0B}"
+
+# Hour format
+set_option -g clock-mode-style 24
 
