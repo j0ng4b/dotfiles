@@ -59,6 +59,8 @@ status_battery() {
         break
     done
 
-    echo "$capacity%% $icon"
+    echo "$capacity% $icon"
 }
+
+status_battery
 

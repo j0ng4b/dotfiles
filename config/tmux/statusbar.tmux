@@ -3,10 +3,6 @@
 # Configuration root variable
 config_root="$(cd $(dirname $0); pwd)"
 
-# Load helpers scripts
-. "$config_root/utils/battery.tmux"
-
-
 ##
 ## Helpers
 ##
@@ -61,7 +57,7 @@ window() {
 set_option -s status on
 
 # Status bar update interval
-set_option -s status-interval 5
+set_option -s status-interval 1
 
 # Align window list to center of the bar
 set_option -s status-justify absolute-centre
@@ -73,27 +69,23 @@ set_option -g status-style "fg=$base07, bg=$base00"
 ##
 ## Status sides
 
-# Status (left side)
+# Left
 set_option -g status-left '' # reset
 set_option -g status-left-length 50
 
 status "#[fg=$base04 bg=$base0B bold]  $(whoami)@#h #[fg=$base0B bg=$base04 nobold]#[fg=$base04 bg=$base03]"
-status "#[fg=$base07 bg=$base03]  #{session_name} #[fg=$base03 bg=$base01]#[fg=$base01 bg=$base00]"
+status "#[fg=$base07 bg=$base03]  #{session_name} "
+status "#($config_root/utils/git.tmux)"
+status "#[fg=$base03 bg=$base01]#[fg=$base01 bg=$base00]"
 
 set_option -g status-left "$STATUS_LEFT"
 
-
-# Status (right side)
+# Right
 set_option -g status-right ''
 set_option -g status-right-length 50
 
 status "#[fg=$base04 bg=$base03]#[fg=$base0B bg=$base04]#[fg=$base04 bg=$base0B bold] %H:%M "
-
-if has_battery; then
-    status " $(status_battery) "
-    status "#[fg=$base07 bg=$base03]"
-fi
-
+status "#[fg=$base07 bg=$base03]#($config_root/utils/battery.tmux)"
 status "#[fg=$base01 bg=$base00]#[fg=$base03 bg=$base01]"
 
 set_option -g status-right "$STATUS_RIGHT"
@@ -113,7 +105,6 @@ window "#[fg=$base07 bg=$base03] #{window_index}:#{window_name}#{window_flag} "
 window "#[fg=$base03 bg=$base01]#[fg=$base01 bg=$base00]"
 
 set_option -g window-status-format "$WINDOW_INACTIVE"
-
 
 # Active
 set_option -g window-status-current-format ''
