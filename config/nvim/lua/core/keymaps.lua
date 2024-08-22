@@ -5,7 +5,7 @@ local buffer = require('core.utils.buffer')
 --   ╠╩╗├┤ └┬┘│││├─┤├─┘└─┐
 --   ╩ ╩└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
 
-vim.g.mapleader = ' '
+vim.g.mapleader = '\\'
 
 -- Sane mode switcher from insert/visual/select to normal mode
 map({ 'i', 'v' }, 'jk', '<Esc>')
@@ -69,11 +69,9 @@ map({ 'n' }, 'tp', '<Cmd>tabprevious<CR>') -- next
 map({ 'n' }, '<leader>ff', require('telescope.builtin').find_files, {})
 map({ 'n' }, '<leader>fg', require('telescope.builtin').live_grep, {})
 map({ 'n' }, '<leader>fb', require('telescope.builtin').buffers, {})
-map({ 'n' }, '<leader>fh', require('telescope.builtin').help_tags, {})
 map({ 'n' }, '<leader>fs', require('telescope.builtin').current_buffer_fuzzy_find, {})
 map({ 'n' }, '<leader>fo', require('telescope.builtin').lsp_document_symbols, {})
 map({ 'n' }, '<leader>fi', require('telescope.builtin').lsp_incoming_calls, {})
-map({ 'n' }, '<leader>fm', function() require('telescope.builtin').treesitter({default_text=":method:"}) end)
 
 -- Explorer
 map({ 'n' }, '<leader>ef', '<Cmd>Neotree source=filesystem toggle<CR>')
