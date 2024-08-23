@@ -130,3 +130,49 @@ set_option -g clock-mode-colour "${base0B}"
 # Hour format
 set_option -g clock-mode-style 24
 
+
+##
+## Message
+##
+
+# Set status line message style
+set_option -g message-style "fg=$base06 bg=$base01"
+
+# Set status line message command style
+set_option -g message-command-style "fg=$base06 bg=$base02"
+
+
+##
+## Pane
+##
+
+# Set Indicator for active pane
+set_option -g pane-border-indicators 'both'
+
+# Set the pane border style for the currently active pane
+set_option -g pane-active-border-style "fg=$base0B bg=$base00"
+
+# Set the pane border style for inactive pane
+set_option -g pane-border-style "fg=$base02 bg=$base00"
+
+##
+## Menu
+##
+
+set_option -g menu-style "fg=$base06 bg=$base01"
+set_option -g menu-border-style "fg=$base06 bg=$base01"
+set_option -g menu-selected-style "fg=$base04 bg=$base0B"
+
+# Set the type of characters used for drawing menu borders
+set_option -g menu-border-lines 'rounded'
+
+##
+## Pop-up
+##
+
+set_option -g popup-style "fg=$base06 bg=$base01"
+set_option -g popup-border-style "fg=$base07 bg=$base01"
+
+# Set the type of characters used for drawing pop-up borders
+set_option -g popup-border-lines 'rounded'
+
