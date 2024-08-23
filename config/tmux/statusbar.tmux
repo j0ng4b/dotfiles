@@ -73,7 +73,8 @@ set_option -g status-style "fg=$base07, bg=$base00"
 set_option -g status-left '' # reset
 set_option -g status-left-length 50
 
-status "#[fg=$base04 bg=$base0B bold]  $(whoami)@#h #[fg=$base0B bg=$base04 nobold]#[fg=$base04 bg=$base03]"
+
+status "#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]}  $(whoami)@#h #{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}#[fg=$base04 bg=$base03]"
 status "#[fg=$base07 bg=$base03]  #{session_name} "
 status "#($config_root/utils/git.tmux)"
 status "#[fg=$base03 bg=$base01]#[fg=$base01 bg=$base00]"
@@ -84,8 +85,9 @@ set_option -g status-left "$STATUS_LEFT"
 set_option -g status-right ''
 set_option -g status-right-length 50
 
-status "#[fg=$base04 bg=$base03]#[fg=$base0B bg=$base04]#[fg=$base04 bg=$base0B bold] %H:%M "
-status "#[fg=$base07 bg=$base03]#($config_root/utils/battery.tmux)"
+status "#[fg=$base04 bg=$base03]#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]} %H:%M "
+status " #($config_root/utils/battery.tmux)"
+status "#[fg=$base07 bg=$base03]"
 status "#[fg=$base01 bg=$base00]#[fg=$base03 bg=$base01]"
 
 set_option -g status-right "$STATUS_RIGHT"
@@ -97,8 +99,9 @@ set_option -g status-right "$STATUS_RIGHT"
 # No separator between windows in the status line
 set_option -g window-status-separator ''
 
-# Inactive
+## Inactive
 set_option -g window-status-format ''
+
 
 window "#[fg=$base01 bg=$base00]#[fg=$base03 bg=$base01]"
 window "#[fg=$base07 bg=$base03] #{window_index}:#{window_name}#{window_flag} "
@@ -106,12 +109,14 @@ window "#[fg=$base03 bg=$base01]#[fg=$base01 bg=$base00]"
 
 set_option -g window-status-format "$WINDOW_INACTIVE"
 
-# Active
+
+## Active
 set_option -g window-status-current-format ''
 
-window "#[fg=$base03 bg=$base00]#[fg=$base0B bg=$base03]"
-window "#[fg=$base04 bg=$base0B bold] #{window_index}:#{window_name}#{window_flag} "
-window "#[fg=$base0B bg=$base03 nobold]#[fg=$base03 bg=$base00]"
+
+window "#[fg=$base03 bg=$base00]#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}"
+window "#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]} #{window_index}:#{window_name}#{window_flag} "
+window "#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}#[fg=$base03 bg=$base00]"
 
 set_option -g window-status-current-format "$WINDOW_ACTIVE"
 
