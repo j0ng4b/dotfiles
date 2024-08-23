@@ -10,7 +10,7 @@
     background-color: $background;
     box-shadow: 0px 0px 5px 0px $background;
 
-    border: 2px solid $color1;
+    border: 2px solid $base08;
     border-radius: 20px;
 
     padding: 20px;
@@ -21,14 +21,14 @@
 }
 
 .menu-separator {
-    background-color: $color4;
+    background-color: $base02;
     border: none;
-    margin: 0px 20px;
+    margin: 0px 40px;
     min-height: 1px;
 }
 
 .menu-power-button label {
-    background-color: rgba($color0, 0.4);
+    background-color: rgba($base00, 0.4);
 
     border-radius: 10px;
 
@@ -39,12 +39,12 @@
 }
 
 .menu-power-button:hover label {
-    color: $color0;
+    color: $base08;
     background-color: $foreground;
 }
 
 .menu-row {
-    background-color: rgba($color0, 0.4);
+    background-color: $base01;
     border-radius: 10px;
     padding: 15px 15px;
 }

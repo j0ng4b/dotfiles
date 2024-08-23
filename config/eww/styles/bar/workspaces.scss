@@ -1,9 +1,11 @@
-.workspace-color1 { color: $color1; }
-.workspace-color2 { color: $color2; }
-.workspace-color3 { color: $color3; }
-.workspace-color4 { color: $color4; }
-.workspace-color5 { color: $color5; }
-.workspace-color6 { color: $color6; }
+.workspace-color1 { color: $base08; }
+.workspace-color2 { color: $base09; }
+.workspace-color3 { color: $base0A; }
+.workspace-color4 { color: $base0B; }
+.workspace-color5 { color: $base0C; }
+.workspace-color6 { color: $base0D; }
+.workspace-color7 { color: $base0E; }
+.workspace-color8 { color: $base0F; }
 
 .workspace-entry {
     label {
@@ -22,10 +24,10 @@
 }
 
 .workspace-empty {
-    color: rgba($color0, 0.35);
+    color: $base02;
 }
 
 .workspace-current {
-    color: $color3;
+    color: $base0A;
 }
 

@@ -17,7 +17,7 @@
 }
 
 .player-title {
-    color: $color1;
+    color: $base08;
 
     font-size: 22px;
     font-weight: bold;
@@ -31,7 +31,7 @@
 }
 
 .player-control-button {
-    color: $color1;
+    color: $base08;
 
     font-size: 26px;
     font-weight: bold;
@@ -52,7 +52,7 @@
 }
 
 .player-time-bar trough {
-    background-color: $color0;
+    background-color: $base01;
 
     border: none;
     border-radius: 15px;
@@ -61,7 +61,7 @@
 }
 
 .player-time-bar highlight {
-    background-color: $color1;
+    background-color: $base08;
 
     border: none;
     border-radius: 15px;

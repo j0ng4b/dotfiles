@@ -11,7 +11,7 @@ if [ ! -d "$workspaces_cache_dir" ]; then
     mkdir -p "$workspaces_cache_dir"
 
     printf "" > $workspaces_colors
-    for i in $(seq 1 6); do
+    for i in $(seq 1 8); do
         printf "$i\n" >> $workspaces_colors
     done
 

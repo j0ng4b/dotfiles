@@ -17,11 +17,12 @@
         }
 
         menuitem {
-            background-color: $color0;
+            background-color: $base00;
+
             &:hover {
                 box-shadow: none;
                 background-color: $foreground;
-                color: $color0;
+                color: $base00;
             }
         }
     }
