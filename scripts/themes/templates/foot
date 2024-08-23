@@ -1,0 +1,31 @@
+[colors]
+foreground={base05}
+background={base00}
+
+regular0={base03}
+regular1={base08}
+regular2={base0B}
+regular3={base0A}
+regular4={base0D}
+regular5={base0E}
+regular6={base0C}
+regular7={base05}
+
+bright0={base04}
+bright1={base08}
+bright2={base0B}
+bright3={base0A}
+bright4={base0D}
+bright5={base06}
+bright6={base0C}
+bright7={base07}
+
+search-box-no-match={base01} {base08}
+search-box-match={base05} {base02}
+
+scrollback-indicator={base00} {base04}
+
+jump-labels={base01} {base09}
+urls={base0D}
+
+# vim: ft=dosini

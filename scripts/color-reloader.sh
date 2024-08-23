@@ -4,48 +4,67 @@
 
 config_file=${XDG_CONFIG_HOME:-$HOME/.config}/system-configs.json
 
-_foot() {
+__generate_colors_file() {
+    template_name=$1
+    output_path=$2
     theme_name=$(cat $config_file | jq --raw-output '.theme')
-    if [ -z "$theme_name" ]; then
+
+    if [ ! -e "$root/themes/templates/$template_name" ]; then
+        warn "no template found for $template_name"
         return
     fi
 
-    color_dir=${XDG_CONFIG_HOME:-$HOME/.config}/foot/themes
-    color_file=$color_dir/$theme_name
+    if [ -z "$theme_name" ]; then
+        error "theme file not found: $theme_name"
+        return
+    fi
+
+    # Load theme colors
+    . "$root/themes/$theme_name"
+
+    # Generate color file
+    cp --force "$root/themes/templates/$template_name" $output_path
+    for color_name in base00 base01 base02 base03 base04 base05 base06 base07 base08 base09 base0A base0B base0C base0D base0E base0F; do
+        eval "sed -i -e "s/{$color_name}/\${$color_name}/" "$output_path""
+    done
+}
+
+_foot_reloader() {
+    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/foot"
+    colors_output_path="$config_dir/colors.ini"
+
+    __generate_colors_file foot $colors_output_path
 
     # Update normal colors
-    sed -nr 's/.*(regular|bright)([0-9])\s*=\s*([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$color_file" |
+    sed -nr 's/.*(regular|bright)([0-9])\s*=\s*([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$colors_output_path" |
         while read type num color; do
             [ "$type" = "bright" ] && num=$(($num + 8))
             printf "\033]4;$num;#$color\a"
         done
 
     # Update foreground color
-    sed -nr 's/.*foreground\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$color_file" |
+    sed -nr 's/.*foreground\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$colors_output_path" |
         while read color; do
             printf "\033]10;#$color\a"
         done
 
     # Update background color
-    sed -nr 's/.*background\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$color_file" |
+    sed -nr 's/.*background\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$colors_output_path" |
         while read color; do
             printf "\033]11;#$color\a"
         done
 }
 
-_eww() {
-    theme_name=$(cat $config_file | jq --raw-output '.theme')
-    if [ -z "$theme_name" ]; then
-        return
-    fi
+_eww_reloader() {
+    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/eww"
+    colors_output_path="$config_dir/styles/colors.scss"
 
-    color_dir=${XDG_CONFIG_HOME:-$HOME/.config}/eww/styles/themes
-    color_file=$color_dir/$theme_name.scss
+    __generate_colors_file eww $colors_output_path
 
-    ln -sf $color_file ${XDG_CONFIG_HOME:-$HOME/.config}/eww/styles/colors.scss
+    # NOTE: eww automatically reloads colors
 }
 
-_nvim() {
+_nvim_reloader() {
     theme_name=$(cat $config_file | jq --raw-output '.theme')
     if [ -z "$theme_name" ]; then
         return
@@ -62,16 +81,26 @@ _nvim() {
 	done
 }
 
-_wm() {
+_tmux_reloader() {
+    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
+    colors_output_path="$config_dir/colors.tmux"
+
+    __generate_colors_file tmux $colors_output_path
+    tmux source-file "$config_dir/tmux.conf"
+}
+
+_wm_reloader() {
     :
 }
 
 reloaders=""
+reloaders_files=""
 while [ $# -gt 0 ]; do
-    [ "$1" = "eww" ] && reloaders="_eww;$reloaders"
-    [ "$1" = "foot" ] && reloaders="_foot;$reloaders"
-    [ "$1" = "nvim" ] && reloaders="_nvim;$reloaders"
-    [ "$1" = "wm" ] && reloaders="_wm;$reloaders"
+    [ "$1" = "eww" ] && reloaders="_eww_reloader;$reloaders"
+    [ "$1" = "foot" ] && reloaders="_foot_reloader;$reloaders"
+    [ "$1" = "nvim" ] && reloaders="_nvim_reloader;$reloaders"
+    [ "$1" = "tmux" ] && reloaders="_tmux_reloader;$reloaders"
+    [ "$1" = "wm" ] && reloaders="_wm_reloader;$reloaders"
 
     shift
 done
