@@ -15,4 +15,5 @@ scripts/_keys
 ## This is a symbolic link
 config/eww/**/colors.scss
 config/tmux/**/colors.tmux
+config/foot/**/colors.ini
 

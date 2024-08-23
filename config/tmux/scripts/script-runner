@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+
+# Scripts directory root
+root=$(cd $(dirname $0); pwd)
+
+# Log function
+error() { echo "\033[31m[Error]\033[0m $1"; }
+
+# Helper function
+_get_dotfiles_root() {
+    test_dir=$(realpath $root)
+
+    while [ "$test_dir" != "$HOME" ]; do
+        if [ -x "$test_dir/dotfile" ]; then
+            break
+        fi
+
+        test_dir=$(realpath $(dirname $test_dir))
+    done
+
+    if [ "$test_dir" != "$HOME" ]; then
+        echo "$test_dir"
+        return 0
+    else
+        echo ""
+        return 1
+    fi
+}
+
+# Try find scripts directory
+scripts_root="$(_get_dotfiles_root)/scripts"
+if [ $? -eq 1 ]; then
+    error "Can't find dotfiles directory!"
+    exit 1
+else
+    sh $scripts_root/_runner $@
+fi
+
