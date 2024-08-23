@@ -87,6 +87,7 @@ set_option -g status-right-length 50
 
 status "#[fg=$base04 bg=$base03]#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]} %H:%M "
 status " #($config_root/utils/battery.tmux)"
+status "#($config_root/utils/weather.tmux)"
 status "#[fg=$base07 bg=$base03]"
 status "#[fg=$base01 bg=$base00]#[fg=$base03 bg=$base01]"
 
@@ -104,7 +105,7 @@ set_option -g window-status-format ''
 
 
 window "#[fg=$base01 bg=$base00]#[fg=$base03 bg=$base01]"
-window "#[fg=$base07 bg=$base03] #{window_index}:#{window_name}#{window_flag} "
+window "#[fg=$base07 bg=$base03] #{window_index} #{window_name}#{window_flag} "
 window "#[fg=$base03 bg=$base01]#[fg=$base01 bg=$base00]"
 
 set_option -g window-status-format "$WINDOW_INACTIVE"
@@ -115,7 +116,7 @@ set_option -g window-status-current-format ''
 
 
 window "#[fg=$base03 bg=$base00]#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}"
-window "#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]} #{window_index}:#{window_name}#{window_flag} "
+window "#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]} #{window_index} #{window_name}#{window_flag} "
 window "#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}#[fg=$base03 bg=$base00]"
 
 set_option -g window-status-current-format "$WINDOW_ACTIVE"

@@ -43,6 +43,10 @@ case $1 in
         printf '%.0f\n' $(echo $(_get) | jq --raw-output '.main.temp')
         ;;
 
+    description)
+        printf '%s\n' $(echo $(_get) | jq --raw-output '.weather[0].main')
+        ;;
+
     icon)
         case $(echo $(_get) | jq --raw-output '.weather[0].icon') in
             # Clear sky

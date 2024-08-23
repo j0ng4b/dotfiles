@@ -67,7 +67,7 @@ case $1 in
         echo $capacity
         ;;
 
-    nerd)
+    icon)
         if [ "$status" = "charging"  ]; then
             echo $(_battery_charging_icon)
         elif [ "$status" = "discharging" ]; then
