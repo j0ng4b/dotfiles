@@ -115,9 +115,9 @@ set_option -g window-status-format "$WINDOW_INACTIVE"
 set_option -g window-status-current-format ''
 
 
-window "#[fg=$base03 bg=$base00]#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}"
+window "#[fg=$base03 bg=$base00]#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base03 nobold]}"
 window "#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]} #{window_index} #{window_name}#{window_flag} "
-window "#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}#[fg=$base03 bg=$base00]"
+window "#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base03 nobold]}#[fg=$base03 bg=$base00]"
 
 set_option -g window-status-current-format "$WINDOW_ACTIVE"
 
