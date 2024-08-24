@@ -55,6 +55,18 @@ _foot_reloader() {
         done
 }
 
+_cava_reloader() {
+    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/cava"
+    colors_output_path="$config_dir/config"
+
+    if [ ! -e "$config_dir" ]; then
+        mkdir -p "$config_dir"
+    fi
+
+    __generate_colors_file cava $colors_output_path
+    pkill -USR1 cava
+}
+
 _eww_reloader() {
     config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/eww"
     colors_output_path="$config_dir/styles/colors.scss"
@@ -98,6 +110,7 @@ reloaders_files=""
 while [ $# -gt 0 ]; do
     [ "$1" = "eww" ] && reloaders="_eww_reloader;$reloaders"
     [ "$1" = "foot" ] && reloaders="_foot_reloader;$reloaders"
+    [ "$1" = "cava" ] && reloaders="_cava_reloader;$reloaders"
     [ "$1" = "nvim" ] && reloaders="_nvim_reloader;$reloaders"
     [ "$1" = "tmux" ] && reloaders="_tmux_reloader;$reloaders"
     [ "$1" = "wm" ] && reloaders="_wm_reloader;$reloaders"

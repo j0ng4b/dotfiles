@@ -1,0 +1,78 @@
+[general]
+
+# Framerate :)
+framerate = 60
+
+# Attempt to decrease sensitivity if the bars peak
+autosens = 1
+
+# Manual sensitivity in %
+sensitivity = 100
+
+# Bars
+bars = 0
+bar_width = 1
+bar_spacing = 0
+
+# Seconds with no input before cava goes to sleep mode
+sleep_timer = 5
+
+
+[input]
+
+# Audio capturing method
+# See: https://forum.manjaro.org/t/howto-troubleshoot-crackling-in-pipewire/82442
+method = pipewire
+
+# Define where it should get the audio
+source = auto
+
+# Sample configuration
+# rate in Hz
+# bits in, well... bits
+sample_rate = 48000
+sample_bits = 32
+
+
+[output]
+# Output method
+method = noncurses
+
+# Visual channels
+channels = stereo
+
+# Show low frequencies at extremes
+reverse = 0
+
+# Show a flat bar at the bottom of the screen when idle
+show_idle_bar_heads = 1
+
+
+[color]
+background = '#{base00}'
+foreground = '#{base06}'
+
+
+gradient = 1
+gradient_color_1 = '#{base08}'
+gradient_color_2 = '#{base09}'
+gradient_color_3 = '#{base0A}'
+gradient_color_4 = '#{base0B}'
+gradient_color_5 = '#{base0C}'
+gradient_color_6 = '#{base0D}'
+gradient_color_7 = '#{base0E}'
+gradient_color_8 = '#{base0F}'
+
+
+[smoothing]
+# Noise reduction
+noise_reduction = 70
+
+
+[eq]
+1 = 2 # bass
+2 = 2
+3 = 1 # midtone
+4 = 1
+5 = 1 # treble
+
