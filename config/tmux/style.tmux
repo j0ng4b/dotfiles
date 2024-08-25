@@ -60,7 +60,7 @@ set_option -s status on
 set_option -s status-interval 1
 
 # Align window list to center of the bar
-set_option -s status-justify absolute-centre
+set_option -s status-justify centre
 
 # Default status bar colors
 set_option -g status-style "fg=$base07, bg=$base00"
