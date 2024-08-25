@@ -67,6 +67,19 @@ _cava_reloader() {
     pkill -USR1 cava
 }
 
+_btop_reloader() {
+    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/btop/themes"
+    colors_output_path="$config_dir/generated.theme"
+
+    if [ ! -e "$config_dir" ]; then
+        mkdir -p "$config_dir"
+    fi
+
+    __generate_colors_file btop $colors_output_path
+
+    pkill -USR2 btop
+}
+
 _eww_reloader() {
     config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/eww"
     colors_output_path="$config_dir/styles/colors.scss"
@@ -111,6 +124,7 @@ while [ $# -gt 0 ]; do
     [ "$1" = "eww" ] && reloaders="_eww_reloader;$reloaders"
     [ "$1" = "foot" ] && reloaders="_foot_reloader;$reloaders"
     [ "$1" = "cava" ] && reloaders="_cava_reloader;$reloaders"
+    [ "$1" = "btop" ] && reloaders="_btop_reloader;$reloaders"
     [ "$1" = "nvim" ] && reloaders="_nvim_reloader;$reloaders"
     [ "$1" = "tmux" ] && reloaders="_tmux_reloader;$reloaders"
     [ "$1" = "wm" ] && reloaders="_wm_reloader;$reloaders"

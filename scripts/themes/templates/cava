@@ -12,7 +12,7 @@ sensitivity = 100
 # Bars
 bars = 0
 bar_width = 1
-bar_spacing = 0
+bar_spacing = 1
 
 # Seconds with no input before cava goes to sleep mode
 sleep_timer = 5

@@ -54,5 +54,5 @@ brightnessctl --restore 2>&1 >/dev/null
 ) &
 
 sh $root_dir/script-runner color-temperature run &
-sh $root_dir/script-runner color-reloader eww cava nvim tmux wm &
+sh $root_dir/script-runner color-reloader eww cava btop nvim tmux wm &
 
