@@ -10,6 +10,15 @@
       (label :text date)
       (label :text '')
       (label :text '${hour}:${minute}')
+      (label
+        :visible {notification.level != 'noisy'}
+        :text ''
+      )
+      (indicator
+        :class 'icon-fill'
+        :visible true
+        :value {notification.level != 'noisy' ? notification.icons.phosphor : ''}
+      )
     )
   )
 )

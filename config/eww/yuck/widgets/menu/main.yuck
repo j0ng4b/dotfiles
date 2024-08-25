@@ -166,7 +166,7 @@
           (menu-button
             :icon {multimedia.microphone.enable == 1 ? '' : '' }
             :icon-type 'fill'
-            :value {multimedia.microphone.enable == 1 ? 'Mute' : 'Unmute' }
+            :value {multimedia.microphone.enable == 1 ? 'Unmute' : 'Mute' }
             :onclick 'scripts/script-runner multimedia microphone toggle-mute'
             :enable {multimedia.microphone.enable == 1}
           )
@@ -175,8 +175,7 @@
             :icon-type 'fill'
             :value {notification.Level}
             :onclick 'scripts/script-runner notification set toggle'
-            :enable {notification.level == 'noisy' || notification.level ==
-              'important'}
+            :enable {notification.level == 'noisy'}
           )
         )
       )
