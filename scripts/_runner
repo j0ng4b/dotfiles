@@ -63,7 +63,7 @@ _run_script() {
             # through this script (_runner) the output of this script (_runner)
             # will be passed to caller script alongside with callee script
             # output.
-            exit 0
+            exit $?
         else
             error "Script hasn't executable permission!"
         fi
