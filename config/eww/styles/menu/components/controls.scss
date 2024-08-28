@@ -1,0 +1,24 @@
+.control-button {
+    padding: 5px 10px;
+    font-size: 16px;
+    border-radius: 10px;
+
+    &.active {
+        color: $background;
+        background-color: $base08;
+    }
+
+    &.inactive {
+        color: $base06;
+        background-color: $base02;
+    }
+
+    .separator {
+        min-width: 2px;
+        margin: 4px 0px;
+
+        .active   { background-color: $background; }
+        .inactive { background-color: $foreground; }
+    }
+}
+

@@ -1,33 +1,31 @@
-(defvar player_time_hover false)
-
 (defwidget player-controls []
   (box
     :orientation 'horizontal'
     :space-evenly false
     :spacing 10
-    :halign {player.length != '' ? 'center' : 'end'}
+    :halign {player?.length != '' ? 'center' : 'end'}
     (eventbox
       :cursor 'pointer'
-      :class 'player-control-button icon-fill'
+      :class 'control-button icon-fill'
       :onclick 'scripts/script-runner multimedia player previous'
       ''
     )
     (eventbox
       :cursor 'pointer'
-      :class 'player-control-button icon-fill'
+      :class 'control-button icon-fill'
       :onclick 'scripts/script-runner multimedia player toggle-play'
       {player.status == 'playing' ? '' : ''}
     )
     (eventbox
       :cursor 'pointer'
-      :class 'player-control-button icon-fill'
+      :class 'control-button icon-fill'
       :onclick 'scripts/script-runner multimedia player next'
       ''
     )
   )
 )
 
-(defwidget player []
+(defwidget menu-player []
   (box
     :class 'player-box'
     :orientation 'vertical'
@@ -45,13 +43,13 @@
           :halign 'start'
           (label
             :limit-width 20
-            :class 'player-title'
+            :class 'title'
             :halign 'start'
             :text {player.title}
           )
           (label
             :limit-width 20
-            :class 'player-artist'
+            :class 'artist'
             :halign 'start'
             :text {player.artist}
           )
@@ -60,7 +58,7 @@
         (label
           :valign 'start'
           :halign 'end'
-          :class 'player-name-icon'
+          :class 'icon'
           :text {player.icon}
         )
       )
@@ -70,6 +68,7 @@
         :space-evenly false
         :spacing 5
         :valign 'end'
+        :class 'time-bar'
         ;; Time bar
         (eventbox
           :cursor 'pointer'
@@ -77,10 +76,10 @@
           :onhoverlost 'eww update player_time_hover=false'
           (scale
             :min 0
-            :max {player.length != '' ? player.length : 0}
-            :value {player.position != '' ? player.position : 0}
-            :visible {player.length != ''}
-            :class 'player-time-bar'
+            :max {player?.length != '' ? player?.length : 0}
+            :value {player?.position != '' ? player?.position : 0}
+            :visible {player?.length != ''}
+            :class 'bar'
             :onchange {player_time_hover ? 'scripts/script-runner multimedia player set-position {}' : ''}
           )
         )
@@ -90,18 +89,18 @@
           (label
             :valign 'start'
             :halign 'start'
-            :visible {player.length != ''}
-            :class 'player-time'
-            :text {player.time}
+            :visible {player?.length != ''}
+            :class 'time'
+            :text {player?.time}
           )
           (player-controls)
           ;; Total time
           (label
             :valign 'start'
             :halign 'end'
-            :visible {player.length != ''}
-            :class 'player-time'
-            :text {player.duration}
+            :visible {player?.length != ''}
+            :class 'time'
+            :text {player?.duration}
           )
         )
       )

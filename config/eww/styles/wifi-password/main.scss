@@ -1,0 +1,41 @@
+.wifi-password {
+    border: none;
+    border-radius: 20px;
+    background-color: transparent;
+
+    .title {
+        font-size: 20px;
+    }
+
+    .hide {
+        padding: 0px 15px;
+        font-size: 32px;
+    }
+
+    .input {
+        color: $base06;
+        border: none;
+        font-size: 16px;
+        border-radius: 15px;
+        background-color: $base01;
+
+        &:focus {
+            box-shadow: inset 0px 0px 0px 1px $base0F;
+        }
+    }
+
+    .button {
+        & label {
+            padding: 5px 10px;
+            font-size: 16px;
+            border-radius: 10px;
+            background-color: $base02;
+        }
+
+        &:hover label {
+            color: $base02;
+            background-color: $base08;
+        }
+    }
+}
+

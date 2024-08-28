@@ -1,0 +1,63 @@
+(defwidget menu-wifi-list []
+  (box
+    :orientation 'vertical'
+    :space-evenly false
+    :spacing 20
+    :class 'wifi-list'
+    (box
+      :orientation 'horizontal'
+      :space-evenly true
+      (eventbox
+        :cursor 'pointer'
+        :onclick 'eww update menu_control_show=0'
+        :halign 'start'
+        :class 'button'
+        (label
+          :text '󰌍'
+        )
+      )
+      (eventbox
+        :cursor 'pointer'
+        :onclick 'scripts/script-runner network wifi list'
+        :halign 'end'
+        :class 'button'
+        (label
+          :text '󰑓'
+        )
+      )
+    )
+    (scroll
+      :height 150
+      :vscroll true
+      (box
+        :orientation 'vertical'
+        :space-evenly false
+        :spacing 10
+        (for network in wifi_network_list
+          (eventbox
+            :class 'entry'
+            :cursor 'pointer'
+            :onclick 'eww update menu_control_show=0 && scripts/script-runner network wifi connect ${replace(network.ssid, ' ', '~')} || (eww update wifi_password_hide=true && eww open wifi-password --arg ssid=${replace(network.ssid, ' ', '~')})'
+            (box
+              :orientation 'horizontal'
+              (label
+                :class 'ssid'
+                :halign 'start'
+                :text {network.ssid}
+              )
+              (label
+                :class 'frequency icon-fill'
+                :halign 'end'
+                :text {network.quality == 'high' ? '' :
+                       network.quality == 'good' ? '' :
+                       network.quality == 'low' ? '' :
+                       network.quality == 'bad' ? '' : ''}
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
+

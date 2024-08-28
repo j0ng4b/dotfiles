@@ -1,0 +1,48 @@
+(include './yuck/widgets/wifi-password/vars.yuck')
+
+
+(defwidget wifi-password [ssid]
+  (box
+    (box
+      :class 'window-box'
+      :orientation 'vertical'
+      :spacing 30
+      (label
+        :class 'title'
+        :text 'Password for "${replace(ssid, '~', ' ')}"'
+      )
+      (box
+        :orientation 'horizontal'
+        :space-evenly false
+        (eventbox
+          :cursor 'pointer'
+          :onclick 'eww update wifi_password_hide=${!wifi_password_hide}'
+          (label
+            :class 'hide'
+            :text {wifi_password_hide ? '' : ''}
+          )
+        )
+        (input
+          :password wifi_password_hide
+          :class 'input'
+          :hexpand true
+          :onaccept 'eww close wifi-password && eww update menu_control_show=0 && scripts/script-runner network wifi connect ${replace(ssid, ' ', '~')} {}'
+        )
+      )
+      (box
+        :orientation 'horizontal'
+        :space-evenly true
+        (eventbox
+          :class 'button'
+          :cursor 'pointer'
+          :halign 'start'
+          :onclick 'eww close wifi-password'
+          (label
+            :text 'Cancel'
+          )
+        )
+      )
+    )
+  )
+)
+

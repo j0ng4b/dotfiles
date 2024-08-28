@@ -5,3 +5,15 @@
 .icon-fill { font-family: 'Phosphor-Fill'; }
 .icon-duotone { font-family: 'Phosphor-Duotone'; }
 
+.window-box {
+    color: $foreground;
+    border: 2px solid $base08;
+    margin: 10px;
+    padding: 20px;
+    font-size: 18px;
+    box-shadow: 0px 0px 5px 0px $background;
+    font-family: 'Poppins';
+    border-radius: 20px;
+    background-color: $background;
+}
+

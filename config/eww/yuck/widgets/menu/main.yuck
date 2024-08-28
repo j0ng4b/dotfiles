@@ -1,12 +1,10 @@
-(include './yuck/widgets/menu/button.yuck')
-(include './yuck/widgets/menu/slider.yuck')
-(include './yuck/widgets/menu/player.yuck')
+(include './yuck/widgets/menu/vars.yuck')
 
-(defwidget separator []
-  (box
-    :class 'menu-separator'
-  )
-)
+(include './yuck/widgets/menu/components/slider.yuck')
+(include './yuck/widgets/menu/components/controls.yuck')
+(include './yuck/widgets/menu/components/wifi-list.yuck')
+(include './yuck/widgets/menu/components/player.yuck')
+
 
 (defwidget menu []
   (eventbox
@@ -15,7 +13,7 @@
       :orientation 'vertical'
       :space-evenly false
       :spacing 20
-      :class 'menu-wrapper'
+      :class 'window-box'
       ;; First row
       (box
         :orientation 'horizontal'
@@ -90,12 +88,13 @@
           )
         )
       )
-      (separator)
+      (box :class 'separator')
       ;; Second row
       (box
         :orientation 'vertical'
         :space-evenly false
-        :class 'menu-row'
+        :spacing 10
+        :class 'row'
         ;; Speaker
         (menu-slider
           :icon {multimedia.speaker.enable == 0 ? '' :
@@ -116,78 +115,27 @@
         )
       )
       ;; Third row
-      (box
-        :class 'menu-row'
+      (stack
+        :class 'row'
+        :selected menu_control_show
+        :transition 'none'
+        :same-size false
         :orientation 'vertical'
-        :spacing 10
-        (box
-          :orientation 'horizontal'
-          :spacing 15
-          (menu-button
-            :icon {wifi.enable == 0 ? '' :
-                  wifi.quality == 'high' ? '' :
-                  wifi.quality == 'good' ? '' :
-                  wifi.quality == 'low' ? '' :
-                  wifi.quality == 'bad' ? '' : ''}
-            :icon-type 'fill'
-            :value {wifi.enable == 1 ? wifi.name : 'Disabled'}
-            :enable {wifi.enable == 1}
-          )
-          (menu-button
-            :icon {bluetooth.enable == 0 ? '' :
-                   bluetooth.status == 'connected' ? '' : ''}
-            :value {bluetooth.enable == 0 ? 'Disabled' :
-                    bluetooth.status == 'connected' ?
-                      'Connected' : 'Disconnected'}
-            :enable {bluetooth.enable == 1}
-            :onclick 'scripts/script-runner network bluetooth toggle'
-          )
-        )
-        (box
-          :orientation 'horizontal'
-          :spacing 15
-          (menu-button
-            :icon ''
-            :value 'Balanced'
-            :enable false
-          )
-          (menu-button
-            :icon {color-temperature.icons.phosphor}
-            :icon-type 'fill'
-            :value '${color-temperature.mode == 'auto' ? 'Auto' :
-                    color-temperature.mode == 'low' ? 'Night' : 'Day'} Light'
-            :enable {color-temperature.mode != 'high'}
-            :onclick 'scripts/script-runner color-temperature cycle-mode'
-          )
-        )
-        (box
-          :orientation 'horizontal'
-          :spacing 15
-          (menu-button
-            :icon {multimedia.microphone.enable == 1 ? '' : '' }
-            :icon-type 'fill'
-            :value {multimedia.microphone.enable == 1 ? 'Unmute' : 'Mute' }
-            :onclick 'scripts/script-runner multimedia microphone toggle-mute'
-            :enable {multimedia.microphone.enable == 1}
-          )
-          (menu-button
-            :icon {notification.icons.phosphor}
-            :icon-type 'fill'
-            :value {notification.Level}
-            :onclick 'scripts/script-runner notification set toggle'
-            :enable {notification.level == 'noisy'}
-          )
-        )
+        ;; selected = 0, show quick controls
+        (menu-controls)
+
+        ;; selected = 1, show WiFi list
+        (menu-wifi-list)
       )
       ;; Fourth row
       (box
-        :class 'menu-row'
+        :class 'row'
         :visible {player.status != ''}
         (revealer
           :transition 'slidedown'
           :reveal {player.status != ''}
           :duration '1s'
-          (player)
+          (menu-player)
         )
       )
     )

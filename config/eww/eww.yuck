@@ -1,27 +1,20 @@
-;;   ╦  ╦┌─┐┬─┐┬┌─┐┌┐ ┬  ┌─┐┌─┐
-;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
-;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
-(include './yuck/variables.yuck')
+;; Global variables
+(include './yuck/vars.yuck')
 
 
-;;   ╦ ╦┬┌┬┐┌─┐┌─┐┌┬┐┌─┐
-;;   ║║║│ │││ ┬├┤  │ └─┐
-;;   ╚╩╝┴─┴┘└─┘└─┘ ┴ └─┘
-
-;; Bar
+;; Bar widget
 (include './yuck/widgets/bar/main.yuck')
 
-;; System menu
+;; System menu widget
 (include './yuck/widgets/menu/main.yuck')
 
+;; WiFi pop-up widget
+(include './yuck/widgets/wifi-password/main.yuck')
 
-;;   ╦ ╦┬┌┐┌┌┬┐┌─┐┬ ┬┌─┐
-;;   ║║║││││ │││ ││││└─┐
-;;   ╚╩╝┴┘└┘─┴┘└─┘└┴┘└─┘
 
+;; Windows
 (include './yuck/windows/bar.yuck')
-
 (include './yuck/windows/corners.yuck')
-
 (include './yuck/windows/menu.yuck')
+(include './yuck/windows/wifi-password.yuck')
 

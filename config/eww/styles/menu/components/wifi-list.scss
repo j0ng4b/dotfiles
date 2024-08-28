@@ -1,0 +1,31 @@
+.wifi-list {
+    .button {
+        label {
+            padding: 0px 10px;
+            font-size: 28px;
+            border-radius: 50%;
+            background-color: $base08;
+        }
+
+        &:hover label {
+            color: $base08;
+            background-color: $base03;
+        }
+    }
+
+    .entry {
+        color: $base06;
+        border-radius: 5px;
+        background-color: $base02;
+
+        &:hover {
+            color: $base01;
+            background-color: $base08;
+        }
+
+        box {
+            padding: 5px 10px;
+        }
+    }
+}
+

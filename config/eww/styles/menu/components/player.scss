@@ -1,0 +1,78 @@
+.player-box {
+    min-height: 150px;
+    border-radius: 10px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.player {
+    margin: 0px -2px; // The gradient puts some white junk at corner left
+    padding: 5px 10px;
+    background: linear-gradient(to right, $background, transparent),
+                linear-gradient(to bottom left, $background, transparent);
+    min-height: inherit;
+    border-radius: 10px;
+
+    .title {
+        color: $base08;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .artist {
+        color: $foreground;
+        font-size: 16px;
+        font-style: italic;
+    }
+
+    .icon {
+        font-size: 40px;
+        margin: 0px 5px;
+    }
+
+    .time-bar {
+        .time {
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .bar {
+            padding: 0px;
+
+            & trough {
+                border: none;
+                padding: 0px;
+                border-radius: 15px;
+                background-color: $base01;
+            }
+
+            & highlight {
+                border: none;
+                margin: 0px;
+                padding: 5px;
+                border-radius: 15px;
+                background-color: $base08;
+            }
+
+            & slider {
+                margin: 0px;
+                min-height: 0px;
+                min-width: 0px;
+                border-width: 0px;
+            }
+        }
+    }
+
+    .control-button {
+        color: $base08;
+        font-size: 26px;
+        font-weight: bold;
+
+        &:hover label {
+            padding: 0px 3px;
+            font-size: 20px;
+        }
+    }
+}
+

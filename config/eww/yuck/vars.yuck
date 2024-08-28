@@ -89,3 +89,6 @@
   'scripts/script-runner multimedia player subscribe'
 )
 
+(defvar wifi_network_list '[]')
+
+

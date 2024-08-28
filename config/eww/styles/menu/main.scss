@@ -1,57 +1,26 @@
 .menu {
+    border: none;
+    border-radius: 20px;
     background-color: transparent;
 
-    border: none;
-    border-radius: 20px;
-}
+    .separator {
+        border: none;
+        margin: 0px 50px;
+        min-height: 1px;
+        background-color: $base02;
+    }
 
-.menu-wrapper {
-    color: $foreground;
-    background-color: $background;
-    box-shadow: 0px 0px 5px 0px $background;
-
-    border: 2px solid $base08;
-    border-radius: 20px;
-
-    padding: 20px;
-    margin: 10px;
-
-    font-family: 'Poppins';
-    font-size: 18px;
-}
-
-.menu-separator {
-    background-color: $base02;
-    border: none;
-    margin: 0px 40px;
-    min-height: 1px;
-}
-
-.menu-power-button label {
-    background-color: rgba($base00, 0.4);
-
-    border-radius: 10px;
-
-    padding: 10px;
-    margin: 5px;
-
-    font-size: 30px;
-}
-
-.menu-power-button:hover label {
-    color: $base08;
-    background-color: $foreground;
-}
-
-.menu-row {
-    background-color: $base01;
-    border-radius: 10px;
-    padding: 15px 15px;
+    .row {
+        background-color: $base01;
+        border-radius: 10px;
+        padding: 15px 15px;
+    }
 }
 
 
 // Menu components styles
-@import './button.scss';
-@import './slider.scss';
-@import './player.scss';
+@import './components/slider.scss';
+@import './components/controls.scss';
+@import './components/wifi-list.scss';
+@import './components/player.scss';
 

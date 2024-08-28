@@ -1,0 +1,8 @@
+;; Local variables for a widget
+
+;; Which control to show
+(defvar menu_control_show 0)
+
+;; If hovering the player time bar
+(defvar player_time_hover false)
+

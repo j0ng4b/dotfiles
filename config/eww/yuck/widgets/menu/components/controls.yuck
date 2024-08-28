@@ -1,0 +1,100 @@
+(defwidget control-button [icon ?icon-type value enable ?onclick ?onopenmenu]
+  (box
+    :orientation 'horizontal'
+    :space-evenly false
+    :class 'control-button ${enable ? 'active' : 'inactive'}'
+    (eventbox
+      :onclick {onclick}
+      :cursor {onclick != '' ? 'pointer' : 'default'}
+      :hexpand true
+      (box
+        :orientation 'horizontal'
+        :space-evenly false
+        :spacing 10
+        (label
+          :class 'icon-${icon-type == '' ? 'regular' : icon-type} control-button-icon'
+          :text {icon}
+        )
+        (label
+          :text {value}
+          :limit-width 12
+        )
+      )
+    )
+    (box
+      :visible {onopenmenu != ''}
+      :class 'separator ${enable ? 'active' : 'inactive'}'
+    )
+    (eventbox
+      :onclick {onopenmenu}
+      :visible {onopenmenu != ''}
+      :cursor 'pointer'
+      (label
+        :class 'icon-fill'
+        :text ''
+      )
+    )
+  )
+)
+
+(defwidget menu-controls []
+  (box
+    :orientation 'vertical'
+    :spacing 10
+    (box
+      :orientation 'horizontal'
+      :spacing 15
+      (control-button
+        :icon {wifi.enable == 0 ? '' :
+          wifi.quality == 'high' ? '' :
+          wifi.quality == 'good' ? '' :
+          wifi.quality == 'low' ? '' :
+          wifi.quality == 'bad' ? '' : ''}
+        :icon-type 'fill'
+        :value {wifi.enable == 1 ? wifi.name : 'Disabled'}
+        :enable {wifi.enable == 1}
+        :onopenmenu 'eww update menu_control_show=1 && scripts/script-runner network wifi list'
+      )
+      (control-button
+        :icon {bluetooth.enable == 0 ? '' :
+          bluetooth.status == 'connected' ? '' : ''}
+        :value {bluetooth.enable == 0 ? 'Disabled' :
+          bluetooth.status == 'connected' ?
+          'Connected' : 'Disconnected'}
+        :enable {bluetooth.enable == 1}
+        :onclick 'scripts/script-runner network bluetooth toggle'
+      )
+    )
+    (box
+      :orientation 'horizontal'
+      :spacing 15
+      (control-button
+        :icon {color-temperature.icons.phosphor}
+        :icon-type 'fill'
+        :value '${color-temperature.mode == 'auto' ? 'Auto' :
+          color-temperature.mode == 'low' ? 'Night' : 'Day'} Light'
+        :enable {color-temperature.mode != 'high'}
+        :onclick 'scripts/script-runner color-temperature cycle-mode'
+      )
+    )
+    (box
+      :orientation 'horizontal'
+      :spacing 15
+      (control-button
+        :icon {multimedia.microphone.enable == 1 ? '' : '' }
+        :icon-type 'fill'
+        :value {multimedia.microphone.enable == 1 ? 'Unmute' : 'Mute' }
+        :onclick 'scripts/script-runner multimedia microphone toggle-mute'
+        :enable {multimedia.microphone.enable == 1}
+      )
+      (control-button
+        :icon {notification.icons.phosphor}
+        :icon-type 'fill'
+        :value {notification.Level}
+        :onclick 'scripts/script-runner notification set toggle'
+        :enable {notification.level == 'noisy'}
+      )
+    )
+  )
+)
+

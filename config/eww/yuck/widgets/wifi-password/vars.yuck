@@ -1,0 +1,5 @@
+;; Local variables for a widget
+
+;; Show/Hide password
+(defvar wifi_password_hide true)
+
