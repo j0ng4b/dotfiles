@@ -144,6 +144,148 @@ _net_get_info() {
     printf '}\n'
 }
 
+_net_wifi_list() {
+    [ "$(wpa_cli scan | tail -n 1)" = "OK" ] && sleep 0.5
+
+    raw_network_list=$(wpa_cli scan_results)
+    network_list=$(echo "$raw_network_list" | sed -ne '2,$s/.*\(-[0-9]*\)\s\+\[.*\]\s\+\(.*\)/\1:\2/p' | sort | tr '\n' ';')
+
+    comma=false
+    printf "["
+    IFS=';'
+    for network in $network_list; do
+        frequency=$(echo $network | cut -d':' -f1)
+        ssid=$(echo $network | cut -d':' -f2)
+
+        [ -z "$ssid" ] && continue
+
+        quality='bad'
+        if [ "$frequency" -ge -50 ]; then
+            quality=high
+        elif [ "$frequency" -ge -70 ]; then
+            quality=good
+        elif [ "$frequency" -ge -89 ]; then
+            quality=low
+        else
+            quality=bad
+        fi
+
+        [ $comma = "true" ] && printf ','
+        printf "{"
+        printf "\"frequency\": %d," $frequency
+        printf "\"quality\": \"%s\"," $quality
+        printf "\"ssid\": \"%s\"" $ssid
+        printf "}"
+
+        comma=true
+    done
+    printf "]"
+}
+
+_net_wifi_disconnect() {
+    # List of previous connected WiFis
+    networks_saved=$(wpa_cli list_networks | sed -ne '2,$s/\(^[0-9]*\)\s\+\(.*\)\s\+any\(\s\+\[\(.*\)\].*\|.*$\)/\1:\2:\4/p' | tr '\n' ';')
+
+    IFS=';'
+    for network in $networks_saved; do
+        id=$(echo $network | cut -d':' -f1)
+        status=$(echo $network | cut -d':' -f3)
+
+        if [ "$status" = "CURRENT" ]; then
+            wpa_cli set_network $id priority 0 1>/dev/null
+            wpa_cli disconnect 1>/dev/null
+
+            break
+        fi
+    done
+}
+
+_net_wifi_connect() {
+    # On Eww the space on ssid name is converted to `~` to properly pass the
+    # ssid name to this script, convert back to space.
+    network_to_connect_ssid=$(echo "$1" | tr '~' ' ')
+    network_to_connect_password=$2
+
+    # List of previous connected WiFis
+    networks_saved=$(wpa_cli list_networks | sed -ne '2,$s/\(^[0-9]*\)\s\+\(.*\)\s\+any\(\s\+\[\(.*\)\].*\|.*$\)/\1:\2:\4/p' | tr '\n' ';')
+
+    if str_contains "$networks_saved" ":$network_to_connect_ssid:"; then
+        connect_to=""
+
+        IFS=';'
+        for network in $networks_saved; do
+            id=$(echo $network | cut -d':' -f1)
+            ssid=$(echo $network | cut -d':' -f2)
+            status=$(echo $network | cut -d':' -f3)
+
+            if [ "$status" = "CURRENT" ]; then
+                # If already connected exit
+                if [ "$ssid" = "$network_to_connect_ssid" ]; then
+                    exit 0
+                else
+                    wpa_cli set_network $id priority 0 1>/dev/null
+                    wpa_cli disconnect 1>/dev/null
+
+                    break
+                fi
+            fi
+
+            # This skip the next for loop if possible, if ssid to connect is
+            # found here save its id.
+            if [ "$ssid" = "$network_to_connect_ssid" ]; then
+                connect_to="$id"
+            fi
+        done
+
+        # If the network to connect is already found connect and exit
+        if [ -n "$connect_to" ]; then
+            wpa_cli set_network $connect_to priority 10 1>/dev/null
+            wpa_cli reconnect 1>/dev/null
+
+            exit 0
+        fi
+
+        # Connect to network
+        IFS=';'
+        for network in $networks_saved; do
+            id=$(echo $network | cut -d':' -f1)
+            ssid=$(echo $network | cut -d':' -f2)
+
+            if [ "$ssid" = "$network_to_connect_ssid" ]; then
+                wpa_cli set_network $id priority 10 1>/dev/null
+                wpa_cli reconnect 1>/dev/null
+
+                break
+            fi
+        done
+    else
+        # When eww call this script no password is give at first but when its a
+        # new connection the password must be provided!
+        #
+        # Open password pop-up to recall this script with the password passed.
+        if [ -z "$network_to_connect_password" ]; then
+            exit 1
+        fi
+
+        _net_wifi_disconnect
+
+        # Create a new network
+        network_id=$(wpa_cli add_network | tail -n 1)
+
+        # Configure the new network
+        wpa_cli set_network $network_id ssid \"$network_to_connect_ssid\" 1>/dev/null
+        wpa_cli set_network $network_id psk \"$network_to_connect_password\" 1>/dev/null
+        wpa_cli set_network $network_id priority 10 1>/dev/null
+
+        # Enable and connect to new network
+        wpa_cli enable_network $network_id 1>/dev/null
+        wpa_cli reconnect 1>/dev/null
+
+        # Save configuration
+        wpa_cli save_config 1>/dev/null
+    fi
+}
+
 _bl_get_info() {
     info=$(bluetoothctl show)
 
@@ -170,6 +312,32 @@ case $1 in
         case $2 in
             info)
                 _net_get_info wifi
+                ;;
+
+            list)
+                echo "$(_net_wifi_list)"
+                ;;
+
+            connect)
+                _net_wifi_connect "$3" "$4"
+                ;;
+
+            disconnect)
+                _net_wifi_disconnect
+                ;;
+
+            on | off | toggle)
+                cmd=$2
+                if [ "$cmd" = "toggle" ]; then
+                    enable=0
+                    if [ "$enable" -eq 1 ]; then
+                        cmd="off"
+                    else
+                        cmd="on"
+                    fi
+                fi
+
+                _net_wifi_enabled $cmd
                 ;;
         esac
         ;;
