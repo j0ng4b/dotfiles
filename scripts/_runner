@@ -73,5 +73,5 @@ _run_script() {
     fi
 }
 
-_run_script $@
+_run_script "$@"
 
