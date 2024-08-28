@@ -4,12 +4,11 @@
             padding: 0px 10px;
             font-size: 28px;
             border-radius: 50%;
-            background-color: $base08;
         }
 
         &:hover label {
-            color: $base08;
-            background-color: $base03;
+            color: $background;
+            background-color: $base08;
         }
     }
 

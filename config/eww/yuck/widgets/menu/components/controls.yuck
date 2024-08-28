@@ -53,7 +53,7 @@
         :icon-type 'fill'
         :value {wifi.enable == 1 ? wifi.name : 'Disabled'}
         :enable {wifi.enable == 1}
-        :onopenmenu 'eww update menu_control_show=1 && scripts/script-runner network wifi list'
+        :onopenmenu 'eww update menu_control_show=1'
       )
       (control-button
         :icon {bluetooth.enable == 0 ? '' :

@@ -6,3 +6,10 @@
 ;; If hovering the player time bar
 (defvar player_time_hover false)
 
+;; List of available WiFi
+(defpoll wifi_network_list
+  :initial '[]'
+  :interval '5s'
+  'scripts/script-runner network wifi list'
+)
+
