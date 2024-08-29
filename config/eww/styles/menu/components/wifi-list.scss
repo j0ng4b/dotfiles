@@ -12,18 +12,38 @@
         }
     }
 
-    .entry {
-        color: $base06;
-        border-radius: 5px;
-        background-color: $base02;
-
-        &:hover {
-            color: $base01;
-            background-color: $base08;
+    .list {
+        overshoot {
+            background-image: radial-gradient(circle at center, $base0F, transparent);
         }
 
-        box {
-            padding: 5px 10px;
+        scrollbar {
+            opacity: 1;
+
+            trough {
+                opacity: 0;
+
+                slider {
+                    opacity: 1;
+                    border: none;
+                    background-color: $base08;
+                }
+            }
+        }
+
+        .entry {
+            color: $base06;
+            border-radius: 5px;
+            background-color: $base02;
+
+            &:hover {
+                color: $base01;
+                background-color: $base08;
+            }
+
+            box {
+                padding: 5px 10px;
+            }
         }
     }
 }
