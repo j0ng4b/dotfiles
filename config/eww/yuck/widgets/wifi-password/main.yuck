@@ -6,7 +6,7 @@
     (box
       :class 'window-box'
       :orientation 'vertical'
-      :spacing 30
+      :spacing 5
       (label
         :class 'title'
         :text 'Password for "${replace(ssid, '~', ' ')}"'
@@ -14,11 +14,12 @@
       (box
         :orientation 'horizontal'
         :space-evenly false
+        :spacing 5
         (eventbox
           :cursor 'pointer'
           :onclick 'eww update wifi_password_hide=${!wifi_password_hide}'
+          :class 'hide'
           (label
-            :class 'hide'
             :text {wifi_password_hide ? '' : ''}
           )
         )
@@ -31,11 +32,10 @@
       )
       (box
         :orientation 'horizontal'
-        :space-evenly true
         (eventbox
           :class 'button'
           :cursor 'pointer'
-          :halign 'start'
+          :hexpand true
           :onclick 'eww close wifi-password'
           (label
             :text 'Cancel'

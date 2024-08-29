@@ -7,8 +7,18 @@
     }
 
     .hide {
-        padding: 0px 15px;
+        color: $base06;
         font-size: 32px;
+        background-color: $base02;
+
+        label {
+            padding: 0px 15px;
+        }
+
+        &:hover {
+            color: $background;
+            background-color: $base08;
+        }
     }
 
     .input {
@@ -31,7 +41,7 @@
         }
 
         &:hover label {
-            color: $base02;
+            color: $background;
             background-color: $base08;
         }
     }
