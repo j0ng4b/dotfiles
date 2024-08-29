@@ -11,6 +11,7 @@
         :orientation 'horizontal'
         :space-evenly false
         :spacing 10
+        :class 'label'
         (label
           :class 'icon-${icon-type == '' ? 'regular' : icon-type} control-button-icon'
           :text {icon}
@@ -21,14 +22,12 @@
         )
       )
     )
-    (box
-      :visible {onopenmenu != ''}
-      :class 'separator ${enable ? 'active' : 'inactive'}'
-    )
     (eventbox
       :onclick {onopenmenu}
       :visible {onopenmenu != ''}
+      :vexpand true
       :cursor 'pointer'
+      :class 'more'
       (label
         :class 'icon-fill'
         :text ''

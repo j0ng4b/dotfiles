@@ -1,24 +1,42 @@
 .control-button {
-    padding: 5px 10px;
     font-size: 16px;
-    border-radius: 10px;
 
     &.active {
-        color: $background;
-        background-color: $base08;
+        .label {
+            color: $background;
+            padding: 5px 10px;
+            background-color: $base08;
+        }
+
+        .more {
+            color: $background;
+            background-color: $base08;
+
+            label {
+                padding: 5px 10px;
+            }
+
+            &:hover {
+                color: $base08;
+                background-color: $background;
+            }
+        }
     }
 
     &.inactive {
-        color: $base06;
-        background-color: $base02;
-    }
+        .label {
+            color: $base06;
+            padding: 5px 10px;
+            background-color: $base02;
+        }
 
-    .separator {
-        min-width: 2px;
-        margin: 4px 0px;
+        .more {
+            background-color: $base04;
 
-        .active   { background-color: $background; }
-        .inactive { background-color: $foreground; }
+            label {
+                padding: 5px 10px;
+            }
+        }
     }
 }
 
