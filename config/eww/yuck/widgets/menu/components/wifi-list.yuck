@@ -4,13 +4,26 @@
     :space-evenly false
     :spacing 10
     :class 'wifi-list'
-    (eventbox
-      :cursor 'pointer'
-      :onclick 'eww update menu_control_show=0'
-      :halign 'start'
-      :class 'button'
-      (label
-        :text '󰌍'
+    (box
+      :orientation 'horizontal'
+      :space-evenly true
+      (eventbox
+        :cursor 'pointer'
+        :onclick 'eww update menu_control_show=0'
+        :halign 'start'
+        :class 'button'
+        (label
+          :text '󰌍'
+        )
+      )
+      (eventbox
+        :cursor 'pointer'
+        :onclick 'eww update wifi_network_list=\"$(scripts/script-runner network wifi list)\"'
+        :halign 'end'
+        :class 'button'
+        (label
+          :text '󰑓'
+        )
       )
     )
     (scroll
