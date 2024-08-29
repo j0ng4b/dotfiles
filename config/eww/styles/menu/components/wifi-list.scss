@@ -1,13 +1,18 @@
 .wifi-list {
-    .button {
-        label {
-            padding: 0px 10px;
-            font-size: 28px;
-        }
+    .controls {
+        color: $background;
+        background-color: $base08;
 
-        &:hover label {
-            color: $background;
-            background-color: $base08;
+        .button {
+            label {
+                padding: 0px 10px;
+                font-size: 28px;
+            }
+
+            &:hover label {
+                color: $base08;
+                background-color: $base00;
+            }
         }
     }
 
