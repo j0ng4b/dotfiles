@@ -2,7 +2,7 @@
   (box
     :orientation 'vertical'
     :space-evenly false
-    :spacing 20
+    :spacing 10
     :class 'wifi-list'
     (eventbox
       :cursor 'pointer'
