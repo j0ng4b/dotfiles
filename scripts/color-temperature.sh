@@ -18,7 +18,7 @@ fi
 
 _get_status() {
     enable=0
-    if [ -z "$(pgrep wlsunset)" ]; then
+    if [ -n "$(pgrep wlsunset)" ]; then
         enable=1
     fi
 
