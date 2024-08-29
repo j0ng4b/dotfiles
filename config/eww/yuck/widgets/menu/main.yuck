@@ -41,19 +41,6 @@
               :text '${battery.capacity}%'
             )
           )
-          (box
-            :orientation 'horizontal'
-            :space-evenly false
-            (label
-              :class 'icon-bold'
-              :halign 'start'
-              :text ''
-            )
-            (label
-              :text '${uptime.days > 1 ? uptime.days + 'd ' :
-                ''}${uptime.hours > 0 ? uptime.hours + 'h ' : ''}${uptime.mins}m'
-            )
-          )
         )
         (box
           :orientation 'horizontal'
@@ -61,31 +48,7 @@
           :spacing 10
           :halign 'end'
           :valign 'center'
-          (eventbox
-            :class 'menu-power-button'
-            :cursor 'pointer'
-            :onclick 'scripts/script-runner wm lock'
-            (label
-              :class 'icon-fill'
-              :text ''
-            )
-          )
-          (eventbox
-            :class 'menu-power-button'
-            :cursor 'pointer'
-            (label
-              :class 'icon-fill'
-              :text ''
-            )
-          )
-          (eventbox
-            :class 'menu-power-button'
-            :cursor 'pointer'
-            (label
-              :class 'icon-regular'
-              :text ''
-            )
-          )
+          ;; Coming Soon
         )
       )
       (box :class 'separator')
