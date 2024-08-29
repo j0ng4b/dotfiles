@@ -11,7 +11,7 @@ if [ ! -d "$workspaces_cache_dir" ]; then
     mkdir -p "$workspaces_cache_dir"
 
     printf "" > $workspaces_colors
-    for i in $(seq 1 8); do
+    for i in $(seq 1 9); do
         printf "$i\n" >> $workspaces_colors
     done
 
@@ -26,7 +26,7 @@ __get_single_color() {
     if [ $(cat $workspaces_colors | wc -l) -eq 0 ]; then
         printf "" > $workspaces_colors
 
-        for i in $(seq 1 6); do
+        for i in $(seq 1 9); do
             printf "$i\n" >> $workspaces_colors
         done
 
