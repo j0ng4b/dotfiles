@@ -2,7 +2,7 @@
 _ls_default_opts="--all --icons --group-directories-first"
 _ls_default_long_opts="--long --smart-group --total-size --git"
 
-alias -g ls="eza $_ls_default_opts --classify"
+alias -g ls="eza $_ls_default_opts --classify=always"
 alias -g ll="eza $_ls_default_opts $_ls_default_long_opts"
 
 alias -g lt="eza $_ls_default_opts --tree --level=2"
