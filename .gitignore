@@ -12,7 +12,7 @@ chpwd-recent-dirs
 ## Script keys
 scripts/_keys
 
-## This is a symbolic link
+## Generated colors files
 config/eww/**/colors.scss
 config/tmux/**/colors.tmux
 config/foot/**/colors.ini
