@@ -16,4 +16,5 @@ scripts/_keys
 config/eww/**/colors.scss
 config/tmux/**/colors.tmux
 config/foot/**/colors.ini
+config/btop/**/generated.theme
 

@@ -1,42 +1,33 @@
 local config = function()
-    local treesitter = require('nvim-treesitter.configs')
-
-    treesitter.setup({
+    require('nvim-treesitter.configs').setup({
         ensure_installed = {
-            -- Programming languages
             'c',
+            'cmake',
             'cpp',
-            'go',
+            'make',
+
+            'css',
+            'html',
             'javascript',
-            'lua',
-            'python',
             'tsx',
             'typescript',
-            'yuck',
 
-            -- Others languages(?)
-            'html',
-            'css',
             'sql',
 
-            -- Build
-            'cmake',
-            'make',
-            'gomod',
+            'java',
+            'php',
+            'python',
 
-            -- Configuration files
             'dockerfile',
-            'hyprlang',
+            'yaml',
 
-            -- JSON
+            'yuck',
+
             'json',
             'json5',
             'jsonc',
 
-            'rasi',
-            'yaml',
-
-            -- Vim
+            'lua',
             'vim',
             'vimdoc',
         },

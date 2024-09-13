@@ -46,5 +46,6 @@ return {
     'catppuccin/nvim',
     name = 'catppuccin',
     config = config,
+    priority = 1000,
 }
 

@@ -18,6 +18,7 @@ return {
         vim.g.gruvbox_material_ui_contrast = 'high'
 
         vim.g.gruvbox_material_better_performance = 1
-    end
+    end,
+    priority = 1000,
 }
 
