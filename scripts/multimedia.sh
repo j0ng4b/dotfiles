@@ -227,6 +227,14 @@ case $cmd in
 
         subcmd=$2
         case $subcmd in
+            lower)
+                wpctl set-volume --limit 1.0 $target 5%-
+                ;;
+
+            raise)
+                wpctl set-volume --limit 1.0 $target 5%+
+                ;;
+
             set)
                 signal=$(echo $3 | sed -ne 's/\([-|+]*\).*/\1/p')
                 value=$(echo $3 | sed -ne 's/[^0-9]*\([0-9]*\).*/\1/p')

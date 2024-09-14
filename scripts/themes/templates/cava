@@ -48,6 +48,10 @@ reverse = 0
 show_idle_bar_heads = 1
 
 
+###  ╔═╗┌─┐┬  ┌─┐┬─┐┌─┐
+###  ║  │ ││  │ │├┬┘└─┐
+###  ╚═╝└─┘┴─┘└─┘┴└─└─┘
+
 [color]
 background = '#{base00}'
 foreground = '#{base06}'

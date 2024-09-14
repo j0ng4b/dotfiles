@@ -115,7 +115,11 @@ _tmux_reloader() {
 }
 
 _wm_reloader() {
-    :
+    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sway"
+    colors_output_path="$config_dir/colors"
+
+    __generate_colors_file sway $colors_output_path
+    swaymsg reload
 }
 
 reloaders=""
