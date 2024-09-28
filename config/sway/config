@@ -161,8 +161,8 @@ exec "$scripts/autostart.sh &"
     bindsym $super+r exec $launcher
 
     ## Screenshot
-    bindsym $super+Print exec "$scripts/screenshot.sh screen"
-    bindsym $super+$alt+Print exec "$scripts/screenshot.sh area"
+    bindsym $super+Print exec "$scripts/script-runner screenshot screen"
+    bindsym $super+$alt+Print exec "$scripts/script-runner screenshot area"
 
 ####################
 # # # Window binds
