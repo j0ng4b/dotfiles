@@ -4,9 +4,17 @@
 dotfiles_root=$(cd $(dirname $0); pwd)
 
 
-# Log functions
+# Helper functions
 error() { echo "\033[31m[Error]\033[0m $1"; }
 warn() { echo "\033[33m[Warning]\033[0m $1"; }
+
+str_contains() {
+    case $1 in
+        *"$2"*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
 
 
 # Target install directories
@@ -27,6 +35,20 @@ for target in config cache state data bin; do
     mkdir -p $target_dir
 done
 
+
+__get_dotfiles() {
+    dotfiles=""
+
+    for target in config data home bin; do
+        for dotfile in $(ls $dotfiles_root/$target | tr '\n' ' '); do
+            if ! str_contains "$dotfiles" "$dotfile"; then
+                dotfiles="$dotfile $dotfiles"
+            fi
+        done
+    done
+
+    echo $dotfiles
+}
 
 # Action functions
 __install_dotfile() {
@@ -117,8 +139,8 @@ __dotfile_action() {
     # List of dotfiles to act on
     dotfiles="$@"
     if [ -z "$dotfiles" ]; then
-        error "$action must receive at least one argument!"
-        exit
+        warn "selecting all dotfiles...\n"
+        dotfiles="$(__get_dotfiles)"
     fi
 
     # Act on dotfiles
