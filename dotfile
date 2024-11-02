@@ -3,6 +3,12 @@
 # Root dotfile directory
 dotfiles_root=$(cd $(dirname $0); pwd)
 
+
+# Log functions
+error() { echo "\033[31m[Error]\033[0m $1"; }
+warn() { echo "\033[33m[Warning]\033[0m $1"; }
+
+
 # Target install directories
 config_dir=${XDG_CONFIG_HOME:-$HOME/.config}
 cache_dir=${XDG_CACHE_HOME:-$HOME/.cache}
@@ -11,60 +17,19 @@ data_dir=${XDG_DATA_HOME:-$HOME/.local/share}
 home_dir=$HOME
 bin_dir=$HOME/.local/bin
 
-# Log functions
-error() { echo "\033[31m[Error]\033[0m $1"; }
-warn() { echo "\033[33m[Warning]\033[0m $1"; }
-
 # Create the target directories if their not exists
-create_target_directories() {
-    for target in config cache state data bin; do
-        eval target_dir=\$${target}_dir
+for target in config cache state data bin; do
+    eval target_dir=\$${target}_dir
 
-        # Check if the target directory exists
-        [ -d $target_dir ] && continue
+    # Check if the target directory exists
+    [ -d $target_dir ] && continue
 
-        mkdir -p $target_dir
-    done
-}
+    mkdir -p $target_dir
+done
 
-# Check if the given dotfile was installed
-check_installed() {
-    dotfile_dir=$dotfiles_root/$1
-    status="uninstalled"
-
-    for target in $(ls $dotfile_dir | tr '\n' ' '); do
-        if [ "$target" = "home" -o "$target" = "bin" ]; then
-            for file in $(ls $dotfile_dir/$target | tr '\n' ' '); do
-                file_path=$dotfile_dir/$target/$file
-
-                [ $target = "home" ] && file=.$file
-
-                eval file_action_path=\$${target}_dir/$file
-
-                if [ -L "$file_action_path" ]; then
-                    status="installed"
-                elif [ "$status" = "installed" ]; then
-                    status="partial-installed"
-                    return
-                fi
-            done
-        elif [ "$target" != "post" ]; then
-            eval dotfile_path=\$${target}_dir/$dotfile
-
-            if [ -L "$dotfile_path" ]; then
-                status="installed"
-            elif [ "$status" = "installed" ]; then
-                status="partial-installed"
-                return
-            fi
-        fi
-    done
-
-    echo "$status"
-}
 
 # Action functions
-install_dotfile() {
+__install_dotfile() {
     install_path=$1
     file_path=$2
 
@@ -75,7 +40,8 @@ install_dotfile() {
     return 0
 }
 
-uninstall_dotfile() {
+
+__uninstall_dotfile() {
     uninstall_path=$1
 
     # Check if the file was not installed
@@ -85,8 +51,9 @@ uninstall_dotfile() {
     return 0
 }
 
+
 # Install files for a target of dotfile
-dotfile_action_target_files() {
+__dotfile_action_target_files() {
     action=$1
     target=$2
     dotfile=$3
@@ -102,24 +69,25 @@ dotfile_action_target_files() {
         # Files of target `home´ has a lead dot at their names
         [ $target = "home" ] && file=.$file
 
-        eval file_action_path=\$${target}_dir/$file
+        eval file_target_path=\$${target}_dir/$file
 
         # Act on the file
-        eval ${action}_dotfile $file_action_path $file_path
+        eval __${action}_dotfile $file_target_path $file_path
 
         # Check for already (un)installed files
         action_result=$?
         if [ $action_result -gt 0 ]; then
             action_result_error=1
-            error "File '$file' of '$dotfile' already ${action}ed!"
+            warn "\`$file\` of '$dotfile' already ${action}ed!"
         fi
     done
 
     return $action_result_error
 }
 
-# Install the targets of a dotfile
-dotfile_action_target() {
+
+# Install the target of a dotfile
+__dotfile_action_target() {
     action=$1
     target=$2
     dotfile=$3
@@ -129,18 +97,19 @@ dotfile_action_target() {
     eval dotfile_path=\$${target}_dir/$dotfile
 
     # Act on the file
-    eval ${action}_dotfile $dotfile_path $dotfile_dir
+    eval __${action}_dotfile $dotfile_path $dotfile_dir
 
     # Check for already (un)installed target
     action_result=$?
     if [ $action_result -gt 0 ]; then
-        error "$dotfile already ${action}ed from/in $dotfile_path!"
+        warn "\`$target\` of $dotfile already ${action}ed!!"
     fi
 
     return $action_result
 }
 
-dotfile_action() {
+
+__dotfile_action() {
     # How process the dotfile, i.e. installing or uninstalling it
     action=$1
     shift
@@ -157,22 +126,10 @@ dotfile_action() {
         # Remove tail / if any
         dotfile="$(basename $dotfile)"
         if [ $action = "install" ]; then
-            echo "Installing $dotfile... "
+            echo "Installing $dotfile..."
         else
-            echo "Uninstalling $dotfile... "
+            echo "Uninstalling $dotfile..."
         fi
-
-        ## Root of the dotfile
-        #dotfile_dir=$dotfiles_root/$dotfile
-
-        ## Skip non-directories because isn't dotfile
-        #if [ ! -d $dotfile_dir ]; then
-        #    warn "The dotfile '$dotfile' doesn't exists! Skipping."
-        #    continue
-        #fi
-
-        ## Target directories of installing dotfile
-        #targets="$(ls $dotfile_dir | tr '\n' ' ')"
 
         action_result=0
         found_dotfile=0
@@ -182,80 +139,35 @@ dotfile_action() {
             if [ ! -d $dotfile_dir ]; then
                 continue
             fi
-            found_dotfile=1
 
+            function=
             case $target in
-                home | bin)
-                    eval dotfile_action_target_files $action $target $dotfile $dotfile_dir
-                    ;;
-
-                config | data)
-                    eval dotfile_action_target $action $target $dotfile $dotfile_dir
-                    ;;
+                home | bin)    function=__dotfile_action_target_files ;;
+                config | data) function=__dotfile_action_target ;;
             esac
+
+            eval $function $action $target $dotfile $dotfile_dir
+            found_dotfile=1
         done
 
         if [ $found_dotfile -eq 0 ]; then
             warn "The dotfile '$dotfile' doesn't exists! Skipping."
         fi
-        echo
     done
 
     exit 0
 }
 
-dotfile_list() {
-    # WIP
-    exit 1
-
-    #dotfiles="$(ls -d $dotfiles_root/*/)"
-
-    #echo "Dotfiles:"
-    #for dotfile in $dotfiles; do
-    #    dotfile=$(basename $dotfile)
-    #    echo "    $dotfile ($(check_installed $dotfile))"
-    #done
-
-    #exit 0
-}
-
-dotfile_install_deps() {
-    if [ $(whoami) != 'root' ]; then
-        error 'To install dependencies root is required!'
-        exit 1
-    fi
-
-    if [ "$@x" != "x" ]; then
-        error "To many argumentes, expected 0, given $#!"
-        exit 1
-    fi
-
-    # WIP
-
-    exit 0
-}
-
-# Create XDG Directories
-create_target_directories
 
 [ $# -eq 0 ] && exit 1
 while [ $# -gt 0 ]; do
     case $1 in
         install | uninstall)
-            dotfile_action $@ # no return
-            ;;
-
-        list)
-            dotfile_list # no return
-            ;;
-
-        install-deps)
-            shift
-            dotfile_install_deps $@ # no return
+            __dotfile_action $@ # no return
             ;;
 
         *)
-            echo "Unknowing command $1\n"
+            error "Unknowing command $1\n"
             exit 1
             ;;
     esac
