@@ -20,5 +20,5 @@ alias -g md="mkdir -p"
 
 ## rm
 alias -g rm="rm -f"
-alias -g rd="rm -r"
+alias -g rd="rm -rf"
 
