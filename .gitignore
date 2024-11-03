@@ -1,4 +1,4 @@
-## Vim
+## (Neo)Vim
 *.spl
 **/vim/**/packages/
 
@@ -13,9 +13,7 @@ chpwd-recent-dirs
 scripts/_keys
 
 ## Generated colors files
-config/sway/**/colors
 config/eww/**/colors.scss
 config/tmux/**/colors.tmux
 config/foot/**/colors.ini
-config/btop/**/generated.theme
 
