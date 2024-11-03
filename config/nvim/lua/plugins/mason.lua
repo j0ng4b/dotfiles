@@ -1,9 +1,5 @@
 local config = function()
-    require('mason').setup({
-        ui = {
-            check_outdated_packages_on_open = false,
-        },
-    })
+    require('mason').setup()
 
     require('mason-lspconfig').setup({
         ensure_installed = {
@@ -15,6 +11,7 @@ local config = function()
             'clangd',
             'jdtls',
             'omnisharp',
+            'pyright',
         },
     })
 end

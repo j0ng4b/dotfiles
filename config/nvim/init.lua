@@ -34,6 +34,6 @@ require('lazy').setup({
 -- Some maps requires plugins
 require('core.keymaps')
 
--- Colorschemes reloader must run after plugins and colorschemes load
+-- Colorschemes re-loader must run after plugins and colorschemes load
 require('core.reloader')
 

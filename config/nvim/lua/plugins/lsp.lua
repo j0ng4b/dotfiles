@@ -91,6 +91,11 @@ local config = function()
             on_attach = attach,
         }
 
+        if server == 'omnisharp' then
+            local omnisharp_root = vim.fn.stdpath('data') .. '/mason/packages/omnisharp/omnisharp'
+            server_config.cmd = { omnisharp_root }
+        end
+
         lsp[server].setup(server_config)
     end
 
