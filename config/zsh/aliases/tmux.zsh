@@ -2,7 +2,7 @@
 alias tk='tmux kill-server'
 
 # Session
-alias tsn='tmux new-session -t'
+alias tsn='tmux new-session -As'
 alias tsr='tmux rename-session -t'
 alias tsa='tmux attach-session -dt'
 alias tsl='tmux list-sessions'
