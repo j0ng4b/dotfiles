@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+
+# NOTE: _runner already define some commons, if definition is not here
+# probably its on _runner.
+
+case $1 in
+    # TODO: include a --save and --restores option to save set value to later
+    # be restored.
+    set)
+        signal=$(echo $2 | sed -ne 's/\([-|+]*\).*/\1/p')
+        value=$(echo $2 | sed -ne 's/[^0-9]*\([0-9]*\)\(%*\)/\1\2/p')
+
+        # For brightnessctl the minus signal should be at end of value and plus
+        # signal must be at start but on this script all signal must be at start
+        # of the value, so conversion is needed.
+        #
+        # E.g.:
+        #   -50 or -50% -> 50- or 50%-
+        #   +50 or +50% -> no conversion
+        [ $signal = '+' ] && value=$signal$value
+        [ $signal = '-' ] && value=$value$signal
+
+        brightnessctl --class backlight set $value 2>&1 >/dev/null
+        ;;
+
+    get)
+        cur=$(brightnessctl --class backlight get)
+        max=$(brightnessctl --class backlight max)
+
+        echo "{ \"current\": \"$cur\", \"max\": \"$max\" }"
+        ;;
+esac
+
