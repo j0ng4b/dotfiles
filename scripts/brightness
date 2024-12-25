@@ -29,5 +29,10 @@ case $1 in
 
         echo "{ \"current\": \"$cur\", \"max\": \"$max\" }"
         ;;
+
+    *)
+        error "Unknown command '$subcmd'!"
+        exit 1
+        ;;
 esac
 

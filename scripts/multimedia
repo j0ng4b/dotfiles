@@ -1,0 +1,104 @@
+#!/usr/bin/env sh
+
+# NOTE: _runner already define some commons, if definition is not here
+# probably its on _runner.
+
+_get_status() {
+    mic_mute=0
+    mic_volume=$(wpctl get-volume @DEFAULT_SOURCE@ | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
+
+    speaker_mute=0
+    speaker_volume=$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
+
+    if [ -n "$(wpctl get-volume @DEFAULT_SOURCE@ | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
+        mic_mute=1
+    fi
+
+    if [ -n "$(wpctl get-volume @DEFAULT_SINK@ | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
+        speaker_mute=1
+    fi
+
+    printf '{'
+
+    # Speaker
+    printf '"speaker": {'
+    printf '"mute": %s,' $speaker_mute
+    printf '"volume": %s' $speaker_volume
+    printf '},'
+
+    # Microphone
+    printf '"microphone": {'
+    printf '"mute": %s,' $mic_mute
+    printf '"volume": %s' $mic_volume
+    printf '}'
+
+    printf '}\n'
+}
+
+
+cmd=$1
+case $cmd in
+    status)
+        _get_status
+        ;;
+
+    speaker | mic)
+        target="@DEFAULT_SINK@"
+        if [ "$cmd" = 'mic' ]; then
+            target="@DEFAULT_SOURCE@"
+        fi
+
+        subcmd=$2
+        case $subcmd in
+            set)
+                set -x
+                # For wpctl all signals should be at end of value but on this
+                # script all signal must be at start of the value, so conversion
+                # is needed.
+                signal=$(echo $3 | sed -ne 's/\([-|+]*\).*/\1/p')
+                value=$(echo $3 | sed -ne 's/[^0-9]*\([0-9]*\).*/\1/p')
+                percent=$(echo $3 | sed -ne 's/.*%/%/p')
+
+                # Normalize
+                int=$(( $value / 100 ))
+                dec=$(( ${value}00 / 100 ))
+
+                if [ ${#dec} -lt 2 ]; then
+                    dec="0$dec"
+                fi
+
+                value=$int.$(echo $dec | sed -e 's/.\([0-2]\)\{2\}$/\1/')
+                wpctl set-volume --limit 1.0 $target $value$percent$signal
+                ;;
+
+            get)
+                mute=0
+                volume=$(wpctl get-volume $target | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
+
+                if [ -n "$(wpctl get-volume $target | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
+                    mute=1
+                fi
+
+                printf '{'
+                printf '"mute": %s,' $mute
+                printf '"volume": %s' $volume
+                printf '}\n'
+                ;;
+
+            mute)
+                wpctl set-mute $target toggle
+                ;;
+
+            *)
+                error "Unknown command '$subcmd'!"
+                exit 1
+                ;;
+        esac
+        ;;
+
+    *)
+        error "Unknown command '$cmd'!"
+        exit 1
+        ;;
+esac
+
