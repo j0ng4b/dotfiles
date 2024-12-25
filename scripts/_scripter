@@ -49,8 +49,11 @@ _run_script() {
                 export SCRIPT_CACHE_DIR=$sr_cache_dir/$script
 
                 # Common script
-                [ -e $root/_common ] && . $root/_common
-                [ -e $root/_keys ]   && . $root/_keys
+                . $root/_common
+
+                if [ -e $root/_keys ]; then
+                    . $root/_keys
+                fi
 
                 # Run script
                 . $root/$script
