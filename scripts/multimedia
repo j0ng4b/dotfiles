@@ -51,7 +51,6 @@ case $cmd in
         subcmd=$2
         case $subcmd in
             set)
-                set -x
                 # For wpctl all signals should be at end of value but on this
                 # script all signal must be at start of the value, so conversion
                 # is needed.

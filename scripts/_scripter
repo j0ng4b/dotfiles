@@ -13,6 +13,7 @@ if [ ! -d "$sr_cache_dir" ]; then
     mkdir -p "$sr_cache_dir"
 fi
 
+
 _get_dotfiles_root() {
     test_dir=$(realpath $root)
 
@@ -42,17 +43,17 @@ _run_script() {
     shift
 
     # Try find scripts directory
-    if [ -e "$root/$script.sh" ]; then
-        if [ -x "$root/$script.sh" ]; then
+    if [ -e "$root/$script" ]; then
+        if [ -x "$root/$script" ]; then
             (
                 export SCRIPT_CACHE_DIR=$sr_cache_dir/$script
 
                 # Common script
-                . $root/_common
-                . $root/_keys
+                [ -e $root/_common ] && . $root/_common
+                [ -e $root/_keys ]   && . $root/_keys
 
                 # Run script
-                . $root/$script.sh
+                . $root/$script
             )
             # WARNING: Do not remove!
             #
@@ -60,7 +61,7 @@ _run_script() {
             # the runner script!
             #
             # If some script call another script (e.g. weather calls location)
-            # through this script (_runner) the output of this script (_runner)
+            # through this script (_scripter) the output of this script (_scripter)
             # will be passed to caller script alongside with callee script
             # output.
             exit $?
