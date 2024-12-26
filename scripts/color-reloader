@@ -2,12 +2,17 @@
 
 # TODO: block multiple script spawn
 
-config_file=${XDG_CONFIG_HOME:-$HOME/.config}/system-configs.json
+# Create theme file if not exists
+theme_file=${XDG_CONFIG_HOME:-$HOME/.config}/sysconf/theme
+if [ ! -e "$theme_file" ]; then
+    echo 'catppuccin' > $theme_file
+fi
+
 
 __generate_colors_file() {
     template_name=$1
     output_path=$2
-    theme_name=$(cat $config_file | jq --raw-output '.theme')
+    theme_name=$(cat $theme_file)
 
     if [ ! -e "$root/themes/templates/$template_name" ]; then
         warn "no template found for $template_name"
@@ -29,8 +34,9 @@ __generate_colors_file() {
     done
 }
 
+
 _foot_reloader() {
-    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/foot"
+    config_dir="$XDG_CONFIG_HOME/foot"
     colors_output_path="$config_dir/colors.ini"
 
     __generate_colors_file foot $colors_output_path
@@ -56,7 +62,7 @@ _foot_reloader() {
 }
 
 _cava_reloader() {
-    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/cava"
+    config_dir="$XDG_CONFIG_HOME/cava"
     colors_output_path="$config_dir/config"
 
     if [ ! -e "$config_dir" ]; then
@@ -68,7 +74,7 @@ _cava_reloader() {
 }
 
 _btop_reloader() {
-    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/btop/themes"
+    config_dir="$XDG_CONFIG_HOME/btop/themes"
     colors_output_path="$config_dir/generated.theme"
 
     if [ ! -e "$config_dir" ]; then
@@ -81,7 +87,7 @@ _btop_reloader() {
 }
 
 _eww_reloader() {
-    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/eww"
+    config_dir="$XDG_CONFIG_HOME/eww"
     colors_output_path="$config_dir/styles/colors.scss"
 
     __generate_colors_file eww $colors_output_path
@@ -90,13 +96,12 @@ _eww_reloader() {
 }
 
 _nvim_reloader() {
-    theme_name=$(cat $config_file | jq --raw-output '.theme')
+    theme_name=$(cat $theme_file)
     if [ -z "$theme_name" ]; then
         return
     fi
 
-    runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
-	for sock in "$runtime_dir"/nvim.*.0; do
+	for sock in "$XDG_RUNTIME_DIR"/nvim.*.0; do
 		nvim --clean --headless --server "$sock" \
 			--remote-send \
                 "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' |\
@@ -107,7 +112,7 @@ _nvim_reloader() {
 }
 
 _tmux_reloader() {
-    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/tmux"
+    config_dir="$XDG_CONFIG_HOME/tmux"
     colors_output_path="$config_dir/colors.tmux"
 
     __generate_colors_file tmux $colors_output_path
@@ -115,58 +120,66 @@ _tmux_reloader() {
 }
 
 _wm_reloader() {
-    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sway"
+    config_dir="$XDG_CONFIG_HOME/sway"
     colors_output_path="$config_dir/colors"
 
     __generate_colors_file sway $colors_output_path
     swaymsg reload
 }
 
-reloaders=""
-reloaders_files=""
-while [ $# -gt 0 ]; do
-    [ "$1" = "eww" ] && reloaders="_eww_reloader;$reloaders"
-    [ "$1" = "foot" ] && reloaders="_foot_reloader;$reloaders"
-    [ "$1" = "cava" ] && reloaders="_cava_reloader;$reloaders"
-    [ "$1" = "btop" ] && reloaders="_btop_reloader;$reloaders"
-    [ "$1" = "nvim" ] && reloaders="_nvim_reloader;$reloaders"
-    [ "$1" = "tmux" ] && reloaders="_tmux_reloader;$reloaders"
-    [ "$1" = "wm" ] && reloaders="_wm_reloader;$reloaders"
 
-    shift
-done
+main() {
+    reloaders_available="$(grep -o "^_.*_reloader" $root/$script)"
 
-if [ -z "$reloaders" ]; then
-    exit 0
-fi
+    # Check which re-loader should run
+    reloaders=""
+    while [ $# -gt 0 ]; do
+        reloader="_$1_reloader"
 
-pid_file=$(mktemp /tmp/inotifywait_modify_pid.XXXXXXX) || exit 1
-while true; do
-    eval "$reloaders"
+        if str_contains "$reloaders_available" "$reloader"; then
+            reloaders="$reloader;$reloaders"
+        else
+            warn "Re-loader for \`$1\` not found! Skipped"
+        fi
 
-    inotifywait --quiet --event modify "$config_file" &
-
-    # Copy inotifywait pid to stop if needed
-    echo $! > $pid_file
-
-    # Wait until modify event finish or be stopped
-    while kill -0 $! 2>/dev/null; do
-        sleep 1
+        shift
     done
-done &
 
-# Watch changes on foot color file (symbolic link)
-while true; do
-    inotifywait --quiet --event delete_self "$config_file" | {
-        # Kill old modify process
-        kill -9 $(cat $pid_file) 2>/dev/null
-    }
-done &
+    # If there're no re-loader to run then exit
+    [ -z "$reloaders" ] && exit 0
 
 
-case $reloaders in
-    *foot*)
-        exec "$SHELL"
-        ;;
-esac
+    pid_file=$(mktemp /tmp/color_reloader.XXXXXXX) || exit 1
+    while true; do
+        eval "$reloaders"
+
+        inotifywait --quiet --event modify "$theme_file" >/dev/null &
+
+        # Copy inotifywait pid to stop if needed
+        echo $! > $pid_file
+
+        # Wait until modify event finish or be stopped
+        while kill -0 $! 2>/dev/null; do
+            sleep 1
+        done
+    done &
+
+    # Watch changes on theme file (symbolic link)
+    while true; do
+        inotifywait --quiet --event delete_self "$theme_file" | {
+            # Kill old modify event watcher
+            kill -9 $(cat $pid_file) 2>/dev/null
+        }
+    done &
+
+
+    # To dynamic change foot colors its need to setup this script as shell of
+    # it, below case check if foot re-loader is need the do the job.
+    case $reloaders in
+        *_foot_reloader*) exec "$SHELL" ;;
+    esac
+}
+
+
+main "$@"
 
