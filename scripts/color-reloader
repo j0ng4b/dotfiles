@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-# TODO: block multiple script spawn
-
 # Create theme file if not exists
 theme_file=${XDG_CONFIG_HOME:-$HOME/.config}/sysconf/theme
 if [ ! -e "$theme_file" ]; then
@@ -129,13 +127,41 @@ _wm_reloader() {
 
 
 main() {
+    # List available re-loader
     reloaders_available="$(grep -o "^_.*_reloader" $root/$script)"
+
+    # List already running re-loaders
+    pid_files_list="$(ls /tmp/color_reloader.* 2>/dev/null)"
+    if [ -n "$pid_files_list" ]; then
+        reloaders_already_running="$(tail -qn 1 $pid_files_list)"
+    fi
 
     # Check which re-loader should run
     reloaders=""
     while [ $# -gt 0 ]; do
         reloader="_$1_reloader"
 
+        # Check if re-loader is already running
+        reloader_running=""
+        for reloader_list in $reloaders_already_running; do
+            # Foot re-loader should start always
+            [ "$1" = "foot" ] && continue
+
+            if str_contains "$reloader_list" "$reloader"; then
+                reloader_running=1
+                break
+            fi
+        done
+
+        if [ -n "$reloader_running" ]; then
+            warn "Re-loader \`$1\` already running! Skipped"
+
+            shift
+            continue
+        fi
+
+
+        # Check if re-loader exit to be run
         if str_contains "$reloaders_available" "$reloader"; then
             reloaders="$reloader;$reloaders"
         else
@@ -157,6 +183,7 @@ main() {
 
         # Copy inotifywait pid to stop if needed
         echo $! > $pid_file
+        echo "$reloaders" >> $pid_file
 
         # Wait until modify event finish or be stopped
         while kill -0 $! 2>/dev/null; do
@@ -175,9 +202,9 @@ main() {
 
     # To dynamic change foot colors its need to setup this script as shell of
     # it, below case check if foot re-loader is need the do the job.
-    case $reloaders in
-        *_foot_reloader*) exec "$SHELL" ;;
-    esac
+    if str_contains "$reloaders" "_foot_reloader"; then
+        exec "$SHELL"
+    fi
 }
 
 
