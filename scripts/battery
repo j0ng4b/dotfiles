@@ -1,0 +1,176 @@
+#!/usr/bin/env sh
+
+_battery_capacity_icon() {
+    case "$(($capacity / 10))" in
+        10) echo '󰁹' ;;
+         9) echo '󰂂' ;;
+         8) echo '󰂁' ;;
+         7) echo '󰂀' ;;
+         6) echo '󰁿' ;;
+         5) echo '󰁾' ;;
+         4) echo '󰁽' ;;
+         3) echo '󰁼' ;;
+         2) echo '󰁻' ;;
+         1) echo '󰁺' ;;
+         *) echo '󰂎' ;;
+    esac
+}
+
+_battery_charging_icon() {
+    case "$(($capacity / 10))" in
+        10) echo '󰂅' ;;
+         9) echo '󰂋' ;;
+         8) echo '󰂊' ;;
+         7) echo '󰢞' ;;
+         6) echo '󰂉' ;;
+         5) echo '󰢝' ;;
+         4) echo '󰂈' ;;
+         3) echo '󰂇' ;;
+         2) echo '󰂆' ;;
+         1) echo '󰢜' ;;
+         *) echo '󰢟' ;;
+    esac
+}
+
+_notify() {
+    # Battery status
+    current_status=$(cat "$status_file")
+
+    # Low battery levels and timeouts
+    level_low=10
+    level_critical=5
+
+    level_low_timeout=3000
+    level_critical_timeout=1000
+
+    # When the battery goes less than or equal this value send a notification.
+    notify_level="$level_low"
+    notify_timeout="$level_low_timeout"
+
+    # notify() {
+    #     appname="battery_notifier.sh"
+    #     urgency=$1
+    #     body=$2
+
+    #     notify-send -w -a "$appname" -u $urgency -t $timeout "battery" "$body"
+    # }
+
+
+    # Don't run notifier if already running
+    pid_file="/tmp/battery_notifier.pid"
+
+    if [ -e "$pid_file" ] && kill -0 $(cat "$pid_file") 2>/dev/null; then
+        warn "Battery notifier already running!"
+        exit 1
+    fi
+
+
+    (
+        while true; do
+            # Get new battery status and current capacity
+            new_status=$(cat "$status_file")
+            capacity=$(cat "$capacity_file")
+
+
+            # Notify low battery
+            if [ "$current_status" = "Discharging" -a "$capacity" -le "$notify_level" ]; then
+                # Update the battery level threshold
+                notify_level="$level_critical"
+                notify_timeout="$level_critical_timeout"
+
+                echo "low battery"
+                # notify critical "<b><span color='#f6c177' size='18pt'>󰂃</span> Low Battery</b>\n<span color='#eb6f92' size='16pt'>$capacity%</span>"
+            fi
+
+
+            if [ "$new_status" = "$current_status" ]; then
+                sleep 1
+                continue
+            fi
+
+
+            # When the battery get fully charged
+            if [ "$new_status" = "Full" -o "$new_status" = "Not charging" ]; then
+                # From Discharging to Full
+                # When: charger was connected when battery is already full.
+                if [ "$current_status" = "Discharging" ]; then
+                    echo "charging full"
+                    # notify normal "<b><span color='#3e8fb0' size='30pt' baseline_shift='-5pt'>$(battery_charging_icon "$capacity")</span> Charging Full Battery</b>"
+                # From Charging to Full
+                # When: battery was charging then get full capacity.
+                else
+                    echo "battery full charge"
+                    # notify normal "<b><span color='#3e8fb0' size='18pt'>󰂄</span> Full Battery</b>"
+                fi
+            # Notify when charger is connected
+            elif [ "$new_status" = "Charging"  ]; then
+                echo "charging"
+                # notify normal "<b><span color='#3e8fb0' size='30pt' baseline_shift='-5pt'>$(battery_charging_icon "$capacity")</span> Charging Battery</b>"
+            # Notify when charger is disconnected
+            elif [ "$new_status" = "Discharging" ]; then
+                echo "discharging"
+                # notify normal "<b><span color='#3e8fb0' size='18pt'>$(battery_capacity_icon "$capacity")</span> Charger disconnected</b>\n<span color='#3e8fb0' size='16pt'>$capacity%</span>"
+
+                # Reset notification of low battery
+                if [ "$capacity" -ge "$level_low" ]; then
+                    notify_level="$level_low"
+                    notify_timeout="$level_low_timeout"
+                fi
+            # Any invalid status is ignored
+            else
+                sleep 1
+                continue
+            fi
+
+            # Update the current battery status
+            current_status="$new_status"
+
+            sleep 1
+        done
+    ) &
+
+    echo $! > "$pid_file"
+}
+
+main() {
+    batteries=$(find /sys/class/power_supply/ -name "BAT*")
+    if [ $(echo $batteries | wc -l) -gt 0 ]; then
+        enable=1
+
+        for bat in $batteries; do
+            capacity_file="$bat/capacity"
+            status_file="$bat/status"
+
+            break
+        done
+    else
+        enable=0
+    fi
+
+
+    case $1 in
+        status)
+            if [ $enable -eq 1 ]; then
+                status=$(cat "$status_file" | sed -e 's/.*/\L&/')
+                capacity=$(cat "$capacity_file")
+            else
+                warn 'No battery!'
+                exit 1
+            fi
+
+            echo "{ \"enable\": \"$enable\", \"capacity\": \"$capacity\", \"status\": \"$status\" }"
+            ;;
+
+        notify)
+            if [ $enable -eq 1 ]; then
+                _notify
+            else
+                warn 'No battery!'
+                exit 1
+            fi
+            ;;
+    esac
+}
+
+main "$@"
+

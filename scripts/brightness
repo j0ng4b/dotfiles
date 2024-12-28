@@ -1,8 +1,5 @@
 #!/usr/bin/env sh
 
-# NOTE: _runner already define some commons, if definition is not here
-# probably its on _runner.
-
 case $1 in
     # TODO: include a --save and --restores option to save set value to later
     # be restored.
