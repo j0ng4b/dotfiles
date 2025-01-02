@@ -7,66 +7,13 @@ My own configuration files.
 
 === Overview
 [.lead]
-Collection of my config files for many tools,
-some of them could be installed without any problem
-but some other depends on another tool config and
-there's no way to keep track dependencies with the
-current `dotfile` installer script.
+My collection of configuration files for many tools.
+This configurations are to my setup and tooling, could
+or couldn't work for you.
 
-{empty} +
-
-.[[tools-list]]Tools list
-[option=header,cols=2*]
-|===
-| Tool
-| Role
-
-| Hyprland
-| wayland compositor
-
-| Rofi
-| application launcher
-
-| Foot
-| terminal emulator
-
-| Vim/Gvim
-| code editor
-
-| Eww
-| widget system
-
-| PipeWire
-| audio server
-
-| WirePlumber
-| audio session manager
-
-| Dunst
-| notification daemon
-
-| Git
-| version control system
-
-| Zsh
-| shell
-
-|===
-
-.To install on Void run
-[%collapsible]
-====
-Some of dependencies can't be installed from default Void repositories, I've my
-own repository with some of the dependencies packages (e.g. Hyprland).
-
-NOTE: the bellow command will install all dependencies even that required by
-scripts as show on <<requirements,requirements>> section.
-
-[,bash]
-----
-$ sudo ./dotfile install-deps
-----
-====
+NOTE: Some configuration could depends on configuration
+of another tool so even had the possibilitty of install single
+one, it's recommended to install all configurations.
 
 {empty} +
 
@@ -77,24 +24,13 @@ that can be used to installing configurations.
 
 No help message yet, but the script commands are:
 
-`install`:: no magic, it will install a config given a name
-`uninstall`:: well, uninstall some config with this
-`list`:: will list the installable configs and their status
-`install-deps`:: install all dependencies and requirements
+`install`:: install a config given a name *or* all when no argument provided.
+
+`uninstall`:: uninstall some config *or* all when no argument provided.
+
+`list`:: will list the installable configs and their status (WIP).
+
+`help`:: show help message (WIP).
 
 {empty} +
 
-IMPORTANT: All those configurations was/are being
-written to works on Void Linux.
-
-=== Requirements
-
-Besides the tools listed <<tools-list,here>> other requirements are:
-
-libnotify:: provides `notify-send`
-grim and slurp:: used to take screenshots
-
-=== Installation
-
-No mistery, clone the repository and that's all. To install or
-uninstall configs see <<installing-configs,installing configs>> section.
