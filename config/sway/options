@@ -83,7 +83,7 @@
     shadows_on_csd enable
     shadow_blur_radius 40
     shadow_color $base02
-    shadow_inactive_color $base00
+    shadow_inactive_color $base01
 
 
     ## Colors
