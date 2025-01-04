@@ -1,0 +1,17 @@
+###  ╦┌┐┌┌─┐┬ ┬┌┬┐
+###  ║│││├─┘│ │ │
+###  ╩┘└┘┴  └─┘ ┴
+
+    ## Keyboard
+    input type:keyboard {
+        xkb_layout br
+        xkb_numlock enable
+    }
+
+    ## Touchpad
+    input type:touchpad {
+        tap enable
+        natural_scroll enable
+    }
+
+# vim: ft=swayconfig nospell
