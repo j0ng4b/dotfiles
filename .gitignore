@@ -13,7 +13,5 @@ chpwd-recent-dirs
 scripts/_keys
 
 ## Generated colors files
-config/eww/**/colors.scss
-config/tmux/**/colors.tmux
-config/foot/**/colors.ini
+**/colors*
 
