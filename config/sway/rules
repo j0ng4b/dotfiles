@@ -1,0 +1,22 @@
+###  ╦═╗┬ ┬┬  ┌─┐┌─┐
+###  ╠╦╝│ ││  ├┤ └─┐
+###  ╩╚═└─┘┴─┘└─┘└─┘
+
+
+####################
+# # # Floating
+for_window {
+    [app_id="firefox" title="Firefox — Sharing Indicator"] floating enable
+
+    [class="^steam$"] floating enable
+}
+
+
+####################
+# # # Automatic close
+for_window {
+    [class="^steam$" title="^Steam - News$"] kill
+}
+
+
+# vim: ft=swayconfig nospell
