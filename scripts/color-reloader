@@ -122,7 +122,12 @@ _wm_reloader() {
     colors_output_path="$config_dir/colors"
 
     __generate_colors_file sway $colors_output_path
+
     swaymsg reload
+
+    # Update title colors
+    focused=$(swaymsg -r -t get_seats | jq '.[0].focus')
+    swaymsg -q "[con_id=${focused}]" title_format "<span rise='-5000' font_desc='Poppins 22'>\$dot_0\$dot_1\$dot_2</span>" &>/dev/null
 }
 
 
