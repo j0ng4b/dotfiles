@@ -35,5 +35,6 @@ include "rules"
 
 ## Run a script to start everything that need to be started
 exec "$scripts-path/autostart &"
+exec "$scripts-path/update_window_titles &"
 
 # vim: ft=swayconfig nospell
