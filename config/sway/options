@@ -54,7 +54,7 @@
 
 
     ## Title
-    font 'pango:Poppins 11'
+    font 'pango:Poppins 8'
 
     title_align left
     titlebar_separator disable
