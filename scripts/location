@@ -1,8 +1,5 @@
 #!/usr/bin/env sh
 
-# NOTE: _runner already define some commons, if definition is not here
-# probably its on _runner.
-
 # Cache
 cache_dir=$SCRIPT_CACHE_DIR
 
@@ -21,6 +18,7 @@ elif [ ! -d "$cache_dir" ]; then
     touch $cache_json
 fi
 
+
 _get() {
     while true; do
         json=$(cat $cache_json)
@@ -38,6 +36,7 @@ _get() {
     done
 }
 
+
 case $1 in
     city)
         echo $(_get) | jq --raw-output '.city'
@@ -51,7 +50,7 @@ case $1 in
         echo $(_get) | jq --raw-output '.lon'
         ;;
 
-    coord)
+    coordinates)
         json=$(_get)
 
         printf '['
