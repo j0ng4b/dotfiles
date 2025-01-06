@@ -45,4 +45,13 @@ str_contains() {
     esac
 }
 
+
+# Signals
+SIGHUP=1
+SIGINT=2
+SIGQUIT=3
+SIGABRT=4
+SIGKILL=9
+SIGTERM=15
+
 # vim ft=bash
