@@ -44,6 +44,10 @@ fi
 sh $root_dir/scripter battery notify
 
 
+## Start color color temperature adjuster
+sh $root_dir/scripter color-temperature run &
+
+
 ## Start color re-loader
 sh $root_dir/scripter color-reloader nvim tmux wm &
 
