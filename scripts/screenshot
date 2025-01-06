@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+
+# Real screenshot path
+screenshot_path="$(xdg-user-dir PICTURES)/$(date +'Screenshot-%d%m%Y-%H%M%S.png')"
+
+# Pretty screenshot path used on notification
+pretty_path="$(echo $screenshot_path | sed -e "s|$HOME|~|g")"
+
+message="Screenshot saved"
+
+if [ "$1" = "--clipboard" ]; then
+    message="$message to clipboard"
+
+    screenshot_path="-"
+    pretty_path=""
+
+    clipboard_screenshot_path="/tmp/clipboard_screenshot"
+    clipboard="| wl-copy -t image/png; wl-paste -t image/png > $clipboard_screenshot_path"
+
+    shift
+fi
+
+case $1 in
+    # Take a screenshot of entire screen
+    screen)
+        eval "grim $screenshot_path $clipboard"
+        ;;
+
+    # Take a screenshot of a selected area
+    area)
+        eval "grim -g \"$(slurp -d)\" $screenshot_path $clipboard"
+
+        if [ $? -gt 0 ]; then
+            notify-send -w -a "scripter-screenshot" "Screenshot aborted" ""
+            exit 1
+        fi
+        ;;
+
+    *)
+        error "Invalid command $1!"
+        exit 1
+        ;;
+esac
+
+# Send screenshot notification
+[ -n "$clipboard_screenshot_path" ] && screenshot_path="$clipboard_screenshot_path"
+notify-send -w -a "scripter-screenshot" -i $screenshot_path "$message" "$pretty_path"
+
