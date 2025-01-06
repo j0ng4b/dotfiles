@@ -23,10 +23,10 @@ bindsym --to-code {
     $super+d exec $menu
 
     ## Screenshot
-    Print exec "$scripter screenshot screen"
-    Shift+Print exec "$scripter screenshot area"
-    Control+Print exec "$scripter screenshot --copy screen"
-    Control+Shift+Print exec "$scripter screenshot --copy area"
+    Print exec $cmd_screenshot_screen
+    Shift+Print exec $cmd_screenshot_area
+    Control+Print exec $cmd_screenshot_screen_clipboard
+    Control+Shift+Print exec $cmd_screenshot_area_clipboard
 }
 
 
