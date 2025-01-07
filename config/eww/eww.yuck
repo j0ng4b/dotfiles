@@ -1,0 +1,10 @@
+;; Global variables
+(include './yuck/variables.yuck')
+
+
+;; Widgets
+
+
+;; Windows
+(include './yuck/windows/corners.yuck')
+
