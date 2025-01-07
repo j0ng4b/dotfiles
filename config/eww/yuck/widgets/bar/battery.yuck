@@ -1,0 +1,24 @@
+(defwidget battery []
+  (box
+    :class 'battery'
+    :orientation 'vertical'
+    :space-evenly false
+    :visible {battery.enable == 1}
+    :spacing 2
+    (box
+      :class 'bulb'
+      :hexpand false
+    )
+    (progress
+      :class 'capacity ${
+        battery.capacity >= 80 ? 'high' :
+        battery.capacity >= 30 ? 'medium' :
+        battery.capacity >= 10 ? 'low' : 'very-low'
+      }'
+      :value {battery.capacity}
+      :flipped true
+      :orientation 'vertical'
+    )
+  )
+)
+

@@ -3,8 +3,10 @@
 
 
 ;; Widgets
+(include './yuck/widgets/bar/main.yuck')
 
 
 ;; Windows
+(include './yuck/windows/bar.yuck')
 (include './yuck/windows/corners.yuck')
 

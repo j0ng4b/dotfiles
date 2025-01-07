@@ -1,0 +1,9 @@
+(defwindow bar
+  :monitor 0
+  :stacking 'fg'
+  :exclusive true
+  :namespace 'bar'
+  :geometry (geometry :height '100%' :anchor 'left center')
+  (bar)
+)
+

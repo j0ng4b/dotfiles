@@ -1,0 +1,14 @@
+.bar {
+    color: $foreground;
+    background-color: $background;
+
+    padding: 5px;
+
+    font-size: 14px;
+    font-weight: normal;
+    font-family: 'Poppins';
+}
+
+
+@import './battery.scss';
+

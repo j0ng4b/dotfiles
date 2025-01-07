@@ -1,0 +1,34 @@
+.battery {
+    .bulb {
+        margin: 0px 8px;
+        min-height: 2px;
+        background-color: $base05;
+    }
+
+    .capacity {
+        border: 2px solid $base05;
+        border-radius: 7px;
+        padding: 3px;
+
+        trough {
+            min-height: 50px;
+            min-width: 22px;
+
+            background-color: transparent;
+            border: none;
+
+            progress {
+                min-width: 22px;
+
+                border: none;
+                border-radius: 3px;
+            }
+        }
+
+        &.high     trough progress { background-color: $base0B; }
+        &.medium   trough progress { background-color: $base0A; }
+        &.low      trough progress { background-color: $base09; }
+        &.very-low trough progress { background-color: $base08; }
+    }
+}
+
