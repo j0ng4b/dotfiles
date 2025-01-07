@@ -29,6 +29,13 @@ if [ -z "$(pgrep -f swww-daemon)" ]; then
 fi
 
 
+## Start eww (widgets)
+sh $root_dir/scripter color-reloader eww &
+if [ -z "$(pgrep -f eww)" ]; then
+   eww daemon
+fi
+
+
 ## Start foot server and always restart if closed
 (
     if [ -z "$(pgrep -f 'foot --server')" ]; then
