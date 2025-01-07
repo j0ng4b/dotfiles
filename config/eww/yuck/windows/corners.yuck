@@ -1,6 +1,6 @@
 (defwindow corner-top
   :monitor 0
-  :stacking 'bg'
+  :stacking 'fg'
   :namespace 'corner'
   :geometry (geometry :anchor 'top left')
   (box
@@ -11,7 +11,7 @@
 
 (defwindow corner-bottom
   :monitor 0
-  :stacking 'bg'
+  :stacking 'fg'
   :namespace 'corner'
   :geometry (geometry :anchor 'bottom left')
   (box
