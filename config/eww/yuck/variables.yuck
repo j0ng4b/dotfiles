@@ -2,3 +2,10 @@
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
 
+
+(defpoll battery
+  :interval '100ms'
+  :initial '{ "enable": 0 }'
+  'scripts/scripter battery status'
+)
+
