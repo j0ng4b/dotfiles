@@ -1,0 +1,62 @@
+#!/usr/bin/env sh
+
+# Cache
+cache_dir=$SCRIPT_CACHE_DIR
+
+cache_dir_bluetooth=$cache_dir/bluetooth
+cache_bluetooth_power=$cache_dir_wifi/power
+
+if [ -z "$cache_dir" ]; then
+    exit 1
+elif [ ! -d "$cache_dir" ]; then
+    mkdir -p $cache_dir
+    mkdir -p $cache_dir_bluetooth
+fi
+
+
+_bl_get_info() {
+    info=$(bluetoothctl show)
+
+    if [ "$(echo $info | sed -ne 's/.*Powered: \([a-z]\{2,3\}\).*/\1/p')" = "yes" ]; then
+        enable=1
+
+        if [ -n "$(bluetoothctl devices Connected)" ]; then
+            status="connected"
+        else
+            status="disconnected"
+        fi
+    else
+        enable=0
+        status="unknown"
+    fi
+
+    echo $enable > $cache_bluetooth_power
+    echo "{ \"enable\": \"$enable\", \"status\": \"$status\"}"
+}
+
+
+case $1 in
+    bluetooth)
+        case $2 in
+            info)
+                _bl_get_info
+                ;;
+
+            on | off | toggle)
+                cmd=$2
+                if [ "$cmd" = "toggle" ]; then
+                    enable=$(cat $cache_bluetooth_power)
+                    if [ "$enable" -eq 1 ]; then
+                        cmd="off"
+                    else
+                        cmd="on"
+                    fi
+                fi
+
+                bluetoothctl power $cmd >/dev/null
+                echo $cmd > $cache_bluetooth_power
+                ;;
+        esac
+        ;;
+esac
+
