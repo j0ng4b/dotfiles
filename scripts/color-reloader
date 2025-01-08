@@ -12,21 +12,21 @@ __generate_colors_file() {
     output_path=$2
     theme_name=$(cat $theme_file)
 
-    if [ ! -e "$root/themes/templates/$template_name" ]; then
+    if [ ! -e "$root/color_reloader/template/$template_name" ]; then
         warn "no template found for $template_name"
         return
     fi
 
-    if [ -z "$theme_name" ]; then
+    if [ ! -e "$root/color_reloader/color/$theme_name" ]; then
         error "theme file not found: $theme_name"
         return
     fi
 
     # Load theme colors
-    . "$root/themes/$theme_name"
+    . "$root/color_reloader/color/$theme_name"
 
     # Generate color file
-    cp --force "$root/themes/templates/$template_name" $output_path
+    cp --force "$root/color_reloader/template/$template_name" $output_path
     for color_name in base00 base01 base02 base03 base04 base05 base06 base07 base08 base09 base0A base0B base0C base0D base0E base0F; do
         eval "sed -i -e "s/{$color_name}/\${$color_name}/" "$output_path""
     done

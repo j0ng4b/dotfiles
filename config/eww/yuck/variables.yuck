@@ -2,7 +2,19 @@
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
 
+;; Clock widget
+(defpoll hour
+  :interval '1s'
+  'date +"%H"'
+)
 
+(defpoll minute
+  :interval '1s'
+  'date +"%M"'
+)
+
+
+;; battery widget
 (defpoll battery
   :interval '100ms'
   :initial '{ "enable": 0 }'
