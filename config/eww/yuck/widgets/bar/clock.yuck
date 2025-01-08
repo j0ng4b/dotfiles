@@ -1,0 +1,11 @@
+(defwidget clock []
+  (box
+    :class 'clock'
+    :orientation 'vertical'
+    :space-evenly false
+    :visible {battery.enable == 1}
+    (label :text {hour})
+    (label :text {minute})
+  )
+)
+

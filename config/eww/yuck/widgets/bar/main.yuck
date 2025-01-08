@@ -1,4 +1,5 @@
 (include './yuck/widgets/bar/battery.yuck')
+(include './yuck/widgets/bar/clock.yuck')
 
 
 (defwidget bar []
@@ -14,9 +15,11 @@
     (box
       :halign 'center'
       :valign 'end'
+      :spacing 10
       :orientation 'vertical'
       :space-evenly false
       (battery)
+      (clock)
     )
   )
 )
