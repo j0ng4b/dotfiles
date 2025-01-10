@@ -13,11 +13,36 @@
   'date +"%M"'
 )
 
+;; Indicators
+(defpoll ethernet
+  :interval '100ms'
+  :initial '{ "enable": 0 }'
+  'scripts/scripter network ethernet status'
+)
+
+(defpoll wifi
+  :interval '100ms'
+  :initial '{ "enable": 0 }'
+  'scripts/scripter network wifi status'
+)
+
+(defpoll bluetooth
+  :interval '100ms'
+  :initial '{ "enable": 0 }'
+  'scripts/scripter network bluetooth status'
+)
+
+(defpoll multimedia
+  :interval '100ms'
+  :initial '{"speaker": { "mute": 0, "volume": 0 }, "microphone": { "mute": 0, "volume": 0 }}'
+  'scripts/scripter multimedia status'
+)
+
 
 ;; battery widget
 (defpoll battery
   :interval '100ms'
-  :initial '{ "enable": 0 }'
+  :initial '{ "enable": 0, "capacity": 0 }'
   'scripts/scripter battery status'
 )
 
