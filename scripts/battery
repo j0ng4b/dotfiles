@@ -2,33 +2,11 @@
 
 _battery_capacity_icon() {
     case "$(($capacity / 10))" in
-        10) echo '󰁹' ;;
-         9) echo '󰂂' ;;
-         8) echo '󰂁' ;;
-         7) echo '󰂀' ;;
-         6) echo '󰁿' ;;
-         5) echo '󰁾' ;;
-         4) echo '󰁽' ;;
-         3) echo '󰁼' ;;
-         2) echo '󰁻' ;;
-         1) echo '󰁺' ;;
-         *) echo '󰂎' ;;
-    esac
-}
-
-_battery_charging_icon() {
-    case "$(($capacity / 10))" in
-        10) echo '󰂅' ;;
-         9) echo '󰂋' ;;
-         8) echo '󰂊' ;;
-         7) echo '󰢞' ;;
-         6) echo '󰂉' ;;
-         5) echo '󰢝' ;;
-         4) echo '󰂈' ;;
-         3) echo '󰂇' ;;
-         2) echo '󰂆' ;;
-         1) echo '󰢜' ;;
-         *) echo '󰢟' ;;
+        10 | 9)     echo '' ;;
+         8 | 7)     echo '' ;;
+         6 | 5 | 4) echo '' ;;
+         3 | 2)     echo '' ;;
+         *)         echo '' ;;
     esac
 }
 
@@ -47,13 +25,36 @@ _notify() {
     notify_level="$level_low"
     notify_timeout="$level_low_timeout"
 
-    # notify() {
-    #     appname="battery_notifier.sh"
-    #     urgency=$1
-    #     body=$2
+    notify() {
+        appname="scripter-battery"
 
-    #     notify-send -w -a "$appname" -u $urgency -t $timeout "battery" "$body"
-    # }
+        urgency=$1
+        icon=$2
+        title=$3
+
+        body=$4
+        [ -n "$body" ] && body="\n$body"
+
+        timeout="$level_low_timeout"
+        [ "$urgency" = "critical" ] && timeout="$notify_timeout"
+
+
+        msg=""
+        msg="$msg<span font_desc='Phosphor-Fill' size='15pt' baseline_shift='-2pt'>$icon</span>"
+        msg="$msg <b><span size='14pt'>$title</span></b>"
+        msg="$msg<span size='12pt'>$body</span>"
+
+
+        # Load generated colors
+        # Note: tmux colors format are shell format
+        . "$XDG_CONFIG_HOME/tmux/colors.tmux"
+
+        for color_name in base00 base01 base02 base03 base04 base05 base06 base07 base08 base09 base0A base0B base0C base0D base0E base0F; do
+            msg="$(eval "echo \"$msg\" | sed -e "s/{$color_name}/\${$color_name}/"")"
+        done
+
+        notify-send -w -a "$appname" -u $urgency -t $timeout "battery" "$msg"
+    }
 
 
     # Don't run notifier if already running
@@ -74,12 +75,14 @@ _notify() {
 
             # Notify low battery
             if [ "$current_status" = "Discharging" -a "$capacity" -le "$notify_level" ]; then
+                notify critical \
+                    "<span color='{base0A}'></span>" \
+                    "Low Battery" \
+                    "<span color='{base08}'>$capacity%</span>"
+
                 # Update the battery level threshold
                 notify_level="$level_critical"
                 notify_timeout="$level_critical_timeout"
-
-                echo "low battery"
-                # notify critical "<b><span color='#f6c177' size='18pt'>󰂃</span> Low Battery</b>\n<span color='#eb6f92' size='16pt'>$capacity%</span>"
             fi
 
 
@@ -94,22 +97,27 @@ _notify() {
                 # From Discharging to Full
                 # When: charger was connected when battery is already full.
                 if [ "$current_status" = "Discharging" ]; then
-                    echo "charging full"
-                    # notify normal "<b><span color='#3e8fb0' size='30pt' baseline_shift='-5pt'>$(battery_charging_icon "$capacity")</span> Charging Full Battery</b>"
+                    notify normal \
+                        "<span color='{base0B}'></span>" \
+                        "Charging Full Battery"
                 # From Charging to Full
                 # When: battery was charging then get full capacity.
                 else
-                    echo "battery full charge"
-                    # notify normal "<b><span color='#3e8fb0' size='18pt'>󰂄</span> Full Battery</b>"
+                    notify normal \
+                        "<span color='{base0B}'></span>" \
+                        "Full Battery"
                 fi
             # Notify when charger is connected
             elif [ "$new_status" = "Charging"  ]; then
-                echo "charging"
-                # notify normal "<b><span color='#3e8fb0' size='30pt' baseline_shift='-5pt'>$(battery_charging_icon "$capacity")</span> Charging Battery</b>"
+                notify normal \
+                    "<span color='{base0C}'></span>" \
+                    "Charging Battery"
             # Notify when charger is disconnected
             elif [ "$new_status" = "Discharging" ]; then
-                echo "discharging"
-                # notify normal "<b><span color='#3e8fb0' size='18pt'>$(battery_capacity_icon "$capacity")</span> Charger disconnected</b>\n<span color='#3e8fb0' size='16pt'>$capacity%</span>"
+                notify normal \
+                    "<span color='{base0C}'>$(_battery_capacity_icon)</span>" \
+                    "Charger disconnected" \
+                    "<span color='{base0C}'>$capacity%</span>"
 
                 # Reset notification of low battery
                 if [ "$capacity" -ge "$level_low" ]; then
@@ -146,7 +154,6 @@ main() {
     else
         enable=0
     fi
-
 
     case $1 in
         status)

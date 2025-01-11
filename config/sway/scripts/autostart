@@ -33,6 +33,8 @@ fi
 sh $root_dir/scripter color-reloader eww &
 if [ -z "$(pgrep -f eww)" ]; then
    eww daemon
+   sleep 1
+   eww open-many bar corner-top corner-bottom
 fi
 
 
