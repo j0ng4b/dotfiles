@@ -1,6 +1,6 @@
 (defwidget battery []
   (box
-    :class 'battery'
+    :class 'battery ${battery.status == 'discharging' ? '' : 'charging'}'
     :orientation 'vertical'
     :space-evenly false
     :visible {battery.enable == 1}

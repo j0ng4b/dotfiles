@@ -1,4 +1,7 @@
 .battery {
+    &.charging .bulb { background-color: $base0A; }
+    &.charging .capacity { border-color: $base0A; }
+
     .bulb {
         margin: 0px 8px;
         min-height: 2px;
