@@ -19,7 +19,7 @@
     )
     (indicator
       :class 'icon-fill'
-      :visible {wifi.enable == 1}
+      :visible {wifi.enable == 1 && ethernet.enable == 0}
       :value {wifi.quality == 'high' ? '' :
               wifi.quality == 'good' ? '' :
               wifi.quality == 'low' ? '' :

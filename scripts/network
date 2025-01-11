@@ -3,14 +3,30 @@
 # Cache
 cache_dir=$SCRIPT_CACHE_DIR
 
+cache_dir_wifi=$cache_dir/wifi
+cache_wifi_power=$cache_dir_wifi/power
+cache_wifi_quality=$cache_dir_wifi/quality
+
 cache_dir_bluetooth=$cache_dir/bluetooth
-cache_bluetooth_power=$cache_dir_wifi/power
+cache_bluetooth_power=$cache_dir_bluetooth/power
 
 if [ -z "$cache_dir" ]; then
     exit 1
 elif [ ! -d "$cache_dir" ]; then
     mkdir -p $cache_dir
+    mkdir -p $cache_dir_wifi
     mkdir -p $cache_dir_bluetooth
+
+    # Bluetooth
+    touch $cache_bluetooth_power
+
+    # WiFi
+    touch $cache_wifi_quality
+    touch $cache_wifi_power
+
+    for i in $(seq 1 5); do
+        echo -50 >> $cache_wifi_quality
+    done
 fi
 
 
@@ -95,7 +111,7 @@ _net_get_info() {
             fi
 
             # Update WiFi quality file
-            sed -if '1d' "$cache_wifi_quality"
+            sed -ie '1d' "$cache_wifi_quality"
             echo "$quality" >> $cache_wifi_quality
 
             # Calculate average WiFi quality
@@ -138,6 +154,23 @@ _net_get_info() {
     printf '}\n'
 }
 
+_net_wifi_enabled() {
+    cmd="$1"
+
+    if [ -n "$(command -pv iwctl)" ]; then
+        interface="$(iwctl device list | sed '1,4d' | cut -d' ' -f3)"
+        iwctl device $interface set-property Powered $cmd
+    elif [ -n "$(command -pv wpa_cli)" ]; then
+        error "Not available to wpa_supplicant!"
+        exit 1
+    else
+        error "Not available without some WiFi manager!"
+        exit 1
+    fi
+
+    echo $cmd > $cache_wifi_power
+}
+
 _bl_get_info() {
     info=$(bluetoothctl show)
 
@@ -149,12 +182,15 @@ _bl_get_info() {
         else
             status="disconnected"
         fi
+
+        echo "on" > $cache_bluetooth_power
     else
         enable=0
         status="unknown"
+
+        echo "off" > $cache_bluetooth_power
     fi
 
-    echo $enable > $cache_bluetooth_power
     echo "{ \"enable\": \"$enable\", \"status\": \"$status\"}"
 }
 
@@ -164,6 +200,20 @@ case $1 in
         case $2 in
             status)
                 _net_get_info wifi
+                ;;
+
+            on | off | toggle)
+                cmd=$2
+                if [ "$cmd" = "toggle" ]; then
+                    enable=$(cat $cache_wifi_power)
+                    if [ "$enable" = "off" ]; then
+                        cmd="on"
+                    else
+                        cmd="off"
+                    fi
+                fi
+
+                _net_wifi_enabled $cmd
                 ;;
         esac
         ;;
@@ -186,10 +236,10 @@ case $1 in
                 cmd=$2
                 if [ "$cmd" = "toggle" ]; then
                     enable=$(cat $cache_bluetooth_power)
-                    if [ "$enable" -eq 1 ]; then
-                        cmd="off"
-                    else
+                    if [ "$enable" = "off" ]; then
                         cmd="on"
+                    else
+                        cmd="off"
                     fi
                 fi
 
