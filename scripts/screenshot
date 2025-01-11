@@ -28,12 +28,13 @@ case $1 in
 
     # Take a screenshot of a selected area
     area)
-        eval "grim -g \"$(slurp -d)\" $screenshot_path $clipboard"
-
+        geometry="$(slurp -d)"
         if [ $? -gt 0 ]; then
             notify-send -w -a "scripter-screenshot" "Screenshot aborted" ""
             exit 1
         fi
+
+        eval "grim -g \"$geometry\" $screenshot_path $clipboard"
         ;;
 
     *)
