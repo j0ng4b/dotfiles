@@ -25,6 +25,9 @@ __generate_colors_file() {
     # Load theme colors
     . "$root/color_reloader/color/$theme_name"
 
+    # Create
+    mkdir -p $(dirname $output_path)
+
     # Generate color file
     cp --force "$root/color_reloader/template/$template_name" $output_path
     for color_name in base00 base01 base02 base03 base04 base05 base06 base07 base08 base09 base0A base0B base0C base0D base0E base0F; do
@@ -115,6 +118,30 @@ _tmux_reloader() {
 
     __generate_colors_file tmux $colors_output_path
     tmux source-file "$config_dir/tmux.conf"
+}
+
+_notification_reloader() {
+    config_dir="$XDG_CONFIG_HOME/dunst/dunstrc.d"
+    colors_output_path="$config_dir/colors.conf"
+
+    __generate_colors_file dunst $colors_output_path
+
+    # Workaround: for some reason on dunst 1.12.1 when reload config with
+    # visible notifications hide notifications and any other notifications
+    # aren't displayed.
+    dunstctl set-paused true
+
+    # If on config there are some notification with override_pause_level set to
+    # 100 this loop will wait until it desapear to reload config.
+    #
+    # Ensuring that any configuration can't set override_pause_level to 100 this
+    # can be simplified to only use sleep 0.01.
+    while [ "$(dunstctl count displayed)" -gt 0 ]; do
+        sleep 0.01
+    done
+    sleep 0.01
+
+    dunstctl reload
 }
 
 _wm_reloader() {

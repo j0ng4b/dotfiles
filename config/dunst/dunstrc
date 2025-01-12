@@ -1,0 +1,99 @@
+#
+#                 ██████╗ ██╗   ██╗███╗   ██╗███████╗████████╗
+#                 ██╔══██╗██║   ██║████╗  ██║██╔════╝╚══██╔══╝
+#                 ██║  ██║██║   ██║██╔██╗ ██║███████╗   ██║
+#                 ██║  ██║██║   ██║██║╚██╗██║╚════██║   ██║
+#                 ██████╔╝╚██████╔╝██║ ╚████║███████║   ██║
+#                 ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚══════╝   ╚═╝
+#
+#                ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗
+#               ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝
+#               ██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+#               ██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+#               ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+#                ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+#
+
+[global]
+    ## Font
+    font = "Poppins 10"
+
+    ## Dimensions
+    width=(300, 400)
+    height=(0, 300)
+
+    ## Borders
+    frame_width = 1
+    corners = all
+    corner_radius = 10
+    separator_color = frame
+
+    ## Location
+    origin = top-right
+    offset = (10, 10)
+    gap_size = 5
+
+    ## Padding
+    padding = 20
+    horizontal_padding = 20
+    text_icon_padding = 15
+
+    ## Progress bar
+    progress_bar = true
+    progress_bar_horizontal_alignment = center
+    progress_bar_height = 15
+
+    progress_bar_frame_width = 0
+    progress_bar_corners = all
+    progress_bar_corner_radius = 15 # This will clamp to half of progress bar height
+
+    ## Icon
+    icon_corners = all
+    icon_corner_radius = 10
+
+    ## History
+    history_length = 15
+
+    ## Visible notifications
+    indicate_hidden = true
+    notification_limit = 4
+
+    ## Timeout
+    timeout = 5s
+    ignore_dbusclose = true
+
+    ## Miscellaneous
+    layer = top
+    follow = mouse
+    enable_posix_regex = true
+    show_indicators = false
+
+
+[battery]
+    ## Filter
+    appname = "scripter-battery"
+
+    ## Modifications
+    format = "%b"
+    alignment = center
+
+    override_pause_level = 100
+
+
+[screenshot_aborted]
+    ## Filter
+    appname = "scripter-screenshot"
+    summary = "aborted"
+
+    ## Modifications
+    alignment = center
+
+[screenshot]
+    ## Filter
+    appname = "scripter-screenshot"
+
+    ## Modifications
+    markup = full
+    max_icon_size = 120
+
+# vim: ft=cfg

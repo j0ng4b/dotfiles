@@ -97,15 +97,11 @@ _notify() {
                 # From Discharging to Full
                 # When: charger was connected when battery is already full.
                 if [ "$current_status" = "Discharging" ]; then
-                    notify normal \
-                        "<span color='{base0B}'></span>" \
-                        "Charging Full Battery"
+                    notify normal "" "Charging Full Battery"
                 # From Charging to Full
                 # When: battery was charging then get full capacity.
                 else
-                    notify normal \
-                        "<span color='{base0B}'></span>" \
-                        "Full Battery"
+                    notify normal "<" "Full Battery"
                 fi
             # Notify when charger is connected
             elif [ "$new_status" = "Charging"  ]; then
