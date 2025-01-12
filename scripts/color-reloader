@@ -117,7 +117,7 @@ _tmux_reloader() {
     colors_output_path="$config_dir/colors.tmux"
 
     __generate_colors_file tmux $colors_output_path
-    tmux source-file "$config_dir/tmux.conf"
+    tmux run-shell "$config_dir/style.tmux"
 }
 
 _notification_reloader() {
