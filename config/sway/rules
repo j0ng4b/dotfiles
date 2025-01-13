@@ -9,6 +9,7 @@ for_window {
     [app_id="firefox" title="Firefox — Sharing Indicator"] floating enable
 
     [class="^steam$"] floating enable
+    [class="^discord$"] floating enable
 }
 
 
@@ -16,6 +17,7 @@ for_window {
 # # # Automatic close
 for_window {
     [class="^steam$" title="^Steam - News$"] kill
+    [class="^steam$" title="^Ofertas especiais$"] kill
 }
 
 
