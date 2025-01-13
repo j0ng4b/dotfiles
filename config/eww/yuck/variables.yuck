@@ -47,5 +47,13 @@
 )
 
 
-(deflisten workspaces 'scripts/workspaces.sh')
+(deflisten systray_items_count
+  :initial 0
+  'scripts/systray_items_count.sh'
+)
+
+(deflisten workspaces
+  :initial '[{"name":"1","focused":false,"non_empty":true},{"name":"2","focused":false,"non_empty":true},{"name":"3","focused":false,"non_empty":true},{"name":"4","focused":false,"non_empty":true},{"name":"5","focused":false,"non_empty":false},{"name":"6","focused":false,"non_empty":false},{"name":"7","focused":false,"non_empty":false},{"name":"8","focused":false,"non_empty":false},{"name":"9","focused":false,"non_empty":false},{"name":"10","focused":false,"non_empty":false}]'
+  'scripts/workspaces.sh'
+)
 

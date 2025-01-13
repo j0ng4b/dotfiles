@@ -1,6 +1,7 @@
 (include './yuck/widgets/bar/battery.yuck')
 (include './yuck/widgets/bar/clock.yuck')
 (include './yuck/widgets/bar/indicators.yuck')
+(include './yuck/widgets/bar/tray.yuck')
 (include './yuck/widgets/bar/workspaces.yuck')
 
 
@@ -18,9 +19,10 @@
     (box
       :halign 'center'
       :valign 'end'
-      :spacing 10
+      :spacing 12
       :orientation 'vertical'
       :space-evenly false
+      (tray)
       (indicators)
       (battery)
       (clock)
