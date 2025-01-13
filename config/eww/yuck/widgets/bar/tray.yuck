@@ -7,7 +7,7 @@
       :class 'systray'
       :visible {systray_items_count > 0}
       :spacing 10
-      :icon-size 25
+      :icon-size 20
       :orientation 'vertical'
     )
   )
