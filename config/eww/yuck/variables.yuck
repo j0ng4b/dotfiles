@@ -46,3 +46,6 @@
   'scripts/scripter battery status'
 )
 
+
+(deflisten workspaces 'scripts/workspaces.sh')
+

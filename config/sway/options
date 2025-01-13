@@ -13,7 +13,7 @@
     focus_follows_mouse yes
 
     ## Move mouse when focus change
-    mouse_warping container
+    mouse_warping none
 
     ## Enable XWayland
     xwayland force

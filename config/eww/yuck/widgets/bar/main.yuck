@@ -1,6 +1,7 @@
 (include './yuck/widgets/bar/battery.yuck')
 (include './yuck/widgets/bar/clock.yuck')
 (include './yuck/widgets/bar/indicators.yuck')
+(include './yuck/widgets/bar/workspaces.yuck')
 
 
 (defwidget bar []
@@ -12,6 +13,7 @@
       :valign 'start'
       :orientation 'vertical'
       :space-evenly false
+      (workspaces)
     )
     (box
       :halign 'center'

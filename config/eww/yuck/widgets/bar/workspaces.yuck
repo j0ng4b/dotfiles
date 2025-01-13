@@ -1,0 +1,18 @@
+(defwidget workspaces []
+  (box
+    :class 'workspaces'
+    :spacing 10
+    :orientation 'vertical'
+    :space-evenly false
+    (for workspace in {workspaces}
+      (eventbox
+        :cursor 'pointer'
+        :onclick 'swaymsg -q workspace number ${workspace.name}'
+        (box
+          :class 'workspace ${workspace.focused ? "current" : ""} ${workspace.non_empty ? "" : "empty"}'
+        )
+      )
+    )
+  )
+)
+
