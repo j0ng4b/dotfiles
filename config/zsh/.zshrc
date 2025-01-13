@@ -61,6 +61,10 @@ for plugin in $plugins; do
     plugin_name="$(basename $plugin)"
     plugin_path="$plugin/$plugin_name.plugin.zsh"
 
+    if [ ! -e "$plugin_path" ]; then
+        continue
+    fi
+
     plugin_pre_conf="$ZDOTDIR/plugins.conf.d/pre/$plugin_name.conf.zsh"
     plugin_post_conf="$ZDOTDIR/plugins.conf.d/post/$plugin_name.conf.zsh"
 
