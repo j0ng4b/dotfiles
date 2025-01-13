@@ -30,12 +30,12 @@ fi
 
 
 ## Start eww (widgets)
-sh $root_dir/scripter color-reloader eww &
 if [ -z "$(pgrep -f eww)" ]; then
    eww daemon
    sleep 1
    eww open-many bar corner-top corner-bottom
 fi
+sh $root_dir/scripter color-reloader eww &
 
 
 ## Start foot server and always restart if closed
