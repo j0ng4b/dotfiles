@@ -39,6 +39,9 @@ export SAVEHIST=10000
 export ZLE_RPROMPT_INDENT="0"
 
 
+## Starship config path
+export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/config.toml"
+
 ## Common variables
 export EDITOR=nvim
 export VISUAL=nvim

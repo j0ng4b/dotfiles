@@ -82,3 +82,7 @@ for plugin in $plugins; do
     fi
 done
 
+
+## Start starship
+eval "$(starship init zsh)"
+
