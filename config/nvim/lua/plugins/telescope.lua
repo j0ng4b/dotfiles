@@ -37,7 +37,12 @@ return {
             'nvim-telescope/telescope-fzf-native.nvim',
             build = 'make',
             cond = function()
-                return vim.fn.executable 'make' == 1
+                if vim.fn.executable 'make' == 1 then
+                    return true
+                end
+
+                print('To install telescope-fzf-native is need a c compiler and make!')
+                return false
             end,
         },
     },
