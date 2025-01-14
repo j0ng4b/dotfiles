@@ -109,27 +109,6 @@ local config = function()
                 end
             },
 
-            {
-                event = 'neo_tree_buffer_leave',
-                handler = function()
-                    -- On others buffers disable movement with left and right arrows
-                    -- in insert mode
-                    map({ 'i' }, '<Left>', '<Nop>')
-                    map({ 'i' }, '<Right>', '<Nop>')
-
-                    vim.cmd 'highlight! Cursor blend=0'
-                end
-            },
-
-            {
-                event = 'neo_tree_popup_buffer_leave',
-                handler = function(args)
-                    print('here')
-                    map({ 'i' }, '<Left>', '<Nop>')
-                    map({ 'i' }, '<Right>', '<Nop>')
-                end,
-            },
-
             -- Equalize windows sizes when open or close
             {
                 event = 'neo_tree_window_after_open',
