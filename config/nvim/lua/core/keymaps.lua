@@ -5,8 +5,6 @@ local buffer = require('core.utils.buffer')
 --   ╠╩╗├┤ └┬┘│││├─┤├─┘└─┐
 --   ╩ ╩└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
 
-vim.g.mapleader = '\\'
-
 -- Sane mode switcher from insert/visual/select to normal mode
 map({ 'i', 'v' }, 'jk', '<Esc>')
 

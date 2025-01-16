@@ -86,6 +86,7 @@ set.smartcase = true
 
 -- Status line & Tab line
 set.laststatus = 3
+set.ruler = false
 set.showtabline = 2
 set.tabpagemax = 10
 
@@ -123,4 +124,8 @@ set.wildcharm = 9 -- Used to enable use of tab in floating window
 set.wildmenu = true
 set.wildmode = 'longest:full,full'
 set.wildoptions = 'pum'
+
+
+-- Leader key
+vim.g.mapleader = '\\'
 
