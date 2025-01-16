@@ -1,7 +1,4 @@
 local config = function()
-    require('java').setup()
-
-
     local lsp = require('lspconfig')
 
     local map = require('core.utils.map')
@@ -26,6 +23,7 @@ local config = function()
 
         -- Rename
         map({ 'n' }, 'gR', vim.lsp.buf.rename)
+        map({ 'n', 'i' }, '<F2>', vim.lsp.buf.rename)
 
         -- Signature help
         map({ 'n' }, 'gk', vim.lsp.buf.signature_help)
@@ -35,6 +33,8 @@ local config = function()
         map({ 'n' }, 'gl', vim.diagnostic.open_float)
         map({ 'n' }, '[d', vim.diagnostic.goto_prev)
         map({ 'n' }, ']d', vim.diagnostic.goto_next)
+
+        map({ 'n', 'i' }, '<F3>', vim.lsp.buf.code_action)
 
 
         -- Auto commands
@@ -130,7 +130,6 @@ end
 
 return {
     'neovim/nvim-lspconfig',
-    dependencies = 'nvim-java/nvim-java',
     config = config,
 }
 
