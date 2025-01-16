@@ -6,7 +6,7 @@ local buffer = require('core.utils.buffer')
 --   ╩ ╩└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
 
 -- Sane mode switcher from insert/visual/select to normal mode
-map({ 'i', 'v' }, 'jk', '<Esc>')
+map({ 'i', 'v' }, 'jk', '<Esc>', { noremap = true })
 
 
 -- Disable arrow keys

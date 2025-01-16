@@ -1,5 +1,6 @@
 local config = function()
     local telescope = require('telescope')
+    local actions = require('telescope.actions')
 
     telescope.setup({
         defaults = {
@@ -10,10 +11,17 @@ local config = function()
             prompt_prefix = '   ',
             multi_icon = '󱇬 ',
 
+            results_title = false,
+            prompt_title = false,
+
             dynamic_preview_title = true,
 
             layout_config = {
                 prompt_position = 'top',
+
+                flex = {
+                    flip_columns = 120,
+                },
 
                 vertical = {
                     width = 0.75,
@@ -26,6 +34,16 @@ local config = function()
                 'smart',
                 filename_first = {
                     reverse_directories = true
+                },
+            },
+
+            mappings = {
+                i = {
+                    -- Close telescope on esc
+                    ["<Esc>"] = actions.close,
+
+                    -- Clear prompt
+                    ["<C-u>"] = false,
                 },
             },
         },
