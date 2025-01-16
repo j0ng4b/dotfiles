@@ -1,36 +1,44 @@
 local config = function()
+    local ensure_installed = {
+        'c',
+        'cmake',
+        'cpp',
+        'make',
+
+        'css',
+        'html',
+        'javascript',
+        'tsx',
+        'typescript',
+
+        'sql',
+
+        'java',
+        'php',
+        'python',
+
+        'dockerfile',
+        'yaml',
+
+        'yuck',
+
+        'json',
+        'json5',
+        'jsonc',
+
+        'lua',
+        'vim',
+        'vimdoc',
+    }
+
+    if vim.fn.executable('cc') == 0 or vim.fn.executable('make') == 0 then
+        ensure_installed = nil
+        vim.notify('Install a C compiler and Make to proper use treesitter!')
+    end
+
+
     require('nvim-treesitter.configs').setup({
-        ensure_installed = {
-            'c',
-            'cmake',
-            'cpp',
-            'make',
-
-            'css',
-            'html',
-            'javascript',
-            'tsx',
-            'typescript',
-
-            'sql',
-
-            'java',
-            'php',
-            'python',
-
-            'dockerfile',
-            'yaml',
-
-            'yuck',
-
-            'json',
-            'json5',
-            'jsonc',
-
-            'lua',
-            'vim',
-            'vimdoc',
-        },
+        ensure_installed = ensure_installed,
 
         highlight = {
             enable = true,
