@@ -3,26 +3,36 @@ local config = function()
 
     telescope.setup({
         defaults = {
+            scroll_strategy = 'limit',
+            layout_strategy = 'flex',
+
+            selection_caret = '▋ ',
+            prompt_prefix = '   ',
+            multi_icon = '󱇬 ',
+
+            dynamic_preview_title = true,
+
             layout_config = {
+                prompt_position = 'top',
+
                 vertical = {
-                    width = 0.75
+                    width = 0.75,
+                    mirror = true,
+                    prompt_position = 'bottom',
                 },
             },
+
             path_display = {
+                'smart',
                 filename_first = {
                     reverse_directories = true
                 },
             },
         },
-
-        pickers = {
-            find_files = {
-                theme = 'dropdown',
-            }
-        },
     })
 
     telescope.load_extension('fzf')
+    telescope.load_extension('cmdline')
 end
 
 
@@ -32,18 +42,11 @@ return {
     config = config,
     dependencies = {
         { 'nvim-lua/plenary.nvim' },
+        { 'jonarrien/telescope-cmdline.nvim' },
 
         {
             'nvim-telescope/telescope-fzf-native.nvim',
             build = 'make',
-            cond = function()
-                if vim.fn.executable 'make' == 1 then
-                    return true
-                end
-
-                print('To install telescope-fzf-native is need a c compiler and make!')
-                return false
-            end,
         },
     },
 }

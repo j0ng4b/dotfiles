@@ -50,6 +50,7 @@ set.linebreak = true
 set.showbreak = '󱞪'
 
 -- Command line
+set.cmdheight = 0
 set.cmdwinheight = 5
 
 -- Swap

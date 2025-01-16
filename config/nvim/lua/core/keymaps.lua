@@ -70,6 +70,7 @@ map({ 'n' }, '<leader>fb', require('telescope.builtin').buffers)
 map({ 'n' }, '<leader>fs', require('telescope.builtin').current_buffer_fuzzy_find)
 map({ 'n' }, '<leader>fo', require('telescope.builtin').lsp_document_symbols)
 map({ 'n' }, '<leader>fi', require('telescope.builtin').lsp_incoming_calls)
+map({ 'n' }, 'Q',          require('telescope').extensions.cmdline.cmdline)
 
 -- Explorer
 map({ 'n' }, '<leader>ef', '<Cmd>Neotree source=filesystem toggle<CR>')
