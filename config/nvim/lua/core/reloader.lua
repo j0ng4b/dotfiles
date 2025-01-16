@@ -6,7 +6,11 @@ local file = require('core.utils.file')
 local colorscheme = 'catppuccin-mocha'
 
 local config_home = os.getenv('XDG_CONFIG_HOME')
+if config_home == nil then
+    config_home = os.getenv('HOME') .. '/.config'
+end
 local config_file = vim.fs.joinpath(config_home, 'sysconf', 'theme')
+
 
 local theme = file.read(config_file)
 if theme then
