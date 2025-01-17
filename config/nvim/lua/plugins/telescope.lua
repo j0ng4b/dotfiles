@@ -4,6 +4,7 @@ local config = function()
 
     telescope.setup({
         defaults = {
+            sorting_strategy = 'ascending',
             scroll_strategy = 'limit',
             layout_strategy = 'flex',
 
