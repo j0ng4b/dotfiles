@@ -46,6 +46,14 @@ local layout = function()
                     end
                 elseif item.type == 'button' then
                     height = height + 1
+                elseif item.type == 'text' then
+                     if type(item.val) == 'string' then
+                         height = height + 1
+                     elseif type(item.val) == 'table' then
+                         height = height + #item.val
+                     end
+                elseif item.type == 'padding' then
+                     height = height + item.val
                 end
             end
 
