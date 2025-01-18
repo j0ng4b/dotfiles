@@ -33,6 +33,6 @@ if [ $? -eq 1 ]; then
     error "Can't find dotfiles directory!"
     exit 1
 else
-    sh $scripts_root/_runner $@
+    sh $scripts_root/_scripter $@
 fi
 
