@@ -3,12 +3,10 @@
 root=$(cd $(dirname $0); pwd)
 
 battery() {
-    runner="$root/../scripts/script-runner"
+    runner="$root/../scripts/scripter"
+    capacity=$(sh -c "$runner battery status" | jq --raw-output '.capacity')
 
-    icon=$(sh -c "$runner battery icon")
-    capacity=$(sh -c "$runner battery capacity")
-
-    echo "$capacity% $icon "
+    echo "$capacity% "
 }
 
 battery
