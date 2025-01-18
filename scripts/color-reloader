@@ -227,7 +227,7 @@ main() {
     while true; do
         inotifywait --quiet --event delete_self "$theme_file" | {
             # Kill old modify event watcher
-            kill -9 $(cat $pid_file) 2>/dev/null
+            kill -9 $(cat $pid_file | head -n1) 2>/dev/null
         }
     done &
 
