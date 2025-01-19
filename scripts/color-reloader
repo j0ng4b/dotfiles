@@ -176,84 +176,77 @@ main() {
     fi
 
     # Check which re-loader should run
-    reloaders=""
-    while [ $# -gt 0 ]; do
-        reloader="_$1_reloader"
+    reloader="_$1_reloader"
 
-        # Check if re-loader is already running
-        reloader_running=""
-        for reloader_list in $reloaders_already_running; do
-            # Foot re-loader should start always
-            [ "$1" = "foot" ] && continue
+    # Check if re-loader is already running
+    reloader_running=""
+    for cur_reloader_running in $reloaders_already_running; do
+        # Foot re-loader should start always
+        [ "$1" = "foot" ] && continue
 
-            if str_contains "$reloader_list" "$reloader"; then
-                reloader_running=$(echo "$reloader_list" | cut -d'%' -f1)
-                break
-            fi
-        done
-
-        if [ -n "$reloader_running" ]; then
-            pids=$(sed -n '3p' $reloader_running | cut -d' ' -f2-)
-            pid1=$(echo $pids | cut -d' ' -f1)
-            pid2=$(echo $pids | cut -d' ' -f2)
-
-            # When some of pids are not running also kill other
-            kill_pid1=$pid1
-            kill_pid2=$pid2
-
-
-            if kill -0 $pid1 2>/dev/null; then
-                # When pid 1 is running do not also kill pid 2
-                kill_pid2=''
-            fi
-
-            if kill -0 $pid2 2>/dev/null; then
-                # When pid 2 is running do not also kill pid 1
-                kill_pid1=''
-            fi
-
-            # Kill pids
-            kill -9 $kill_pid1 $kill_pid2 2>/dev/null
-
-            if [ -z "$kill_pid1" -a -z "$kill_pid2" ]; then
-                warn "Re-loader \`$1\` already running! Skipped"
-
-                shift
-                continue
-            else
-                # Remove old file
-                rm $reloader_running
-            fi
+        if str_contains "$cur_reloader_running" "$reloader"; then
+            reloader_running=$(echo "$cur_reloader_running" | cut -d'%' -f1)
+            break
         fi
-
-
-        # Check if re-loader exit to be run
-        if str_contains "$reloaders_available" "$reloader"; then
-            reloaders="$reloader;$reloaders"
-        else
-            warn "Re-loader for \`$1\` not found! Skipped"
-        fi
-
-        shift
     done
 
+    if [ -n "$reloader_running" ]; then
+        pids=$(sed -n '3p' $reloader_running | cut -d' ' -f2-)
+        pid1=$(echo $pids | cut -d' ' -f1)
+        pid2=$(echo $pids | cut -d' ' -f2)
+
+        # When some of pids are not running also kill other
+        kill_pid1=$pid1
+        kill_pid2=$pid2
+
+
+        if kill -0 $pid1 2>/dev/null; then
+            # When pid 1 is running do not also kill pid 2
+            kill_pid2=''
+        fi
+
+        if kill -0 $pid2 2>/dev/null; then
+            # When pid 2 is running do not also kill pid 1
+            kill_pid1=''
+        fi
+
+        # Kill pids
+        kill -9 $kill_pid1 $kill_pid2 2>/dev/null
+
+        if [ -z "$kill_pid1" -a -z "$kill_pid2" ]; then
+            warn "Re-loader \`$1\` already running! Skipped"
+
+            return 1
+        else
+            # Remove old file
+            rm $reloader_running
+        fi
+    fi
+
+
+    # Check if re-loader exists to be run
+    if ! str_contains "$reloaders_available" "$reloader"; then
+        reloader=""
+        warn "Re-loader for \`$1\` not found! Skipped"
+    fi
+
     # If there're no re-loader to run then exit
-    [ -z "$reloaders" ] && exit 0
+    [ -z "$reloader" ] && exit 0
 
 
     pid_file=$(mktemp /tmp/color_reloader.XXXXXXX) || exit 1
     while true; do
-        eval "$reloaders"
+        eval "$reloader"
 
         inotifywait --quiet --event modify "$theme_file" >/dev/null &
 
         # Copy inotifywait pid to stop if needed
         content="$(cat $pid_file)"
-        if str_contains "$content" "$reloaders"; then
+        if str_contains "$content" "$reloader"; then
             sed -i "1s/.*/$!/" $pid_file
         else
             [ -n "$content" ] && content="\n$content"
-            echo "$!\n$reloaders$content" > $pid_file
+            echo "$!\n$reloader$content" > $pid_file
         fi
 
         # Wait until modify event finish or be stopped
@@ -293,11 +286,22 @@ main() {
 
     # To dynamic change foot colors its need to setup this script as shell of
     # it, below case check if foot re-loader is need the do the job.
-    if str_contains "$reloaders" "_foot_reloader"; then
+    if str_contains "$reloader" "_foot_reloader"; then
         exec "$SHELL"
     fi
 }
 
 
-main "$@"
+if [ $# -eq 0 ]; then
+    exit 1
+elif [ $# -eq 1 ]; then
+    main "$1"
+    exit $?
+fi
+
+while [ $# -gt 0 ]; do
+    # This will ensure that the process get the correct name
+    eval "$0 $script $1" &
+    shift
+done
 
