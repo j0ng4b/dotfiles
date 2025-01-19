@@ -87,7 +87,7 @@
 
 
     ## Colors
-    client.focused          $base00 $base04 $base08 $base08
+    client.focused          $base00 $base04 $base05 $base04
     client.focused_inactive $base00 $base02 $base04 $base04
     client.unfocused        $base00 $base02 $base04 $base04
     # client.urgent           $color1 $color1 $background $color6
