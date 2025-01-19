@@ -72,7 +72,7 @@ _run_script() {
             error "Script hasn't executable permission!"
         fi
     else
-        error "Can't find script to run!"
+        error "Can't find script $script to run!"
         exit 1
     fi
 }
