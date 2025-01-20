@@ -51,7 +51,6 @@ local config = function()
     })
 
     telescope.load_extension('fzf')
-    telescope.load_extension('cmdline')
 end
 
 
@@ -61,7 +60,6 @@ return {
     config = config,
     dependencies = {
         { 'nvim-lua/plenary.nvim' },
-        { 'jonarrien/telescope-cmdline.nvim' },
 
         {
             'nvim-telescope/telescope-fzf-native.nvim',
