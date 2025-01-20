@@ -39,7 +39,7 @@ set.backspace = 'indent,eol,start'
 set.belloff = 'all'
 set.completeopt = 'menuone,popup,noinsert,noselect'
 set.history = 250
-set.shortmess = 'astTcC'
+set.shortmess = 'stTASWIFcC'
 set.showmode = false
 set.signcolumn = 'number'
 
