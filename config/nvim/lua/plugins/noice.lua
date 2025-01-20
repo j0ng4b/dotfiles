@@ -115,6 +115,17 @@ local config = function()
                 },
             },
         },
+
+        routes = {
+            -- Re-route long notifications to split
+            {
+                view = 'split',
+                filter = {
+                    event = "notify",
+                    min_height = 10
+                },
+            },
+        },
     })
 end
 
