@@ -200,7 +200,7 @@ local config = function()
                 auto.cmd(
                     'BufUnload', nil,
                     function()
-                        vim.opt.cmdheight = 1
+                        vim.opt.cmdheight = 0
                         vim.opt.laststatus = 3
                         vim.opt.showtabline = 2
 
