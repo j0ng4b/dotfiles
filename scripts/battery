@@ -1,5 +1,18 @@
 #!/usr/bin/env sh
 
+# Cache
+cache_dir=$SCRIPT_CACHE_DIR
+cache_last_notify_id=$cache_dir/last_notify_id
+cache_last_notify_time=$cache_dir/last_notify_time
+
+if [ ! -d "$cache_dir" ]; then
+    mkdir -p "$cache_dir"
+
+    echo 0 > $cache_last_notify_id
+    echo 0 > $cache_last_notify_time
+fi
+
+
 _battery_capacity_icon() {
     case "$(($capacity / 10))" in
         10 | 9)     echo '' ;;
@@ -53,7 +66,16 @@ _notify() {
             msg="$(eval "echo \"$msg\" | sed -e "s/{$color_name}/\${$color_name}/"")"
         done
 
-        notify-send -w -a "$appname" -u $urgency -t $timeout "battery" "$msg"
+        time=$(cat $cache_last_notify_time)
+        if [ $(( $(date +%s) - $time )) -gt $(( $timeout / 1000 )) ]; then
+            id=$(notify-send -p -a "$appname" -u $urgency -t $timeout "battery" "$msg")
+            echo $id > $cache_last_notify_id
+        else
+            id=$(cat $cache_last_notify_id)
+            notify-send -r $id -a "$appname" -u $urgency -t $timeout "battery" "$msg"
+        fi
+
+        echo $(date +%s) > $cache_last_notify_time
     }
 
 
@@ -97,11 +119,15 @@ _notify() {
                 # From Discharging to Full
                 # When: charger was connected when battery is already full.
                 if [ "$current_status" = "Discharging" ]; then
-                    notify normal "" "Charging Full Battery"
+                    notify normal \
+                        "span color='{base0B}'></span>" \
+                        "Charging Full Battery"
                 # From Charging to Full
                 # When: battery was charging then get full capacity.
                 else
-                    notify normal "<" "Full Battery"
+                    notify normal \
+                        "<span color='{base0B}'></span>" \
+                        "Full Battery"
                 fi
             # Notify when charger is connected
             elif [ "$new_status" = "Charging"  ]; then
@@ -129,7 +155,7 @@ _notify() {
             # Update the current battery status
             current_status="$new_status"
 
-            sleep 1
+            sleep 0.5
         done
     ) &
 
