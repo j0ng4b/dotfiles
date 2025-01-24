@@ -53,12 +53,19 @@ setopt SH_WORD_SPLIT
 ## Binds
 bindkey -v
 
+# Enable history substring search
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
+
 
 ## Plugins
 plugins="$(ls -d $ZDATADIR/plugins/*)"
 
 for plugin in $plugins; do
-    plugin_name="$(basename $plugin)"
+    plugin_name="$(basename $plugin | cut -d'-' -f2-)"
     plugin_path="$plugin/$plugin_name.plugin.zsh"
 
     if [ ! -e "$plugin_path" ]; then
