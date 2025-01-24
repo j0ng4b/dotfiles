@@ -95,5 +95,7 @@ done
 
 
 ## Start starship
-eval "$(starship init zsh)"
+if command -v starship; then
+    eval "$(starship init zsh)"
+fi
 
