@@ -12,6 +12,7 @@ local config = function()
             'jdtls',
             'omnisharp',
             'pyright',
+            'gopls',
         },
     })
 end
