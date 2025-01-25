@@ -51,3 +51,8 @@ export VISUAL=nvim
 export DOTNET_ROOT=$HOME/.dotnet
 export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
 
+# Go
+[ -z "$GOPATH" ] && export GOPATH="${HOME}/go"
+[ -z "$GOBIN" ] && export GOBIN="${GOPATH}/bin"
+export PATH=$PATH:$GOROOT/bin:$GOBIN
+
