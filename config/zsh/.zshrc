@@ -54,8 +54,11 @@ setopt SH_WORD_SPLIT
 bindkey -v
 
 # Enable history substring search
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+
+# bindkey "$terminfo[kcuu1]" history-substring-search-up
+# bindkey "$terminfo[kcud1]" history-substring-search-down
 
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
@@ -66,7 +69,7 @@ plugins="$(ls -d $ZDATADIR/plugins/*)"
 
 for plugin in $plugins; do
     plugin_name="$(basename $plugin | cut -d'-' -f2-)"
-    plugin_path="$plugin/$plugin_name.plugin.zsh"
+    plugin_path="$plugin$plugin_name.plugin.zsh"
 
     if [ ! -e "$plugin_path" ]; then
         continue
@@ -95,7 +98,7 @@ done
 
 
 ## Start starship
-if command -v starship; then
+if [ -n "$(command -pv starship)" ]; then
     eval "$(starship init zsh)"
 fi
 
