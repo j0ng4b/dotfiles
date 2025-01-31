@@ -13,7 +13,7 @@ local config = function()
         end
 
         if client.server_capabilities.inlayHintProvider then
-            vim.lsp.inlay_hint.enable(true)
+            vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
         end
 
         map({ 'n' }, 'K', vim.lsp.buf.hover)
@@ -50,6 +50,29 @@ local config = function()
         end
 
         if client.server_capabilities.documentHighlightProvider then
+            auto.cmd(
+                'InsertEnter', nil,
+                function()
+                    local filter = { bufnr = bufnr }
+                    if vim.lsp.inlay_hint.is_enabled(filter) then
+                        vim.lsp.inlay_hint.enable(false)
+
+                        auto.cmd(
+                            'InsertLeave', nil,
+                            function()
+                                vim.lsp.inlay_hint.enable(true, filter)
+                            end,
+                            {
+                                buffer = bufnr,
+                            }
+                        )
+                    end
+                end,
+                {
+                    buffer = bufnr,
+                }
+            )
+
             auto.cmd(
                 'CursorHold', nil,
                 vim.lsp.buf.document_highlight,
