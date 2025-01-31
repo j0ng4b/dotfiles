@@ -134,8 +134,16 @@ return {
     config = config,
     dependencies = {
         'MunifTanjim/nui.nvim',
-        'rcarriga/nvim-notify',
         'nvim-treesitter/nvim-treesitter',
+        {
+            'rcarriga/nvim-notify',
+            opts = {
+                fps = 60,
+                timeout = 1000,
+                max_width = 40,
+                top_down = false,
+            },
+        },
     },
 }
 
