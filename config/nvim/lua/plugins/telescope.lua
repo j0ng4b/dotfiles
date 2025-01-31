@@ -2,6 +2,35 @@ local config = function()
     local telescope = require('telescope')
     local actions = require('telescope.actions')
 
+    vimgrep_arguments = nil
+    if vim.fn.executable('rg') == 1 then
+        vimgrep_arguments = {
+          'rg',
+          '--color=never',
+          '--no-heading',
+          '--with-filename',
+          '--line-number',
+          '--column',
+          '--smart-case'
+        }
+    else
+        vimgrep_arguments = {
+            'grep',
+            '--extended-regexp',
+            '--color=never',
+            '--with-filename',
+            '--line-number',
+            '-b',
+            '--ignore-case',
+            '--recursive',
+            '--no-messages',
+            '--exclude-dir=*cache*',
+            '--exclude-dir=*.git',
+            '--exclude=.*',
+            '--binary-files=without-match'
+        }
+    end
+
     telescope.setup({
         defaults = {
             sorting_strategy = 'ascending',
@@ -16,6 +45,11 @@ local config = function()
             prompt_title = false,
 
             dynamic_preview_title = true,
+            vimgrep_arguments = vimgrep_arguments,
+
+            file_ignore_patterns = {
+                '.git/', 'node_modules/', '.cache/',
+            },
 
             layout_config = {
                 prompt_position = 'top',
@@ -45,6 +79,20 @@ local config = function()
 
                     -- Clear prompt
                     ["<C-u>"] = false,
+                },
+            },
+        },
+
+        pickers = {
+            diagnostics = {
+                layout_strategy = 'vertical',
+
+                layout_config = {
+                    prompt_position = 'top',
+
+                    width = 100,
+                    height = 0.50,
+                    preview_height = 0,
                 },
             },
         },
