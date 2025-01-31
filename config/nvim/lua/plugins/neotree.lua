@@ -16,7 +16,7 @@ local config = function()
 
         window = {
             position = 'left',
-            width = 50,
+            width = 40,
             mappings = {
                 ['e'] = function() vim.api.nvim_exec('Neotree focus filesystem left', true) end,
                 ['b'] = function() vim.api.nvim_exec('Neotree focus buffers left', true) end,

@@ -12,6 +12,10 @@ local config = function()
             navic.attach(client, bufnr)
         end
 
+        if client.server_capabilities.inlayHintProvider then
+            vim.lsp.inlay_hint.enable(true)
+        end
+
         map({ 'n' }, 'K', vim.lsp.buf.hover)
 
         -- Gotos
@@ -34,6 +38,7 @@ local config = function()
         map({ 'n' }, '[d', vim.diagnostic.goto_prev)
         map({ 'n' }, ']d', vim.diagnostic.goto_next)
 
+        map({ 'n' }, 'gf', vim.lsp.buf.code_action)
         map({ 'n', 'i' }, '<F3>', vim.lsp.buf.code_action)
 
 
@@ -76,12 +81,16 @@ local config = function()
     local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
     capabilities.textDocument.colorProvider = {
-        dynamicRegistration = true
+        dynamicRegistration = true,
     }
 
     capabilities.textDocument.foldingRange = {
         dynamicRegistration = true,
-        lineFoldingOnly = true
+        lineFoldingOnly = true,
+    }
+
+    capabilities.textDocument.inlayHint = {
+        dynamicRegistration = true,
     }
 
 
@@ -94,6 +103,21 @@ local config = function()
         if server == 'omnisharp' then
             local omnisharp_root = vim.fn.stdpath('data') .. '/mason/packages/omnisharp/omnisharp'
             server_config.cmd = { omnisharp_root }
+        elseif server == 'gopls' then
+            server_config.settings = {
+                gopls = {
+                    semanticTokens = true,
+                    usePlaceholders = true,
+
+                    hints = {
+                        constantValues = true,
+                        rangeVariableTypes = true,
+                        assignVariableTypes = true,
+                        compositeLiteralTypes = true,
+                        compositeLiteralFields = true,
+                    },
+                }
+            }
         end
 
         lsp[server].setup(server_config)
