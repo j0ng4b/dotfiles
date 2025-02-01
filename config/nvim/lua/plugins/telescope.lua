@@ -58,6 +58,10 @@ local config = function()
                     flip_columns = 120,
                 },
 
+                horizontal = {
+                    preview_width = 0.55,
+                },
+
                 vertical = {
                     width = 0.75,
                     mirror = true,
@@ -79,6 +83,11 @@ local config = function()
 
                     -- Clear prompt
                     ["<C-u>"] = false,
+                },
+
+                n = {
+                    -- Close telescope on Control+C
+                    ["<C-c>"] = actions.close,
                 },
             },
         },
