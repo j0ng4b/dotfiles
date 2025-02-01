@@ -20,10 +20,34 @@ local config = function()
 
         -- Gotos
         map({ 'n' }, 'gD', vim.lsp.buf.declaration)
-        map({ 'n' }, 'gd', vim.lsp.buf.definition)
-        map({ 'n' }, 'gi', vim.lsp.buf.implementation)
-        map({ 'n' }, 'gt', vim.lsp.buf.type_definition)
-        map({ 'n' }, 'gr', vim.lsp.buf.references)
+
+        map({ 'n' }, 'gd', function()
+            require('telescope.builtin').lsp_definitions {
+                trim_text = true,
+                reuse_win = true,
+            }
+        end)
+
+        map({ 'n' }, 'gi', function()
+            require('telescope.builtin').lsp_implementations {
+                trim_text = true,
+                reuse_win = true,
+            }
+        end)
+
+        map({ 'n' }, 'gt', function()
+            require('telescope.builtin').lsp_type_definitions {
+                trim_text = true,
+                reuse_win = true,
+            }
+        end)
+
+        map({ 'n' }, 'gr', function()
+            require('telescope.builtin').lsp_references {
+                trim_text = true,
+                reuse_win = true,
+            }
+        end)
 
         -- Rename
         map({ 'n' }, 'gR', vim.lsp.buf.rename)
