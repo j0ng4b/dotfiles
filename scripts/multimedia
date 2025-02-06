@@ -129,6 +129,31 @@ case $cmd in
 
             mute)
                 wpctl set-mute $target toggle
+
+                # Notify current volume value
+                appname="scripter-multimedia"
+                timeout=2000
+
+                value=$(wpctl get-volume $target | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
+                value=$(echo "$value" | jq --raw-output '(. * 100) | floor')
+
+                mute="$(_get_volume_icon $value)"
+                value="-h int:value:$value"
+                if [ -n "$(wpctl get-volume $target | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
+                    mute=''
+                    value=''
+                fi
+
+                time=$(cat $cache_last_notify_time)
+                if [ $(( $(date +%s) - $time )) -gt $(( $timeout / 1000 )) ]; then
+                    id=$(notify-send -p $value -a "$appname" -t $timeout "volume" "<span font_desc='Phosphor-Fill' size='24pt'>$mute</span>")
+                    echo $id > $cache_last_notify_id
+                else
+                    id=$(cat $cache_last_notify_id)
+                    notify-send -r $id $value -a "$appname" -t $timeout "volume" "<span font_desc='Phosphor-Fill' size='24pt'>$mute</span>"
+                fi
+
+                echo $(date +%s) > $cache_last_notify_time
                 ;;
 
             *)
