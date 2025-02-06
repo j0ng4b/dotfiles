@@ -17,7 +17,7 @@ set {
     $term footclient
 
     # Application launcher
-    $menu rofi -show drun
+    $menu rofi -show drun -terminal $term
 
     # Scripts path
     $scripts-path "~/.config/sway/scripts"

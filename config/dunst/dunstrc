@@ -80,6 +80,15 @@
     override_pause_level = 100
 
 
+[multimedia]
+    ## Filter
+    appname = "scripter-multimedia"
+
+    ## Modifications
+    format = "%b"
+    alignment = center
+
+
 [screenshot_aborted]
     ## Filter
     appname = "scripter-screenshot"
