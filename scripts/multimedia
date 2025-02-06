@@ -59,6 +59,52 @@ _get_volume_icon() {
     echo "<span font_desc='Phosphor-Fill' size='24pt'>$icon</span>"
 }
 
+_notify() {
+    progress=$1
+    msg=$2
+
+    # Notify current volume value
+    appname="scripter-multimedia"
+    timeout=2000
+
+
+    time=$(cat $cache_last_notify_time)
+    if [ $(( $(date +%s) - $time )) -gt $(( $timeout / 1000 )) ]; then
+        id=$(notify-send -p $progress -a "$appname" -t $timeout "volume" "$msg")
+        echo $id > $cache_last_notify_id
+    else
+        id=$(cat $cache_last_notify_id)
+        notify-send -r $id $progress -a "$appname" -t $timeout "volume" "$msg"
+    fi
+
+    echo $(date +%s) > $cache_last_notify_time
+}
+
+_notify_volume() {
+    value=$(wpctl get-volume $target | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
+    value=$(echo "$value" | jq --raw-output '(. * 100) | floor')
+
+    _notify \
+        "-h int:value:$value" \
+        "$(_get_volume_icon $value)"
+}
+
+_notify_mute() {
+    value=$(wpctl get-volume $target | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
+    value=$(echo "$value" | jq --raw-output '(. * 100) | floor')
+
+    mute="$(_get_volume_icon $value)"
+    value="-h int:value:$value"
+    if [ -n "$(wpctl get-volume $target | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
+        mute=''
+        value=''
+    fi
+
+    _notify \
+        "$value" \
+        "<span font_desc='Phosphor-Fill' size='24pt'>$mute</span>"
+}
+
 
 cmd=$1
 case $cmd in
@@ -75,6 +121,11 @@ case $cmd in
         subcmd=$2
         case $subcmd in
             set)
+                if [ -n "$(wpctl get-volume $target | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
+                    _notify_mute
+                    exit
+                fi
+
                 # For wpctl all signals should be at end of value but on this
                 # script all signal must be at start of the value, so conversion
                 # is needed.
@@ -93,24 +144,7 @@ case $cmd in
                 value=$int.$(echo $dec | sed -e 's/.\([0-2]\)\{2\}$/\1/')
                 wpctl set-volume --limit 1.0 $target $value$percent$signal
 
-
-                # Notify current volume value
-                appname="scripter-multimedia"
-                timeout=2000
-
-                value=$(wpctl get-volume $target | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
-                value=$(echo "$value" | jq --raw-output '(. * 100) | floor')
-
-                time=$(cat $cache_last_notify_time)
-                if [ $(( $(date +%s) - $time )) -gt $(( $timeout / 1000 )) ]; then
-                    id=$(notify-send -p -h int:value:$value -a "$appname" -t $timeout "volume" "$(_get_volume_icon $value)")
-                    echo $id > $cache_last_notify_id
-                else
-                    id=$(cat $cache_last_notify_id)
-                    notify-send -r $id -h int:value:$value -a "$appname" -t $timeout "volume" "$(_get_volume_icon $value)"
-                fi
-
-                echo $(date +%s) > $cache_last_notify_time
+                _notify_volume
                 ;;
 
             get)
@@ -129,31 +163,7 @@ case $cmd in
 
             mute)
                 wpctl set-mute $target toggle
-
-                # Notify current volume value
-                appname="scripter-multimedia"
-                timeout=2000
-
-                value=$(wpctl get-volume $target | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
-                value=$(echo "$value" | jq --raw-output '(. * 100) | floor')
-
-                mute="$(_get_volume_icon $value)"
-                value="-h int:value:$value"
-                if [ -n "$(wpctl get-volume $target | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
-                    mute=''
-                    value=''
-                fi
-
-                time=$(cat $cache_last_notify_time)
-                if [ $(( $(date +%s) - $time )) -gt $(( $timeout / 1000 )) ]; then
-                    id=$(notify-send -p $value -a "$appname" -t $timeout "volume" "<span font_desc='Phosphor-Fill' size='24pt'>$mute</span>")
-                    echo $id > $cache_last_notify_id
-                else
-                    id=$(cat $cache_last_notify_id)
-                    notify-send -r $id $value -a "$appname" -t $timeout "volume" "<span font_desc='Phosphor-Fill' size='24pt'>$mute</span>"
-                fi
-
-                echo $(date +%s) > $cache_last_notify_time
+                _notify_mute
                 ;;
 
             *)
