@@ -1,5 +1,18 @@
 #!/usr/bin/env sh
 
+# Cache
+cache_dir=$SCRIPT_CACHE_DIR
+cache_last_notify_id=$cache_dir/last_notify_id
+cache_last_notify_time=$cache_dir/last_notify_time
+
+if [ ! -d "$cache_dir" ]; then
+    mkdir -p "$cache_dir"
+
+    echo 0 > $cache_last_notify_id
+    echo 0 > $cache_last_notify_time
+fi
+
+
 case $1 in
     # TODO: include a --save and --restores option to save set value to later
     # be restored.
@@ -18,6 +31,25 @@ case $1 in
         [ $signal = '-' ] && value=$value$signal
 
         brightnessctl --class backlight set $value 2>&1 >/dev/null
+
+        # Notify current volume value
+        appname="scripter-brightness"
+        timeout=2000
+
+        value=$(brightnessctl --class backlight get)
+        max=$(brightnessctl --class backlight max)
+        value=$(( $value * 100 / $max ))
+
+        time=$(cat $cache_last_notify_time)
+        if [ $(( $(date +%s) - $time )) -gt $(( $timeout / 1000 )) ]; then
+            id=$(notify-send -p -h int:value:$value -a "$appname" -t $timeout "brightness" "<span font_desc='Phosphor-Fill' size='24pt'></span>")
+            echo $id > $cache_last_notify_id
+        else
+            id=$(cat $cache_last_notify_id)
+            notify-send -r $id -h int:value:$value -a "$appname" -t $timeout "brightness" "<span font_desc='Phosphor-Fill' size='24pt'></span>"
+        fi
+
+        echo $(date +%s) > $cache_last_notify_time
         ;;
 
     get)

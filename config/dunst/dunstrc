@@ -89,6 +89,15 @@
     alignment = center
 
 
+[brightness]
+    ## Filter
+    appname = "scripter-brightness"
+
+    ## Modifications
+    format = "%b"
+    alignment = center
+
+
 [screenshot_aborted]
     ## Filter
     appname = "scripter-screenshot"
