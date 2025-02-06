@@ -6,7 +6,10 @@
 ####################
 # # # Floating
 for_window {
-    [app_id="firefox" title="Firefox — Sharing Indicator"] floating enable
+    [app_id="Firefox" title="Firefox — Sharing Indicator"] floating enable
+    [app_id="Firefox" title="Picture-in-Picture"] floating enable
+    [app_id="Firefox" title="Picture-in-Picture"] dim_inactive 0.0
+
 
     [class="^steam$"] floating enable
     [class="^discord$"] floating enable
