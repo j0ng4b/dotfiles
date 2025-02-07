@@ -1,0 +1,22 @@
+#!/bin/env sh
+
+##
+### Onedark
+
+base00='181a1f'
+base01='282c34'
+base02='31353f'
+base03='393f4a'
+base04='3b3f4c'
+base05='abb2bf'
+base06='ebd09c'
+base07='73b8f1'
+base08='e86671'
+base09='d19a66'
+base0A='e5c07b'
+base0B='98c379'
+base0C='56b6c2'
+base0D='61afef'
+base0E='c678dd'
+base0F='993939'
+
