@@ -96,6 +96,19 @@ _eww_reloader() {
     # NOTE: eww automatically reloads colors
 }
 
+_rofi_reloader() {
+    config_dir="$XDG_CONFIG_HOME/rofi"
+    colors_output_path="$config_dir/colors.rasinc"
+
+    if [ ! -e "$config_dir" ]; then
+        mkdir -p "$config_dir"
+    fi
+
+    __generate_colors_file rofi $colors_output_path
+
+    # Can't automatic reload rofi(?)
+}
+
 _nvim_reloader() {
     theme_name=$(cat $theme_file)
     if [ -z "$theme_name" ]; then

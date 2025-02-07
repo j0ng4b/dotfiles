@@ -6,7 +6,7 @@ battery() {
     runner="$root/../scripts/scripter"
     capacity=$(sh -c "$runner battery status" | jq --raw-output '.capacity')
 
-    echo "$capacity% "
+    echo "$capacity%"
 }
 
 battery

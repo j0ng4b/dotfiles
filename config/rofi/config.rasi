@@ -1,0 +1,84 @@
+configuration {
+    modi: "drun";
+
+	display-drun: "Apps";
+	drun-display-format: "{name}";
+
+	font: "Poppins 10";
+
+	show-icons: true;
+	icon-theme: "Papirus";
+}
+
+@theme "/dev/null"
+@import "colors.rasinc"
+
+window {
+	transparency: "real";
+
+    width: 20%;
+	height: calc(100% - 8px);
+
+	location: west;
+	x-offset: 5px;
+	y-offset: 0%;
+
+	border-radius: 30px;
+}
+
+inputbar {
+	children: [ textbox, entry ];
+	expand: false;
+	margin: 20px;
+	border-radius: 10px;
+	background-color: @base04;
+}
+
+textbox {
+    str: "";
+    expand: false;
+    padding: 0 1% 0;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
+    border-radius: 10px;
+    background-color: @base02;
+    text-color: @foreground;
+    font: "Phosphor-Fill 12";
+}
+
+entry{
+	expand: true;
+	padding: 15px 20px;
+    placeholder: "Search";
+	border-radius: 10px;
+    background-color: @base04;
+}
+
+listview {
+	columns: 1;
+	lines: 2;
+	cycle: false;
+    margin: 15px;
+}
+
+element {
+	orientation: horizontal;
+	padding: 0.5em;
+}
+
+element-text, element-icon {
+	padding: 0.2em;
+	background-color: inherit;
+    vertical-align: 0.5;
+}
+
+element-icon { size: 48px; }
+listview, element, element selected, element-text, element-icon { cursor: pointer; }
+
+element selected {
+	background-color: @base04;
+	text-color: @foreground;
+	border-radius: 5px;
+}
+
+// vim: ft=rasi
