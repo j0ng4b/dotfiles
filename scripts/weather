@@ -1,8 +1,5 @@
 #!/usr/bin/env sh
 
-# NOTE: _runner already define some commons, if definition is not here
-# probably its on _runner.
-
 # Cache
 cache_dir=$SCRIPT_CACHE_DIR
 
@@ -23,8 +20,8 @@ fi
 
 _get() {
     # NOTE: location script will block until can fetch location data
-    LAT=$(sh $root/_runner location latitude)
-    LON=$(sh $root/_runner location longitude)
+    LAT=$(sh $root/_scripter location latitude)
+    LON=$(sh $root/_scripter location longitude)
 
     url="https://api.openweathermap.org/data/2.5/weather?lat=$LAT&lon=$LON&appid=$WEATHER_API_KEY&units=metric"
 
