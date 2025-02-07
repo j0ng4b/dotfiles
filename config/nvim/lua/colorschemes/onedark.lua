@@ -3,7 +3,7 @@ return {
     version = '*',
     priority = 1000,
     opts = {
-        style = 'darker',
+        style = 'dark',
         transparent = false,
         term_colors = true,
         cmp_itemkind_reverse = true,
