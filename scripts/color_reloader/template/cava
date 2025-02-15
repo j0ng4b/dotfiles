@@ -58,7 +58,7 @@ foreground = '#{base06}'
 
 gradient = 1
 gradient_color_1 = '#{base08}'
-gradient_color_2 = '#{base08}'
+gradient_color_2 = '#{base0B}'
 gradient_color_3 = '#{base09}'
 gradient_color_4 = '#{base09}'
 gradient_color_5 = '#{base0A}'

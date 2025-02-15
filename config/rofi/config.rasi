@@ -1,37 +1,37 @@
 configuration {
     modi: "drun";
 
-	display-drun: "Apps";
-	drun-display-format: "{name}";
+    display-drun: "Apps";
+    drun-display-format: "{name}";
 
-	font: "Poppins 10";
+    font: "Poppins 10";
 
-	show-icons: true;
-	icon-theme: "Papirus";
+    show-icons: true;
+    icon-theme: "Papirus";
 }
 
 @theme "/dev/null"
 @import "colors.rasinc"
 
 window {
-	transparency: "real";
+    transparency: "real";
 
     width: 20%;
-	height: calc(100% - 8px);
+    height: calc(100% - 8px);
 
-	location: west;
-	x-offset: 5px;
-	y-offset: 0%;
+    location: west;
+    x-offset: 5px;
+    y-offset: 0%;
 
-	border-radius: 30px;
+    border-radius: 30px;
 }
 
 inputbar {
-	children: [ textbox, entry ];
-	expand: false;
-	margin: 20px;
-	border-radius: 10px;
-	background-color: @base04;
+    children: [ textbox, entry ];
+    expand: false;
+    margin: 20px;
+    border-radius: 10px;
+    background-color: @base04;
 }
 
 textbox {
@@ -46,39 +46,43 @@ textbox {
     font: "Phosphor-Fill 12";
 }
 
-entry{
-	expand: true;
-	padding: 15px 20px;
+entry {
+    expand: true;
+    padding: 15px 20px;
     placeholder: "Search";
-	border-radius: 10px;
+    border-radius: 10px;
     background-color: @base04;
 }
 
 listview {
-	columns: 1;
-	lines: 2;
-	cycle: false;
+    columns: 1;
+    lines: 2;
+    cycle: false;
     margin: 15px;
 }
 
 element {
-	orientation: horizontal;
-	padding: 0.5em;
+    orientation: horizontal;
 }
 
 element-text, element-icon {
-	padding: 0.2em;
-	background-color: inherit;
+    padding: 0.2em;
+    background-color: inherit;
     vertical-align: 0.5;
 }
 
 element-icon { size: 48px; }
 listview, element, element selected, element-text, element-icon { cursor: pointer; }
 
+element-icon selected {
+    border-radius: 0px 10px 10px 0px;
+    background-color: @base02;
+}
+
 element selected {
-	background-color: @base04;
-	text-color: @foreground;
-	border-radius: 5px;
+    background-color: @base04;
+    text-color: @foreground;
+    border-radius: 10px 5px 5px 10px;
 }
 
 // vim: ft=rasi

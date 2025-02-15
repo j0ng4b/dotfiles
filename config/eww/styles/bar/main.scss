@@ -9,6 +9,14 @@
     font-family: 'Poppins';
 }
 
+.menu-button {
+    & .icon {
+        font-size: 28px;
+        margin-left: -14px;
+
+    }
+}
+
 
 @import './battery.scss';
 @import './clock.scss';

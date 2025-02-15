@@ -6,9 +6,21 @@
 
 
 (defwidget bar []
-  (box
-    :halign 'center'
+  (centerbox
     :orientation 'vertical'
+    (box
+      :orientation 'vertical'
+      :space-evenly false
+      (eventbox
+        :cursor 'pointer'
+        :onclick 'rofi -show drun -terminal footclient'
+        :class 'menu-button'
+        (label
+          :class 'icon'
+          :text ''
+        )
+      )
+    )
     (box
       :halign 'center'
       :valign 'start'

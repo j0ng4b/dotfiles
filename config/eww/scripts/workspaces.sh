@@ -4,7 +4,7 @@ __get_all_workspaces() {
     workspaces_windows=$(swaymsg -t get_workspaces |
         jq 'map({key: .name | tostring, value: [ .focused, true ]}) | from_entries')
 
-    seq 1 10 |
+    seq 1 5 |
         jq --argjson w "$workspaces_windows" \
            --slurp \
            --compact-output \

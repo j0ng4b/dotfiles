@@ -31,9 +31,7 @@ fi
 
 ## Start eww (widgets)
 if [ -z "$(pgrep -f eww)" ]; then
-   eww daemon
-   sleep 1
-   eww open-many bar corner-top corner-bottom
+    $root_dir/eww_init
 fi
 sh $root_dir/scripter color-reloader eww &
 
@@ -64,5 +62,6 @@ sh $root_dir/scripter color-reloader \
     btop \
     cava \
     notification \
-    wm &
+    wm \
+    rofi &
 
