@@ -5,6 +5,7 @@
     :space-evenly false
     :visible {battery.enable == 1}
     :spacing 2
+    :tooltip '${battery.capacity}%'
     (box
       :class 'bulb'
       :hexpand false

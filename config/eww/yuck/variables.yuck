@@ -18,11 +18,7 @@
 
 
 ;; battery widget
-(defpoll battery
-  :interval '100ms'
-  :initial '{ "enable": 0, "capacity": 0 }'
-  'scripts/scripter battery status'
-)
+(defvar battery '{ "enable": 0, "capacity": 0 }')
 
 
 (deflisten systray_items_count
