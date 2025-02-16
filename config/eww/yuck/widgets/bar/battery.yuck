@@ -11,6 +11,7 @@
       :hexpand false
     )
     (progress
+      :halign 'center'
       :class 'capacity ${
         battery.capacity >= 80 ? 'high' :
         battery.capacity >= 30 ? 'medium' :
