@@ -108,6 +108,7 @@ local config = function()
     })
 
     telescope.load_extension('fzf')
+    telescope.load_extension('ui-select')
 end
 
 
@@ -117,6 +118,7 @@ return {
     config = config,
     dependencies = {
         { 'nvim-lua/plenary.nvim' },
+        { 'nvim-telescope/telescope-ui-select.nvim' },
 
         {
             'nvim-telescope/telescope-fzf-native.nvim',
