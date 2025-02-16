@@ -3,11 +3,11 @@
 
 
 add_newline = true
-
+palette = 'base16'
 
 ## Prompts format
 format = """
-$username$hostname$directory$git_branch
+$username$hostname$directory($git_branch)$custom
 $character
 """
 
@@ -17,15 +17,15 @@ $cmd_duration
 
 
 [character]
-error_symbol = '[🭧🭒](fg:#{base08})[ ✗ ](bg:#{base08} fg:#{base00})[](fg:#{base08})'
-success_symbol = '[🭧🭒](fg:#{base01})[ ➜ ](bg:#{base01} fg:#{base05})[](fg:#{base01})'
+error_symbol = '[🭧🭒](fg:base08)[ ✗ ](bg:base08 fg:base00)[](fg:base08)'
+success_symbol = '[🭧🭒](fg:base01)[ ➜ ](bg:base01 fg:base05)[](fg:base01)'
 
 
 [username]
-style_user = 'bg:#{base01} fg:#{base05}'
-style_root = '#{base08} bold'
+style_user = 'bg:base01 fg:base05'
+style_root = 'base08 bold'
 
-format = '[🭃](fg:#{base01})[  $user]($style)'
+format = '[🭃](fg:base01)[  $user]($style)'
 
 disabled = false
 show_always = true
@@ -33,7 +33,7 @@ show_always = true
 
 [hostname]
 ssh_only = false
-format =  '[@$hostname ](bg:#{base01} fg:#{base05})[ ](bg:#{base02} fg:#{base01})'
+format =  '[@$hostname ](bg:base01 fg:base05)[ ](bg:base02 fg:base01)'
 trim_at = '.companyname.com'
 disabled = false
 
@@ -46,8 +46,8 @@ truncate_to_repo = true
 truncation_length = 4
 truncation_symbol = './'
 
-style = 'bg:#{base02} fg:#{base05}'
-format = '[$path ]($style)[ ](bg:#{base03} fg:#{base02})'
+style = 'bg:base02 fg:base05'
+format = '[$path ]($style)'
 
 
 [directory.substitutions]
@@ -60,21 +60,45 @@ format = '[$path ]($style)[ ](bg:#{base03} fg:#{base02})'
 [git_branch]
 symbol = '🌱 '
 
-style = 'bg:#{base03} fg:#{base05}'
-format = '[on $symbol]($style)[$branch(:$remote_branch) ](bg:#{base03} fg:#{base0B} bold)[ 🬖🬥🬔🬗](bg:#{base03} fg:#{base00})'
+style = 'bg:base03 fg:base05'
+format = '[ ](bg:base03 fg:base02)[on $symbol]($style)[$branch(:$remote_branch) ](bg:base03 fg:base11 bold)'
 
-truncation_length = 4
+truncation_length = 6
 truncation_symbol = '…'
 
-#ignore_branches = ['master', 'main']
 
 [cmd_duration]
 min_time = 0
-format = '[🬈🬖🬥🬅 ](bg:#{base0A} fg:#{base00})[took $duration](bg:#{base0A} fg:#{base00})[ 🬖🬥🬔🬗](bg:#{base0A} fg:#{base00})'
+format = '[🬈🬖🬥🬅 ](bg:base10 fg:base00)[took $duration](bg:base10 fg:base00)[ 🬖🬥🬔🬗](bg:base10 fg:base00)'
+
+
+[custom.end_prompt]
+when = true
+format = '[ 🬖🬥🬔🬗](bg:prev_bg fg:base00)'
 
 
 # Disable the package module, hiding it from the prompt completely
 [package]
 disabled = true
+
+
+[palettes.base16]
+base00 = '#{base00}'
+base01 = '#{base01}'
+base02 = '#{base02}'
+base03 = '#{base03}'
+base04 = '#{base04}'
+base05 = '#{base05}'
+base06 = '#{base06}'
+base07 = '#{base07}'
+base08 = '#{base08}'
+base09 = '#{base09}'
+base10 = '#{base0A}'
+base11 = '#{base0B}'
+base12 = '#{base0C}'
+base13 = '#{base0D}'
+base14 = '#{base0E}'
+base15 = '#{base0F}'
+
 
 # vim: ft=toml
