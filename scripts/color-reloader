@@ -138,7 +138,7 @@ _starship_reloader() {
     colors_output_path="$config_dir/config.toml"
 
     __generate_colors_file starship $colors_output_path
-    pkill -USR1 zsh
+    sleep 1 ; pkill -USR1 zsh
 }
 
 _notification_reloader() {

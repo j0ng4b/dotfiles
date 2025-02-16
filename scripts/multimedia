@@ -84,9 +84,13 @@ _notify_volume() {
     value=$(wpctl get-volume $target | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p')
     value=$(echo "$value" | jq --raw-output '(. * 100) | floor')
 
-    _notify \
-        "-h int:value:$value" \
-        "$(_get_volume_icon $value)"
+    if [ "$1" = "mic" ]; then
+        _notify \
+            "-h int:value:$value" \
+            "<span font_desc='Phosphor-Fill' size='24pt'></span>"
+    else
+        _notify "-h int:value:$value" "$(_get_volume_icon $value)"
+    fi
 }
 
 _notify_mute() {
@@ -94,9 +98,13 @@ _notify_mute() {
     value=$(echo "$value" | jq --raw-output '(. * 100) | floor')
 
     mute="$(_get_volume_icon $value)"
+    [ "$1" = "mic" ] && mute=''
+
     value="-h int:value:$value"
     if [ -n "$(wpctl get-volume $target | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
         mute=''
+        [ "$1" = "mic" ] && mute=''
+
         value=''
     fi
 
@@ -122,7 +130,7 @@ case $cmd in
         case $subcmd in
             set)
                 if [ -n "$(wpctl get-volume $target | sed -ne 's/.*\(MUTED\).*/\1/p')" ]; then
-                    _notify_mute
+                    _notify_mute $cmd
                     exit
                 fi
 
@@ -144,7 +152,7 @@ case $cmd in
                 value=$int.$(echo $dec | sed -e 's/.\([0-2]\)\{2\}$/\1/')
                 wpctl set-volume --limit 1.0 $target $value$percent$signal
 
-                _notify_volume
+                _notify_volume $cmd
                 ;;
 
             get)
@@ -163,7 +171,7 @@ case $cmd in
 
             mute)
                 wpctl set-mute $target toggle
-                _notify_mute
+                _notify_mute $cmd
                 ;;
 
             *)
