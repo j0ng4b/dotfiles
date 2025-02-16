@@ -1,0 +1,80 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+
+add_newline = true
+
+
+## Prompts format
+format = """
+$username$hostname$directory$git_branch
+$character
+"""
+
+right_format = """
+$cmd_duration
+"""
+
+
+[character]
+error_symbol = '[🭧🭒](fg:#{base08})[ ✗ ](bg:#{base08} fg:#{base00})[](fg:#{base08})'
+success_symbol = '[🭧🭒](fg:#{base01})[ ➜ ](bg:#{base01} fg:#{base05})[](fg:#{base01})'
+
+
+[username]
+style_user = 'bg:#{base01} fg:#{base05}'
+style_root = '#{base08} bold'
+
+format = '[🭃](fg:#{base01})[  $user]($style)'
+
+disabled = false
+show_always = true
+
+
+[hostname]
+ssh_only = false
+format =  '[@$hostname ](bg:#{base01} fg:#{base05})[ ](bg:#{base02} fg:#{base01})'
+trim_at = '.companyname.com'
+disabled = false
+
+
+[directory]
+home_symbol = ' '
+read_only = '  '
+
+truncate_to_repo = true
+truncation_length = 4
+truncation_symbol = './'
+
+style = 'bg:#{base02} fg:#{base05}'
+format = '[$path ]($style)[ ](bg:#{base03} fg:#{base02})'
+
+
+[directory.substitutions]
+'/' = '  '
+'Documents' = ' '
+'Downloads' = ' '
+'Music' = ' '
+'Pictures' = ' '
+
+[git_branch]
+symbol = '🌱 '
+
+style = 'bg:#{base03} fg:#{base05}'
+format = '[on $symbol]($style)[$branch(:$remote_branch) ](bg:#{base03} fg:#{base0B} bold)[ 🬖🬥🬔🬗](bg:#{base03} fg:#{base00})'
+
+truncation_length = 4
+truncation_symbol = '…'
+
+#ignore_branches = ['master', 'main']
+
+[cmd_duration]
+min_time = 0
+format = '[🬈🬖🬥🬅 ](bg:#{base0A} fg:#{base00})[took $duration](bg:#{base0A} fg:#{base00})[ 🬖🬥🬔🬗](bg:#{base0A} fg:#{base00})'
+
+
+# Disable the package module, hiding it from the prompt completely
+[package]
+disabled = true
+
+# vim: ft=toml

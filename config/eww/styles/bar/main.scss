@@ -2,7 +2,7 @@
     color: $foreground;
     background-color: $background;
 
-    padding: 7px;
+    padding: 5px;
 
     font-size: 14px;
     font-weight: normal;
@@ -11,9 +11,12 @@
 
 .menu-button {
     & .icon {
-        font-size: 28px;
-        margin-left: -14px;
+        padding: 5px;
+        border-radius: 10px;
+        background-color: $base02;
 
+        font-size: 28px;
+        font-family: "Symbols Nerd Font Mono";
     }
 }
 

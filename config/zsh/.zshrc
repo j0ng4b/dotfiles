@@ -102,3 +102,14 @@ if [ -n "$(command -pv starship)" ]; then
     eval "$(starship init zsh)"
 fi
 
+# Prompt reload on SIGUSR1
+TRAPUSR1() {
+    if [[ -n $ZLE ]]; then
+        # If in zle (line editor), reset the prompt
+        zle reset-prompt
+    else
+        # If not in an interactive editing session, just output a newline
+        echo ""
+    fi
+}
+

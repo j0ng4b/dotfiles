@@ -59,6 +59,7 @@ sh $root_dir/scripter color-temperature run &
 sh $root_dir/scripter color-reloader \
     nvim \
     tmux \
+    starship \
     btop \
     cava \
     notification \
