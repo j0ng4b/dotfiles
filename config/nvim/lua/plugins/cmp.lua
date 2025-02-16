@@ -86,6 +86,9 @@ local config = function()
                     buffer = '[Buffer]',
                     emmet_vim = '[Emmet]',
                     path = '[Path]',
+                    codecompanion_tools = '[CC]',
+                    codecompanion_variables = '[CC]',
+                    codecompanion_slash_commands = '[CC]',
                     ['vim-dadbod-completion'] = '[DB]',
                 })[entry.source.name]
 
@@ -119,13 +122,11 @@ local config = function()
         }),
     })
 
-    auto.cmd('FileType', 'sql,mysql,plsql', function()
-        cmp.setup.buffer({
-            sources = {
-                { name = 'vim-dadbod-completion' },
-            }
-        })
-    end)
+    cmp.setup.filetype({ 'sql', 'mysql', 'plsql' }, {
+        sources = {
+            { name = 'vim-dadbod-completion' },
+        }
+    })
 
     local names = {
         'CmpItemKindField',
