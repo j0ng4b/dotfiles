@@ -59,7 +59,7 @@ local config = function()
 
         strategies = {
             chat = {
-                adapter = 'gemini',
+                adapter = 'copilot',
 
                 keymaps = {
                     send = {
@@ -76,16 +76,29 @@ local config = function()
                         return adapter.formatted_name
                     end,
 
-                    user = 'Me',
+                    user = vim.fn.system('whoami'):match('%S+'),
                 },
             },
 
             inline = {
-                adapter = 'ollama',
+                adapter = 'copilot',
             },
         },
 
         adapters = {
+            copilot = function()
+                return require('codecompanion.adapters').extend('copilot', {
+                    schema = {
+                        model = {
+                            default = 'o3-mini',
+                        },
+
+                        max_tokens = {
+                            default = 8192,
+                        },
+                    },
+                })
+            end,
             ollama = function()
                 return require('codecompanion.adapters').extend('ollama', {
                     schema = {
@@ -105,6 +118,27 @@ return {
     dependencies = {
         'nvim-lua/plenary.nvim',
         'nvim-treesitter/nvim-treesitter',
+
+        {
+            'zbirenbaum/copilot.lua',
+            event = 'InsertEnter',
+
+            opts = {
+                panel = {
+                    enabled = false,
+                },
+
+                suggestion = {
+                    auto_trigger = true,
+
+                    keymap = {
+                        accept = '<C-n>',
+                        accept_line = '<C-j>',
+                        accept_word = '<C-l>',
+                    },
+                },
+            },
+        },
     },
     config = config,
 }

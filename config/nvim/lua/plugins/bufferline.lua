@@ -27,6 +27,14 @@ local config = function()
                 delay = 100,
                 reveal = { 'close' },
             },
+
+            custom_filter = function(buf_number, buf_numbers)
+                if vim.bo[buf_number].filetype == 'codecompanion' then
+                    return false
+                end
+
+                return true
+            end,
         },
     })
 end
