@@ -3,7 +3,7 @@ return {
     opts = {
         time_interval = 15,
         hide_target_hack = false,
-        legacy_computing_symbols_support = true,
+        legacy_computing_symbols_support = false,
 
         stiffness = 0.7,
         trailing_stiffness = 0.4,

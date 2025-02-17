@@ -25,15 +25,31 @@ local config = function()
 
 
     local presets = require('markview.presets');
+    require('markview').setup({
+        markdown = {
+            headings = presets.headings.simple,
+            horizontal_rules = presets.horizontal_rules.thick,
+            tables = presets.tables.rounded,
+        }
+    })
 
     require('markview').setup({
         preview = {
-            hybrid_modes = { 'n' },
+            hybrid_modes = { 'n', 'v', 'i', },
+            linewise_hybrid_mode = true,
+
             filetypes = { 'markdown', 'codecompanion' },
             ignore_buftypes = {},
 
             icon_provider = 'devicons',
-        }
+        },
+
+        markdown = {
+            tables = {
+                col_min_width = 4,
+                use_virt_lines = false,
+            },
+        },
     })
 end
 

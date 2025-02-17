@@ -105,6 +105,20 @@ local config = function()
                 },
             },
         },
+
+        extensions = {
+            ["ui-select"] = {
+                layout_strategy = 'vertical',
+
+                layout_config = {
+                    prompt_position = 'top',
+
+                    width = 0.3,
+                    height = 15,
+                    preview_height = 0,
+                },
+            }
+        },
     })
 
     telescope.load_extension('fzf')

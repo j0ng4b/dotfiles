@@ -43,11 +43,17 @@ local config = function()
                 start_in_insert_mode = true,
 
                 window = {
-                    layout = 'float',
+                    layout = 'vertical',
 
                     height = 0.85,
-                    width = 0.70,
+                    width = 0.30,
                 },
+            },
+
+            diff = {
+                enabled = true,
+                layout = 'vertical',
+                provider = 'mini_diff',
             },
         },
 

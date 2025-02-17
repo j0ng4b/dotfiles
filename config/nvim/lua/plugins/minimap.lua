@@ -1,5 +1,6 @@
 return {
     'wfxr/minimap.vim',
+    enabled = false,
     init = function()
         vim.g.minimap_width = 20
 
@@ -16,7 +17,11 @@ return {
         vim.g.minimap_auto_start_win_enter = 1
         vim.g.minimap_background_processing = 1
 
-        vim.g.minimap_close_filetypes = { 'alpha', 'neo-tree' }
+        vim.g.minimap_close_filetypes = {
+            'alpha',
+            'neo-tree',
+            'codecompanion',
+        }
     end
 }
 
