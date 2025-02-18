@@ -129,4 +129,5 @@ set.wildoptions = 'pum'
 
 -- Leader key
 vim.g.mapleader = '\\'
+vim.g.maplocalleader = '\\'
 
