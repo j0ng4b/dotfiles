@@ -20,7 +20,7 @@ local config = function()
     local map = require('core.utils.map')
 
     map({ 'n', 'v' }, '<Leader>ca', '<Cmd>CodeCompanionActions<CR>', { noremap = true })
-    map({ 'n', 'v' }, '<Leader>c', '<Cmd>CodeCompanionChat Toggle<CR>', { noremap = true })
+    map({ 'n', 'v' }, '<Leader>cc', '<Cmd>CodeCompanionChat Toggle<CR>', { noremap = true })
     map({ 'v' }, 'ga', '<Cmd>CodeCompanionChat Add<CR>', { noremap = true })
 
     vim.cmd [[cab cc CodeCompanion]]
@@ -63,7 +63,10 @@ local config = function()
 
                 keymaps = {
                     send = {
-                        modes = { n = '<C-s>', i = '<C-s>' },
+                        modes = {
+                            n = { '<CR>', '<C-s>' },
+                            i = '<C-s>'
+                        },
                     },
 
                     close = {
@@ -99,15 +102,6 @@ local config = function()
                     },
                 })
             end,
-            ollama = function()
-                return require('codecompanion.adapters').extend('ollama', {
-                    schema = {
-                        model = {
-                            default = 'llama3.2',
-                        },
-                    },
-                })
-            end,
         },
     })
 end
@@ -132,7 +126,7 @@ return {
                     auto_trigger = true,
 
                     keymap = {
-                        accept = '<C-n>',
+                        accept = '<C-y>',
                         accept_line = '<C-j>',
                         accept_word = '<C-l>',
                     },

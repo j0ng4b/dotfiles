@@ -51,8 +51,16 @@ export VISUAL=nvim
 export DOTNET_ROOT=$HOME/.dotnet
 export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
 
+
 # Go
 [ -z "$GOPATH" ] && export GOPATH="${HOME}/go"
 [ -z "$GOBIN" ] && export GOBIN="${GOPATH}/bin"
 export PATH=$PATH:$GOROOT/bin:$GOBIN
+
+
+# Ollama setup
+export OLLAMA_KEEP_ALIVE=10m
+export OLLAMA_KV_CACHE_TYPE=q8_0
+export OLLAMA_FLASH_ATTENTION=1
+export OLLAMA_MAX_LOADED_MODELS=1
 
