@@ -5,9 +5,9 @@ cur_focus=$(swaymsg -r -t get_seats | jq '.[0].focus')
 swaymsg -m -t subscribe '["window"]' | \
     jq --unbuffered 'select(.change == "focus").container.id' | \
     while read new_focus; do
-        swaymsg -q "[con_id=${cur_focus}]" title_format "<span rise='-5000' font_desc='Poppins 22'>●︎●︎●︎</span>" &>/dev/null
+        swaymsg -q "[con_id=${cur_focus}]" title_format "<span rise='-3000' font_desc='Poppins 18'>●︎●︎●︎</span>" &>/dev/null
 
-        swaymsg -q "[con_id=${new_focus}]" title_format "<span rise='-5000' font_desc='Poppins 22'>\$dot_0\$dot_1\$dot_2</span>" &>/dev/null
+        swaymsg -q "[con_id=${new_focus}]" title_format "<span rise='-3000' font_desc='Poppins 18'>\$dot_0\$dot_1\$dot_2</span>" &>/dev/null
 
         cur_focus=$new_focus
     done
