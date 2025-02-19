@@ -11,17 +11,27 @@ M.del = function(modes, left)
 end
 
 
-M.which_key_group = nil
+M.which_key = false
+M.use_which_key = function(enable)
+    M.which_key = enable or true
+end
+
 M.group = function(name, prefix)
+    if not M.which_key then
+        return
+    end
+
     require('which-key').add({
         lhs = prefix,
         group = name,
     })
-
-    M.which_key_group = name
 end
 
 local wk_map = function(modes, left, right, opts)
+    if not M.which_key then
+        return
+    end
+
     if type(opts) == 'string' then
         opts = {
             desc = opts,
@@ -39,6 +49,8 @@ local wk_map = function(modes, left, right, opts)
 
         desc = opts.desc,
         icon = opts.icon,
+
+        remap = opts.remap,
     })
 end
 
@@ -75,7 +87,7 @@ end
 
 setmetatable(M, {
     __call = function(self, ...)
-        if self.which_key_group then
+        if self.which_key then
             wk_map(...)
             return
         end

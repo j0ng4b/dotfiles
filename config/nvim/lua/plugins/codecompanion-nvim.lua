@@ -17,15 +17,6 @@ local config = function()
     install_required_treesitters()
 
 
-    local map = require('core.utils.map')
-
-    map({ 'n', 'v' }, '<Leader>ca', '<Cmd>CodeCompanionActions<CR>', { noremap = true })
-    map({ 'n', 'v' }, '<Leader>cc', '<Cmd>CodeCompanionChat Toggle<CR>', { noremap = true })
-    map({ 'v' }, 'ga', '<Cmd>CodeCompanionChat Add<CR>', { noremap = true })
-
-    vim.cmd [[cab cc CodeCompanion]]
-
-
     require('codecompanion').setup({
         sources = {
             per_filetype = {

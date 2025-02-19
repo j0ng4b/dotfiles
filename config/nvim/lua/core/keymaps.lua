@@ -79,6 +79,9 @@ map({ 'n' }, 'tp', '<Cmd>tabprevious<CR>') -- next
 --   ║║║├─┤││  ├─┤───╠╩╗├┤ └┬┘
 --   ╚╩╝┴ ┴┴└─┘┴ ┴   ╩ ╩└─┘ ┴
 
+-- Enable which-key
+map.use_which_key()
+
 ---
 -- Telescope
 ---
@@ -147,6 +150,35 @@ map({ 'n' }, '<leader>es', function()
         })
     end,
     'lsp document symbols explorer'
+)
+
+
+---
+-- CodeCompanion.nvim
+---
+map.group('󰚩 AI', '<Leader>c')
+map({ 'n', 'v' }, '<Leader>ca',
+    '<Cmd>CodeCompanionActions<CR>',
+    {
+        desc = 'open the actions palette',
+        remap = false,
+    }
+)
+
+map({ 'n', 'v' }, '<Leader>cc',
+    '<Cmd>CodeCompanionChat Toggle<CR>',
+    {
+        desc = 'open a chat ',
+        remap = false,
+    }
+)
+
+map({ 'v' }, 'ga',
+    '<Cmd>CodeCompanionChat Add<CR>',
+    {
+        desc = 'add selected text to chat',
+        remap = false,
+    }
 )
 
 
