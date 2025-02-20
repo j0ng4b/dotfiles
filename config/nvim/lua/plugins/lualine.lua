@@ -70,7 +70,13 @@ local config = function()
             },
         },
 
-        extensions = { 'lazy', 'neo-tree', 'quickfix', },
+        extensions = {
+            'lazy',
+            'mason',
+            'neo-tree',
+            'quickfix',
+            'toggleterm',
+        },
     })
 end
 

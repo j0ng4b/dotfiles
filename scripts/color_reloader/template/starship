@@ -76,12 +76,12 @@ truncation_symbol = '…'
 
 [cmd_duration]
 min_time = 0
-format = '[🬈🬖🬥🬅 ](bg:base10 fg:base00)[took $duration](bg:base10 fg:base00)[ 🬖🬥🬔🬗](bg:base10 fg:base00)'
+format = '[🬖🬈🬔🬖🬥](fg:base10)[ took $duration ](bg:base10 fg:base00)[🬗🬔🬥🬖](fg:base10)'
 
 
 [custom.end_prompt]
 when = true
-format = '[ 🬖🬥🬔🬗](bg:prev_bg fg:base00)'
+format = '[🬗🬥🬖🬔🬖](fg:prev_bg)'
 
 
 # Disable the package module, hiding it from the prompt completely

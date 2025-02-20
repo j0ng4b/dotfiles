@@ -40,11 +40,11 @@ map({ 'n' }, 'bd', function()
     buffer.close()
 end)
 
-map({ 'n' }, 'bn', function()
+map({ 'n' }, '<Tab>', function()
     buffer.move('bnext')
 end)
 
-map({ 'n' }, 'bp', function()
+map({ 'n' }, '<S-Tab>', function()
     buffer.move('bprevious')
 end)
 
@@ -52,17 +52,17 @@ end)
 ---
 -- Window management
 ---
-map({ 'n' }, 'wo', '<Cmd>wincmd =<CR>') -- new
+map({ 'n' }, 'wo', '<Cmd>wincmd n<CR>') -- new
 map({ 'n' }, 'wc', '<Cmd>wincmd c<CR>') -- close
 
+map({ 'n' }, 'we', '<Cmd>wincmd =<CR>') -- equalize windows size
 map({ 'n' }, 'ws', '<Cmd>wincmd s<CR>') -- split horizontal
 map({ 'n' }, 'wv', '<Cmd>wincmd v<CR>') -- split vertical
 
-map({ 'n' }, 'wh', '<Cmd>wincmd h<CR>') -- right
-map({ 'n' }, 'wj', '<Cmd>wincmd j<CR>') -- bottom
-map({ 'n' }, 'wk', '<Cmd>wincmd k<CR>') -- top
-map({ 'n' }, 'wl', '<Cmd>wincmd l<CR>') -- left
-
+map({ 'n' }, '<C-h>', '<Cmd>TmuxNavigateRight<CR>') -- right
+map({ 'n' }, '<C-j>', '<Cmd>TmuxNavigateDown<CR>') -- bottom
+map({ 'n' }, '<C-k>', '<Cmd>TmuxNavigateUp<CR>') -- top
+map({ 'n' }, '<C-l>', '<Cmd>TmuxNavigateLeft<CR>') -- left
 
 ---
 -- Tab management
@@ -73,6 +73,12 @@ map({ 'n' }, 'tc', '<Cmd>tabclose<CR>') -- close
 map({ 'n' }, 'tn', '<Cmd>tabnext<CR>') -- previous
 map({ 'n' }, 'tp', '<Cmd>tabprevious<CR>') -- next
 
+
+---
+-- Move line up or down
+---
+map({ 'n', 'v' }, '<A-j>', '<Cmd>move .+1<CR>==') -- move down
+map({ 'n', 'v' }, '<A-k>', '<Cmd>move .-2<CR>==') -- move up
 
 
 --   ╦ ╦┬ ┬┬┌─┐┬ ┬   ╦╔═┌─┐┬ ┬
