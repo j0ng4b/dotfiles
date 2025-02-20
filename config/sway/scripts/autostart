@@ -37,14 +37,14 @@ sh $root_dir/scripter color-reloader eww &
 
 
 ## Start foot server and always restart if closed
-(
-    if [ -z "$(pgrep -f 'foot --server')" ]; then
-        while true; do
-            foot --server --override shell="$root_dir/scripter color-reloader foot" &
-            wait $!
-        done
-    fi
-) &
+# (
+#     if [ -z "$(pgrep -f 'foot --server')" ]; then
+#         while true; do
+#             foot --server --override shell="$root_dir/scripter color-reloader foot" &
+#             wait $!
+#         done
+#     fi
+# ) &
 
 
 ## Start battery status notifier
@@ -57,6 +57,7 @@ sh $root_dir/scripter color-temperature run &
 
 ## Start color re-loader
 sh $root_dir/scripter color-reloader \
+    rio \
     nvim \
     tmux \
     starship \

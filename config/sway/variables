@@ -14,7 +14,7 @@ set {
     $right l
 
     # Terminal application
-    $term footclient
+    $term rio
 
     # Application launcher
     $menu rofi -show drun -terminal $term

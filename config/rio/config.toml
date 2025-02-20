@@ -1,0 +1,74 @@
+# Hide the cursor while typing
+hide-cursor-when-typing = true
+
+
+# Set theme to use the auto generated theme
+theme = 'colors'
+
+# Padding
+padding-x = 0
+padding-y = [0, 1]
+
+# Line height
+line-height = 1.0
+
+# Use fork
+use-fork = true
+
+# Exit Rio without confirmation
+confirm-before-quit = false
+
+
+[cursor]
+shape = 'underline'
+blinking = true
+blinking-interval = 800
+
+
+# Editor used to open configuration file
+[editor]
+program = 'nvim'
+args = []
+
+
+[window]
+mode = 'windowed'
+decorations = 'disabled'
+
+
+[renderer]
+performance = 'low'
+backend = 'vulkan'
+disable-unfocused-render = false
+level = 1
+
+
+[keyboard]
+use-kitty-keyboard-protocol = false
+
+
+# Fonts
+# Configure fonts used by the terminal
+[fonts]
+size = 14
+family = 'JetBrainsMono Nerd Font Mono'
+hinting = true
+features = [ 'calt', 'ss02', 'ss20', 'cv15', 'cv16', 'cv18' ]
+
+
+[fonts.emoji]
+family = 'OpenMoji'
+
+
+[scroll]
+# Amount to multiply (speedup scroll) mouse scrolling with
+multiplier = 4.0
+
+# Amount to divide (slow scroll) mouse scrolling with
+divider = 1.0
+
+
+[navigation]
+# Disable navigations
+mode = 'plain'
+
