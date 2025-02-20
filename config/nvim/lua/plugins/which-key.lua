@@ -9,6 +9,10 @@ return {
             { '<auto>', mode = 'nixsotc' },
         },
 
+        filter = function(mapping)
+            return mapping.desc and mapping.desc ~= ""
+        end,
+
         win = {
             height = { min = 4, max = 10 },
 
@@ -36,7 +40,6 @@ return {
         },
 
         show_keys = false,
-        ignore_missing = true,
     },
 
     keys = {

@@ -21,26 +21,105 @@ local config = function()
 
         signs_staged_enable = false,
         on_attach = function(bufnr)
-            local function map(mode, lhs, rhs, opts)
-                opts = vim.tbl_extend('force', { noremap = true, silent = true }, opts or {})
-                vim.api.nvim_buf_set_keymap(bufnr, mode, lhs, rhs, opts)
-            end
+            local map = require('core.utils.map')
+
+            -- Enable which-key
+            map.use_which_key()
+            map.group('󰊢 Git', '<Leader>h')
 
             -- Navigation
-            map('n', '<Leader>hn', '<Cmd>Gitsigns next_hunk<CR>')
-            map('n', '<Leader>hp', '<Cmd>Gitsigns prev_hunk<CR>')
+            map({ 'n' }, '<Leader>hn', function()
+                    gitsigns.nav_hunk('next')
+                end,
+                {
+                    desc = 'jump to next hunk',
+                    remap = false,
+                }
+            )
+
+            map({ 'n' }, '<Leader>hp', function()
+                    gitsigns.nav_hunk('prev')
+                end,
+                {
+                    desc = 'jump to previous hunk',
+                    remap = false,
+                }
+            )
+
 
             -- Actions
-            map('n', '<leader>hS', '<Cmd>Gitsigns stage_buffer<CR>')
-            map('n', '<leader>hs', '<Cmd>Gitsigns stage_hunk<CR>')
-            map('v', '<leader>hs', '<Cmd>Gitsigns stage_hunk<CR>')
+            map({ 'n' }, '<leader>hS',
+                gitsigns.stage_buffer,
+                {
+                    desc = 'stage all hunks on buffer',
+                    remap = false,
+                }
+            )
 
-            map('n', '<leader>hR', '<Cmd>Gitsigns reset_buffer<CR>')
-            map('n', '<leader>hr', '<Cmd>Gitsigns reset_hunk<CR>')
-            map('v', '<leader>hr', '<Cmd>Gitsigns reset_hunk<CR>')
+            map({ 'n', 'v' }, '<leader>hs', function()
+                    local range = nil
+                    local mode = vim.api.nvim_get_mode().mode
 
-            map('n', '<leader>hP', '<Cmd>Gitsigns preview_hunk_inline<CR>')
-            map('n', '<leader>hb', '<Cmd>Gitsigns blame_line<CR>')
+                    if mode == 'v' or mode == 'V' or mode == '<C-v>' then
+                        range = {
+                            vim.fn.getpos('v')[2],
+                            vim.fn.getpos('.')[2],
+                        }
+                    end
+
+                    gitsigns.stage_hunk(range)
+                end,
+                {
+                    desc = 'stage lines of the hunk at cursor position',
+                    remap = false,
+                }
+            )
+
+
+            map({ 'n' }, '<leader>hR', function()
+                    local range = nil
+                    local mode = vim.api.nvim_get_mode().mode
+
+                    if mode == 'v' or mode == 'V' or mode == '<C-v>' then
+                        range = {
+                            vim.fn.getpos('v')[2],
+                            vim.fn.getpos('.')[2],
+                        }
+                    end
+
+                    gitsigns.reset_buffer(range)
+                end,
+                {
+                    desc = 'reset the lines of all hunks on buffer',
+                    remap = false,
+                }
+            )
+
+            map({ 'n', 'v' }, '<leader>hr',
+                gitsigns.reset_hunk,
+                {
+                    desc = 'reset the lines of the hunk',
+                    remap = false,
+                }
+            )
+
+
+            map({ 'n' }, '<leader>hv',
+                gitsigns.preview_hunk,
+                {
+                    desc = 'preview hunk at cursor position',
+                    remap = false,
+                }
+            )
+
+
+            map({ 'n' }, '<leader>hb',
+                gitsigns.blame_line,
+                {
+                    desc = 'show line last modification revision and author',
+                    remap = false,
+                }
+            )
         end,
     })
 end

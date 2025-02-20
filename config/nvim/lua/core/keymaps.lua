@@ -164,7 +164,7 @@ map({ 'n' }, '<leader>es', function()
 ---
 map.group(' AI', '<Leader>c')
 map({ 'n', 'v' }, '<Leader>ca',
-    '<Cmd>CodeCompanionActions<CR>',
+    require("codecompanion").actions,
     {
         desc = 'open the actions palette',
         remap = false,
@@ -172,7 +172,7 @@ map({ 'n', 'v' }, '<Leader>ca',
 )
 
 map({ 'n', 'v' }, '<Leader>cc',
-    '<Cmd>CodeCompanionChat Toggle<CR>',
+    require("codecompanion").toggle,
     {
         desc = 'open a chat ',
         remap = false,
@@ -180,7 +180,7 @@ map({ 'n', 'v' }, '<Leader>cc',
 )
 
 map({ 'v' }, 'ga',
-    '<Cmd>CodeCompanionChat Add<CR>',
+    require("codecompanion").add,
     {
         desc = 'add selected text to chat',
         remap = false,
