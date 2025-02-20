@@ -114,6 +114,9 @@ _rio_reloader() {
     colors_output_path="$config_dir/themes/colors.toml"
 
     __generate_colors_file rio $colors_output_path
+
+    # Reload rio config to reload theme
+    touch $config_dir/config.toml
 }
 
 _nvim_reloader() {
