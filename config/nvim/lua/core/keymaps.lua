@@ -162,7 +162,7 @@ map({ 'n' }, '<leader>es', function()
 ---
 -- CodeCompanion.nvim
 ---
-map.group('󰚩 AI', '<Leader>c')
+map.group(' AI', '<Leader>c')
 map({ 'n', 'v' }, '<Leader>ca',
     '<Cmd>CodeCompanionActions<CR>',
     {
