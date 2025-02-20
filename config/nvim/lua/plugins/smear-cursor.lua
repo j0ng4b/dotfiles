@@ -3,7 +3,7 @@ return {
     opts = {
         time_interval = 15,
         hide_target_hack = false,
-        scroll_buffer_space = false,
+        scroll_buffer_space = true,
         legacy_computing_symbols_support = false,
 
         stiffness = 0.7,
@@ -12,7 +12,7 @@ return {
         distance_stop_animating = 0.35,
 
         cursor_color = '#df6000',
-        gamma = 3,
+        gamma = 2,
     },
 }
 
