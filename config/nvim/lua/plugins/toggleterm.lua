@@ -8,7 +8,7 @@ return {
 
         highlights = {
             NormalFloat = {
-                link = 'Normal'
+                link = 'NormalFloat'
             },
 
             FloatBorder = {
