@@ -59,10 +59,10 @@ map({ 'n' }, 'we', '<Cmd>wincmd =<CR>') -- equalize windows size
 map({ 'n' }, 'ws', '<Cmd>wincmd s<CR>') -- split horizontal
 map({ 'n' }, 'wv', '<Cmd>wincmd v<CR>') -- split vertical
 
-map({ 'n' }, '<C-h>', '<Cmd>TmuxNavigateRight<CR>') -- right
+map({ 'n' }, '<C-h>', '<Cmd>TmuxNavigateLeft<CR>') -- left
 map({ 'n' }, '<C-j>', '<Cmd>TmuxNavigateDown<CR>') -- bottom
 map({ 'n' }, '<C-k>', '<Cmd>TmuxNavigateUp<CR>') -- top
-map({ 'n' }, '<C-l>', '<Cmd>TmuxNavigateLeft<CR>') -- left
+map({ 'n' }, '<C-l>', '<Cmd>TmuxNavigateRight<CR>') -- right
 
 ---
 -- Tab management
