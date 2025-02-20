@@ -17,15 +17,15 @@ $cmd_duration
 
 
 [character]
-error_symbol = '[🭧🭒](fg:base08)[ ✗ ](bg:base08 fg:base00)[](fg:base08)'
-success_symbol = '[🭧🭒](fg:base01)[ ➜ ](bg:base01 fg:base05)[](fg:base01)'
+error_symbol = '[](fg:base08)[ ✗ ](bg:base08 fg:base00)[](fg:base08)'
+success_symbol = '[](fg:base01)[ ➜ ](bg:base01 fg:base05)[](fg:base01)'
 
 
 [username]
 style_user = 'bg:base01 fg:base05'
 style_root = 'base08 bold'
 
-format = '[🭃](fg:base01)[  $user]($style)'
+format = '[](fg:base01)[  $user]($style)'
 
 disabled = false
 show_always = true
@@ -76,12 +76,12 @@ truncation_symbol = '…'
 
 [cmd_duration]
 min_time = 0
-format = '[🬖🬈🬔🬖🬥](fg:base10)[ took $duration ](bg:base10 fg:base00)[🬗🬔🬥🬖](fg:base10)'
+format = '[](fg:base10)[ took $duration ](bg:base10 fg:base00)[](fg:base10)'
 
 
 [custom.end_prompt]
 when = true
-format = '[🬗🬥🬖🬔🬖](fg:prev_bg)'
+format = '[](fg:prev_bg)'
 
 
 # Disable the package module, hiding it from the prompt completely
