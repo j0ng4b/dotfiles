@@ -1,0 +1,17 @@
+.wallpapers-list {
+    padding: 10px;
+    background-color: $base00;
+
+    scrollbar trough,
+    scrollbar slider {
+        border: none;
+        min-width: 0px;
+        min-height: 0px;
+    }
+
+    .image {
+        border: 1px solid $base05;
+        padding: 10px;
+    }
+}
+

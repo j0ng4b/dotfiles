@@ -18,12 +18,6 @@ local config = function()
 
 
     require('codecompanion').setup({
-        sources = {
-            per_filetype = {
-                codecompanion = { 'codecompanion' },
-            },
-        },
-
         display = {
             action_palette = {
                 provider = 'telescope',

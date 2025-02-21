@@ -31,3 +31,6 @@
   'scripts/workspaces.sh'
 )
 
+(defvar wallpapers_window_open false)
+(deflisten wallpapers 'scripts/wallpapers.sh list')
+
