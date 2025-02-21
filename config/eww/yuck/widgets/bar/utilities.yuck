@@ -1,0 +1,17 @@
+(defwidget utilities []
+  (box
+    :class 'utilities'
+    :spacing 10
+    :space-evenly false
+    :orientation 'vertical'
+    (eventbox
+      :cursor 'pointer'
+      :onclick 'scripts/wallpapers.sh toggle'
+
+      (label
+        :class 'icon'
+        :text ''
+      )
+    )
+  )
+)

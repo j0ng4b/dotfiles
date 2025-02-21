@@ -10,7 +10,9 @@
   (box
     :orientation 'horizontal'
     :space-evenly false
+    :spacing 5
     (wallpapers)
+    (box :class 'separator' :visible wallpapers_window_open)
     (centerbox
       :orientation 'vertical'
       (box
@@ -26,6 +28,7 @@
             :text ''
           )
         )
+        (utilities)
       )
       (box
         :halign 'center'
