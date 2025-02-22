@@ -8,6 +8,10 @@ configuration {
 
     show-icons: true;
     icon-theme: "Papirus";
+
+    kb-accept-custom: "";
+    kb-row-select: "";
+    kb-cancel: "Control+Return,Control+space,Escape";
 }
 
 @theme "/dev/null"

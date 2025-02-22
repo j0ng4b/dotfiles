@@ -98,10 +98,12 @@ local layout = function()
         local height = get_height(layout)
         local offset = vim.api.nvim_win_get_height(0) / 2 - height / 2
 
-        table.insert(layout, 1, {
-            type = 'padding',
-            val = math.floor(offset + 0.5),
-        })
+        if offset > 0 then
+            table.insert(layout, 1, {
+                type = 'padding',
+                val = math.floor(offset + 0.5),
+            })
+        end
 
         return layout
     end
@@ -111,7 +113,7 @@ local layout = function()
 
         {
             type = 'padding',
-            val = 3,
+            val = 2,
         },
 
         {
@@ -157,7 +159,6 @@ local config = function()
                             return
                         end
 
-                        vim.opt.cmdheight = 0
                         vim.opt.laststatus = 0
                         vim.opt.showtabline = 0
                     end
@@ -166,7 +167,6 @@ local config = function()
                 auto.cmd(
                     'BufUnload', nil,
                     function()
-                        vim.opt.cmdheight = 0
                         vim.opt.laststatus = 3
                         vim.opt.showtabline = 2
 
