@@ -27,6 +27,11 @@ local config = function()
                 show_header_separator = false,
                 start_in_insert_mode = true,
 
+                icons = {
+                    pinned_buffer = ' ',
+                    watched_buffer = ' ',
+                },
+
                 window = {
                     layout = 'vertical',
 

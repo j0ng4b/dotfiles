@@ -1,70 +1,36 @@
+local function count_files(dir)
+    local uv = vim.loop
+    local count = 0
+    local iter, err = uv.fs_scandir(dir)
+
+    if not iter then
+        error('Could not scan directory: ' .. err)
+    end
+
+    while true do
+        local name, type = uv.fs_scandir_next(iter)
+        if not name then break end
+        if type == 'file' then
+            count = count + 1
+        end
+    end
+
+    return count
+end
+
 local banner = function()
-    local banners = {
-        {
-            [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠈⠀⢸⠀⠃⠈⠀⠀⠀⠃⠀⢸⡇⠀⠀⠀⠀]],
-            [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢐⠀⠸⠀⠀⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⠀⠀]],
-            [[⠒⠢⡐⠠⠠⠤⠤⠤⢀⠀⣠⠀⣸⣀⢸⡆⣇⣸⠀⠀⠀⠇⠀⢸⣇⣇⠀⠀⠀]],
-            [[⠀⠀⠃⠀⠡⠀⠀⠀⡀⠕⣊⡼⠟⢿⠟⠋⠙⠻⠒⠢⢄⡇⠀⣸⠁⠈⠀⠀⠀]],
-            [[⠀⠀⡇⠀⠀⠑⠒⠭⣠⠞⠁⠠⠀⠀⢰⠀⠀⠀⢡⠀⠀⠉⠢⠃⠀⠰⠀⠀⠀]],
-            [[⠀⠀⢣⠀⠀⠀⠀⡠⠃⢠⠀⣆⢠⠐⢺⢀⠀⠀⠀⢗⠢⢐⡀⠑⡀⢠⠀⠀⠀]],
-            [[⠀⠀⠀⡡⠢⠀⣹⠃⢀⡟⢀⠇⡄⠀⢸⢠⠀⠀⢰⢸⠆⠄⢱⠀⢰⢣⠀⠀⠀]],
-            [[⠀⢀⣰⠀⠀⣠⡎⠀⠈⡇⢸⠀⡇⠀⣟⢸⢠⠀⢸⠘⠘⡰⠈⣿⢸⢧⠀⠀⠀]],
-            [[⠀⠑⢠⠄⢒⡎⡇⠀⠀⣇⣘⣦⣷⣶⣯⠉⠈⠀⠻⣮⣴⣓⡣⣿⢸⡸⠃⠀⠀]],
-            [[⢄⡔⠉⠀⡰⠠⡇⠀⠀⠀⠛⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠉⠁⠹⠀⡇⠀⠀⠀]],
-            [[⠀⠙⠄⠀⡠⢇⡯⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠃⢣⢳⠀⠀⠀]],
-            [[⠀⠀⢸⡋⣒⠝⡠⢸⠀⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠣⢦⣑⣄⡀]],
-            [[⢀⠴⠃⠪⣤⢻⡶⠁⠐⠋⠁⠒⠒⠒⠒⠂⠀⠀⠒⠒⠒⠒⠊⠉⠐⠚⠛⠚⠁]],
-            [[⠋⠁⠀⠀⠈⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
-        },
-
-        {
-            [[⠀⠀⠀⠀⠀⠀⠀⣀⠤⠒⠋⠉⠁⠀⠀⠀⠀⠉⠑⠒⠂⠤⣀⠀⠀⠀⠀⠀⠀⠀]],
-            [[⠀⠀⠀⠀⠀⡠⠊⠀⢀⣤⣶⣶⡶⠶⣶⣶⣶⣤⣀⡀⠀⠀⠀⠑⢄⠀⠀⠀⠀⠀]],
-            [[⠀⠀⠀⣠⠎⠀⣠⠞⠉⠘⠋⠁⠀⠀⠀⠉⠛⠀⠀⠙⠲⢄⠀⠀⠀⠱⡀⠀⠀⠀]],
-            [[⠀⠀⢰⠁⣠⠊⠀⡐⠀⠀⠀⠀⠀⠀⠀⢀⠀⠠⠀⠀⡄⠀⠑⡄⠀⠀⠱⡄⠀⠀]],
-            [[⠀⢰⠇⡔⠡⠀⠐⠀⠀⡘⠠⠀⠀⠀⠀⠠⠀⠀⡄⠀⠰⠀⠀⠠⡀⠀⠀⡇⠀⠀]],
-            [[⠀⣿⢰⢀⡇⠀⡄⠀⢰⡇⡀⠀⠀⠀⠀⠀⠀⠀⢱⠀⠀⠃⠀⠀⢃⠀⠀⢸⠀⠀]],
-            [[⠀⡫⠂⢸⡄⠀⡇⠀⢸⡇⡇⠀⠀⠀⠀⠠⡆⠀⠈⡆⠀⢸⠀⠀⠸⡀⠀⠘⠀⠀]],
-            [[⠀⠁⠀⢸⡃⢰⠀⠀⢸⡇⠁⠀⠀⠀⠀⡀⣧⠀⠀⢻⠠⠈⡆⠀⠀⡇⠀⠀⠀⠀]],
-            [[⠀⠀⠀⢸⢠⢸⡀⠀⢸⠇⢸⠘⠀⠀⠀⡇⢿⡄⠀⢸⣇⡃⠃⠀⠀⠁⠀⠀⠀⠀]],
-            [[⠀⠀⡀⠈⣿⣾⣏⡁⠉⠈⠈⠛⠃⠐⠒⠉⠈⠁⢀⣬⡿⢱⠃⠀⠀⣇⠀⠀⠀⣦]],
-            [[⠀⠀⢃⠀⠸⡇⠉⠙⠳⢷⣴⠀⠀⠀⠀⠀⣿⣚⣋⠁⠀⢸⠀⠀⢸⢿⠀⠀⡀⢱]],
-            [[⣼⠠⠸⠀⠀⣇⠙⠒⠚⠉⠉⠀⠀⠀⠀⠀⠀⠉⠉⠉⠋⢸⠀⠀⣠⢾⠀⢀⠇⡾]],
-            [[⠿⡄⢇⣷⡄⣽⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡌⠀⣴⠏⠘⣠⢪⠜⠀]],
-            [[⠀⠈⠺⣿⣷⠀⢻⡆⢄⡀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠄⠊⡭⢠⣿⣤⢼⣯⠁⠀⠀]],
-            [[⠀⠀⠀⢾⣿⣷⣾⠀⠐⠛⠷⡂⠤⠒⠒⠀⠶⢏⠙⢏⠐⣿⣿⢹⣿⣿⣏⠀⠀⠀]],
-            [[⠀⠀⢀⣶⣿⠿⢇⠀⠀⠀⠀⠈⠒⠦⠀⢔⠢⠀⠑⠀⠁⡏⢉⣚⣿⣿⣹⡇⠀⠀]],
-            [[⠀⠀⢀⣿⣿⠆⠤⣶⡄⣀⣀⠤⢿⡂⠀⣆⠥⢄⣀⣠⠚⠙⢅⠘⣾⣿⣿⠿⣦⢀]],
-            [[⠀⠀⣾⣿⠛⠀⠀⠁⣆⣠⠲⠤⣼⠉⠢⠈⣲⡖⠀⡼⠁⠒⢺⠀⡆⠈⣻⣿⡿⢻]],
-        },
-
-        {
-            [[⠀⠀⠀⠀⡠⠂⠁⠀⡀⠠⠁⠀⠀⠀⠀⡆⠀⢀⠀⠁⠒⠠⡈⢳⣄⠀⠀⠀]],
-            [[⠀⠀⠠⠋⢠⠂⢀⡞⢠⠇⠀⢀⠀⠲⠀⣻⡄⠀⢣⠀⠀⠀⢃⠉⡙⣦⠀⠀]],
-            [[⡠⠔⠀⠀⠃⢀⢿⠁⣷⠀⠀⡈⠰⢰⡂⡇⡹⡒⠤⣆⠀⢠⠀⠁⡆⢸⢇⠀]],
-            [[⠀⡄⠀⡘⠀⣦⠇⢸⢡⠀⢠⠡⠁⡎⡃⠃⠘⢷⠀⢸⡄⠀⡆⠀⡇⠘⢮⠀]],
-            [[⠠⠀⠘⡅⢰⠆⠀⡄⠀⡠⠗⠁⡜⠁⣟⣀⠀⠈⢣⢸⢴⡀⠀⠀⠀⢆⠈⠀]],
-            [[⠀⠀⡇⠁⢸⡶⠺⢷⣯⣇⠀⠰⠀⢰⠿⢻⣟⡛⠛⣦⠸⢇⠀⠀⠀⠘⠀⠀]],
-            [[⠀⠀⠇⢠⠈⠃⢼⢺⣿⡍⢂⠃⠀⠀⢸⢻⣏⣿⠀⠍⢰⠈⡆⠀⠀⡄⠆⠀]],
-            [[⠀⢠⠘⡜⢢⠀⠈⠣⠜⠀⠀⠀⠀⠀⠈⠓⠜⠋⠀⠀⠀⠀⢀⠀⣤⢏⣾⡀]],
-            [[⠀⢸⠀⢰⠈⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡆⠀⠀⢠⡟⡘⢹⠑]],
-            [[⠀⡀⠀⠀⢸⢇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⢠⡨⠑⠀⠸⠀]],
-            [[⠀⠁⡔⠀⢈⠎⠢⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣺⠁⠀⣿⠃⠀⠀⠀⠃]],
-            [[⠀⢠⢣⠀⢸⡀⢤⠒⠩⡒⣠⣄⡀⡠⠤⠀⠂⢉⠟⢄⡇⢸⢸⡈⣦⠀⠀⠀]],
-            [[⠀⢾⠀⣆⠸⠀⠤⠄⣀⡞⠉⣿⠀⢇⠀⡀⠔⢁⠠⣸⡇⣿⠉⣀⠇⠀⠀⠀]],
-            [[⠀⠈⢠⠃⠙⢷⠉⠀⢺⠀⠀⡇⢀⢴⣿⢆⠀⠀⣰⠇⢸⡗⠈⠘⠀⠀⠀⠀]],
-            [[⠀⠀⡈⠀⠀⠀⠀⠀⡆⠀⢠⠗⠁⠀⠀⠰⠑⠴⡽⠀⢸⠀⠀⠀⠀⠀⠀⠀]],
-        },
-    }
-
     math.randomseed(os.time())
-    return {
-        type = 'text',
-        val = banners[math.random(#banners)],
-        opts = {
-            position = 'center',
-        }
-    }
+
+    local banners_count = count_files(
+        vim.fn.stdpath('config') .. '/lua/plugins/alpha-banners'
+    )
+
+    local banner = require('plugins.alpha-banners/banner-' .. math.random(banners_count))
+
+    -- used to reset highlight when colorscheme changes
+    _G.alpha_cur_banner = banner
+
+    return banner.header
 end
 
 local button = function(text, shortcut, action)
@@ -205,6 +171,18 @@ local config = function()
                         vim.opt.showtabline = 2
 
                         vim.g.alpha_closed = true
+                    end,
+                    {
+                        buffer = 0,
+                    }
+                )
+
+                -- Due the reloader thats changes colorscheme the highlight are
+                -- lost so we need to set them again
+                _G.alpha_cur_banner.set_highlights()
+                auto.cmd('Colorscheme', '',
+                    function()
+                        _G.alpha_cur_banner.set_highlights()
                     end,
                     {
                         buffer = 0,

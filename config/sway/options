@@ -22,7 +22,7 @@
     floating_modifier $super normal
 
     ## Show urgency hint before reset window decoration
-    force_display_urgency_hint 500 ms
+    force_display_urgency_hint 1500 ms
 
     ## Repeating workspace command switch back to prior workspace
     workspace_auto_back_and_forth yes
