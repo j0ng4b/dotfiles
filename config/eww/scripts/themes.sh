@@ -70,6 +70,7 @@ case $1 in
         printf $2 > "$XDG_CONFIG_HOME/sysconf/theme"
 
         # Keep window open
+        sleep 1.5
         eww update themes_window_open='true'
         ;;
 
