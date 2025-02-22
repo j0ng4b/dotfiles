@@ -159,6 +159,8 @@ local config = function()
                             return
                         end
 
+                        _G.alpha_win_num = vim.api.nvim_get_current_win()
+
                         vim.opt.laststatus = 0
                         vim.opt.showtabline = 0
                     end
@@ -171,6 +173,19 @@ local config = function()
                         vim.opt.showtabline = 2
 
                         vim.g.alpha_closed = true
+                    end,
+                    {
+                        buffer = 0,
+                    }
+                )
+
+                auto.cmd(
+                    'VimResized', nil,
+                    function()
+                        if vim.api.nvim_get_current_win() == _G.alpha_win_num then
+                            package.loaded.alpha.default_config.layout = layout()
+                            alpha.redraw()
+                        end
                     end,
                     {
                         buffer = 0,

@@ -21,7 +21,7 @@ confirm-before-quit = false
 
 [cursor]
 shape = 'underline'
-blinking = true
+blinking = false
 blinking-interval = 800
 
 

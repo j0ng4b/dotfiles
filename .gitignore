@@ -16,3 +16,6 @@ scripts/_keys
 **/colors*
 !**/colors*/
 
+## The theme in config directory
+config/sysconf/theme
+

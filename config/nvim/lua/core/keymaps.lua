@@ -40,11 +40,11 @@ map({ 'n' }, 'bd', function()
     buffer.close()
 end)
 
-map({ 'n' }, '<Tab>', function()
+map({ 'n' }, 'bn', function()
     buffer.move('bnext')
 end)
 
-map({ 'n' }, '<S-Tab>', function()
+map({ 'n' }, 'bp', function()
     buffer.move('bprevious')
 end)
 
