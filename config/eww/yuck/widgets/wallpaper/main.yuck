@@ -3,7 +3,6 @@
     :vscroll true
     :hscroll false
     :class 'wallpapers-list'
-    :visible wallpapers_window_open
     (box
       :orientation 'vertical'
       :spacing 10
