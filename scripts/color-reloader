@@ -185,7 +185,7 @@ _wm_reloader() {
 
     # Update title colors
     focused=$(swaymsg -r -t get_seats | jq '.[0].focus')
-    swaymsg -q "[con_id=${focused}]" title_format "<span rise='-5000' font_desc='Poppins 22'>\$dot_0\$dot_1\$dot_2</span>" &>/dev/null
+    swaymsg -q "[con_id=${focused}]" title_format "<span rise='-2000' font_desc='Poppins 14'>\$dot_0\$dot_1\$dot_2</span>" &>/dev/null
 }
 
 
