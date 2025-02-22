@@ -15,7 +15,7 @@ _get_wallpapers() {
 case $1 in
     list)
         _get_wallpapers
-        inotifywait -m -e modify,create,delete,move --format '%w%f' "$wallpapers_dir" |
+        inotifywait -q -m -e modify,create,delete,move --format '%w%f' "$wallpapers_dir" |
             while read -r _; do
                 _get_wallpapers
             done
@@ -33,9 +33,10 @@ case $1 in
     toggle)
         current=$(eww get wallpapers_window_open)
         if [ $current = 'false' ]; then
-            eww update wallpapers_window_open="true"
+            eww update wallpapers_window_open='true'
+            eww update themes_window_open='false'
         else
-            eww update wallpapers_window_open="false"
+            eww update wallpapers_window_open='false'
         fi
         ;;
 esac

@@ -4,6 +4,7 @@
 
 ;; Widgets
 (include './yuck/widgets/bar/main.yuck')
+(include './yuck/widgets/theme/main.yuck')
 (include './yuck/widgets/wallpaper/main.yuck')
 
 

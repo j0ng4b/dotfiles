@@ -7,10 +7,17 @@
     (eventbox
       :cursor 'pointer'
       :onclick 'scripts/wallpapers.sh toggle'
-
       (label
         :class 'icon'
         :text ''
+      )
+    )
+    (eventbox
+      :cursor 'pointer'
+      :onclick 'scripts/themes.sh toggle'
+      (label
+        :class 'icon'
+        :text ''
       )
     )
   )

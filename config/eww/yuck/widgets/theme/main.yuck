@@ -1,0 +1,113 @@
+(defwidget themes []
+  (scroll
+    :vscroll true
+    :hscroll false
+    :class 'themes-list'
+    (box
+      :orientation 'vertical'
+      :spacing 15
+      :space-evenly false
+      (for theme in themes
+        (eventbox
+          :cursor 'pointer'
+          :onclick 'scripts/themes.sh set "${theme.name}"'
+          (box
+            :class 'theme'
+            :spacing 5
+            :space-evenly false
+            :orientation 'vertical'
+            (label
+              :class 'name'
+              :text '${theme.name}'
+            )
+            (box
+              :orientation 'horizontal'
+              :spacing 5
+              :space-evenly false
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base00};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base01};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base02};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base03};'
+              )
+            )
+            (box
+              :orientation 'horizontal'
+              :spacing 5
+              :space-evenly false
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base04};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base05};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base06};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base07};'
+              )
+            )
+            (box
+              :orientation 'horizontal'
+              :spacing 5
+              :space-evenly false
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base08};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base09};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base0A};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base0B};'
+              )
+            )
+            (box
+              :orientation 'horizontal'
+              :spacing 5
+              :space-evenly false
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base0C};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base0D};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base0E};'
+              )
+              (box
+                :class 'color'
+                :style 'background-color: #${theme.base0F};'
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+)
+

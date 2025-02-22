@@ -32,5 +32,14 @@
 )
 
 (defvar wallpapers_window_open false)
-(deflisten wallpapers 'scripts/wallpapers.sh list')
+(deflisten wallpapers
+  :initial '[]'
+  'scripts/wallpapers.sh list'
+)
+
+(defvar themes_window_open false)
+(deflisten themes
+  :initial '[]'
+  'scripts/themes.sh list'
+)
 
