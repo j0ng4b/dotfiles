@@ -91,7 +91,11 @@ local config = function()
                 {
                     'diagnostics',
                     separator = '',
-                    sources = { 'nvim_diagnostic', 'nvim_lsp' },
+
+                    -- previously: { 'nvim_diagnostic', 'nvim_lsp' }
+                    -- but this produces duplicate diagnostics count
+                    sources = { 'nvim_diagnostic' },
+
                     sections = { 'error', 'warn', 'info', 'hint' },
                     symbols = icons.diagnostics,
                 },
