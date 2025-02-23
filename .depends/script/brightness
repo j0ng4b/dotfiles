@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+desc Used to show brightness notification
+cmd notify-send
+
+desc Used to set brightness
+cmd brightnessctl
+

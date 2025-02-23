@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+desc Used to set day/night gamma adjustment
+cmd wlsunset
+

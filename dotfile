@@ -192,8 +192,8 @@ _check_dependencies() {
 
     # Why the dotfile needs the command
     descs=""
-    desc() { descs="$@"; }
-    desca() { descs="$descs:$@"; }
+    desc() { IFS=' '; descs="$@"; }
+    desca() { IFS=' '; descs="$descs:$@"; }
 
     # Commands that are needed to be installed to use the dotfile
     cmd() {
@@ -234,11 +234,30 @@ _check_dependencies() {
     for dotfile in $dotfiles; do
         [ $dotfile = 'sysconf' ] && continue
 
-        desc The dotfile requires the command thats it configure
-        cmd $dotfile
+        if ! str_contains $dotfile "script"; then
+            desc The dotfile requires the command thats it configure
+            cmd $dotfile
 
-        if [ $missing -eq 1 ]; then
-            error "Missing the command thats $dotfile configures"
+            if [ $missing -eq 1 ]; then
+                error "Missing the command thats $dotfile configures"
+                continue
+            fi
+        elif [ $dotfile = 'scripts' ]; then
+            # Check all scripts dependencies
+            for script in $(ls $dotfiles_root/.depends/script); do
+                info "Checking dependencies for $script..."
+
+                # Load script dependencies checks
+                . $dotfiles_root/.depends/script/$script
+            done
+
+            if [ $missing -eq 0 ]; then
+                info "All $dotfile dependencies are satisfied."
+            else
+                error "Some dependencies are missing for some script."
+                return 1
+            fi
+
             continue
         fi
 

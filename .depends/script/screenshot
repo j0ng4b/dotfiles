@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+desc Used to take screenshots
+cmd grim
+cmd slurp
+
+desc Used to send notifications
+cmd notify-send
+
+desc Used to copy screenshots to clipboard
+cmd wl-copy
+cmd wl-paste
+
+desc Used to retrieve XDG user directories
+cmd xdg-user-dir
+

@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+desc Used to get the location of the user using the IP address
+cmd curl
+
+desc Used to parser the json response
+cmd jq
+

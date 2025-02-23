@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+desc Used to manage wifi connections
+cmd wpa_cli
+
+desc Used to manage wifi connections
+opt iwctl
+
+desc Used to control bluetooth devices
+cmd bluetoothctl
+

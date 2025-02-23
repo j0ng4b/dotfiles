@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+desc Used to control the status of the speaker and microphone
+cmd wpctl
+
+desc Used to send notifications
+cmd notify-send
+
+desc Used to parse json
+cmd jq
+

@@ -19,7 +19,7 @@ desc Used by GitSigns
 opt git
 
 
-desc Used by some LSP
+desc Used to run some LSP
 opt node
 opt python
 
