@@ -6,6 +6,7 @@ if [ ! -e "$theme_file" ]; then
     echo 'catppuccin' > $theme_file
 fi
 
+# TODO: send a notification when the theme is changed
 
 __generate_colors_file() {
     template_name=$1

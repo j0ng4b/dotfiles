@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+desc Used to get files changes and reload the color scheme
+cmd inotifywait
+
+desc Used to send notifications
+cmd notify-send
+
+desc Used to reload sway colors
+cmd swaymsg
+
+desc Used to reload dunst colors
+cmd dunstctl
+
+desc Used to reload starship colors
+cmd zsh
+
+
