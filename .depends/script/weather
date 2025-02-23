@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+desc Used to get the current weather information
+cmd curl
+
+desc Used to parse the json response
+cmd jq
+
