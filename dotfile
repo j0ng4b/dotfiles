@@ -140,7 +140,7 @@ __dotfile_action() {
     # List of dotfiles to act on
     dotfiles="$@"
     if [ -z "$dotfiles" ]; then
-        warn "selecting all dotfiles...\n"
+        warn "Selecting all dotfiles...\n"
         dotfiles="$(__get_dotfiles)"
     fi
 
@@ -149,9 +149,15 @@ __dotfile_action() {
         # Remove tail / if any
         dotfile="$(basename $dotfile)"
         if [ $action = "install" ]; then
-            echo "Installing $dotfile..."
+            info "Installing $dotfile..."
+
+            info "Checking dependencies..."
+            _check_dependencies $dotfile
+            if [ $? -gt 0 ]; then
+                continue
+            fi
         else
-            echo "Uninstalling $dotfile..."
+            info "Uninstalling $dotfile..."
         fi
 
         action_result=0
@@ -185,16 +191,20 @@ _check_dependencies() {
     missing=0
 
     # Why the dotfile needs the command
-    description=""
-    desc() {
-        description="$@"
-    }
+    descs=""
+    desc() { descs="$@"; }
+    desca() { descs="$descs:$@"; }
 
     # Commands that are needed to be installed to use the dotfile
     cmd() {
         if ! command -v $1 >/dev/null 2>&1; then
             error "The command '$1' is required by $dotfile"
-            echo "  - because: $description"
+
+            echo "Why:"
+            IFS=':'  # Set the field separator
+            for description in $descs; do
+                echo "  - $description"
+            done
 
             missing=1
         fi
@@ -204,11 +214,14 @@ _check_dependencies() {
     opt() {
         if ! command -v $1 >/dev/null 2>&1; then
             warn "You may want install '$1' for $dotfile"
-            echo "  - because: $description"
+
+            echo "Why:"
+            IFS=':'  # Set the field separator
+            for description in $descs; do
+                echo "  - $description"
+            done
         fi
     }
-
-    shift
 
     # List of dotfiles to act on
     dotfiles="$@"
@@ -238,10 +251,11 @@ _check_dependencies() {
             info "All $dotfile dependencies are satisfied."
         else
             error "Some dependencies are missing for $dotfile."
+            return 1
         fi
     done
 
-    exit 0
+    return 0
 }
 
 
@@ -253,7 +267,9 @@ while [ $# -gt 0 ]; do
             ;;
 
         check)
-            _check_dependencies $@ # no return
+            shift
+            _check_dependencies $@
+            exit 0
             ;;
 
         *)
