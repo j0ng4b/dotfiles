@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+desc JSON parser for some scripts
+cmd jq
+
+desc Used to get repository branch
+opt git
+

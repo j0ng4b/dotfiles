@@ -3,6 +3,11 @@
 branch=''
 has_git_branch() {
     path=$(__get_pane_path)
+
+    if ! command -v git >/dev/null 2>&1; then
+        return 1
+    fi
+
     branch="$(git -C $path rev-parse --abbrev-ref HEAD)"
 
     if [ -n "$branch" ]; then

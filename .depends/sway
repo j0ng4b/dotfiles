@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+
+desc Audio server and session manager
+cmd pipewire
+cmd wireplumber
+
+desc Notification server
+cmd dunst
+
+desc Wallpaper setter
+cmd swww-daemon
+
+desc Terminal emulator
+cmd rio
+
+desc Application launcher
+cmd rofi
+
+desc Widgets
+cmd eww
+
+desc JSON parser for some scripts
+cmd jq
+
+desc Used to create bus user session
+cmd dbus-daemon
+

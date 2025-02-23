@@ -181,26 +181,33 @@ __dotfile_action() {
     exit 0
 }
 
-_check_dotfile_dependencies() {
-    dotfile=$1
-
-    # Load dependencies
-    if [ -f "$dotfiles_root/.depends/$dotfile" ]; then
-        . $dotfiles_root/.depends/$dotfile
-    fi
-
-    cmds="$dotfile $cmds"
-    for cmd in $cmds; do
-        if ! command -v $cmd >/dev/null 2>&1; then
-            error "The command '$cmd' is required $dotfile"
-            return 1
-        fi
-    done
-
-    return 0
-}
-
 _check_dependencies() {
+    missing=0
+
+    # Why the dotfile needs the command
+    description=""
+    desc() {
+        description="$@"
+    }
+
+    # Commands that are needed to be installed to use the dotfile
+    cmd() {
+        if ! command -v $1 >/dev/null 2>&1; then
+            error "The command '$1' is required by $dotfile"
+            echo "  - because: $description"
+
+            missing=1
+        fi
+    }
+
+    # Optional dependencies
+    opt() {
+        if ! command -v $1 >/dev/null 2>&1; then
+            warn "You may want install '$1' for $dotfile"
+            echo "  - because: $description"
+        fi
+    }
+
     shift
 
     # List of dotfiles to act on
@@ -214,10 +221,23 @@ _check_dependencies() {
     for dotfile in $dotfiles; do
         [ $dotfile = 'sysconf' ] && continue
 
-        _check_dotfile_dependencies "$(basename $dotfile)"
+        desc The dotfile requires the command thats it configure
+        cmd $dotfile
 
-        if [ $? -eq 0 ]; then
+        if [ $missing -eq 1 ]; then
+            error "Missing the command thats $dotfile configures"
+            continue
+        fi
+
+        # Load dependencies checks
+        if [ -f "$dotfiles_root/.depends/$dotfile" ]; then
+            . $dotfiles_root/.depends/$dotfile
+        fi
+
+        if [ $missing -eq 0 ]; then
             info "All $dotfile dependencies are satisfied."
+        else
+            error "Some dependencies are missing for $dotfile."
         fi
     done
 

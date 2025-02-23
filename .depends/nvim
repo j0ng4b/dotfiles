@@ -1,2 +1,9 @@
 #!/usr/bin/env sh
 
+desc Plugins fetch
+cmd git
+
+desc Builds telescope fzf and treesitter parsers
+cmd make
+cmd gcc
+
