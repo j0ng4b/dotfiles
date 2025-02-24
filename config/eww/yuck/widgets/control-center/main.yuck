@@ -1,0 +1,13 @@
+(include './yuck/widgets/control-center/notifications.yuck')
+
+
+(defwidget control-center []
+  (box
+    :orientation 'vertical'
+    :spacing 10
+    :class 'control-center'
+    :width 450
+    (notifications)
+  )
+)
+

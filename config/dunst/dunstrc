@@ -114,4 +114,8 @@
     markup = full
     max_icon_size = 120
 
+[notifications]
+summary = ".*"
+script = "$XDG_CONFIG_HOME/dunst/scripts/scripter-notification"
+
 # vim: ft=cfg

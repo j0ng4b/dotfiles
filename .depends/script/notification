@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+desc Used to manage notifications
+cmd dunstctl
+
+desc Used to send notifications
+cmd notify-send
+
+desc Used to get icon from spotify
+cmd curl
+
+desc Used to get spotify icon path
+cmd playerctl
+

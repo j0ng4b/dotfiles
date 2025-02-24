@@ -12,15 +12,21 @@
     :space-evenly false
     (revealer
       :transition 'slideright'
-      :reveal {wallpapers_window_open && !themes_window_open}
+      :reveal {wallpapers_window_open && !themes_window_open && !control_center_window_open}
       (wallpapers)
     )
     (revealer
       :transition 'slideright'
-      :reveal {themes_window_open && !wallpapers_window_open}
+      :reveal {themes_window_open && !wallpapers_window_open && !control_center_window_open}
       (themes)
     )
-    (box :class 'separator' :visible {themes_window_open || wallpapers_window_open})
+    (revealer
+      :transition 'slideright'
+      :reveal {control_center_window_open && !wallpapers_window_open && !themes_window_open}
+      (control-center)
+    )
+    (box :class 'separator' :visible {themes_window_open ||
+      wallpapers_window_open || control_center_window_open})
     (centerbox
       :orientation 'vertical'
       (box

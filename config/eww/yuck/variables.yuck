@@ -31,6 +31,10 @@
   'scripts/workspaces.sh'
 )
 
+;; Control center
+(defvar control_center_window_open false)
+(defpoll notifications :initial '[]' :interval '1s' 'scripts/scripter notification list')
+
 (defvar wallpapers_window_open false)
 (deflisten wallpapers
   :initial '[]'
