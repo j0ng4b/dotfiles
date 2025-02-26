@@ -89,7 +89,7 @@ case $cmd in
     dismiss)
         if [ "$2" = "all" ]; then
             echo '' > $cache_notifications_list
-            rm $cache_notification_icons/*
+            rm -f $cache_notification_icons/*
 
             exit 0
         fi

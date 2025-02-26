@@ -8,10 +8,23 @@
     font-weight: normal;
     font-family: 'Poppins';
 
-    .separator {
+    .separator-horizontal {
         border-left: 1px solid $base03;
         margin: -5px 0px;
         padding-right: 5px;
+    }
+
+    .profile {
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+
+        border: 1px solid $base05;
+        border-radius: 50%;
+    }
+
+    .separator-vertical {
+        border-bottom: 2px solid $base03;
     }
 }
 

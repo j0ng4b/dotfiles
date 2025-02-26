@@ -79,6 +79,7 @@ case $1 in
         if [ $current = 'false' ]; then
             eww update themes_window_open='true'
             eww update wallpapers_window_open='false'
+            eww update control_center_window_open='false'
         else
             eww update themes_window_open='false'
         fi

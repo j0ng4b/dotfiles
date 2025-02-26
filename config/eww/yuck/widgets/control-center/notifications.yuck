@@ -51,12 +51,12 @@
                 :space-evenly false
                 :spacing 5
                 :halign 'start'
-                (image
+                (box
                   :visible {notification.app.icon != ''}
                   :class 'icon'
-                  :path {notification.app.icon}
-                  :image-width 22
-                  :image-height 22
+                  :style 'background-image: url("${notification.app.icon}")'
+                  :width 22
+                  :height 22
                 )
                 (label
                   :class 'appname'
@@ -85,7 +85,7 @@
                 :visible {notification.icon.path != ''}
                 :width {notification.icon.width}
                 :height {notification.icon.height}
-                :style "background-image: url(\"${notification.icon.path}\")"
+                :style 'background-image: url("${notification.icon.path}")'
               )
               (box
                 :orientation 'vertical'

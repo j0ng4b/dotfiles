@@ -93,6 +93,12 @@ local config = function()
                 })
             end,
         },
+
+        -- opts = {
+        --     system_prompt = function(opts)
+        --         return ''
+        --     end,
+        -- }
     })
 end
 

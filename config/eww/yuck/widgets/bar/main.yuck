@@ -25,14 +25,30 @@
       :reveal {control_center_window_open && !wallpapers_window_open && !themes_window_open}
       (control-center)
     )
-    (box :class 'separator' :visible {themes_window_open ||
-      wallpapers_window_open || control_center_window_open})
+    (box
+      :class 'separator-horizontal'
+      :visible {themes_window_open || wallpapers_window_open || control_center_window_open}
+    )
     (centerbox
       :orientation 'vertical'
       (box
         :orientation 'vertical'
         :space-evenly false
         :spacing 10
+        (eventbox
+          :class 'profile'
+          :cursor 'pointer'
+          :onclick '\
+            eww update \
+            control_center_window_open=${!control_center_window_open} \
+            wallpapers_window_open=false \
+            themes_window_open=false
+          '
+          :width 38
+          :height 38
+          :style 'background-image: url("/home/jonatha/.config/sysconf/profile-pic")'
+        )
+        (box :class 'separator-vertical')
         (eventbox
           :cursor 'pointer'
           :onclick 'rofi -show drun -terminal footclient'
