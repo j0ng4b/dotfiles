@@ -1,12 +1,17 @@
+(include './yuck/widgets/control-center/controls.yuck')
+(include './yuck/widgets/control-center/profile.yuck')
 (include './yuck/widgets/control-center/notifications.yuck')
 
 
 (defwidget control-center []
   (box
     :orientation 'vertical'
-    :spacing 10
+    :space-evenly false
+    :spacing 20
     :class 'control-center'
     :width 450
+    (profile)
+    (controls)
     (notifications)
   )
 )

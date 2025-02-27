@@ -3,5 +3,7 @@
     background-color: $base00;
 }
 
+@import './controls.scss';
+@import './profile.scss';
 @import './notification.scss';
 

@@ -1,0 +1,52 @@
+(defwidget control[icon label onclick]
+  (eventbox
+    :cursor 'pointer'
+    :onclick onclick
+    (box
+      :class 'control'
+      :space-evenly false
+      :spacing 10
+      :orientation 'vertical'
+      (label
+        :class 'icon'
+        :text {icon}
+        :halign 'center'
+      )
+      (label
+        :class 'label'
+        :halign 'center'
+        :text {label}
+      )
+    )
+  )
+)
+
+
+(defwidget controls[]
+  (box
+    :orientation 'horizontal'
+    :space-evenly true
+    :spacing 20
+    :valign 'start'
+    :class 'controls'
+    :vexpand true
+    (control
+      :icon {bluetooth.enable == 1 ? '' : ''}
+      :label 'Bluetooth'
+      :onclick 'scripts/scripter network bluetooth toggle'
+    )
+    (control
+      :icon {multimedia.speaker.mute == 1 ? '' : ''}
+      :label {multimedia.speaker.mute == 1 ? 'Mute' : 'Volume'}
+      :onclick 'scripts/scripter multimedia speaker mute'
+    )
+    (control
+      :icon {notification == 'noisy' ? '' :
+             notification == 'important' ? '' : ''}
+      :label {notification == 'noisy' ? 'Noisy' :
+              notification == 'important' ? 'Important' : 'Silent'}
+      :onclick 'scripts/scripter notification set toggle'
+    )
+  )
+)
+

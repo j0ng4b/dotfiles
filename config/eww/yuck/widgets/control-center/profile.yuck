@@ -1,0 +1,41 @@
+(defwidget profile[]
+  (box
+    :orientation 'horizontal'
+    :space-evenly false
+    :spacing 10
+    :class 'profile'
+    :valign 'start'
+    (box
+      :width 70
+      :height 70
+      :class 'pic'
+      :style 'background-image: url("/home/jonatha/.config/sysconf/profile-pic")'
+    )
+    (box
+      :orientation 'vertical'
+      :space-evenly false
+      :valign 'center'
+      (label
+        :halign 'start'
+        :class 'name'
+        :text {username}
+      )
+      (box
+        :orientation 'horizontal'
+        :space-evenly false
+        :spacing 5
+        :class 'uptime'
+        (label
+          :text '${uptime.days}d'
+        )
+        (label
+          :text '${uptime.hours}h'
+        )
+        (label
+          :text '${uptime.mins}m'
+        )
+      )
+    )
+  )
+)
+

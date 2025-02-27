@@ -3,7 +3,7 @@ background = '#{base00}'
 foreground = '#{base06}'
 
 selection-background = '#{base00}'
-selection-foreground = '#{base06}'
+selection-foreground = '#{base0E}'
 
 cursor = '#{base06}'
 

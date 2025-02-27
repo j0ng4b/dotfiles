@@ -14,7 +14,7 @@
         padding-right: 5px;
     }
 
-    .profile {
+    .bar-profile-pic {
         background-repeat: no-repeat;
         background-size: cover;
         background-position: center;
@@ -25,17 +25,6 @@
 
     .separator-vertical {
         border-bottom: 2px solid $base03;
-    }
-}
-
-.menu-button {
-    & .icon {
-        padding: 0px 8px;
-        border-radius: 10px;
-        background-color: $base02;
-
-        font-size: 32px;
-        font-family: 'JetBrainsMono Nerd Font Mono';
     }
 }
 

@@ -2,16 +2,22 @@
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
 
+(defpoll username
+  :interval 9999
+  'getent passwd $(whoami) | cut -d":" -f5'
+)
+
 ;; Clock widget
 (defvar hour '00')
 (defvar minute '00')
-(defvar uptime '{ "days": 0, "hours": 0, "mins": 0 }')
+(defvar uptime '{ "days": "0", "hours": "0", "mins": "0" }')
 
 
 ;; Indicators
 (defvar wifi '{ "enable": 1 }')
 (defvar ethernet '{ "enable": 0 }')
 (defvar bluetooth '{ "enable": 0 }')
+(defvar notification 'noisy')
 (defvar multimedia
   '{"speaker": { "mute": 0, "volume": 0 }, "microphone": { "mute": 0, "volume": 0 }}'
 )

@@ -88,6 +88,8 @@
     format = "%b"
     alignment = center
 
+    override_pause_level = 100
+
 
 [brightness]
     ## Filter
@@ -96,6 +98,8 @@
     ## Modifications
     format = "%b"
     alignment = center
+
+    override_pause_level = 100
 
 
 [screenshot_aborted]
@@ -106,6 +110,8 @@
     ## Modifications
     alignment = center
 
+    override_pause_level = 100
+
 [screenshot]
     ## Filter
     appname = "scripter-screenshot"
@@ -113,6 +119,8 @@
     ## Modifications
     markup = full
     max_icon_size = 120
+
+    override_pause_level = 100
 
 [notifications]
 summary = ".*"

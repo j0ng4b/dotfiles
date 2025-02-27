@@ -7,7 +7,7 @@ while true; do
     eww update hour="$(date +"%H")"
     eww update minute="$(date +"%M")"
 
-    eww update uptime="$(TZ=UTC date -d@$(cut -d" " -f1 /proc/uptime) +"{ \\\"days\\\": \\\"%-j\\\", \\\"hours\\\": \\\"%-H\\\", \\\"mins\\\": \\\"%02M\\\" }")"
+    eww update uptime="$(TZ=UTC date -d@$(cut -d" " -f1 /proc/uptime) +"{ \"days\": \"%-j\", \"hours\": \"%-H\", \"mins\": \"%02M\" }")"
 
     sleep 1
 done &
@@ -19,6 +19,7 @@ while true; do
     eww update ethernet="$($root/scripter network ethernet status)"
     eww update bluetooth="$($root/scripter network bluetooth status)"
     eww update multimedia="$($root/scripter multimedia status)"
+    eww update notification="$($root/scripter notification status)"
 
     eww update battery="$($root/scripter battery status)"
 

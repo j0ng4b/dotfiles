@@ -36,7 +36,7 @@
         :space-evenly false
         :spacing 10
         (eventbox
-          :class 'profile'
+          :class 'bar-profile-pic'
           :cursor 'pointer'
           :onclick '\
             eww update \
@@ -49,15 +49,6 @@
           :style 'background-image: url("/home/jonatha/.config/sysconf/profile-pic")'
         )
         (box :class 'separator-vertical')
-        (eventbox
-          :cursor 'pointer'
-          :onclick 'rofi -show drun -terminal footclient'
-          :class 'menu-button'
-          (label
-            :class 'icon'
-            :text ''
-          )
-        )
         (utilities)
       )
       (box
