@@ -33,15 +33,14 @@
       :hexpand true
       :halign 'center'
       :valign 'center'
+      :visible {arraylength(notifications) == 0}
       (label
         :class 'empty'
-        :visible {arraylength(notifications) == 0}
         :text '󰂚'
       )
       (label
         :valign 'start'
         :class 'sleep'
-        :visible {arraylength(notifications) == 0}
         :text '󰒲'
       )
     )
