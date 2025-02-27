@@ -5,6 +5,9 @@
 # ITS ONLY USED TO CALL NOTIFICATION SCRIPT.
 #
 
+# Play sound
+pw-play --volume 1.0 $XDG_CONFIG_HOME/sysconf/notification-sound
+
 # Scripts directory root
 root=$(cd $(dirname $0); pwd)
 
