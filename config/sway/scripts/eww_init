@@ -20,6 +20,7 @@ while true; do
     eww update bluetooth="$($root/scripter network bluetooth status)"
     eww update multimedia="$($root/scripter multimedia status)"
     eww update notification="$($root/scripter notification status)"
+    eww update brightness="$($root/scripter brightness get)"
 
     eww update battery="$($root/scripter battery status)"
 

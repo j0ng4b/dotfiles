@@ -27,8 +27,8 @@ case $1 in
         # E.g.:
         #   -50 or -50% -> 50- or 50%-
         #   +50 or +50% -> no conversion
-        [ $signal = '+' ] && value=$signal$value
-        [ $signal = '-' ] && value=$value$signal
+        [ "$signal" = '+' ] && value=$signal$value
+        [ "$signal" = '-' ] && value=$value$signal
 
         brightnessctl --class backlight set $value 2>&1 >/dev/null
 
@@ -41,7 +41,7 @@ case $1 in
         value=$(( $value * 100 / $max ))
 
         time=$(cat $cache_last_notify_time)
-        if [ $(( $(date +%s) - $time )) -gt $(( $timeout / 1000 )) ]; then
+        if [ "$(( $(date +%s) - $time ))" -gt "$(( $timeout / 1000 ))" ]; then
             id=$(notify-send -p -h int:value:$value -a "$appname" -t $timeout "brightness" "<span font_desc='Phosphor-Fill' size='24pt'></span>")
             echo $id > $cache_last_notify_id
         else

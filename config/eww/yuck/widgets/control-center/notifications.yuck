@@ -113,6 +113,7 @@
                 (label
                   :class 'summary'
                   :vexpand {notification.body == ''}
+                  :limit-width 40
                   :halign 'start'
                   :text {notification.summary}
                 )

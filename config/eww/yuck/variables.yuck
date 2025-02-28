@@ -7,6 +7,8 @@
   'getent passwd $(whoami) | cut -d":" -f5'
 )
 
+(defvar brightness '{ "current": "21", "max": "255" }')
+
 ;; Clock widget
 (defvar hour '00')
 (defvar minute '00')
