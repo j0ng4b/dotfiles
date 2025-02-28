@@ -60,6 +60,10 @@ _get_volume_icon() {
 }
 
 _notify() {
+    if [ -z "$send_notification" ]; then
+        return
+    fi
+
     progress=$1
     msg=$2
 
@@ -112,6 +116,13 @@ _notify_mute() {
         "$value" \
         "<span font_desc='Phosphor-Fill' size='24pt'>$mute</span>"
 }
+
+
+send_notification=''
+if [ "$1" = "--notify" ]; then
+    send_notification=true
+    shift
+fi
 
 
 cmd=$1

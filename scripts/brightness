@@ -13,6 +13,13 @@ if [ ! -d "$cache_dir" ]; then
 fi
 
 
+send_notification=''
+if [ "$1" = "--notify" ]; then
+    send_notification=true
+    shift
+fi
+
+
 case $1 in
     # TODO: include a --save and --restores option to save set value to later
     # be restored.
@@ -40,6 +47,13 @@ case $1 in
         max=$(brightnessctl --class backlight max)
         value=$(( $value * 100 / $max ))
 
+        echo $(date +%s) > $cache_last_notify_time
+
+
+        if [ -z "$send_notification" ]; then
+            exit 0
+        fi
+
         time=$(cat $cache_last_notify_time)
         if [ "$(( $(date +%s) - $time ))" -gt "$(( $timeout / 1000 ))" ]; then
             id=$(notify-send -p -h int:value:$value -a "$appname" -t $timeout "brightness" "<span font_desc='Phosphor-Fill' size='24pt'></span>")
@@ -48,8 +62,6 @@ case $1 in
             id=$(cat $cache_last_notify_id)
             notify-send -r $id -h int:value:$value -a "$appname" -t $timeout "brightness" "<span font_desc='Phosphor-Fill' size='24pt'></span>"
         fi
-
-        echo $(date +%s) > $cache_last_notify_time
         ;;
 
     get)

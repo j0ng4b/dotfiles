@@ -24,16 +24,16 @@ set {
     $scripter "$scripts-path/scripter"
 
     # Commands to control volume
-    $cmd_volume_up "$scripter multimedia speaker set +5"
-    $cmd_volume_down "$scripter multimedia speaker set -5"
-    $cmd_volume_mute "$scripter multimedia speaker mute"
+    $cmd_volume_up "$scripter multimedia --notify speaker set +5"
+    $cmd_volume_down "$scripter multimedia --notify speaker set -5"
+    $cmd_volume_mute "$scripter multimedia --notify speaker mute"
 
     # Commands to control microphone
-    $cmd_mic_mute "$scripter multimedia mic mute"
+    $cmd_mic_mute "$scripter multimedia --notify mic mute"
 
     # Commands to control brightness
-    $cmd_brightness_up "$scripter brightness set +5%"
-    $cmd_brightness_down "$scripter brightness set -5%"
+    $cmd_brightness_up "$scripter brightness --notify set +5%"
+    $cmd_brightness_down "$scripter brightness --notify set -5%"
 
     # Commands to take screenshot
     $cmd_screenshot_screen "$scripter screenshot screen"
