@@ -1,5 +1,6 @@
 .control {
     .icon {
+        color: $base09;
         background-color: $base02;
         border-radius: 50%;
         padding: 10px;
@@ -12,6 +13,40 @@
     .label {
         color: $base04;
         font-size: 16px;
+    }
+}
+
+.slider {
+    .icon {
+        color: $base04;
+        font-size: 24px;
+    }
+
+    .bar {
+        background-color: $base00;
+
+        & trough {
+            border: none;
+            margin: 0px;
+            padding: 0px;
+            border-radius: 15px;
+            background-color: $base01;
+        }
+
+        & highlight {
+            border: none;
+            margin: 0px;
+            padding: 7px;
+            border-radius: 15px;
+            background-color: $base09;
+        }
+
+        & slider {
+            margin: 0px;
+            min-width: 0px;
+            min-height: 0px;
+            border-width: 0px;
+        }
     }
 }
 

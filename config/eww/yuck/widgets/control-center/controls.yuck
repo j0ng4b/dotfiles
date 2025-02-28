@@ -22,30 +22,83 @@
 )
 
 
+(defwidget slider[icon value ?max onchange]
+  (eventbox
+    :cursor 'pointer'
+    (box
+      :class 'slider'
+      :orientation 'horizontal'
+      :space-evenly false
+      :spacing 10
+      (label
+        :class 'icon'
+        :halign 'center'
+        :text {icon}
+      )
+      (scale
+        :class 'bar'
+        :orientation 'horizontal'
+        :onchange {onchange}
+        :hexpand true
+        :min 0
+        :max {max == '' ? 101 : max + 1}
+        :value {value}
+      )
+    )
+  )
+)
+
 (defwidget controls[]
   (box
-    :orientation 'horizontal'
-    :space-evenly true
-    :spacing 20
-    :valign 'start'
-    :class 'controls'
+    :orientation 'vertical'
+    :space-evenly false
+    :spacing 30
     :vexpand true
-    (control
-      :icon {bluetooth.enable == 1 ? '' : ''}
-      :label 'Bluetooth'
-      :onclick 'scripts/scripter network bluetooth toggle'
+    (box
+      :orientation 'horizontal'
+      :space-evenly true
+      :spacing 20
+      :valign 'start'
+      :class 'controls'
+      (control
+        :icon {ethernet.enable == 1 ? '' : wifi.enable == 1 ? '' : ''}
+        :label {ethernet.enable == 1 ? 'Wired' : 'Wi-Fi'}
+        :onclick {ethernet.enable == 1 ? '' : 'scripts/scripter network wifi toggle'}
+      )
+      (control
+        :icon {bluetooth.enable == 1 ? '' : ''}
+        :label 'Bluetooth'
+        :onclick 'scripts/scripter network bluetooth toggle'
+      )
+      (control
+        :icon {multimedia.speaker.mute == 1 ? '' : ''}
+        :label {multimedia.speaker.mute == 1 ? 'Mute' : 'Volume'}
+        :onclick 'scripts/scripter multimedia speaker mute'
+      )
+      (control
+        :icon {notification == 'noisy' ? '' :
+          notification == 'important' ? '' : ''}
+        :label {notification == 'noisy' ? 'Noisy' :
+          notification == 'important' ? 'Important' : 'Silent'}
+        :onclick 'scripts/scripter notification set toggle'
+      )
     )
-    (control
-      :icon {multimedia.speaker.mute == 1 ? '' : ''}
-      :label {multimedia.speaker.mute == 1 ? 'Mute' : 'Volume'}
-      :onclick 'scripts/scripter multimedia speaker mute'
-    )
-    (control
-      :icon {notification == 'noisy' ? '' :
-             notification == 'important' ? '' : ''}
-      :label {notification == 'noisy' ? 'Noisy' :
-              notification == 'important' ? 'Important' : 'Silent'}
-      :onclick 'scripts/scripter notification set toggle'
+    (box
+      :orientation 'vertical'
+      :space-evenly false
+      :spacing 10
+      (slider
+        :icon {multimedia.speaker.volume < 0.33 ? '' :
+              multimedia.speaker.volume < 0.66 ? '' : ''}
+        :value {multimedia.speaker.volume * 100}
+        :onchange 'scripts/scripter multimedia speaker set {}'
+      )
+      (slider
+        :icon ''
+        :value {brightness.current}
+        :max {brightness.max}
+        :onchange 'scripts/scripter brightness set {}'
+      )
     )
   )
 )
