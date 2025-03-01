@@ -30,6 +30,7 @@
   "neocord": { "branch": "main", "commit": "4d55d8dab2d5f2f272192add7a2c21982039c699" },
   "neotree-file-nesting-config": { "branch": "main", "commit": "1aae716f76717a6b662e0c18fd022f244cd064da" },
   "noice.nvim": { "branch": "main", "commit": "0427460c2d7f673ad60eb02b35f5e9926cf67c59" },
+  "nord.nvim": { "branch": "main", "commit": "57fb474a1d628bdf9d1e7964719464ed5675d7c7" },
   "nui.nvim": { "branch": "main", "commit": "53e907ffe5eedebdca1cd503b00aa8692068ca46" },
   "nvim-autopairs": { "branch": "master", "commit": "68f0e5c3dab23261a945272032ee6700af86227a" },
   "nvim-cmp": { "branch": "main", "commit": "12509903a5723a876abd65953109f926f4634c30" },
