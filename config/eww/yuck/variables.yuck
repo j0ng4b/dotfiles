@@ -12,8 +12,9 @@
 ;; Clock widget
 (defvar hour '00')
 (defvar minute '00')
-(defvar uptime '{ "days": "0", "hours": "0", "mins": "0" }')
 
+;; Day start at 1
+(defvar uptime '{ "days": "1", "hours": "0", "mins": "0" }')
 
 ;; Indicators
 (defvar wifi '{ "enable": 1 }')

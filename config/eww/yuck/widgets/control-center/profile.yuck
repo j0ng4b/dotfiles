@@ -26,9 +26,11 @@
         :spacing 5
         :class 'uptime'
         (label
-          :text '${uptime.days}d'
+          :visible {uptime.days > 1}
+          :text '${uptime.days - 1}d'
         )
         (label
+          :visible {uptime.hours > 0}
           :text '${uptime.hours}h'
         )
         (label
