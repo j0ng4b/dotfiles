@@ -1,23 +1,41 @@
-(defwidget control[icon label onclick]
+(defwidget control[icon label onclick expanded]
   (eventbox
     :cursor 'pointer'
     :onclick onclick
+    :hexpand true
     (box
       :class 'control'
       :space-evenly false
-      :spacing 10
+      :spacing 0
       :orientation 'vertical'
       (label
-        :class 'icon'
+        :class 'icon ${expanded ? 'expanded' : ''}'
         :text {icon}
-        :halign 'center'
       )
-      (label
-        :class 'label'
-        :halign 'center'
-        :text {label}
+      (overlay
+        :height 20
+        (box
+          :class 'padding'
+          :visible {expanded}
+        )
+        (label
+          :class 'label ${expanded ? 'expanded' : ''}'
+          :text {label}
+        )
       )
     )
+  )
+)
+
+
+(defwidget separator[left right]
+  (overlay
+    :class 'separator'
+    :valign 'end'
+    :height 20
+    :hexpand true
+    (box :class 'layer-1')
+    (box :class 'layer-2${left ? '-left' : ''}${right ? '-right' : ''}')
   )
 )
 
@@ -56,24 +74,38 @@
     :vexpand true
     (box
       :orientation 'horizontal'
-      :space-evenly true
-      :spacing 20
+      :space-evenly false
       :valign 'start'
       :class 'controls'
       (control
         :icon {ethernet.enable == 1 ? '' : wifi.enable == 1 ? '' : ''}
         :label {ethernet.enable == 1 ? 'Wired' : 'Wi-Fi'}
         :onclick {ethernet.enable == 1 ? '' : 'scripts/scripter network wifi toggle'}
+        :expanded false
+      )
+      (separator
+        :left false
+        :right false
       )
       (control
         :icon {bluetooth.enable == 1 ? '' : ''}
         :label 'Bluetooth'
         :onclick 'scripts/scripter network bluetooth toggle'
+        :expanded false
+      )
+      (separator
+        :left false
+        :right false
       )
       (control
         :icon {multimedia.speaker.mute == 1 ? '' : ''}
         :label {multimedia.speaker.mute == 1 ? 'Mute' : 'Volume'}
         :onclick 'scripts/scripter multimedia speaker mute'
+        :expanded false
+      )
+      (separator
+        :left false
+        :right false
       )
       (control
         :icon {notification == 'noisy' ? '' :
@@ -81,6 +113,7 @@
         :label {notification == 'noisy' ? 'Noisy' :
           notification == 'important' ? 'Important' : 'Silent'}
         :onclick 'scripts/scripter notification set toggle'
+        :expanded false
       )
     )
     (box

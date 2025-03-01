@@ -1,18 +1,45 @@
 .control {
     .icon {
         color: $base09;
+        border-radius: 10px;
         background-color: $base02;
-        border-radius: 50%;
+
         padding: 10px;
 
         font-size: 56px;
         font-weight: normal;
         font-family: 'Phosphor';
+
+        &.expanded {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
     }
 
     .label {
         color: $base04;
         font-size: 16px;
+
+        &.expanded { color: $base09; }
+    }
+
+    .padding {
+        background-color: $base02;
+    }
+}
+
+.separator {
+    .layer-1 { background-color: $base02; }
+    .layer-2 { background-color: $base00; }
+
+    .layer-2-left {
+        background-color: $base00;
+        border-bottom-left-radius: 100%;
+    }
+
+    .layer-2-right {
+        background-color: $base00;
+        border-bottom-right-radius: 100%;
     }
 }
 
