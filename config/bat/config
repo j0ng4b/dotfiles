@@ -1,0 +1,6 @@
+# Specify desired highlighting theme
+--theme="colors"
+
+# Enable italic text
+--italic-text=always
+

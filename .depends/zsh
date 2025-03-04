@@ -1,7 +1,10 @@
 #!/usr/bin/env sh
 
-desc There are a alias of 'ls' that use 'eza'
+desc There are an alias of 'ls' that use 'eza'
 cmd eza
+
+desc There are an alias of 'cat' that use 'bat'
+cmd bat
 
 desc The prompt is managed by 'starship'
 cmd starship

@@ -88,6 +88,19 @@ _btop_reloader() {
     pkill -USR2 btop
 }
 
+_bat_reloader() {
+    config_dir="$XDG_CONFIG_HOME/bat/themes"
+    colors_output_path="$config_dir/colors.tmTheme"
+
+    if [ ! -e "$config_dir" ]; then
+        mkdir -p "$config_dir"
+    fi
+
+    __generate_colors_file bat $colors_output_path
+
+    bat cache --build >/dev/null
+}
+
 _eww_reloader() {
     config_dir="$XDG_CONFIG_HOME/eww"
     colors_output_path="$config_dir/styles/colors.scss"

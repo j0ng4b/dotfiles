@@ -63,6 +63,7 @@ sh $root_dir/scripter color-reloader \
     starship \
     btop \
     cava \
+    bat \
     notification \
     wm \
     rofi &

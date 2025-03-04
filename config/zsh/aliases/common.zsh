@@ -14,6 +14,9 @@ alias -g llr="eza $_ls_default_opts $_ls_default_long_opts --recurse --level=2"
 alias -g lg="eza $_ls_default_opts $_ls_default_long_opts --git-repos"
 
 
+## cat
+alias -g cat="bat"
+
 ## mkdir
 alias -g md="mkdir -p"
 
