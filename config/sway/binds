@@ -76,11 +76,11 @@ bindsym --to-code {
     $super+3 workspace number 3
     $super+4 workspace number 4
     $super+5 workspace number 5
-    $super+6 workspace number 6
-    $super+7 workspace number 7
-    $super+8 workspace number 8
-    $super+9 workspace number 9
-    $super+0 workspace number 10
+    # $super+6 workspace number 6
+    # $super+7 workspace number 7
+    # $super+8 workspace number 8
+    # $super+9 workspace number 9
+    # $super+0 workspace number 10
 
     ## Move current window to workspace
     $super+Shift+1 move container to workspace number 1
@@ -88,11 +88,11 @@ bindsym --to-code {
     $super+Shift+3 move container to workspace number 3
     $super+Shift+4 move container to workspace number 4
     $super+Shift+5 move container to workspace number 5
-    $super+Shift+6 move container to workspace number 6
-    $super+Shift+7 move container to workspace number 7
-    $super+Shift+8 move container to workspace number 8
-    $super+Shift+9 move container to workspace number 9
-    $super+Shift+0 move container to workspace number 10
+    # $super+Shift+6 move container to workspace number 6
+    # $super+Shift+7 move container to workspace number 7
+    # $super+Shift+8 move container to workspace number 8
+    # $super+Shift+9 move container to workspace number 9
+    # $super+Shift+0 move container to workspace number 10
 
     ## Toggle scratchpad
     $super+m scratchpad show

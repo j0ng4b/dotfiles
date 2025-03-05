@@ -11,6 +11,7 @@
     ## Touchpad
     input type:touchpad {
         tap enable
+        dwt disabled
         natural_scroll enable
     }
 
