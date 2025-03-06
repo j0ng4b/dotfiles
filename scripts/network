@@ -84,13 +84,13 @@ _net_get_info() {
 
     # Get connection quality
     if [ "$type" = "wifi" ]; then
-        if [ -n "$(command -pv iwctl)" ]; then
+        if command -v iwctl >/dev/null 2>&1; then
             # Get WiFi name from iwd
             interface="$(iwctl device list | sed '1,4d' | cut -d' ' -f3)"
             iwctl_output="$(iwctl station $interface show)"
 
             name="$(echo "$iwctl_output" | sed '1,6d;8,$d;s/.*network\s*//;s/\s*$//')"
-        elif [ -n "$(command -pv wpa_cli)" ]; then
+        elif command -v wpa_cli >/dev/null 2>&1; then
             # Get WiFi name from wpa_supplicant
             name=$(wpa_cli status | tr '\n' ';' | cut -d';' -f4 | cut -d'=' -f2)
         else
@@ -99,10 +99,10 @@ _net_get_info() {
 
         _net_check_connection
         if [ $? -gt 0 ]; then
-            if [ -n "$(command -pv iwctl)" ]; then
+            if command -v iwctl >/dev/null 2>&1; then
                 # Get WiFi quality from iwd
                 quality="$(echo "$iwctl_output" | sed '1,13d;15,$d;s/.*\(-[0-9]*\).*/\1/')"
-            elif [ -n "$(command -pv wpa_cli)" ]; then
+            elif command -v wpa_cli >/dev/null 2>&1; then
                 # Get WiFi quality from wpa_supplicant
                 quality=$(wpa_cli signal_poll | tr '\n' ';' | cut -d';' -f8 | cut -d'=' -f2)
             else
@@ -157,10 +157,10 @@ _net_get_info() {
 _net_wifi_enabled() {
     cmd="$1"
 
-    if [ -n "$(command -pv iwctl)" ]; then
+    if command -v iwctl >/dev/null 2>&1; then
         interface="$(iwctl device list | sed '1,4d' | cut -d' ' -f3)"
         iwctl device $interface set-property Powered $cmd
-    elif [ -n "$(command -pv wpa_cli)" ]; then
+    elif command -v wpa_cli >/dev/null 2>&1; then
         error "Not available to wpa_supplicant!"
         exit 1
     else
@@ -172,9 +172,9 @@ _net_wifi_enabled() {
 }
 
 _net_wifi_list() {
-    if [ -n "$(command -pv iwctl)" ]; then
+    if command -v iwctl >/dev/null 2>&1; then
         error "iwctl back-end not implemented"
-    elif [ -n "$(command -pv wpa_cli)" ]; then
+    elif command -v wpa_cli >/dev/null 2>&1; then
         [ "$(wpa_cli scan | tail -n 1)" = "OK" ] && sleep 0.5
 
         raw_network_list=$(wpa_cli scan_results)
@@ -214,9 +214,9 @@ _net_wifi_list() {
 }
 
 _net_wifi_disconnect() {
-    if [ -n "$(command -pv iwctl)" ]; then
+    if command -v iwctl >/dev/null 2>&1; then
         error "iwctl back-end not implemented"
-    elif [ -n "$(command -pv wpa_cli)" ]; then
+    elif command -v wpa_cli >/dev/null 2>&1; then
         # List of previous connected WiFis
         networks_saved=$(wpa_cli list_networks | sed -ne '2,$s/\(^[0-9]*\)\s\+\(.*\)\s\+any\(\s\+\[\(.*\)\].*\|.*$\)/\1:\2:\4/p' | tr '\n' ';')
 
@@ -236,9 +236,9 @@ _net_wifi_disconnect() {
 }
 
 _net_wifi_connect() {
-    if [ -n "$(command -pv iwctl)" ]; then
+    if command -v iwctl >/dev/null 2>&1; then
         error "iwctl back-end not implemented"
-    elif [ -n "$(command -pv wpa_cli)" ]; then
+    elif command -v wpa_cli >/dev/null 2>&1; then
         # On Eww the space on ssid name is converted to `~` to properly pass the
         # ssid name to this script, convert back to space.
         network_to_connect_ssid=$(echo "$1" | tr '~' ' ')

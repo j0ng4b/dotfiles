@@ -98,7 +98,7 @@ done
 
 
 ## Start starship
-if [ -n "$(command -pv starship)" ]; then
+if command -v starship >/dev/null 2>&1; then
     eval "$(starship init zsh)"
 fi
 
