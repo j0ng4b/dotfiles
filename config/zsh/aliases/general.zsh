@@ -15,7 +15,11 @@ alias -g lg="eza $_ls_default_opts $_ls_default_long_opts --git-repos"
 
 
 ## cat
-alias -g cat="bat"
+if command -v bat >/dev/null 2>&1; then
+    alias -g cat="bat"
+elif command -v batcat >/dev/null 2>&1; then
+    alias -g cat="batcat"
+fi
 
 ## mkdir
 alias -g md="mkdir -p"
@@ -24,4 +28,17 @@ alias -g md="mkdir -p"
 ## rm
 alias -g rm="rm -f"
 alias -g rd="rm -rf"
+
+## yazi
+function y() {
+    local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+    yazi "$@" --cwd-file="$tmp"
+
+    cwd="$(command cat -- "$tmp")"
+    if [ -n "$cwd" ] && [ "$cwd" != "$(pwd)" ]; then
+        builtin cd -- "$cwd"
+    fi
+
+    rm -f -- "$tmp"
+}
 
