@@ -153,8 +153,15 @@ _tmux_reloader() {
     config_dir="$XDG_CONFIG_HOME/tmux"
     colors_output_path="$config_dir/colors.tmux"
 
-    __generate_colors_file tmux $colors_output_path
+    __generate_colors_file zsh $colors_output_path
     tmux run-shell "$config_dir/style.tmux"
+}
+
+_zsh_reloader() {
+    config_dir="$XDG_CONFIG_HOME/zsh/utils/"
+    colors_output_path="$config_dir/colors.zsh"
+
+    __generate_colors_file zsh $colors_output_path
 }
 
 _starship_reloader() {
