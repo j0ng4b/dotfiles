@@ -20,7 +20,7 @@ No help message yet, but the script commands are:
 
 `check` :: check for dependencies of a dotfile.
 
-`list` :: will list the installable configs and their status (WIP).
+`list` :: will list the installable configs and their status.
 
 `help` :: show help message (WIP).
 

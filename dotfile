@@ -303,6 +303,9 @@ _list_dotfiles() {
 
     info "Available dotfiles:"
 
+    entries=""
+
+    largest_dotfile_name=0
     for dotfile in $(__get_dotfiles); do
         install_level="none"
 
@@ -333,9 +336,22 @@ _list_dotfiles() {
             esac
         done
 
-        printf "· $dotfile"
-        printf "    ($install_level)"
-        printf "\n"
+        [ "${#dotfile}" -gt "$largest_dotfile_name" ] && largest_dotfile_name=${#dotfile}
+        entries="$dotfile:$install_level;$entries"
+    done
+
+    IFS=';'
+    for entry in $entries; do
+        dotfile=$(echo "$entry" | cut -d: -f1)
+        status=$(echo "$entry" | cut -d: -f2)
+
+        printf "  · %-${largest_dotfile_name}s" "$dotfile"
+
+        [ "$status" = "installed" ] && printf '\033[32m'
+        [ "$status" = "partial installed" ] && printf '\033[33m'
+
+        printf "   $status"
+        printf "\033[0m\n"
     done
 }
 
