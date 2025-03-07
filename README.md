@@ -1,12 +1,9 @@
-= Dotfiles
-:toc: preamble
-:toclevels: 5
-:toc-title: Sections
+# Dotfiles
+---
 
 My own configuration files.
 
-=== Overview
-[.lead]
+### Overview
 My collection of configuration files for many tools.
 This configurations are to my setup and tooling, could
 or couldn't work for you.
@@ -15,22 +12,18 @@ NOTE: Some configuration could depends on configuration
 of another tool so even had the possibilitty of install single
 one, it's recommended to install all configurations.
 
-{empty} +
-
-==== Installing configs
+### Installing configs
 
 There's a script called `dotfile` in repository root
 that can be used to installing configurations.
 
 No help message yet, but the script commands are:
 
-`install`:: install a config given a name *or* all when no argument provided.
+`install`:: install a config given a name *or* all when no argument is provided.
 
 `uninstall`:: uninstall some config *or* all when no argument provided.
 
 `list`:: will list the installable configs and their status (WIP).
 
 `help`:: show help message (WIP).
-
-{empty} +
 
