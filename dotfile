@@ -41,7 +41,9 @@ __get_dotfiles() {
     dotfiles=""
 
     for target in config data home bin; do
-        for dotfile in $(ls $dotfiles_root/$target | tr '\n' ' '); do
+        [ -e "$dotfiles_root/$target" ] || continue
+
+        for dotfile in $(ls "$dotfiles_root/$target" | tr '\n' ' '); do
             if ! str_contains "$dotfiles" "$dotfile"; then
                 dotfiles="$dotfile $dotfiles"
             fi
@@ -278,6 +280,66 @@ _check_dependencies() {
 }
 
 
+_list_dotfiles() {
+    _check_status() {
+        if [ -L "$1" ]; then
+            if [ "$2" = "uninstalled" ]; then
+                echo "partial installed"
+            elif [ "$2" = "none" ]; then
+                echo "installed"
+            else
+                echo "$2"
+            fi
+        else
+            if [ "$2" = "installed" ]; then
+                echo "partial installed"
+            elif [ "$2" = "none" ]; then
+                echo "uninstalled"
+            else
+                echo "$2"
+            fi
+        fi
+    }
+
+    info "Available dotfiles:"
+
+    for dotfile in $(__get_dotfiles); do
+        install_level="none"
+
+        for target in home config data bin; do
+            # Root of the dotfile by target
+            dotfile_dir=$dotfiles_root/$target/$dotfile
+            if [ ! -d $dotfile_dir ]; then
+                continue
+            fi
+
+            case $target in
+                home | bin)
+                    for file in $(ls $dotfile_dir | tr '\n' ' '); do
+                        file_path=$dotfile_dir/$file
+
+                        # Files of target `home´ has a lead dot at their names
+                        [ $target = "home" ] && file=.$file
+
+                        eval file_target_path=\$${target}_dir/$file
+                        install_level=$(_check_status "$file_target_path" "$install_level")
+                    done
+                    ;;
+
+                config | data)
+                    eval dotfile_path=\$${target}_dir/$dotfile
+                    install_level=$(_check_status "$dotfile_path" "$install_level")
+                    ;;
+            esac
+        done
+
+        printf "· $dotfile"
+        printf "    ($install_level)"
+        printf "\n"
+    done
+}
+
+
 [ $# -eq 0 ] && exit 1
 while [ $# -gt 0 ]; do
     case $1 in
@@ -288,6 +350,11 @@ while [ $# -gt 0 ]; do
         check)
             shift
             _check_dependencies $@
+            exit 0
+            ;;
+
+        list)
+            _list_dotfiles
             exit 0
             ;;
 
