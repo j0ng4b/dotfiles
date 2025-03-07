@@ -1,5 +1,4 @@
 # Dotfiles
----
 
 My own configuration files.
 
@@ -8,10 +7,6 @@ My collection of configuration files for many tools.
 This configurations are to my setup and tooling, could
 or couldn't work for you.
 
-NOTE: Some configuration could depends on configuration
-of another tool so even had the possibilitty of install single
-one, it's recommended to install all configurations.
-
 ### Installing configs
 
 There's a script called `dotfile` in repository root
@@ -19,11 +14,16 @@ that can be used to installing configurations.
 
 No help message yet, but the script commands are:
 
-`install`:: install a config given a name *or* all when no argument is provided.
+`install` :: install a config given a name *or* all when no argument is provided.
 
-`uninstall`:: uninstall some config *or* all when no argument provided.
+`uninstall` :: uninstall some config *or* all when no argument provided.
 
-`list`:: will list the installable configs and their status (WIP).
+`check` :: check for dependencies of a dotfile.
 
-`help`:: show help message (WIP).
+`list` :: will list the installable configs and their status (WIP).
 
+`help` :: show help message (WIP).
+
+> `NOTE` the check command checks for binary name, e.g., when check dependencies for
+> bat it will check for bat binary, but some distributions has a batcat command instead
+> so the check will fail.
