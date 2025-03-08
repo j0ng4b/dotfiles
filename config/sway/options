@@ -40,8 +40,9 @@
 
 
     ## Set the border style for tile and float windows (title + border)
-    default_border normal 0
-    default_floating_border normal 0
+    # default_border normal 0
+    # default_floating_border normal 0
+    ## NOTE: now has a rule to set this for all windows
 
     ## No border when there are only one window on workspace
     smart_borders on
