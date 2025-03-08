@@ -60,6 +60,7 @@ sh $root_dir/scripter color-reloader \
     rio \
     nvim \
     tmux \
+    zsh \
     starship \
     btop \
     cava \

@@ -33,7 +33,7 @@ show_always = true
 
 [hostname]
 ssh_only = false
-format =  '[@$hostname ](bg:base01 fg:base05)[ ](bg:base02 fg:base01)'
+format =  '[@$hostname ](bg:base01 fg:base05)[ ](bg:base02 fg:base01)'
 trim_at = '.companyname.com'
 disabled = false
 
@@ -68,7 +68,7 @@ format = '[$path ]($style)'
 symbol = '🌱 '
 
 style = 'bg:base03 fg:base05'
-format = '[ ](bg:base03 fg:base02)[on $symbol]($style)[$branch(:$remote_branch) ](bg:base03 fg:base11 bold)'
+format = '[ ](bg:base03 fg:base02)[on $symbol]($style)[$branch(:$remote_branch) ](bg:base03 fg:base11 bold)'
 
 truncation_length = 6
 truncation_symbol = '…'

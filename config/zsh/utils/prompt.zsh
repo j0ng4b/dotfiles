@@ -16,8 +16,8 @@ zle-line-init() {
     rps=$RPROMPT
 
 
-    bgcolor="%(?.$base00.$base08)"
-    fgcolor="%(?.$base05.$base00)"
+    bgcolor="%(?.$base01.$base08)"
+    fgcolor="%(?.$base05.$base01)"
 
     echo ""
     PROMPT="%K{$bgcolor}%F{$fgcolor} %(?.➜.✗) %k%F{$bgcolor}%f "
