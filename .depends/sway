@@ -25,3 +25,6 @@ cmd jq
 desc Used to create bus user session
 cmd dbus-daemon
 
+desc Used to change cursor
+cmd dconf
+

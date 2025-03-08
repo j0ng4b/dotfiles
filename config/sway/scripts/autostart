@@ -36,6 +36,11 @@ fi
 sh $root_dir/scripter color-reloader eww &
 
 
+## Change cursor
+dconf write /org/gnome/desktop/interface/cursor-theme "'default'"
+dconf write /org/gnome/desktop/interface/cursor-size 28
+
+
 ## Start foot server and always restart if closed
 # (
 #     if [ -z "$(pgrep -f 'foot --server')" ]; then
