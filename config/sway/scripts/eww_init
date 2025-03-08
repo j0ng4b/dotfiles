@@ -4,6 +4,10 @@ root=$(cd $(dirname $0); pwd)
 
 ## Time
 while true; do
+    eww ping >/dev/null
+    [ $? -ne 0 ] && continue
+
+
     eww update hour="$(date +"%H")"
     eww update minute="$(date +"%M")"
 
@@ -15,6 +19,10 @@ done &
 
 ## Indicators
 while true; do
+    eww ping >/dev/null
+    [ $? -ne 0 ] && continue
+
+
     eww update wifi="$($root/scripter network wifi status)"
     eww update ethernet="$($root/scripter network ethernet status)"
     eww update bluetooth="$($root/scripter network bluetooth status)"
