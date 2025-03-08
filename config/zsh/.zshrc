@@ -5,7 +5,9 @@ done
 
 
 ## Completion
-source $ZDOTDIR/completion.zsh
+for completion in $ZDOTDIR/completions/*; do
+    source $completion
+done
 
 
 ## Utilities
@@ -68,8 +70,11 @@ bindkey -M vicmd 'j' history-substring-search-down
 plugins="$(ls -d $ZDATADIR/plugins/*)"
 
 for plugin in $plugins; do
+    # Remove trailing slash if any
+    plugin=${plugin%/}
+
     plugin_name="$(basename $plugin | cut -d'-' -f2-)"
-    plugin_path="$plugin$plugin_name.plugin.zsh"
+    plugin_path="$plugin/$plugin_name.plugin.zsh"
 
     if [ ! -e "$plugin_path" ]; then
         continue
