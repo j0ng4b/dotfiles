@@ -1,7 +1,9 @@
-(defwidget control[icon label onclick expanded]
+;; Helper widgets for the controls
+(defwidget control[icon label onclick ?onrightclick expanded]
   (eventbox
     :cursor 'pointer'
     :onclick onclick
+    :onrightclick {onrightclick == '' ? onclick : onrightclick}
     :hexpand true
     (box
       :class 'control'
@@ -24,18 +26,6 @@
         )
       )
     )
-  )
-)
-
-
-(defwidget separator[left right]
-  (overlay
-    :class 'separator'
-    :valign 'end'
-    :height 20
-    :hexpand true
-    (box :class 'layer-1')
-    (box :class 'layer-2${left ? '-left' : ''}${right ? '-right' : ''}')
   )
 )
 
@@ -66,6 +56,43 @@
   )
 )
 
+
+(defwidget separator[left right]
+  (overlay
+    :class 'separator'
+    :valign 'end'
+    :height 20
+    :hexpand true
+    (box :class 'layer-1')
+    (box :class 'layer-2${left ? '-left' : ''}${right ? '-right' : ''}')
+  )
+)
+
+
+;; The actual control widgets
+(defwidget main-menu[]
+  (box
+    :orientation 'vertical'
+    :space-evenly false
+    :spacing 10
+    (slider
+      :icon {multimedia.speaker.volume < 0.33 ? '' :
+            multimedia.speaker.volume < 0.66 ? '' : ''}
+      :value {multimedia.speaker.volume * 100}
+      :onchange 'scripts/scripter multimedia speaker set {}'
+    )
+    (slider
+      :icon ''
+      :value {brightness.current}
+      :max {brightness.max}
+      :onchange 'scripts/scripter brightness set {}'
+    )
+  )
+)
+
+
+;; The main control widget
+(defvar control_center_show_menu 0)
 (defwidget controls[]
   (box
     :orientation 'vertical'
@@ -81,20 +108,24 @@
         :icon {ethernet.enable == 1 ? '' : wifi.enable == 1 ? '' : ''}
         :label {ethernet.enable == 1 ? 'Wired' : 'Wi-Fi'}
         :onclick {ethernet.enable == 1 ? '' : 'scripts/scripter network wifi toggle'}
-        :expanded false
+        :onrightclick {ethernet.enable == 1 ? '' :
+          'eww update control_center_show_menu=${control_center_show_menu == 1 ? 0 : 1}'}
+        :expanded {control_center_show_menu == 1}
       )
       (separator
-        :left false
-        :right false
+        :left {control_center_show_menu == 1}
+        :right {control_center_show_menu == 2}
       )
       (control
         :icon {bluetooth.enable == 1 ? '' : ''}
         :label 'Bluetooth'
         :onclick 'scripts/scripter network bluetooth toggle'
-        :expanded false
+        :onrightclick {ethernet.enable == 1 ? '' :
+          'eww update control_center_show_menu=${control_center_show_menu == 2 ? 0 : 2}'}
+        :expanded {control_center_show_menu == 2}
       )
       (separator
-        :left false
+        :left {control_center_show_menu == 2}
         :right false
       )
       (control
@@ -116,22 +147,11 @@
         :expanded false
       )
     )
-    (box
-      :orientation 'vertical'
-      :space-evenly false
-      :spacing 10
-      (slider
-        :icon {multimedia.speaker.volume < 0.33 ? '' :
-              multimedia.speaker.volume < 0.66 ? '' : ''}
-        :value {multimedia.speaker.volume * 100}
-        :onchange 'scripts/scripter multimedia speaker set {}'
-      )
-      (slider
-        :icon ''
-        :value {brightness.current}
-        :max {brightness.max}
-        :onchange 'scripts/scripter brightness set {}'
-      )
+    (stack
+      :selected control_center_show_menu
+      :same-size false
+      :transition 'crossfade'
+      (main-menu)
     )
   )
 )
