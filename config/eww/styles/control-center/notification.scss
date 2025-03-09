@@ -33,6 +33,10 @@
     }
 
     .list {
+        overshoot {
+            background-image: radial-gradient(circle at center, $base09, transparent);
+        }
+
         scrollbar trough,
         scrollbar slider {
             border: none;
