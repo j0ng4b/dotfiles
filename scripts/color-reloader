@@ -341,6 +341,11 @@ while [ $# -gt 0 ]; do
             generate_only=true
             ;;
 
+        -*)
+            error "Invalid option '$1'!"
+            exit 1
+            ;;
+
         *)
             # This will ensure that the process get the correct name
             eval "generate_only="$generate_only" $0 $script $1" &
