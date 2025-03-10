@@ -139,6 +139,7 @@ _zsh_reloader() {
     colors_output_path="$config_dir/colors.zsh"
 
     __generate_colors_file zsh $colors_output_path
+    sleep 1 ; pkill -USR1 zsh
 }
 
 _starship_reloader() {
@@ -262,6 +263,12 @@ main() {
     # If there're no re-loader to run then exit
     [ -z "$reloader" ] && exit 0
 
+    # Generate the colors and exit
+    if [ -n "$generate_only" ]; then
+        eval "$reloader"
+        exit 0
+    fi
+
 
     pid_file=$(mktemp /tmp/color_reloader.XXXXXXX) || exit 1
     while true; do
@@ -329,8 +336,17 @@ elif [ $# -eq 1 ]; then
 fi
 
 while [ $# -gt 0 ]; do
-    # This will ensure that the process get the correct name
-    eval "$0 $script $1" &
+    case "$1" in
+        --generate-only|-g)
+            generate_only=true
+            ;;
+
+        *)
+            # This will ensure that the process get the correct name
+            eval "generate_only="$generate_only" $0 $script $1" &
+            ;;
+    esac
+
     shift
 done
 
