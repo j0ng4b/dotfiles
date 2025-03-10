@@ -34,6 +34,10 @@ __generate_colors_file() {
     for color_name in base00 base01 base02 base03 base04 base05 base06 base07 base08 base09 base0A base0B base0C base0D base0E base0F; do
         eval "sed -i -e "s/{$color_name}/\${$color_name}/g" "$output_path""
     done
+
+
+    # skip reload?
+    [ -n "$generate_only" ] && exit 0
 }
 
 
@@ -266,7 +270,9 @@ main() {
     # Generate the colors and exit
     if [ -n "$generate_only" ]; then
         eval "$reloader"
-        exit 0
+
+        # Implicit exit 0
+        # __generate_colors_file never returns when only generating colors
     fi
 
 

@@ -183,6 +183,12 @@ __dotfile_action() {
 
         if [ $found_dotfile -eq 0 ]; then
             warn "The dotfile '$dotfile' doesn't exists! Skipping."
+        else
+            # Generate colors for the dotfile
+            if [ "$action" = "install" ]; then
+                info "Generating colors..."
+                $dotfiles_root/scripts/_scripter color-reloader --generate-only $dotfile
+            fi
         fi
     done
 
