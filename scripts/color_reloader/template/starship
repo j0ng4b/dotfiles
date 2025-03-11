@@ -52,8 +52,8 @@ format = '[$path ]($style)'
 [directory.substitutions]
 '/' = '  '
 
-'Documents' = ''
-'Documentos' = ''
+'Documents' = '󱔗'
+'Documentos' = '󱔗'
 
 'Downloads' = ''
 

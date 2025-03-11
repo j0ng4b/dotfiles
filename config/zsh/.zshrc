@@ -109,6 +109,8 @@ fi
 
 # Prompt reload on SIGUSR1
 TRAPUSR1() {
+    source $ZDOTDIR/utils/colors.zsh
+
     if [[ -n $ZLE ]]; then
         # If in zle (line editor), reset the prompt
         zle .reset-prompt
