@@ -184,17 +184,17 @@ _net_wifi_list() {
         printf "["
         IFS=';'
         for network in $network_list; do
-            frequency=$(echo $network | cut -d':' -f1)
+            signal_level=$(echo $network | cut -d':' -f1)
             ssid=$(echo $network | cut -d':' -f2)
 
             [ -z "$ssid" ] && continue
 
             quality='bad'
-            if [ "$frequency" -ge -50 ]; then
+            if [ "$signal_level" -ge -50 ]; then
                 quality=high
-            elif [ "$frequency" -ge -70 ]; then
+            elif [ "$signal_level" -ge -70 ]; then
                 quality=good
-            elif [ "$frequency" -ge -89 ]; then
+            elif [ "$signal_level" -ge -89 ]; then
                 quality=low
             else
                 quality=bad
@@ -202,7 +202,7 @@ _net_wifi_list() {
 
             [ $comma = "true" ] && printf ','
             printf "{"
-            printf "\"frequency\": %d," $frequency
+            printf "\"signal_level\": %d," $signal_level
             printf "\"quality\": \"%s\"," $quality
             printf "\"ssid\": \"%s\"" $ssid
             printf "}"
