@@ -153,6 +153,7 @@ case $cmd in
             body="$(echo "$body" | head -n 6)\n..."
         fi
         body=$(echo "$body" | sed ':a;N;$!ba;s/\n/\\\\n/g')
+        body=$(echo "$body" | sed 's/"/\\"/g')
 
         printf '{' >> $cache_notifications_list
         printf '"id": "%s",' $id >> $cache_notifications_list
