@@ -44,6 +44,10 @@ __get_dotfiles() {
         [ -e "$dotfiles_root/$target" ] || continue
 
         for dotfile in $(ls "$dotfiles_root/$target" | tr '\n' ' '); do
+            if [ $dotfile = "sources" ]; then
+                continue
+            fi
+
             if ! str_contains "$dotfiles" "$dotfile"; then
                 dotfiles="$dotfile $dotfiles"
             fi
@@ -187,7 +191,8 @@ __dotfile_action() {
             # Generate colors for the dotfile
             if [ "$action" = "install" ]; then
                 info "Generating colors..."
-                $dotfiles_root/scripts/_scripter color-reloader --generate-only $dotfile
+                $dotfiles_root/scripts/_scripter color-reloader --generate-only \
+                    $dotfile >/dev/null
             fi
         fi
     done
