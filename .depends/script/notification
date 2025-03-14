@@ -12,3 +12,6 @@ cmd curl
 desc Used to get spotify icon path
 cmd playerctl
 
+desc Used to parse json
+cmd jq
+
