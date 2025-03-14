@@ -205,13 +205,16 @@ func saveIcon(data []interface {}, iconPath string) {
     // Create a new image with target dimensions
     resizedImg := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
 
-    // Nearest-neighbor scaling using only stdlib
+    widthRatio := float64(width) / float64(newWidth)
+    heightRatio := float64(height) / float64(newHeight)
+
+    // Nearest-neighbor scaling
     for newY := 0; newY < newHeight; newY++ {
         // Calculate the corresponding source y coordinate
-        srcY := int(float64(newY) * float64(height) / float64(newHeight))
+        srcY := int(float64(newY) * heightRatio)
         for newX := 0; newX < newWidth; newX++ {
             // Calculate the corresponding source x coordinate
-            srcX := int(float64(newX) * float64(width) / float64(newWidth))
+            srcX := int(float64(newX) * widthRatio)
             resizedImg.Set(newX, newY, img.At(srcX, srcY))
         }
     }
