@@ -28,7 +28,7 @@ jobs:
           if [ -d "$project" ]; then
             echo "Building $project"
             cd $project
-            go build -o ../../bin/$(basename $project)
+            go build -o ../../$(basename $project)
             cd -
           fi
         done
