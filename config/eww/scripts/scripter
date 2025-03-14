@@ -28,11 +28,19 @@ _get_dotfiles_root() {
 }
 
 # Try find scripts directory
-scripts_root="$(_get_dotfiles_root)/scripts"
+dotfiles_root="$(_get_dotfiles_root)"
 if [ $? -eq 1 ]; then
     error "Can't find dotfiles directory!"
     exit 1
 else
-    sh $scripts_root/_scripter $@
+    if [ "$1" = "--binary" -o "$1" = "-b" ]; then
+        shift
+        binary=$1
+        shift
+
+        $dotfiles_root/bin/$binary $@
+    else
+        sh $dotfiles_root/scripts/_scripter $@
+    fi
 fi
 
