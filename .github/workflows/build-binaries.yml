@@ -4,9 +4,7 @@ on:
   push:
     paths:
       - 'bin/sources/**'
-  pull_request:
-    paths:
-      - 'bin/sources/**'
+  workflow_dispatch:
 
 jobs:
   build:
