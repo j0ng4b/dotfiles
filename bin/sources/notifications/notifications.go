@@ -138,12 +138,12 @@ func handleNotification(msg *dbus.Message, notifications <-chan map[string]inter
         return
     }
 
+    notification := <-notifications
+
     // If there are hints with icon data
     if hints, ok := msg.Body[6].(map[string]dbus.Variant); ok {
         for _, name := range []string{ "icon_data", "image_data", "image-data" } {
             if data, exists := hints[name]; exists {
-                notification := <-notifications
-
                 iconPath := filepath.Join(
                     os.Getenv("XDG_CACHE_HOME"),
                     "scripter/notification/icons",
@@ -198,6 +198,24 @@ func saveIcon(data []interface {}, iconPath string) {
         }
     }
 
+    // Define new target dimensions (example: half size)
+    newWidth := 128
+    newHeight := int(float64(height) * float64(newWidth) / float64(width))
+
+    // Create a new image with target dimensions
+    resizedImg := image.NewRGBA(image.Rect(0, 0, newWidth, newHeight))
+
+    // Nearest-neighbor scaling using only stdlib
+    for newY := 0; newY < newHeight; newY++ {
+        // Calculate the corresponding source y coordinate
+        srcY := int(float64(newY) * float64(height) / float64(newHeight))
+        for newX := 0; newX < newWidth; newX++ {
+            // Calculate the corresponding source x coordinate
+            srcX := int(float64(newX) * float64(width) / float64(newWidth))
+            resizedImg.Set(newX, newY, img.At(srcX, srcY))
+        }
+    }
+
     // Save image to a file
     file, err := os.Create(iconPath)
     if err != nil {
@@ -206,7 +224,7 @@ func saveIcon(data []interface {}, iconPath string) {
     }
     defer file.Close()
 
-    err = png.Encode(file, img)
+    err = png.Encode(file, resizedImg)
     if err != nil {
         log.Printf("Failed to save image data: %v", err)
         return
