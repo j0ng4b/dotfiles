@@ -78,6 +78,12 @@ case $cmd in
         list=""
         while read -r line; do
             [ -z "$line" ] && continue
+
+            icon_path="$cache_notification_icons/$(echo "$line" | jq -r '.id')"
+            if [ ! -e "$icon_path" ]; then
+                line=$(echo "$line" | jq '.icon.path = ""')
+            fi
+
             list="$line,$list"
         done < $cache_notifications_list
         list=${list%,}
@@ -113,9 +119,13 @@ case $cmd in
         body="$DUNST_BODY"
 
         icon_path="$DUNST_ICON_PATH"
+        if [ -z "$icon_path" ]; then
+            icon_path="$cache_notification_icons/$id"
+        fi
         icon_width=48
         icon_height=48
 
+        timestamp=$(( $(cut -d" " -f1 /proc/uptime | tr -d ".") * 10 ))
 
         case $app_name in
             scripter-brightness |\
@@ -155,34 +165,36 @@ case $cmd in
         body=$(echo "$body" | sed ':a;N;$!ba;s/\n/\\\\n/g')
         body=$(echo "$body" | sed 's/"/\\"/g')
 
-        printf '{' >> $cache_notifications_list
-        printf '"id": "%s",' $id >> $cache_notifications_list
-        printf '"summary": "%s",' "$summary" >> $cache_notifications_list
-        printf '"body": "%s",' "$body" >> $cache_notifications_list
-        printf '"urgency": "%s",' "$urgency" >> $cache_notifications_list
+        buffer='{'
+        buffer="$buffer$(printf '"id": "%s",' $id)"
+        buffer="$buffer$(printf '"summary": "%s",' "$summary")"
+        buffer="$buffer$(printf '"body": "%s",' "$body")"
+        buffer="$buffer$(printf '"urgency": "%s",' "$urgency")"
+        buffer="$buffer$(printf '"timestamp": %d,' $timestamp)"
 
 
         ## App
-        printf '"app": {' >> $cache_notifications_list
-        printf '"name": "%s",' "$app_name" >> $cache_notifications_list
+        buffer="$buffer$(printf '"app": {')"
+        buffer="$buffer$(printf '"name": "%s",' "$app_name")"
 
         app_name="$(echo "$app_name" | tr '[:upper:]' '[:lower:]')"
         app_icon="/usr/share/icons/Papirus/128x128/apps/$app_name.svg"
         if [ ! -f "$app_icon" ]; then
             app_icon=""
         fi
-        printf '"icon": "%s"' "$app_icon" >> $cache_notifications_list
-        printf '},' >> $cache_notifications_list
+        buffer="$buffer$(printf '"icon": "%s"' "$app_icon")"
+        buffer="$buffer$(printf '},')"
 
 
         ## Icon
-        printf '"icon": {' >> $cache_notifications_list
-        printf '"path": "%s",' "$icon_path" >> $cache_notifications_list
-        printf '"width": %d,' "$icon_width" >> $cache_notifications_list
-        printf '"height": %d' "$icon_height" >> $cache_notifications_list
-        printf '}' >> $cache_notifications_list
+        buffer="$buffer$(printf '"icon": {')"
+        buffer="$buffer$(printf '"path": "%s",' "$icon_path")"
+        buffer="$buffer$(printf '"width": %d,' "$icon_width")"
+        buffer="$buffer$(printf '"height": %d' "$icon_height")"
+        buffer="$buffer$(printf '}')"
 
-        printf '}\n' >> $cache_notifications_list
+        buffer="$buffer}\n"
+        printf "$buffer" >> $cache_notifications_list
         ;;
 esac
 
