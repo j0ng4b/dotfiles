@@ -40,7 +40,7 @@ done
 __get_dotfiles() {
     dotfiles=""
 
-    for target in config data home bin; do
+    for target in config data home; do
         [ -e "$dotfiles_root/$target" ] || continue
 
         for dotfile in $(ls "$dotfiles_root/$target" | tr '\n' ' '); do
@@ -55,6 +55,21 @@ __get_dotfiles() {
     done
 
     echo $dotfiles
+}
+
+_get_binaries() {
+    binaries=""
+
+    IFS=' '
+    for binary in $(ls "$dotfiles_root/bin" | tr '\n' ' '); do
+        if [ "$binary" = "sources" ]; then
+            continue
+        fi
+
+        binaries="$binary $binaries"
+    done
+
+    echo $binaries
 }
 
 # Action functions
@@ -114,6 +129,29 @@ __dotfile_action_target_files() {
     return $action_result_error
 }
 
+# Install binary files
+__dotfile_action_bin() {
+    action=$1
+    target=$2
+    dotfile=$3
+    dotfile_path=$4
+
+    # Set install path
+    eval target_path=\$${target}_dir/$dotfile
+
+    # Act on the file
+    eval __${action}_dotfile $target_path $dotfile_path
+
+    # Check for already (un)installed files
+    action_result=$?
+    if [ $action_result -gt 0 ]; then
+        action_result_error=1
+        warn "'$target/$dotfile' already ${action}ed!"
+    fi
+
+    return $action_result_error
+}
+
 
 # Install the target of a dotfile
 __dotfile_action_target() {
@@ -152,23 +190,38 @@ __dotfile_action() {
 
     # Act on dotfiles
     for dotfile in $dotfiles; do
-        # Remove tail / if any
-        dotfile="$(basename $dotfile)"
         if [ $action = "install" ]; then
             info "Installing $dotfile..."
 
-            info "Checking dependencies..."
-            _check_dependencies $dotfile
-            if [ $? -gt 0 ]; then
-                continue
+            if ! str_contains "$dotfile" "bin/"; then
+                info "Checking dependencies..."
+                _check_dependencies $dotfile
+                if [ $? -gt 0 ]; then
+                    continue
+                fi
             fi
         else
             info "Uninstalling $dotfile..."
         fi
 
+        if str_contains "$dotfile" "bin/"; then
+            if ! str_contains "$dotfile" "bin/sources"; then
+                target=bin
+                dotfile=${dotfile#bin/}
+                function=__dotfile_action_bin
+                dotfile_path=$dotfiles_root/$target/$dotfile
+
+                eval $function $action $target $dotfile $dotfile_path
+            else
+                warn "The dotfile '$dotfile' is a source file! Skipping."
+            fi
+
+            continue
+        fi
+
         action_result=0
         found_dotfile=0
-        for target in home config data bin; do
+        for target in home config data; do
             # Root of the dotfile by target
             dotfile_dir=$dotfiles_root/$target/$dotfile
             if [ ! -d $dotfile_dir ]; then
@@ -312,15 +365,30 @@ _list_dotfiles() {
         fi
     }
 
-    info "Available dotfiles:"
+    _show_entries() {
+        entries=$1
 
-    entries=""
+        IFS=';'
+        for entry in $entries; do
+            dotfile=$(echo "$entry" | cut -d: -f1)
+            status=$(echo "$entry" | cut -d: -f2)
 
-    largest_dotfile_name=0
+            printf "  · %-${largest_name}s" "$dotfile"
+
+            [ "$status" = "installed" ] && printf '\033[32m'
+            [ "$status" = "partial installed" ] && printf '\033[33m'
+
+            printf "   $status"
+            printf "\033[0m\n"
+        done
+    }
+
+    dotfile_entries=""
+    largest_name=0
     for dotfile in $(__get_dotfiles); do
         install_level="none"
 
-        for target in home config data bin; do
+        for target in home config data; do
             # Root of the dotfile by target
             dotfile_dir=$dotfiles_root/$target/$dotfile
             if [ ! -d $dotfile_dir ]; then
@@ -328,7 +396,7 @@ _list_dotfiles() {
             fi
 
             case $target in
-                home | bin)
+                home)
                     for file in $(ls $dotfile_dir | tr '\n' ' '); do
                         file_path=$dotfile_dir/$file
 
@@ -347,23 +415,28 @@ _list_dotfiles() {
             esac
         done
 
-        [ "${#dotfile}" -gt "$largest_dotfile_name" ] && largest_dotfile_name=${#dotfile}
-        entries="$dotfile:$install_level;$entries"
+        [ "${#dotfile}" -gt "$largest_name" ] && largest_name=${#dotfile}
+        dotfile_entries="$dotfile:$install_level;$dotfile_entries"
     done
 
-    IFS=';'
-    for entry in $entries; do
-        dotfile=$(echo "$entry" | cut -d: -f1)
-        status=$(echo "$entry" | cut -d: -f2)
+    binary_entries=""
+    largest_name=0
+    for binary in $(_get_binaries); do
+        file_path=$bin_dir/$binary
+        install_level=$(_check_status "$file_path" "none")
 
-        printf "  · %-${largest_dotfile_name}s" "$dotfile"
-
-        [ "$status" = "installed" ] && printf '\033[32m'
-        [ "$status" = "partial installed" ] && printf '\033[33m'
-
-        printf "   $status"
-        printf "\033[0m\n"
+        [ "${#binary}" -gt "$largest_name" ] && largest_name=${#binary}
+        binary_entries="$binary:$install_level;$binary_entries"
     done
+
+    # Show entries
+    info "Available dotfiles:"
+    _show_entries $dotfile_entries
+
+    echo ""
+
+    info "Available binaries:"
+    _show_entries $binary_entries
 }
 
 
