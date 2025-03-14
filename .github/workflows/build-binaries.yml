@@ -1,1 +1,46 @@
+name: Build and Push Go Projects
 
+on:
+  push:
+    paths:
+      - 'bin/sources/**'
+  pull_request:
+    paths:
+      - 'bin/sources/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16'
+
+    - name: List and build projects in bin/sources
+      run: |
+        for project in bin/sources/*; do
+          if [ -d "$project" ]; then
+            echo "Building $project"
+            cd $project
+            go build -o ../../bin/$(basename $project)
+            cd -
+          fi
+        done
+
+    - name: Configure Git
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Commit and push changes
+      run: |
+        git add bin/
+        git commit -m "Build and push binaries"
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
