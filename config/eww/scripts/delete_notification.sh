@@ -6,7 +6,7 @@ dismissed_notifications=$(eww get dismissed_notifications)
 eww update dismissed_notifications="$(echo $dismissed_notifications | jq ". + [\"$1\"]")"
 
 # Wait for the notification dismiss animation
-sleep 2
+sleep 0.5
 
 # Dismiss notification
 sh scripts/scripter notification dismiss $1

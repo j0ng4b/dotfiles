@@ -39,7 +39,7 @@ func main() {
         path = filepath.Join(os.Getenv("HOME"), ".cache")
     }
 
-    err = watcher.Add(filepath.Join(path, "scripter/notification/list"))
+    err = watcher.Add(filepath.Join(path, "scripter/notification/"))
     if err != nil {
         log.Fatal(err)
     }
@@ -51,6 +51,10 @@ func main() {
             case event, ok := <-watcher.Events:
                 if !ok {
                     return
+                }
+
+                if filepath.Base(event.Name) != "list" {
+                    continue
                 }
 
                 if event.Has(fsnotify.Write) {
