@@ -2,6 +2,7 @@ package main
 
 import (
     "bufio"
+    "context"
     "encoding/json"
     "fmt"
     "image"
@@ -10,6 +11,7 @@ import (
     "log"
     "os"
     "path/filepath"
+    "time"
 
     "github.com/fsnotify/fsnotify"
     "github.com/godbus/dbus/v5"
@@ -138,13 +140,18 @@ func handleNotification(msg *dbus.Message, notifications <-chan map[string]inter
         return
     }
 
+
+    // Create a context with a timeout to skip the process if no notification is
+    // read after 2 seconds
+    ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+    defer cancel()
+
     var notification map[string]interface{}
     select {
     // Get notification written on file
     case notification = <-notifications:
-
     // If no notification was read from file, skip process
-    default:
+    case <-ctx.Done():
         return
     }
 
