@@ -1,6 +1,6 @@
 .control {
     .icon {
-        color: $base09;
+        color: $base0B;
         border-radius: 10px;
         background-color: $base02;
 
@@ -20,7 +20,7 @@
         color: $base04;
         font-size: 16px;
 
-        &.expanded { color: $base09; }
+        &.expanded { color: $base0B; }
     }
 
     .padding {
@@ -65,7 +65,7 @@
             margin: 0px;
             padding: 7px;
             border-radius: 15px;
-            background-color: $base09;
+            background-color: $base0B;
         }
 
         & slider {
