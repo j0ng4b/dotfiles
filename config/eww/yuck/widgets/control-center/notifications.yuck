@@ -1,3 +1,6 @@
+;; List dismissed notifications to animate them out
+(defvar dismissed_notifications '[]')
+
 (defwidget notifications []
   (box
     :valign 'end'
@@ -53,77 +56,81 @@
       (box
         :space-evenly false
         :orientation 'vertical'
-        :spacing 15
         :hexpand true
         (for notification in notifications
-          (box
-            :class 'notification'
-            :space-evenly false
-            :orientation 'vertical'
-            :spacing 2
+          (revealer
+            :reveal {!jq(dismissed_notifications, 'any(. == ${notification.id})')}
+            :transition 'slidedown'
+            :duration '350ms'
             (box
-              :orientation 'horizontal'
-              :space-evenly true
-              :class 'header'
+              :class 'notification'
+              :space-evenly false
+              :orientation 'vertical'
+              :spacing 2
               (box
                 :orientation 'horizontal'
-                :space-evenly false
-                :spacing 5
-                :halign 'start'
+                :space-evenly true
+                :class 'header'
                 (box
-                  :visible {notification.app.icon != ''}
-                  :class 'icon'
-                  :style 'background-image: url("${notification.app.icon}")'
-                  :width 22
-                  :height 22
+                  :orientation 'horizontal'
+                  :space-evenly false
+                  :spacing 5
+                  :halign 'start'
+                  (box
+                    :visible {notification.app.icon != ''}
+                    :class 'icon'
+                    :style 'background-image: url("${notification.app.icon}")'
+                    :width 22
+                    :height 22
+                  )
+                  (label
+                    :class 'appname'
+                    :text {notification.app.name}
+                  )
                 )
-                (label
-                  :class 'appname'
-                  :text {notification.app.name}
+                (eventbox
+                  :hexpand false
+                  :halign 'end'
+                  :cursor 'pointer'
+                  :onclick 'scripts/delete_notification.sh ${notification.id}'
+                  :class 'close'
+                  (label
+                    :text ''
+                  )
                 )
-              )
-              (eventbox
-                :hexpand false
-                :halign 'end'
-                :cursor 'pointer'
-                :onclick 'scripts/scripter notification dismiss ${notification.id}'
-                :class 'close'
-                (label
-                  :text ''
-                )
-              )
-            )
-            (box
-              :orientation 'horizontal'
-              :class 'content'
-              :space-evenly false
-              :spacing 15
-              (box
-                :class 'icon'
-                :halign 'start'
-                :visible {notification.icon.path != ''}
-                :width {notification.icon.width}
-                :height {notification.icon.height}
-                :style 'background-image: url("${notification.icon.path}")'
               )
               (box
-                :orientation 'vertical'
+                :orientation 'horizontal'
+                :class 'content'
                 :space-evenly false
-                :class 'entry'
-                (label
-                  :class 'summary'
-                  :vexpand {notification.body == ''}
-                  :limit-width 40
+                :spacing 15
+                (box
+                  :class 'icon'
                   :halign 'start'
-                  :text {notification.summary}
+                  :visible {notification.icon.path != ''}
+                  :width {notification.icon.width}
+                  :height {notification.icon.height}
+                  :style 'background-image: url("${notification.icon.path}")'
                 )
-                (label
-                  :visible {notification.body != ''}
-                  :class 'body'
-                  :halign 'start'
-                  :limit-width 40
-                  :wrap true
-                  :text {notification.body}
+                (box
+                  :orientation 'vertical'
+                  :space-evenly false
+                  :class 'entry'
+                  (label
+                    :class 'summary'
+                    :vexpand {notification.body == ''}
+                    :limit-width 40
+                    :halign 'start'
+                    :text {notification.summary}
+                  )
+                  (label
+                    :visible {notification.body != ''}
+                    :class 'body'
+                    :halign 'start'
+                    :limit-width 40
+                    :wrap true
+                    :text {notification.body}
+                  )
                 )
               )
             )
