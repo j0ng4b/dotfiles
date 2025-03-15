@@ -38,7 +38,7 @@ done &
 
 ## Run notification listener
 ## to gets raw image data of notification if any
-$root/scripter --binary notifications
+$root/scripter --binary notifications &
 
 
 ## Initialize eww

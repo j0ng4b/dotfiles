@@ -120,6 +120,8 @@ _rio_reloader() {
 }
 
 _nvim_reloader() {
+    theme_name=$(cat $theme_file)
+
     for sock in "$XDG_RUNTIME_DIR"/nvim.*.0; do
         nvim --clean --headless --server "$sock" \
             --remote-send \
