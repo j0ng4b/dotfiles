@@ -59,7 +59,7 @@
         :hexpand true
         (for notification in notifications
           (revealer
-            :reveal {!jq(dismissed_notifications, 'any(. == ${notification.id})')}
+            :reveal {!jq(dismissed_notifications, 'any(. == "${notification.id}")')}
             :transition 'slidedown'
             :duration '350ms'
             (box
