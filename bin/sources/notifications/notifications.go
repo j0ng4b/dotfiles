@@ -138,7 +138,15 @@ func handleNotification(msg *dbus.Message, notifications <-chan map[string]inter
         return
     }
 
-    notification := <-notifications
+    var notification map[string]interface{}
+    select {
+    // Get notification written on file
+    case notification = <-notifications:
+
+    // If no notification was read from file, skip process
+    default:
+        return
+    }
 
     // If there are hints with icon data
     if hints, ok := msg.Body[6].(map[string]dbus.Variant); ok {
