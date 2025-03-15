@@ -90,6 +90,21 @@
   )
 )
 
+(defwidget wifi-menu[]
+  (box
+    :orientation 'vertical'
+    :class 'control-menu left'
+  )
+)
+
+
+(defwidget bluetooth-menu[]
+  (box
+    :orientation 'vertical'
+    :class 'control-menu'
+  )
+)
+
 
 ;; The main control widget
 (defvar control_center_show_menu 0)
@@ -97,7 +112,7 @@
   (box
     :orientation 'vertical'
     :space-evenly false
-    :spacing 30
+    :spacing {control_center_show_menu == 0 ? 30 : 0}
     :vexpand true
     (box
       :orientation 'horizontal'
@@ -150,8 +165,10 @@
     (stack
       :selected control_center_show_menu
       :same-size false
-      :transition 'crossfade'
+      :transition 'slidedown'
       (main-menu)
+      (wifi-menu)
+      (bluetooth-menu)
     )
   )
 )

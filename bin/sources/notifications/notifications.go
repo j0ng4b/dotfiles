@@ -11,6 +11,7 @@ import (
     "log"
     "os"
     "path/filepath"
+    "strings"
     "time"
 
     "github.com/fsnotify/fsnotify"
@@ -144,7 +145,6 @@ func handleNotification(msg *dbus.Message, notifications <-chan map[string]inter
         return
     }
 
-
     // Create a context with a timeout to skip the process if no notification is
     // read after 2 seconds
     ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
@@ -156,6 +156,16 @@ func handleNotification(msg *dbus.Message, notifications <-chan map[string]inter
     case notification = <-notifications:
     // If no notification was read from file, skip process
     case <-ctx.Done():
+        return
+    }
+
+    // Check if the notification is from Spotify, Spotify notifications are
+    // handled by the notification script and should not be processed here
+    //
+    // Spotify notifications use the same id on every notifications, so when
+    // receives a spotify notification here, if processed it will use the same
+    // icon for all notifications
+    if strings.ToLower(msg.Body[0].(string)) == "spotify" {
         return
     }
 

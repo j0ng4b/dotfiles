@@ -28,6 +28,15 @@
     }
 }
 
+.control-menu {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: $base02;
+
+    &.left { border-top-left-radius: 0; }
+    &.right { border-top-right-radius: 0; }
+}
+
 .separator {
     .layer-1 { background-color: $base02; }
     .layer-2 { background-color: $base00; }

@@ -79,9 +79,9 @@ case $cmd in
         while read -r line; do
             [ -z "$line" ] && continue
 
-            icon_path="$cache_notification_icons/$(echo "$line" | jq -r '.id')"
+            icon_path="$(echo "$line" | jq -r '.icon.path')"
             if [ ! -e "$icon_path" ]; then
-                line=$(echo "$line" | jq '.icon.path = ""')
+                line=$(echo "$line" | jq -c '.icon.path = ""')
             fi
 
             list="$line,$list"
