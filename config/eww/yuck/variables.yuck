@@ -42,7 +42,11 @@
 
 ;; Control center
 (defvar control_center_window_open false)
-(defpoll notifications :initial '[]' :interval '0.5s' 'scripts/scripter notification list')
+(deflisten notifications
+  ;; :initial '[]' ; for some reason this is not working, no notifications are
+                   ; shown if the initial value is set to '[]'
+  'scripts/scripter notification subscribe'
+)
 
 (defvar wallpapers_window_open false)
 (deflisten wallpapers
