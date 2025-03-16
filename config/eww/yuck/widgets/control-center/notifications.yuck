@@ -107,6 +107,7 @@
                 (box
                   :class 'icon'
                   :halign 'start'
+                  :valign 'start'
                   :visible {notification.icon.path != ''}
                   :width {notification.icon.width}
                   :height {notification.icon.height}

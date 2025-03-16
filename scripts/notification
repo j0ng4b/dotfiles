@@ -162,7 +162,10 @@ case $cmd in
         if [ $(echo "$body" | wc -l) -gt 6 ]; then
             body="$(echo "$body" | head -n 6)\n..."
         fi
-        body=$(echo "$body" | sed ':a;N;$!ba;s/\n/\\\\n/g')
+
+        # Escape newlines and double quotes in body
+        # so many backslash to escape newlines >.<
+        body=$(echo "$body" | sed ':a;N;$!ba;s/\n/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n/g')
         body=$(echo "$body" | sed 's/"/\\"/g')
 
         buffer='{'
