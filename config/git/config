@@ -1,9 +1,25 @@
 [user]
 	email = jonathagabrielns@gmail.com
 	name = Jonatha Gabriel
-[core]
-	editor = nvim
+
 [init]
 	defaultBranch = main
+
+[core]
+	editor = nvim
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[merge]
+    conflictstyle = zdiff3
+
 [diff]
 	ignoreSubmodules = dirty
+
+[delta]
+    navigate = true
+    line-numbers = true
+    side-by-side = true
+
