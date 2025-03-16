@@ -117,6 +117,10 @@ map({ 'n' }, '<leader>fo',
     'search for lsp symbols on current file'
 )
 
+map({ 'n' }, '<leader>fu',
+    require('telescope').extensions.undo.undo,
+    'search for undo history'
+)
 
 ---
 -- Explorer

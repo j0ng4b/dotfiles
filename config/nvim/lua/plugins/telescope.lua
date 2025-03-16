@@ -107,7 +107,7 @@ local config = function()
         },
 
         extensions = {
-            ["ui-select"] = {
+            ['ui-select'] = {
                 layout_strategy = 'vertical',
 
                 layout_config = {
@@ -117,13 +117,14 @@ local config = function()
                     height = 15,
                     preview_height = 0,
                 },
-            }
+            },
         },
     })
 
     telescope.load_extension('fzf')
     telescope.load_extension('ui-select')
     telescope.load_extension('notify')
+    telescope.load_extension('undo')
 end
 
 
@@ -134,6 +135,7 @@ return {
     dependencies = {
         { 'nvim-lua/plenary.nvim' },
         { 'nvim-telescope/telescope-ui-select.nvim' },
+        { 'debugloop/telescope-undo.nvim' },
 
         {
             'nvim-telescope/telescope-fzf-native.nvim',
