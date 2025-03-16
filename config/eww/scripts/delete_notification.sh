@@ -2,8 +2,7 @@
 
 # Added notification to deleted notifications list, this is used to animate the
 # notification dismissal
-dismissed_notifications=$(eww get dismissed_notifications)
-eww update dismissed_notifications="$(echo $dismissed_notifications | jq ". + [\"$1\"]")"
+eww update dismissed_notification="$1"
 
 # Wait for the notification dismiss animation
 sleep 0.5
@@ -13,6 +12,5 @@ sh scripts/scripter notification dismiss $1
 eww update notifications="$(scripts/scripter notification list)"
 
 # Remove the notification from the dismissed notifications list
-dismissed_notifications=$(eww get dismissed_notifications)
-eww update dismissed_notifications="$(echo $dismissed_notifications | jq "map(select(. != \"$1\"))")"
+eww update dismissed_notification=""
 

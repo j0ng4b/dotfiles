@@ -1,5 +1,5 @@
 ;; List dismissed notifications to animate them out
-(defvar dismissed_notifications '[]')
+(defvar dismissed_notification '')
 
 (defwidget notifications []
   (box
@@ -59,7 +59,7 @@
         :hexpand true
         (for notification in notifications
           (revealer
-            :reveal {!jq(dismissed_notifications, 'any(. == "${notification.id}")')}
+            :reveal {dismissed_notification != notification.id}
             :transition 'slidedown'
             :duration '350ms'
             (box
