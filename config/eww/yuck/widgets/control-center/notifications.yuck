@@ -92,7 +92,7 @@
                   :hexpand false
                   :halign 'end'
                   :cursor 'pointer'
-                  :onclick 'scripts/delete_notification.sh ${notification.id}'
+                  :onclick {dismissed_notification == '' ? 'scripts/delete_notification.sh ${notification.id}' : ''}
                   :class 'close'
                   (label
                     :text ''
