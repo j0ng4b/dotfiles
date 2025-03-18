@@ -42,14 +42,14 @@ dconf write /org/gnome/desktop/interface/cursor-size 28
 
 
 ## Start foot server and always restart if closed
-# (
-#     if [ -z "$(pgrep -f 'foot --server')" ]; then
-#         while true; do
-#             foot --server --override shell="$root_dir/scripter color-reloader foot" &
-#             wait $!
-#         done
-#     fi
-# ) &
+(
+    if [ -z "$(pgrep -f 'foot --server')" ]; then
+        while true; do
+            foot --server --override shell="$root_dir/scripter color-reloader foot" &
+            wait $!
+        done
+    fi
+) &
 
 
 ## Start battery status notifier
