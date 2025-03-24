@@ -91,6 +91,16 @@ _bat_reloader() {
     bat cache --build >/dev/null
 }
 
+_git_reloader() {
+    config_dir="$XDG_CONFIG_HOME/git/"
+    colors_output_path="$config_dir/colors.gitconfig"
+
+    __generate_colors_file git $colors_output_path
+
+    # Also require bat colors
+    _bat_reloader
+}
+
 _eww_reloader() {
     config_dir="$XDG_CONFIG_HOME/eww"
     colors_output_path="$config_dir/styles/colors.scss"

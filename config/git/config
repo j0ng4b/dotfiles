@@ -1,3 +1,7 @@
+[include]
+    path = ~/.config/git/colors.gitconfig
+
+
 [user]
 	email = jonathagabrielns@gmail.com
 	name = Jonatha Gabriel
@@ -19,6 +23,7 @@
 	ignoreSubmodules = dirty
 
 [delta]
+    features = colors
     navigate = true
     line-numbers = true
     side-by-side = true

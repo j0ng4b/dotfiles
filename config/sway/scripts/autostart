@@ -70,6 +70,7 @@ sh $root_dir/scripter color-reloader \
     btop \
     cava \
     bat \
+    git \
     notification \
     wm \
     rofi &
