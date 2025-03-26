@@ -58,7 +58,7 @@ local config = function()
         map({ 'i' }, '<C-k>', vim.lsp.buf.signature_help)
 
         -- Diagnostics
-        map({ 'n' }, '<Leader>gl', vim.diagnostic.open_float)
+        map({ 'n' }, '<Leader>dv', vim.diagnostic.open_float)
         map({ 'n' }, '<Leader>dp', vim.diagnostic.goto_prev)
         map({ 'n' }, '<Leader>dn', vim.diagnostic.goto_next)
         map({ 'n' }, '<Leader>dd', require('telescope.builtin').diagnostics)

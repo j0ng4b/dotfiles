@@ -18,7 +18,7 @@ return {
         },
 
         inverse = true,
-        invert_signs = true,
+        invert_signs = false,
         invert_tabline = false,
         invert_selection = false,
         invert_intend_guides = false,

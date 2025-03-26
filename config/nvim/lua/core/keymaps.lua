@@ -193,6 +193,53 @@ map({ 'v' }, 'ga',
 
 
 ---
+-- Neotest
+---
+map.group('󰙨 Test', '<Leader>t')
+map({ 'n' }, '<Leader>tt',
+    require('neotest').run.run,
+    'run nearest test'
+)
+
+map({ 'n' }, '<Leader>tT', function()
+        require('neotest').run.run(vim.fn.expand('%'))
+    end,
+    'run tests on current file'
+)
+
+map({ 'n' }, '<Leader>ts',
+    require('neotest').run.stop,
+    'stop test'
+)
+
+map({ 'n' }, '<Leader>to', function()
+        require('neotest').output.open({
+            short = true,
+            quiet = true,
+            auto_close = true,
+        })
+    end,
+    'show test output'
+)
+
+map({ 'n' }, '<Leader>tv',
+    require('neotest').summary.toggle,
+    'toggle test summary window'
+)
+
+map({ 'n' }, '<Leader>tw',
+    require('neotest').watch.toggle,
+    'watch nearest test'
+)
+
+map({ 'n' }, '<Leader>tW', function()
+        require('neotest').watch.toggle(vim.fn.expand('%'))
+    end,
+    'watch tests on current file'
+)
+
+
+---
 -- DBUI
 ---
 -- map({ 'n' }, '<leader>db',
