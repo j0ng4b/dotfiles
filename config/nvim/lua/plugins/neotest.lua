@@ -3,6 +3,12 @@ local adapters = {}
 local config = function()
     require('neotest').setup({
         adapters = {},
+        summary = {
+            mappings = {
+                expand = { '<space>', '<right>', '<left>', '<2-LeftMouse>' },
+                jumpto = '<CR>',
+            },
+        },
     })
 
     vim.diagnostic.config({
