@@ -88,6 +88,32 @@ map({ 'n', 'v' }, '<A-k>', '<Cmd>move .-2<CR>==') -- move up
 -- Enable which-key
 map.use_which_key()
 
+
+---
+-- Diagnostics
+---
+map.group('󰓙 Diagnostics', '<leader>d')
+map({ 'n' }, '<Leader>dv',
+    vim.diagnostic.open_float,
+    'show diagnostic float window'
+)
+
+map({ 'n' }, '<Leader>dp',
+    vim.diagnostic.goto_prev,
+    'go to previous diagnostic'
+)
+
+map({ 'n' }, '<Leader>dn',
+    vim.diagnostic.goto_next,
+    'go to next diagnostic'
+)
+
+map({ 'n' }, '<Leader>dd',
+    require('telescope.builtin').diagnostics,
+    'show diagnostics list'
+)
+
+
 ---
 -- Telescope
 ---
