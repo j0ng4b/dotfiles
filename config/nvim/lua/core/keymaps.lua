@@ -222,23 +222,29 @@ map({ 'v' }, 'ga',
 -- Neotest
 ---
 map.group('󰙨 Test', '<Leader>t')
-map({ 'n' }, '<Leader>tt',
-    require('neotest').run.run,
+map({ 'n' }, '<Leader>tt', function()
+        require('plugins.neotest').setup_adapter(vim.bo.filetype)
+        require('neotest').run.run()
+    end,
     'run nearest test'
 )
 
 map({ 'n' }, '<Leader>tT', function()
+        require('plugins.neotest').setup_adapter(vim.bo.filetype)
         require('neotest').run.run(vim.fn.expand('%'))
     end,
     'run tests on current file'
 )
 
-map({ 'n' }, '<Leader>ts',
-    require('neotest').run.stop,
+map({ 'n' }, '<Leader>ts', function()
+        require('plugins.neotest').setup_adapter(vim.bo.filetype)
+        require('neotest').run.stop()
+    end,
     'stop test'
 )
 
 map({ 'n' }, '<Leader>to', function()
+        require('plugins.neotest').setup_adapter(vim.bo.filetype)
         require('neotest').output.open({
             short = true,
             quiet = true,
@@ -248,17 +254,22 @@ map({ 'n' }, '<Leader>to', function()
     'show test output'
 )
 
-map({ 'n' }, '<Leader>tv',
-    require('neotest').summary.toggle,
+map({ 'n' }, '<Leader>tv', function()
+        require('plugins.neotest').setup_adapter(vim.bo.filetype)
+        require('neotest').summary.toggle()
+    end,
     'toggle test summary window'
 )
 
-map({ 'n' }, '<Leader>tw',
-    require('neotest').watch.toggle,
+map({ 'n' }, '<Leader>tw', function()
+        require('plugins.neotest').setup_adapter(vim.bo.filetype)
+        require('neotest').watch.toggle()
+    end,
     'watch nearest test'
 )
 
 map({ 'n' }, '<Leader>tW', function()
+        require('plugins.neotest').setup_adapter(vim.bo.filetype)
         require('neotest').watch.toggle(vim.fn.expand('%'))
     end,
     'watch tests on current file'
