@@ -81,6 +81,16 @@ map({ 'n', 'v' }, '<A-j>', '<Cmd>move .+1<CR>==') -- move down
 map({ 'n', 'v' }, '<A-k>', '<Cmd>move .-2<CR>==') -- move up
 
 
+---
+-- Indentation
+---
+map({ 'v' }, '<Tab>', '>gv')
+map({ 'n' }, '<Tab>', '>>')
+
+map({ 'v' }, '<S-Tab>', '<gv')
+map({ 'n' }, '<S-Tab>', '<<')
+
+
 --   ╦ ╦┬ ┬┬┌─┐┬ ┬   ╦╔═┌─┐┬ ┬
 --   ║║║├─┤││  ├─┤───╠╩╗├┤ └┬┘
 --   ╚╩╝┴ ┴┴└─┘┴ ┴   ╩ ╩└─┘ ┴
@@ -240,7 +250,7 @@ map({ 'n' }, '<Leader>ts', function()
         require('plugins.neotest').setup_adapter(vim.bo.filetype)
         require('neotest').run.stop()
     end,
-    'stop test'
+    'stop running test'
 )
 
 map({ 'n' }, '<Leader>to', function()
