@@ -56,14 +56,9 @@ setopt SH_WORD_SPLIT
 bindkey -v
 
 # Enable history substring search
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-
-# bindkey "$terminfo[kcuu1]" history-substring-search-up
-# bindkey "$terminfo[kcud1]" history-substring-search-down
-
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
+#
+# NOTE: to enable for ↑ and ↓ this must be set after zsh-autocomplete see their
+# post configuration on ./plugins.conf.d/post/zsh-autocomplete.conf.zsh
 
 
 ## Plugins
