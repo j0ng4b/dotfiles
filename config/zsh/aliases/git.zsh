@@ -1,53 +1,68 @@
 # git add
-alias -g ga='git add'
-alias -g gaa='git add --all'
-alias -g gai='git add --interactive'
-alias -g gap='git add --patch'
+alias ga='git add'
+alias gaa='git add --all'
+alias gai='git add --interactive'
+alias gap='git add --patch'
 
 # git branch
-alias -g gb='git branch'
-alias -g gba='git branch --all'
-alias -g gbd='git branch --delete'
-alias -g gbD='git branch --delete --force'
-alias -g gbm='git branch --move'
-alias -g gbM='git branch --move --force'
-alias -g gbr='git branch --remote'
-alias -g gbu='git branch --set-upstreat-to'
+alias gb='git branch'
+alias gba='git branch --all'
+alias gbd='git branch --delete'
+alias gbD='git branch --delete --force'
+alias gbm='git branch --move'
+alias gbM='git branch --move --force'
+alias gbr='git branch --remote'
+alias gbu='git branch --set-upstreat-to'
 
 # git commit
-alias -g gc='git commit'
-alias -g gcm='git commit --message'
-alias -g gca='git commit --amend --no-edit'
-alias -g gcae='git commit --amend --edit'
+alias gc='git commit'
+alias gcm='git commit --message'
+alias gca='git commit --amend --no-edit'
+alias gcae='git commit --amend --edit'
 
 # git diff
-alias -g gd='git diff'
-alias -g gdw='git diff --word-diff'
-alias -g gds='git diff --staged'
-alias -g gdsw='git diff --staged --word-diff'
+alias gd='git diff'
+alias gdw='git diff --word-diff'
+alias gds='git diff --staged'
+alias gdsw='git diff --staged --word-diff'
 
 # git status
-alias -g gs='git status'
-alias -g gsu='git status --untracked-files'
-alias -g gss='git status --short'
-alias -g gssu='git status --short --untracked-files'
+alias gs='git status'
+alias gsu='git status --untracked-files'
+alias gss='git status --short'
+alias gssu='git status --short --untracked-files'
 
 # git fetch
-alias -g gf='git fetch'
-alias -g gfa='git fetch --all --tags --prune'
-alias -g gfo='git fetch origin'
+alias gf='git fetch'
+alias gfa='git fetch --all --tags --prune'
+alias gfo='git fetch origin'
 
 # git log
-alias -g gl='git log'
-alias -g glg='git log --graph'
-alias -g glo='git log --oneline --decorate'
-alias -g glog='git log --oneline --decorate --graph'
-alias -g glsp='git log --stat --patch'
+alias gl='git log'
+alias glg='git log --graph'
+alias glo='git log --oneline --decorate'
+alias glog='git log --oneline --decorate --graph'
+alias glsp='git log --stat --patch'
 
 # git merge
-alias -g gm='git merge'
-alias -g gma='git merge --abort'
-alias -g gmc='git merge --continue'
-alias -g gms='git merge --squash'
-alias -g gmff='git merge --ff-only'
+alias gm='git merge'
+alias gma='git merge --abort'
+alias gmc='git merge --continue'
+alias gms='git merge --squash'
+alias gmff='git merge --ff-only'
+
+# git pull
+alias gpl='git pull'
+alias gplf='git pull --ff-only'
+alias gplr='git pull --rebase'
+
+# git push
+alias gp='git push'
+alias gpa='git push --all'
+alias gpA='git push --all --force-with-lease'
+alias gpp='git push --prune'
+alias gppt='git push --prune --tags'
+alias gpt='git push --tags'
+alias gpd='git push --delete'
+alias gpf='git push --force-with-lease'
 
