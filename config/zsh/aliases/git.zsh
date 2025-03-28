@@ -33,12 +33,6 @@ alias gdw='git diff --word-diff'
 alias gds='git diff --staged'
 alias gdsw='git diff --staged --word-diff'
 
-# git status
-alias gs='git status'
-alias gsu='git status --untracked-files'
-alias gss='git status --short'
-alias gssu='git status --short --untracked-files'
-
 # git fetch
 alias gf='git fetch'
 alias gfa='git fetch --all --tags --prune'
@@ -73,3 +67,15 @@ alias gpt='git push --tags'
 alias gpd='git push --delete'
 alias gpf='git push --force-with-lease'
 
+# git reset
+alias gr='git reset'
+alias grp='git reset --patch'
+alias grh='git reset --hard'
+alias grs='git reset --soft'
+alias grm='git reset --mixed'
+
+# git status
+alias gs='git status'
+alias gsu='git status --untracked-files'
+alias gss='git status --short'
+alias gssu='git status --short --untracked-files'
