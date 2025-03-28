@@ -53,12 +53,13 @@ alias gm='git merge'
 alias gma='git merge --abort'
 alias gmc='git merge --continue'
 alias gms='git merge --squash'
-alias gmff='git merge --ff-only'
+alias gmf='git merge --ff-only'
 
 # git pull
 alias gpl='git pull'
 alias gplf='git pull --ff-only'
 alias gplr='git pull --rebase'
+alias gplm='git pull --no-rebase'
 
 # git push
 alias gp='git push'
