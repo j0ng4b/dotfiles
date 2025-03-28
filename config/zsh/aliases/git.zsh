@@ -26,6 +26,9 @@ alias gc='git commit'
 alias gcm='git commit --message'
 alias gca='git commit --amend --no-edit'
 alias gcae='git commit --amend --edit'
+alias gcam='git commit --amend --message'
+alias gce='git commit --allow-empty'
+alias gcem='git commit --allow-empty --message'
 
 # git diff
 alias gd='git diff'
@@ -39,11 +42,11 @@ alias gfa='git fetch --all --tags --prune'
 alias gfo='git fetch origin'
 
 # git log
-alias gl='git log'
-alias glg='git log --graph'
-alias glo='git log --oneline --decorate'
-alias glog='git log --oneline --decorate --graph'
-alias glsp='git log --stat --patch'
+alias gl='git log --abbrev-commit'
+alias glg='git log --abbrev-commit --graph'
+alias glo='git log --abbrev-commit --oneline --decorate'
+alias glog='git log --abbrev-commit --oneline --decorate --graph'
+alias glsp='git log --abbrev-commit --stat --patch'
 
 # git merge
 alias gm='git merge'
@@ -66,6 +69,14 @@ alias gppt='git push --prune --tags'
 alias gpt='git push --tags'
 alias gpd='git push --delete'
 alias gpf='git push --force-with-lease'
+
+# git rebase
+alias grb='git rebase'
+alias grbi='git rebase --interactive'
+alias grba='git rebase --abort'
+alias grbc='git rebase --continue'
+alias grbs='git rebase --skip'
+alias grbo='git rebase --onto'
 
 # git reset
 alias gr='git reset'
