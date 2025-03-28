@@ -14,6 +14,13 @@ alias gbM='git branch --move --force'
 alias gbr='git branch --remote'
 alias gbu='git branch --set-upstreat-to'
 
+# git checkout
+alias gco='git checkout'
+alias gcom='git checkout main'
+alias gcod='git checkout --detach'
+alias gcoo='git checkout --orphan'
+alias gcop='git checkout --patch'
+
 # git commit
 alias gc='git commit'
 alias gcm='git commit --message'
