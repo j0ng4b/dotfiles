@@ -21,6 +21,10 @@ alias gcod='git checkout --detach'
 alias gcoo='git checkout --orphan'
 alias gcop='git checkout --patch'
 
+# git clone
+alias gcl='git clone'
+
+
 # git commit
 alias gc='git commit'
 alias gcm='git commit --message'
@@ -38,7 +42,8 @@ alias gdsw='git diff --staged --word-diff'
 
 # git fetch
 alias gf='git fetch'
-alias gfa='git fetch --all --tags --prune'
+alias gfa='git fetch --all'
+alias gfA='git fetch --all --tags --prune'
 alias gfo='git fetch origin'
 
 # git log
@@ -70,6 +75,7 @@ alias gppt='git push --prune --tags'
 alias gpt='git push --tags'
 alias gpd='git push --delete'
 alias gpf='git push --force-with-lease'
+alias gpF='git push --force'
 
 # git rebase
 alias grb='git rebase'
@@ -83,8 +89,11 @@ alias grbo='git rebase --onto'
 alias gr='git reset'
 alias grp='git reset --patch'
 alias grh='git reset --hard'
+alias grhp='git reset --hard --patch'
 alias grs='git reset --soft'
+alias grsp='git reset --soft -patch'
 alias grm='git reset --mixed'
+alias grmp='git reset --mixed --patch'
 
 # git status
 alias gs='git status'

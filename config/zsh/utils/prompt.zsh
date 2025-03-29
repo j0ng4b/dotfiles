@@ -41,6 +41,8 @@ zle-line-init() {
 
 
 bottom-prompt() {
+    [ "${ZPROMPT_POS}" != "UP" ] && return
+
     # Move the cursor to bottom of screen
     print -n "\e[$LINES;H"
 

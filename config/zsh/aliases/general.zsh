@@ -16,18 +16,24 @@ alias -g lg="eza $_ls_default_opts $_ls_default_long_opts --git-repos"
 
 ## cat
 if command -v bat >/dev/null 2>&1; then
-    alias -g cat="bat"
+    alias cat="bat"
 elif command -v batcat >/dev/null 2>&1; then
-    alias -g cat="batcat"
+    alias cat="batcat"
 fi
 
+
 ## mkdir
-alias -g md="mkdir -p"
+alias md="mkdir -p"
 
 
 ## rm
-alias -g rm="rm -f"
-alias -g rd="rm -rf"
+alias rm="rm -f"
+alias rd="rm -rf"
+
+
+## clear
+alias cl="clear"
+
 
 ## yazi
 function y() {
