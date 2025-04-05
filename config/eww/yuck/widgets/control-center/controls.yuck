@@ -135,8 +135,7 @@
         :icon {bluetooth.enable == 1 ? '' : ''}
         :label 'Bluetooth'
         :onclick 'scripts/scripter network bluetooth toggle'
-        :onrightclick {ethernet.enable == 1 ? '' :
-          'eww update control_center_show_menu=${control_center_show_menu == 2 ? 0 : 2}'}
+        :onrightclick 'eww update control_center_show_menu=${control_center_show_menu == 2 ? 0 : 2}'
         :expanded {control_center_show_menu == 2}
       )
       (separator
