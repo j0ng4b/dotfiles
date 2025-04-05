@@ -47,7 +47,7 @@ bottom-prompt() {
     print -n "\e[$LINES;H"
 
     # Check if ZLE is active
-    [ -n "$ZLE" ] && zle .reset-prompt
+    [ -n "$ZLE_VERSION" ] && zle .reset-prompt
 }
 
 
