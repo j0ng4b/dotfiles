@@ -248,26 +248,19 @@ _net_wifi_list() {
         IFS=';'
         for network in $network_list; do
             signal_level=$(echo $network | cut -d':' -f1)
-            ssid=$(echo $network | cut -d':' -f2)
 
+            ssid=$(echo $network | cut -d':' -f2)
             [ -z "$ssid" ] && continue
 
-            quality='bad'
-            if [ "$signal_level" -ge -50 ]; then
-                quality=high
-            elif [ "$signal_level" -ge -70 ]; then
-                quality=good
-            elif [ "$signal_level" -ge -89 ]; then
-                quality=low
-            else
-                quality=bad
-            fi
+            # TODO: extract if is current network connected
+            # TODO: extract security level
 
             [ $comma = "true" ] && printf ','
             printf "{"
-            printf "\"signal_level\": %d," $signal_level
-            printf "\"quality\": \"%s\"," $quality
-            printf "\"ssid\": \"%s\"" $ssid
+            printf "\"ssid\": \"%s\", " $ssid
+            printf "\"current\": %s, " "$current"
+            printf "\"security\": \"%s\", " "$security"
+            printf "\"signal_level\": %d" $signal_level
             printf "}"
 
             comma=true
