@@ -169,7 +169,7 @@ _net_wifi_list() {
         interface="$(iwctl device list | sed '1,4d' | cut -d' ' -f3)"
 
         # Scan for networks first
-        iwctl station "$interface" scan
+        iwctl station "$interface" scan >/dev/null
         sleep 1
 
         # Get network list
