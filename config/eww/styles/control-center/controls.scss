@@ -37,6 +37,41 @@
     &.right { border-top-right-radius: 0; }
 }
 
+.control-menu .wifi-list {
+    overshoot {
+        background-image: radial-gradient(circle at center, $base0B, transparent);
+    }
+
+    scrollbar,
+    scrollbar trough {
+        border: none;
+        min-width: 0px;
+        min-height: 0px;
+        background-color: transparent;
+    }
+
+    scrollbar slider {
+        border: none;
+        min-width: 2px;
+        min-height: 0px;
+        background-color: $base0B;
+    }
+
+    .wifi {
+        &:hover {
+            border-radius: 10px;
+            background-color: $base04;
+        }
+
+        .box {
+            padding: 5px 10px;
+
+            .state { font-size: 18px; }
+            .ssid { font-size: 16px; }
+        }
+    }
+}
+
 .separator {
     .layer-1 { background-color: $base02; }
     .layer-2 { background-color: $base00; }

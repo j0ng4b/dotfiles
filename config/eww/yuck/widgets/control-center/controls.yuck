@@ -94,6 +94,50 @@
   (box
     :orientation 'vertical'
     :class 'control-menu left'
+    :space-evenly false
+    (scroll
+      :class 'wifi-list'
+      :vscroll true
+      :hscroll false
+      :vexpand true
+      (box
+        :orientation 'vertical'
+        :spacing 5
+        :space-evenly false
+        (for wifi in wifi_list
+          (eventbox
+            :class 'wifi'
+            :cursor 'pointer'
+            (box
+              :class 'box'
+              :orientation 'horizontal'
+              (box
+                :orientation 'horizontal'
+                :spacing 10
+                :space-evenly false
+                (label
+                  :class 'state icon-fill'
+                  :text {wifi.signal_level >= -50 ? '' :
+                        wifi.signal_level >= -70 ? '' :
+                        wifi.signal_level >= -89 ? '' :
+                        wifi.state != 'connected' ? '' : ''}
+                )
+                (label
+                  :class 'ssid'
+                  :text '${wifi.ssid}'
+                )
+              )
+              (label
+                :class 'state icon-bold'
+                :visible {wifi.security != 'open'}
+                :halign 'end'
+                :text ''
+              )
+            )
+          )
+        )
+      )
+    )
   )
 )
 
@@ -165,6 +209,7 @@
       :selected control_center_show_menu
       :same-size false
       :transition 'slidedown'
+      :vexpand true
       (main-menu)
       (wifi-menu)
       (bluetooth-menu)
