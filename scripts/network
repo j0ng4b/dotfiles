@@ -173,7 +173,70 @@ _net_wifi_enabled() {
 
 _net_wifi_list() {
     if command -v iwctl >/dev/null 2>&1; then
-        error "iwctl back-end not implemented"
+        # Get interface name
+        interface="$(iwctl device list | sed '1,4d' | cut -d' ' -f3)"
+
+        # Scan for networks first
+        iwctl station "$interface" scan
+        sleep 1
+
+        # Get network list
+        network_list=$(iwctl station "$interface" get-networks | sed -ne '5,$p' \
+            | sed -e "s:\[1;30m::g" \
+            | sed -e "s:\[1;90m::g" \
+            | sed -e "s:\[0m::g" \
+            | sed -e "s:\*\x1b.*:\*:g" \
+            | sed -e "s:\x1b::g" \
+            | tr '\n' ';')
+
+        comma=false
+        printf "["
+        IFS=';'
+        for network in $network_list; do
+            [ -z "$network" ] && continue
+
+            # Extract signal strength symbol (typically in column 3)
+            strength=$(echo "$network" | tr -s ' ' | sed -e 's/^[ \t>]*//' -e 's/^>* *//' | cut -d' ' -f3)
+
+            # Skip lines that don't have proper network info
+            [ -z "$strength" ] && continue
+
+            signal_level="-100"
+            case "$strength" in
+                "****") signal_level="-50" ;;
+                "***") signal_level="-60" ;;
+                "**") signal_level="-75" ;;
+                "*") signal_level="-85" ;;
+            esac
+
+            # Check if network is current
+            current='false'
+            if echo "$network" | grep -q '[ \t]>[ \t]'; then
+                current='true'
+            fi
+
+            # Extract SSID
+            ssid=$(echo "$network" | sed -e 's/^[ \t>]*//' -e 's/[ ]\{3,\}.*$//')
+            [ -z "$ssid" ] && continue
+
+            # Extract security type
+            security='open'
+            case $network in
+                *'   psk   '*) security='wpa' ;;
+                *'   8021x   '*) security='wep' ;;
+            esac
+
+            [ $comma = "true" ] && printf ','
+            printf "{"
+            printf "\"ssid\": \"%s\", " "$ssid"
+            printf "\"current\": %s, " "$current"
+            printf "\"security\": \"%s\", " "$security"
+            printf "\"signal_level\": %d" "$signal_level"
+            printf "}"
+
+            comma=true
+        done
+        printf "]"
     elif command -v wpa_cli >/dev/null 2>&1; then
         [ "$(wpa_cli scan | tail -n 1)" = "OK" ] && sleep 0.5
 
