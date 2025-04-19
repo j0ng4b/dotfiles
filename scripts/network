@@ -5,7 +5,7 @@ cache_dir=$SCRIPT_CACHE_DIR
 
 cache_dir_wifi=$cache_dir/wifi
 cache_wifi_power=$cache_dir_wifi/power
-cache_wifi_quality=$cache_dir_wifi/quality
+cache_wifi_signal_level=$cache_dir_wifi/signal_level
 
 cache_dir_bluetooth=$cache_dir/bluetooth
 cache_bluetooth_power=$cache_dir_bluetooth/power
@@ -21,11 +21,11 @@ elif [ ! -d "$cache_dir" ]; then
     touch $cache_bluetooth_power
 
     # WiFi
-    touch $cache_wifi_quality
+    touch $cache_wifi_signal_level
     touch $cache_wifi_power
 
     for i in $(seq 1 5); do
-        echo -50 >> $cache_wifi_quality
+        echo -50 >> $cache_wifi_signal_level
     done
 fi
 
@@ -78,7 +78,7 @@ _net_get_info() {
 
     # Immediately return if disconnected
     if [ "$connected" = 0 ]; then
-        echo "{ \"enable\": \"$connected\", \"quality\": \"unknown\" }"
+        echo "{ \"enable\": \"$connected\", \"state\": \"unknown\" }"
         return
     fi
 
@@ -101,54 +101,46 @@ _net_get_info() {
         if [ $? -gt 0 ]; then
             if command -v iwctl >/dev/null 2>&1; then
                 # Get WiFi quality from iwd
-                quality="$(echo "$iwctl_output" | sed '1,13d;15,$d;s/.*\(-[0-9]*\).*/\1/')"
+                signal_level="$(echo "$iwctl_output" | sed '1,13d;15,$d;s/.*\(-[0-9]*\).*/\1/')"
             elif command -v wpa_cli >/dev/null 2>&1; then
-                # Get WiFi quality from wpa_supplicant
-                quality=$(wpa_cli signal_poll | tr '\n' ';' | cut -d';' -f8 | cut -d'=' -f2)
+                # Get WiFi signal_level from wpa_supplicant
+                signal_level=$(wpa_cli signal_poll | tr '\n' ';' | cut -d';' -f8 | cut -d'=' -f2)
             else
-                # Get WiFi quality from Linux
-                quality=$(cat /proc/net/wireless | sed -ne 's/.*\(-[0-9]\{2,4\}\)\..*/\1/p')
+                # Get WiFi signal_level from Linux
+                signal_level=$(cat /proc/net/wireless | sed -ne 's/.*\(-[0-9]\{2,4\}\)\..*/\1/p')
             fi
 
-            # Update WiFi quality file
-            sed -ie '1d' "$cache_wifi_quality"
-            echo "$quality" >> $cache_wifi_quality
+            # Update WiFi signal level file
+            sed -ie '1d' "$cache_wifi_signal_level"
+            echo "$signal_level" >> $cache_wifi_signal_level
 
-            # Calculate average WiFi quality
+            # Calculate average WiFi signal level
             sum=0
             count=0
-            for value in $(cat $cache_wifi_quality); do
+            for value in $(cat $cache_wifi_signal_level); do
                 sum=$(($sum + $value))
                 count=$(( $count + 1 ))
             done
-            quality=$(( $sum / $count ))
-
-            if [ "$quality" -ge -50 ]; then
-                quality=high
-            elif [ "$quality" -ge -70 ]; then
-                quality=good
-            elif [ "$quality" -ge -89 ]; then
-                quality=low
-            else
-                quality=bad
-            fi
+            signal_level=$(( $sum / $count ))
+            state='connected'
         else
-            quality="noconnection"
+            state="noconnection"
         fi
     elif [ "$type" = "ethernet" ]; then
         _net_check_connection
         if [ $? -gt 0 ]; then
-            quality="unkown"
+            state="unkown"
         else
-            quality="noconnection"
+            state="noconnection"
         fi
     fi
 
     printf '{'
-    printf '"enable": %s,' $connected
-    printf '"quality": "%s"' $quality
+    printf '"enable": %s, ' $connected
+    printf '"state": "%s", ' $state
+    printf "\"signal_level\": %d" $signal_level
     if [ -n "$name" ]; then
-        printf ','
+        printf ', '
         printf '"name": "%s"' "$name"
     fi
     printf '}\n'
