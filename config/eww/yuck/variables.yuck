@@ -17,7 +17,8 @@
 (defvar uptime '{ "days": "1", "hours": "0", "mins": "0" }')
 
 ;; Indicators
-(defvar wifi '{ "enable": 1 }')
+(defvar wifi '{ "enable": 0 }')
+
 (defvar ethernet '{ "enable": 0 }')
 (defvar bluetooth '{ "enable": 0 }')
 (defvar notification 'noisy')

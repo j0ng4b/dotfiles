@@ -117,19 +117,20 @@
                 :space-evenly false
                 (label
                   :class 'state icon-fill'
-                  :text {wifi.signal_level >= -50 ? '' :
-                        wifi.signal_level >= -70 ? '' :
-                        wifi.signal_level >= -89 ? '' :
-                        wifi.state != 'connected' ? '' : ''}
+                  :text {wifi?.signal_level >= -50 ? '' :
+                        wifi?.signal_level >= -70 ? '' :
+                        wifi?.signal_level >= -89 ? '' :
+                        wifi?.state != 'connected' ? '' : ''}
                 )
                 (label
                   :class 'ssid'
-                  :text '${wifi.ssid}'
+                  :truncate true
+                  :text '${wifi?.ssid}'
                 )
               )
               (label
                 :class 'state icon-bold'
-                :visible {wifi.security != 'open'}
+                :visible {wifi?.security != 'open'}
                 :halign 'end'
                 :text ''
               )

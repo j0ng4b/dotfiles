@@ -20,7 +20,7 @@
         :text 'Notifications'
       )
       (eventbox
-        :visible {arraylength(notifications) > 0}
+        :visible {notifications != '' && arraylength(notifications) > 0}
         :halign 'end'
         :cursor 'pointer'
         :onclick 'scripts/scripter notification dismiss all'
@@ -36,7 +36,7 @@
       :hexpand true
       :halign 'center'
       :valign 'center'
-      :visible {arraylength(notifications) == 0}
+      :visible {notifications == '' || arraylength(notifications) == 0}
       (label
         :class 'empty'
         :text '󰂚'
@@ -48,7 +48,7 @@
       )
     )
     (scroll
-      :visible {arraylength(notifications) > 0}
+      :visible {notifications != '' && arraylength(notifications) > 0}
       :vscroll true
       :hscroll false
       :class 'list'

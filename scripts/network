@@ -138,7 +138,7 @@ _net_get_info() {
     printf '{'
     printf '"enable": %s, ' $connected
     printf '"state": "%s", ' $state
-    printf "\"signal_level\": %d" $signal_level
+    printf '"signal_level": %d' $signal_level
     if [ -n "$name" ]; then
         printf ', '
         printf '"name": "%s"' "$name"

@@ -21,7 +21,8 @@
       :class 'icon-fill'
       :tooltip {wifi.name != '' ? 'Connected on "${wifi.name}"' : ''}
       :visible {wifi.enable == 1 && ethernet.enable == 0}
-      :value {wifi.signal_level >= -50 ? '' :
+      :value {wifi.enable == 0 ? '' :
+              wifi.signal_level >= -50 ? '' :
               wifi.signal_level >= -70 ? '' :
               wifi.signal_level >= -89 ? '' :
               wifi.state != 'connected' ? '' : ''}
