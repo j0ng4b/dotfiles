@@ -164,6 +164,9 @@ _net_wifi_enabled() {
 }
 
 _net_wifi_list() {
+    # Create temporary files for network details
+    temp_file=$(mktemp)
+
     if command -v iwctl >/dev/null 2>&1; then
         # Get interface name
         interface="$(iwctl device list | sed '1,4d' | cut -d' ' -f3)"
@@ -181,8 +184,6 @@ _net_wifi_list() {
             | sed -e "s:\x1b::g" \
             | tr '\n' ';')
 
-        comma=false
-        printf "["
         IFS=';'
         for network in $network_list; do
             [ -z "$network" ] && continue
@@ -218,25 +219,16 @@ _net_wifi_list() {
                 *'   8021x   '*) security='wep' ;;
             esac
 
-            [ $comma = "true" ] && printf ','
-            printf "{"
-            printf "\"ssid\": \"%s\", " "$ssid"
-            printf "\"current\": %s, " "$current"
-            printf "\"security\": \"%s\", " "$security"
-            printf "\"signal_level\": %d" "$signal_level"
-            printf "}"
-
-            comma=true
+            # Store all the information with the signal level as the first
+            # field for sorting
+            echo "$signal_level|$ssid|$current|$security" >> "$temp_file"
         done
-        printf "]"
     elif command -v wpa_cli >/dev/null 2>&1; then
         [ "$(wpa_cli scan | tail -n 1)" = "OK" ] && sleep 0.5
 
         raw_network_list=$(wpa_cli scan_results)
         network_list=$(echo "$raw_network_list" | sed -ne '2,$s/.*\(-[0-9]*\)\s\+\[.*\]\s\+\(.*\)/\1:\2/p' | sort | tr '\n' ';')
 
-        comma=false
-        printf "["
         IFS=';'
         for network in $network_list; do
             signal_level=$(echo $network | cut -d':' -f1)
@@ -247,18 +239,38 @@ _net_wifi_list() {
             # TODO: extract if is current network connected
             # TODO: extract security level
 
-            [ $comma = "true" ] && printf ','
-            printf "{"
-            printf "\"ssid\": \"%s\", " $ssid
-            printf "\"current\": %s, " "$current"
-            printf "\"security\": \"%s\", " "$security"
-            printf "\"signal_level\": %d" $signal_level
-            printf "}"
-
-            comma=true
+            echo "$signal_level|$ssid|$current|$security" >> "$temp_file"
         done
-        printf "]"
     fi
+
+    # Sort the networks by signal level (numerically)
+    # The "-n" option is for numeric sort, "-r" for reverse order (strongest signal first)
+    sorted_networks=$(sort -n -r "$temp_file")
+    rm "$temp_file"
+
+    # Output the sorted networks as JSON
+    comma=false
+    printf "["
+    echo "$sorted_networks" | while IFS= read -r line; do
+        [ -z "$line" ] && continue
+
+        # Parse the line to extract all fields
+        signal_level=$(echo "$line" | cut -d'|' -f1)
+        ssid=$(echo "$line" | cut -d'|' -f2)
+        current=$(echo "$line" | cut -d'|' -f3)
+        security=$(echo "$line" | cut -d'|' -f4)
+
+        [ $comma = "true" ] && printf ','
+        printf "{"
+        printf "\"ssid\": \"%s\", " "$ssid"
+        printf "\"current\": %s, " "$current"
+        printf "\"security\": \"%s\", " "$security"
+        printf "\"signal_level\": %d" "$signal_level"
+        printf "}"
+
+        comma=true
+    done
+    printf "]"
 }
 
 _net_wifi_disconnect() {
