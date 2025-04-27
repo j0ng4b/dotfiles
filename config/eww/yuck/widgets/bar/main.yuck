@@ -42,7 +42,8 @@
             eww update \
             control_center_window_open=${!control_center_window_open} \
             wallpapers_window_open=false \
-            themes_window_open=false
+            themes_window_open=false \
+            control_center_show_menu=${!control_center_window_open ? 0 : control_center_show_menu}
           '
           :width 38
           :height 38

@@ -18,7 +18,7 @@
 
 ;; Indicators
 (defvar wifi '{ "enable": 0 }')
-
+(defvar wifi_list '[]')
 (defvar ethernet '{ "enable": 0 }')
 (defvar bluetooth '{ "enable": 0 }')
 (defvar notification 'noisy')

@@ -108,6 +108,8 @@
           (eventbox
             :class 'wifi'
             :cursor 'pointer'
+            :onclick './scripts/scripter network wifi connect
+              ${replace(wifi?.ssid, ' ', '~')}'
             (box
               :class 'box'
               :orientation 'horizontal'
