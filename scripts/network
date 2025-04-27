@@ -175,13 +175,14 @@ _net_wifi_list() {
         iwctl station "$interface" scan >/dev/null
         sleep 1
 
+        # Get the list of saved networks
+        saved_networks="|$(iwctl known-networks list \
+            | sed -e '1,4d' -e 's/\x1b\[[0-9;]*m//g' -e 's/^[ \t]*//g' -e 's/[ ]\{3,\}.*$//' \
+            | tr '\n' '|')"
+
         # Get network list
-        network_list=$(iwctl station "$interface" get-networks | sed -ne '5,$p' \
-            | sed -e "s:\[1;30m::g" \
-            | sed -e "s:\[1;90m::g" \
-            | sed -e "s:\[0m::g" \
-            | sed -e "s:\*\x1b.*:\*:g" \
-            | sed -e "s:\x1b::g" \
+        network_list=$(iwctl station "$interface" get-networks \
+            | sed -e '1,4d' -e 's/\x1b\[[0-9;]*m//g' \
             | tr '\n' ';')
 
         IFS=';'
@@ -219,9 +220,15 @@ _net_wifi_list() {
                 *'   8021x   '*) security='wep' ;;
             esac
 
+            # Check if network is saved
+            saved='false'
+            if str_contains "$saved_networks" "|$ssid|"; then
+                saved='true'
+            fi
+
             # Store all the information with the signal level as the first
             # field for sorting
-            echo "$signal_level|$ssid|$current|$security" >> "$temp_file"
+            echo "$signal_level|$ssid|$current|$security|$saved" >> "$temp_file"
         done
     elif command -v wpa_cli >/dev/null 2>&1; then
         [ "$(wpa_cli scan | tail -n 1)" = "OK" ] && sleep 0.5
@@ -259,11 +266,13 @@ _net_wifi_list() {
         ssid=$(echo "$line" | cut -d'|' -f2)
         current=$(echo "$line" | cut -d'|' -f3)
         security=$(echo "$line" | cut -d'|' -f4)
+        saved=$(echo "$line" | cut -d'|' -f5)
 
         [ $comma = "true" ] && printf ','
         printf "{"
         printf "\"ssid\": \"%s\", " "$ssid"
         printf "\"current\": %s, " "$current"
+        printf "\"saved\": %s, " "$saved"
         printf "\"security\": \"%s\", " "$security"
         printf "\"signal_level\": %d" "$signal_level"
         printf "}"
