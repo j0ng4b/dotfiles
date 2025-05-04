@@ -41,6 +41,15 @@ dconf write /org/gnome/desktop/interface/cursor-theme "'default'"
 dconf write /org/gnome/desktop/interface/cursor-size 28
 
 
+## Start sway idle
+if [ -z "$(pgrep -f swayidle)" ]; then
+    swayidle -w \
+        timeout 90 'swaymsg "output * dpms off"' \
+        timeout 150 'exec zzz' \
+        resume 'swaymsg "output * dpms on"' &
+fi
+
+
 ## Start foot server and always restart if closed
 (
     if [ -z "$(pgrep -f 'foot --server')" ]; then

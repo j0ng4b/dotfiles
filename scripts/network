@@ -185,6 +185,12 @@ _net_wifi_list() {
             | sed -e '1,4d' -e 's/\x1b\[[0-9;]*m//g' \
             | tr '\n' ';')
 
+        if [ "$network_list" = "No networks available" ]; then
+            echo "[]"
+            rm "$temp_file"
+            return
+        fi
+
         IFS=';'
         for network in $network_list; do
             [ -z "$network" ] && continue
@@ -231,6 +237,9 @@ _net_wifi_list() {
             echo "$signal_level|$ssid|$current|$security|$saved" >> "$temp_file"
         done
     elif command -v wpa_cli >/dev/null 2>&1; then
+        error "wpa_supplicant back-end not full implemented"
+        exit 1
+
         [ "$(wpa_cli scan | tail -n 1)" = "OK" ] && sleep 0.5
 
         raw_network_list=$(wpa_cli scan_results)
