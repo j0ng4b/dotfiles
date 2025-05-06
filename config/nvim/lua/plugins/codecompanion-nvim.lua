@@ -83,7 +83,7 @@ local config = function()
                 return require('codecompanion.adapters').extend('copilot', {
                     schema = {
                         model = {
-                            default = 'o3-mini',
+                            default = 'claude-3.7-sonnet',
                         },
 
                         max_tokens = {
