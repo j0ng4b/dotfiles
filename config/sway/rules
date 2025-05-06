@@ -16,6 +16,7 @@ for_window {
 
 
     [title=".*"] border normal 0
+    [title="^Android Emulator - .*"] floating enable
 }
 
 
