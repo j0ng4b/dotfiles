@@ -13,6 +13,7 @@ for_window {
 
     [class="^steam$"] floating enable
     [class="^discord$"] floating enable
+    [class="^obsidian$"] floating enable
 
 
     [title=".*"] border normal 0
