@@ -2,6 +2,12 @@
 
 root_dir=$(cd $(dirname $0); pwd)
 
+## Start syncthing daemon
+if [ -z "$(pgrep -f syncthing)" ]; then
+    syncthing --no-browser --no-restart --no-default-folder \
+        --logfile=$HOME/.cache/syncthing.log &
+fi
+
 ## Start dbus user session
 dbus="dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS"
 if [ -z "$(pgrep -f "$dbus")" ]; then

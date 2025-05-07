@@ -31,7 +31,7 @@ setup_void() {
         libreoffice-i18n-pt-BR \
         libreoffice-impress \
         libreoffice-writer \
-        libspa-bluetooth \
+        libspa-bluetooth
 
     info 'Install steam...'
     echo 'TODO: Install steam...'
