@@ -1,0 +1,9 @@
+(defwindow themes
+  :monitor 0
+  :stacking 'fg'
+  :exclusive false
+  :namespace 'bar'
+  :geometry (geometry :height '100%' :anchor 'left center')
+  (themes)
+)
+

@@ -68,21 +68,18 @@ case $1 in
         fi
 
         printf $2 > "$XDG_CONFIG_HOME/sysconf/theme"
-
-        # Keep window open
-        sleep 1.5
-        eww update themes_window_open='true'
         ;;
 
     toggle)
-        current=$(eww get themes_window_open)
-        if [ $current = 'false' ]; then
-            eww update themes_window_open='true'
-            eww update wallpapers_window_open='false'
-            eww update control_center_window_open='false'
-        else
-            eww update themes_window_open='false'
-        fi
+        eww close control-center wallpapers
+        case $(eww active-windows) in
+            *themes*)
+                eww close themes
+                ;;
+            *)
+                eww open themes
+                ;;
+        esac
         ;;
 esac
 

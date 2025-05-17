@@ -1,6 +1,11 @@
 .wallpapers-list {
     padding: 10px;
+    border-left: 1px solid $base03;
     background-color: $base00;
+
+    overshoot {
+        background-image: radial-gradient(circle at center, $base0B, transparent);
+    }
 
     scrollbar trough,
     scrollbar slider {

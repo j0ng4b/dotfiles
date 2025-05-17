@@ -1,6 +1,13 @@
 .control-center {
+    border-left: 1px solid $base03;
     padding: 10px;
+
+    color: $foreground;
     background-color: $base00;
+
+    font-size: 14px;
+    font-weight: normal;
+    font-family: 'Poppins', 'OpenMoji';
 }
 
 @import './controls.scss';

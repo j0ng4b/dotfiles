@@ -31,14 +31,15 @@ case $1 in
         ;;
 
     toggle)
-        current=$(eww get wallpapers_window_open)
-        if [ $current = 'false' ]; then
-            eww update wallpapers_window_open='true'
-            eww update themes_window_open='false'
-            eww update control_center_window_open='false'
-        else
-            eww update wallpapers_window_open='false'
-        fi
+        eww close control-center themes
+        case $(eww active-windows) in
+            *wallpapers*)
+                eww close wallpapers
+                ;;
+            *)
+                eww open wallpapers
+                ;;
+        esac
         ;;
 esac
 

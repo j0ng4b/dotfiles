@@ -10,25 +10,6 @@
   (box
     :orientation 'horizontal'
     :space-evenly false
-    (revealer
-      :transition 'slideright'
-      :reveal {wallpapers_window_open && !themes_window_open && !control_center_window_open}
-      (wallpapers)
-    )
-    (revealer
-      :transition 'slideright'
-      :reveal {themes_window_open && !wallpapers_window_open && !control_center_window_open}
-      (themes)
-    )
-    (revealer
-      :transition 'slideright'
-      :reveal {control_center_window_open && !wallpapers_window_open && !themes_window_open}
-      (control-center)
-    )
-    (box
-      :class 'separator-horizontal'
-      :visible {themes_window_open || wallpapers_window_open || control_center_window_open}
-    )
     (centerbox
       :orientation 'vertical'
       (box
@@ -39,12 +20,8 @@
           :class 'bar-profile-pic'
           :cursor 'pointer'
           :onclick '\
-            eww update \
-            control_center_window_open=${!control_center_window_open} \
-            wallpapers_window_open=false \
-            themes_window_open=false \
-            control_center_show_menu=${!control_center_window_open ? 0 : control_center_show_menu}
-          '
+            eww open --toggle control-center && \
+            eww close wallpapers themes'
           :width 38
           :height 38
           :style 'background-image: url("/home/jonatha/.config/sysconf/profile-pic")'

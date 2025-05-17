@@ -1,6 +1,17 @@
 .themes-list {
     padding: 10px;
+    border-left: 1px solid $base03;
+
+    color: $foreground;
     background-color: $base00;
+
+    font-size: 14px;
+    font-weight: normal;
+    font-family: 'Poppins', 'OpenMoji';
+
+    overshoot {
+        background-image: radial-gradient(circle at center, $base0B, transparent);
+    }
 
     scrollbar trough,
     scrollbar slider {
