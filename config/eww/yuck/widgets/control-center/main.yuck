@@ -8,7 +8,7 @@
     :orientation 'vertical'
     :space-evenly false
     :spacing 25
-    :class 'control-center'
+    :class 'control-center-box'
     :width 450
     (profile)
     (controls)

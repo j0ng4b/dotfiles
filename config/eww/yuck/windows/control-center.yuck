@@ -3,7 +3,7 @@
   :stacking 'fg'
   :exclusive false
   :namespace 'bar'
-  :geometry (geometry :height '100%' :anchor 'left center')
+  :geometry (geometry :x '5px' :height '95%' :anchor 'center left')
   (control-center)
 )
 

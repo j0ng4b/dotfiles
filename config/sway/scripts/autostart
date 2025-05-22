@@ -53,7 +53,7 @@ if [ -z "$(pgrep -f swayidle)" ]; then
     swayidle -w \
         timeout 90 'swaymsg "output * dpms off"' \
             resume 'swaymsg "output * dpms on"' \
-        timeout 150 'exec zzz' &
+        timeout 100 'exec zzz' &
 fi
 
 

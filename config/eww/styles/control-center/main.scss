@@ -1,5 +1,9 @@
 .control-center {
-    border-left: 1px solid $base03;
+    background-color: transparent;
+    border-radius: 20px;
+}
+
+.control-center-box {
     padding: 10px;
 
     color: $foreground;
