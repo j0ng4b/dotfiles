@@ -299,8 +299,11 @@ _net_wifi_list() {
 }
 
 _net_wifi_disconnect() {
+    # Get interface name
+    interface=$(cat $cache_wifi_interface)
+
     if command -v iwctl >/dev/null 2>&1; then
-        error "iwctl back-end not implemented"
+        iwctl station "$interface" disconnect >/dev/null
     elif command -v wpa_cli >/dev/null 2>&1; then
         # List of previous connected WiFis
         networks_saved=$(wpa_cli list_networks | sed -ne '2,$s/\(^[0-9]*\)\s\+\(.*\)\s\+any\(\s\+\[\(.*\)\].*\|.*$\)/\1:\2:\4/p' | tr '\n' ';')
