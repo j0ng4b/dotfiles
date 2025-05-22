@@ -87,11 +87,13 @@ _net_get_info() {
         return
     fi
 
+    # Get interface name
+    interface="$(cat $cache_wifi_interface)"
+
     # Get connection quality
     if [ "$type" = "wifi" ]; then
         if command -v iwctl >/dev/null 2>&1; then
             # Get WiFi name from iwd
-            interface="$(cat $cache_wifi_interface)"
             iwctl_output="$(iwctl station $interface show)"
 
             name="$(echo "$iwctl_output" | sed '1,6d;8,$d;s/.*network\s*//;s/\s*$//')"
@@ -106,7 +108,8 @@ _net_get_info() {
         if [ $? -gt 0 ]; then
             if command -v iwctl >/dev/null 2>&1; then
                 # Get WiFi quality from iwd
-                signal_level="$(echo "$iwctl_output" | sed '1,13d;15,$d;s/.*\(-[0-9]*\).*/\1/')"
+                signal_level="$(echo "$iwctl_output" | sed '1,14d;16,$d;s/.*\(-[0-9]*\).*/\1/
+')"
             elif command -v wpa_cli >/dev/null 2>&1; then
                 # Get WiFi signal_level from wpa_supplicant
                 signal_level=$(wpa_cli signal_poll | tr '\n' ';' | cut -d';' -f8 | cut -d'=' -f2)
