@@ -25,6 +25,7 @@ while true; do
 
     eww update wifi="$($root/scripter network wifi status)"
     eww update wifi_list="$($root/scripter network wifi list)"
+    eww update wifi_interfaces="$($root/scripter network wifi interface list)"
 
     eww update ethernet="$($root/scripter network ethernet status)"
     eww update bluetooth="$($root/scripter network bluetooth status)"

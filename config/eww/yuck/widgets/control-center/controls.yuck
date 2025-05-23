@@ -126,7 +126,6 @@
                 )
                 (label
                   :class 'ssid'
-                  :truncate true
                   :text '${wifi?.ssid}'
                 )
               )
@@ -135,6 +134,31 @@
                 :visible {wifi?.security != 'open'}
                 :halign 'end'
                 :text ''
+              )
+            )
+          )
+        )
+      )
+    )
+    (box
+      :class 'wifi-interface-selector'
+      :visible {arraylength(wifi_interfaces) > 1}
+      :orientation 'horizontal'
+      :space-evenly false
+      (expander
+        :hexpand true
+        (box
+          :orientation 'vertical'
+          :spacing 5
+          :space-evenly false
+          (for interface in wifi_interfaces
+            (eventbox
+              :class 'interface'
+              :cursor 'pointer'
+              :onclick './scripts/scripter network wifi interface set ${interface}'
+              (label
+                :class 'interface'
+                :text {interface}
               )
             )
           )
