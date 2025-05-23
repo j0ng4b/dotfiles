@@ -108,7 +108,7 @@ _net_get_info() {
         if [ $? -gt 0 ]; then
             if command -v iwctl >/dev/null 2>&1; then
                 # Get WiFi quality from iwd
-                signal_level="$(echo "$iwctl_output" | sed '1,14d;16,$d;s/.*\(-[0-9]*\).*/\1/
+                signal_level="$(echo "$iwctl_output" | sed '1,13d;15,$d;s/.*\(-[0-9]*\).*/\1/
 ')"
             elif command -v wpa_cli >/dev/null 2>&1; then
                 # Get WiFi signal_level from wpa_supplicant
@@ -473,6 +473,65 @@ case $1 in
                 _net_wifi_disconnect
                 ;;
 
+            interface)
+                case $3 in
+                    list)
+                        # List all interfaces
+                        interfaces=$(find /sys/class/net -name "wlan*" -or -name "wl*" -exec basename {} \;)
+                        if [ -z "$interfaces" ]; then
+                            error "No WiFi interfaces found"
+                            exit 1
+                        fi
+
+                        printf '['
+                        comma=false
+                        for interface in $interfaces; do
+                            if [ $comma = "true" ]; then
+                                printf ','
+                            fi
+                            printf "\"$interface\""
+                            comma=true
+                        done
+                        printf ']'
+                        ;;
+
+                    get)
+                        # Get interface name
+                        echo $(cat $cache_wifi_interface)
+                        ;;
+
+                    set)
+                        if [ -z "$4" ]; then
+                            error "No interface name provided"
+                            exit 1
+                        fi
+
+                        if [ "$4" = "$(cat $cache_wifi_interface)" ]; then
+                            exit 0
+                        fi
+
+                        # Check if interface exists
+                        if [ ! -d "/sys/class/net/$4" ]; then
+                            error "Interface $4 not found"
+                            exit 1
+                        fi
+
+                        # Set interface name
+                        echo "$4" > $cache_wifi_interface
+
+                        # Enable the interface
+                        interfaces=$(find /sys/class/net -name "wlan*" -or -name "wl*" -exec basename {} \;)
+                        for interface in $interfaces; do
+                            if [ "$interface" = "$4" ]; then
+                                # Enable selected interface
+                                iwctl device $interface set-property Powered on
+                            else
+                                # Disable other interfaces
+                                iwctl device $interface set-property Powered off
+                            fi
+                        done
+                        ;;
+                esac
         esac
         ;;
 
