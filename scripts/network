@@ -24,7 +24,7 @@ elif [ ! -d "$cache_dir" ]; then
     # WiFi
     touch $cache_wifi_signal_level
     touch $cache_wifi_power
-    interface=$(find /sys/class/net -name "wlan*" -or -name "wl*" | head -n1 | cut -d'/' -f5)
+    interface=$(find /sys/class/net \( -name "wlan*" -or -name "wl*" \) -exec basename {} \;)
     if [ -n "$interface" ]; then
         echo $interface > $cache_wifi_interface
     fi
@@ -51,7 +51,7 @@ _net_get_info() {
     if [ "$type" = "wifi" ]; then
         interfaces=$(cat $cache_wifi_interface)
     elif [ "$type" = "ethernet" ]; then
-        interfaces=$(find /sys/class/net -name "en*" -or -name "eth*")
+        interfaces=$(find /sys/class/net \( -name "en*" -or -name "eth*" \) -exec basename {} \;)
     fi
 
     connected=0
@@ -520,7 +520,7 @@ case $1 in
                         echo "$4" > $cache_wifi_interface
 
                         # Enable the interface
-                        interfaces=$(find /sys/class/net -name "wlan*" -or -name "wl*" -exec basename {} \;)
+                        interfaces=$(find /sys/class/net \( -name "wlan*" -or -name "wl*" \) -exec basename {} \;)
                         for interface in $interfaces; do
                             if [ "$interface" = "$4" ]; then
                                 # Enable selected interface
