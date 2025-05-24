@@ -4,6 +4,11 @@
   :exclusive false
   :namespace 'bar'
   :geometry (geometry :x '5px' :height '95%' :anchor 'center left')
-  (control-center)
+  (revealer
+    :transition 'slideright'
+    :duration '300ms'
+    :reveal {window-control-center-open}
+    (control-center)
+  )
 )
 

@@ -19,9 +19,7 @@
         (eventbox
           :class 'bar-profile-pic'
           :cursor 'pointer'
-          :onclick '\
-            eww open --toggle control-center && \
-            eww close wallpapers themes'
+          :onclick 'scripts/window_manager.sh toggle control-center'
           :width 38
           :height 38
           :style 'background-image: url("/home/jonatha/.config/sysconf/profile-pic")'

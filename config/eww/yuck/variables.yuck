@@ -9,7 +9,7 @@
 
 (defvar brightness '{ "current": "21", "max": "255" }')
 
-;; Clock widget
+;; Clock
 (defvar hour '00')
 (defvar minute '00')
 
@@ -27,6 +27,11 @@
   '{"speaker": { "mute": 0, "volume": 0 }, "microphone": { "mute": 0, "volume": 0 }}'
 )
 
+
+;; Windows visibility
+(defvar window-control-center-open false)
+(defvar window-wallpapers-open false)
+(defvar window-themes-open false)
 
 ;; battery widget
 (defvar battery '{ "enable": 0, "capacity": 0 }')
@@ -50,13 +55,11 @@
   'scripts/scripter notification subscribe'
 )
 
-(defvar wallpapers_window_open false)
 (deflisten wallpapers
   :initial '[]'
   'scripts/wallpapers.sh list'
 )
 
-(defvar themes_window_open false)
 (deflisten themes
   :initial '[]'
   'scripts/themes.sh list'
