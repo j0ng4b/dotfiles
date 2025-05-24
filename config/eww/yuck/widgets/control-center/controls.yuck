@@ -93,10 +93,10 @@
 (defwidget wifi-menu[]
   (box
     :orientation 'vertical'
-    :class 'control-menu left'
+    :class 'control-menu left wifi'
     :space-evenly false
     (scroll
-      :class 'wifi-list'
+      :class 'list'
       :vscroll true
       :hscroll false
       :vexpand true
@@ -141,7 +141,7 @@
       )
     )
     (box
-      :class 'wifi-interface-selector'
+      :class 'interface-selector'
       :visible {arraylength(wifi_interfaces) > 1}
       :orientation 'horizontal'
       :space-evenly false

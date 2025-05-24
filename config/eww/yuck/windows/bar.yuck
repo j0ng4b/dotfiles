@@ -1,3 +1,7 @@
+;; Includes main bar widget
+(include './yuck/widgets/bar/main.yuck')
+
+
 (defwindow bar
   :monitor 0
   :stacking 'fg'

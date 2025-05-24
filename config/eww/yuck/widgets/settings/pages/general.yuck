@@ -1,0 +1,5 @@
+(defwidget general-page[]
+  (box
+  )
+)
+

@@ -1,18 +1,11 @@
 ;; Global variables
-(include './yuck/variables.yuck')
-
-
-;; Widgets
-(include './yuck/widgets/bar/main.yuck')
-(include './yuck/widgets/theme/main.yuck')
-(include './yuck/widgets/wallpaper/main.yuck')
-(include './yuck/widgets/control-center/main.yuck')
+(include './yuck/vars.yuck')
 
 
 ;; Windows
 (include './yuck/windows/bar.yuck')
 (include './yuck/windows/corners.yuck')
+
 (include './yuck/windows/control-center.yuck')
-(include './yuck/windows/themes.yuck')
-(include './yuck/windows/wallpapers.yuck')
+(include './yuck/windows/settings.yuck')
 

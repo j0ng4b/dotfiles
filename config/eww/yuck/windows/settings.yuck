@@ -1,0 +1,18 @@
+;; Includes main settings window widget
+(include './yuck/widgets/settings/main.yuck')
+
+
+(defwindow settings
+  :monitor 0
+  :stacking 'fg'
+  :exclusive false
+  :namespace 'bar'
+  :geometry (geometry :anchor 'center left')
+  (revealer
+    :transition 'slideright'
+    :duration '300ms'
+    :reveal {window-settings-open}
+    (settings)
+  )
+)
+

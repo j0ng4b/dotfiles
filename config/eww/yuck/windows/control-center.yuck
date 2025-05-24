@@ -1,9 +1,13 @@
+;; Includes main control center widget
+(include './yuck/widgets/control-center/main.yuck')
+
+
 (defwindow control-center
   :monitor 0
   :stacking 'fg'
   :exclusive false
   :namespace 'bar'
-  :geometry (geometry :x '5px' :height '95%' :anchor 'center left')
+  :geometry (geometry :height '95%' :anchor 'center left')
   (revealer
     :transition 'slideright'
     :duration '300ms'

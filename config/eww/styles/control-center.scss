@@ -1,0 +1,311 @@
+.control-center {
+    padding-left: 10px;
+    background-color: transparent;
+
+    .container {
+        padding: 10px;
+        border-radius: 20px;
+
+        color: $foreground;
+        background-color: $base00;
+
+        font-size: 14px;
+        font-weight: normal;
+        font-family: 'Poppins', 'OpenMoji';
+
+        .profile {
+            padding: 10px;
+            border-radius: 10px;
+            background-color: $base02;
+
+            .picture {
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+                border-radius: 10px;
+            }
+
+            .name {
+                font-size: 18px;
+                font-weight: bold;
+                color: $base05;
+            }
+
+            .uptime {
+                font-size: 14px;
+                font-weight: bold;
+                color: $base0B;
+            }
+        }
+
+        .controls {
+            .control {
+                .icon {
+                    color: $base0B;
+                    border-radius: 10px;
+                    background-color: $base02;
+
+                    padding: 10px;
+
+                    font-size: 56px;
+                    font-weight: normal;
+                    font-family: 'Phosphor';
+
+                    &.expanded {
+                        border-bottom-right-radius: 0;
+                        border-bottom-left-radius: 0;
+                    }
+                }
+
+                .label {
+                    color: $base04;
+                    font-size: 16px;
+
+                    &.expanded { color: $base0B; }
+                }
+
+                .padding {
+                    background-color: $base02;
+                }
+            }
+
+            .separator {
+                .layer-1 { background-color: $base02; }
+                .layer-2 { background-color: $base00; }
+
+                .layer-2-left {
+                    background-color: $base00;
+                    border-bottom-left-radius: 100%;
+                }
+
+                .layer-2-right {
+                    background-color: $base00;
+                    border-bottom-right-radius: 100%;
+                }
+            }
+        }
+
+        .control-menu {
+            padding: 10px;
+            border-radius: 10px;
+            background-color: $base02;
+
+            &.left { border-top-left-radius: 0; }
+            &.right { border-top-right-radius: 0; }
+
+            &.wifi {
+                .list {
+                    overshoot {
+                        background-image: radial-gradient(circle at center, $base0B, transparent);
+                    }
+
+                    scrollbar,
+                    scrollbar trough {
+                        border: none;
+                        min-width: 0px;
+                        min-height: 0px;
+                        background-color: transparent;
+                    }
+
+                    scrollbar slider {
+                        border: none;
+                        min-width: 2px;
+                        min-height: 0px;
+                        background-color: $base0B;
+                    }
+
+                    .wifi {
+                        &:hover {
+                            border-radius: 10px;
+                            background-color: $base04;
+                        }
+
+                        .box {
+                            padding: 5px 10px;
+
+                            .state { font-size: 18px; }
+                            .ssid { font-size: 16px; }
+                        }
+                    }
+                }
+
+                .interface-selector {
+                    padding: 5px;
+                    margin: 0px -10px -10px -10px;
+                    background-color: $base02;
+                    border-radius: 10px;
+                    box-shadow: 0px -2px 5px $base01;
+
+                    .interface {
+                        padding: 5px;
+                        border-radius: 10px;
+
+                        &:hover {
+                            background-color: $base03;
+                        }
+                    }
+
+                    expander {
+                        arrow {
+                            color: $base0B;
+                            min-height: 20px;
+                            min-width: 20px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .slider {
+            .icon {
+                color: $base04;
+                font-size: 24px;
+            }
+
+            .bar {
+                background-color: $base00;
+
+                & trough {
+                    border: none;
+                    margin: 0px;
+                    padding: 0px;
+                    border-radius: 15px;
+                    background-color: $base01;
+                }
+
+                & highlight {
+                    border: none;
+                    margin: 0px;
+                    padding: 7px;
+                    border-radius: 15px;
+                    background-color: $base0B;
+                }
+
+                & slider {
+                    margin: 0px;
+                    min-width: 0px;
+                    min-height: 0px;
+                    border-width: 0px;
+                }
+            }
+        }
+
+        .notifications {
+            padding: 15px;
+            background-color: $base02;
+
+            border-radius: 10px;
+
+            .header {
+                color: $base0B;
+                text-shadow: 0px 0px 10px $base00;
+
+                .title {
+                    font-size: 20px;
+                    font-weight: bold;
+                    font-style: italic;
+                }
+
+                .dismiss {
+                    font-size: 42px;
+                    font-style: italic;
+                }
+            }
+
+            .empty, .sleep {
+                color: $base03;
+                font-size: 180px;
+                text-shadow: 2px 2px 10px $base00;
+            }
+
+            .sleep {
+                margin-left: -20px;
+                margin-top: -40px;
+                font-size: 130px;
+            }
+
+            .list {
+                overshoot {
+                    background-image: radial-gradient(circle at center, $base0B, transparent);
+                }
+
+                scrollbar trough,
+                scrollbar slider {
+                    border: none;
+                    min-width: 0px;
+                    min-height: 0px;
+                }
+
+                .notification {
+                    margin-right: 5px;
+                    margin-bottom: 20px;
+                    border-radius: 10px;
+                    box-shadow: 3px 3px 5px $base00;
+
+                    .header {
+                        border-top-right-radius: 10px;
+                        border-top-left-radius: 10px;
+
+                        padding: 5px 10px;
+                        background-color: $base03;
+
+
+                        .icon {
+                            background-repeat: no-repeat;
+                            background-size: cover;
+                            background-position: center;
+                            border-radius: 10px;
+                        }
+
+                        .appname {
+                            font-size: 16px;
+                            font-weight: bold;
+                            font-style: italic;
+                        }
+
+                        .close {
+                            label {
+                                color: $base03;
+                                padding: 0px 6px;
+                                background-color: $base08;
+                                border-radius: 50%;
+
+                                font-size: 16px;
+                                font-weight: bold;
+                            }
+                        }
+                    }
+
+                    .content {
+                        border-bottom-right-radius: 10px;
+                        border-bottom-left-radius: 10px;
+
+                        padding: 10px;
+                        background-color: $base04;
+
+                        .icon {
+                            background-repeat: no-repeat;
+                            background-size: cover;
+                            background-position: center;
+                            border-radius: 10px;
+                        }
+
+                        .entry {
+                            .summary {
+                                font-size: 16px;
+                                font-weight: bold;
+                                font-style: italic;
+                            }
+
+                            .body {
+                                font-size: 14px;
+                                font-style: italic;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

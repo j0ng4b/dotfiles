@@ -29,17 +29,5 @@ case $1 in
             --transition-wave 10,10 \
             "$2"
         ;;
-
-    toggle)
-        eww close control-center themes
-        case $(eww active-windows) in
-            *wallpapers*)
-                eww close wallpapers
-                ;;
-            *)
-                eww open wallpapers
-                ;;
-        esac
-        ;;
 esac
 

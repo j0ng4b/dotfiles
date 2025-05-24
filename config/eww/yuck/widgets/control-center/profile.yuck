@@ -8,7 +8,7 @@
     (box
       :width 70
       :height 70
-      :class 'pic'
+      :class 'picture'
       :style 'background-image: url("/home/jonatha/.config/sysconf/profile-pic")'
     )
     (box

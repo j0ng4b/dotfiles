@@ -69,17 +69,5 @@ case $1 in
 
         printf $2 > "$XDG_CONFIG_HOME/sysconf/theme"
         ;;
-
-    toggle)
-        eww close control-center wallpapers
-        case $(eww active-windows) in
-            *themes*)
-                eww close themes
-                ;;
-            *)
-                eww open themes
-                ;;
-        esac
-        ;;
 esac
 

@@ -1,0 +1,147 @@
+window .bar {
+    color: $foreground;
+    background-color: $background;
+
+    padding: 5px;
+
+    font-size: 14px;
+    font-weight: normal;
+    font-family: 'Poppins', 'OpenMoji';
+
+    .profile-picture {
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+
+        border: 1px solid $base05;
+        border-radius: 50%;
+    }
+
+    .separator-horizontal {
+        border-bottom: 2px solid $base03;
+    }
+
+    .utilities {
+        color: $foreground;
+        background-color: $base02;
+
+        padding: 5px;
+        border-radius: 10px;
+
+        font-size: 20px;
+    }
+
+    .workspaces {
+        padding: 10px;
+        background-color: $base02;
+        border-radius: 10px;
+
+        .workspace {
+            background-color: $base04;
+            min-width: 15px;
+            min-height: 30px;
+            border-radius: 10px;
+
+            &.current {
+                background-color: $base0B;
+                min-height: 30px;
+            }
+
+            &.empty {
+                background-color: $base03;
+                min-height: 15px;
+            }
+        }
+    }
+
+    .tray {
+        background-color: $background;
+
+        window decoration {
+            box-shadow: none;
+            border: 2px solid $base02;
+        }
+
+        menu {
+            color: $foreground;
+            background-color: $background;
+
+            separator {
+                margin: 0px 40px;
+                background-color: $foreground;
+            }
+
+            menuitem {
+                background-color: $background;
+
+                &:hover {
+                    box-shadow: none;
+                    background-color: $foreground;
+                    color: $background;
+                }
+            }
+        }
+    }
+
+    .indicators {
+        color: $foreground;
+        background-color: $base02;
+
+        padding: 5px;
+        border-radius: 10px;
+
+        font-size: 20px;
+        font-weight: normal;
+        font-family: 'Phosphor';
+    }
+
+    .battery {
+        &.charging .bulb { background-color: $base0A; }
+        &.charging .capacity { border-color: $base0A; }
+
+        .bulb {
+            margin: 0px 8px;
+            min-height: 2px;
+            background-color: $base05;
+        }
+
+        .capacity {
+            border: 2px solid $base05;
+            border-radius: 7px;
+            padding: 3px;
+
+            trough {
+                min-height: 35px;
+                min-width: 18px;
+
+                background-color: transparent;
+                border: none;
+
+                progress {
+                    min-width: 18px;
+
+                    border: none;
+                    border-radius: 3px;
+                }
+            }
+
+            &.high     trough progress { background-color: $base0B; }
+            &.medium   trough progress { background-color: $base0A; }
+            &.low      trough progress { background-color: $base09; }
+            &.very-low trough progress { background-color: $base08; }
+        }
+    }
+
+    .clock {
+        color: $foreground;
+        background-color: $base02;
+
+        padding: 5px;
+        border-radius: 10px;
+
+        font-size: 15px;
+        font-weight: normal;
+        font-family: 'Poppins';
+    }
+}
+
