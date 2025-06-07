@@ -2,8 +2,6 @@
 
 root=$(cd $(dirname $0); pwd)
 
-# Set username for eww
-eww update username=$(getent passwd $(whoami) | cut -d":" -f5)
 
 ## Time
 while true; do

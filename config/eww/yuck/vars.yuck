@@ -2,7 +2,7 @@
 ;;   ╚╗╔╝├─┤├┬┘│├─┤├┴┐│  ├┤ └─┐
 ;;    ╚╝ ┴ ┴┴└─┴┴ ┴└─┘┴─┘└─┘└─┘
 
-(defvar username '')
+(defpoll username :interval 9999 "getent passwd $(whoami) | cut -d':' -f5")
 
 (defvar brightness '{ "current": "21", "max": "255" }')
 
