@@ -1,0 +1,113 @@
+#!/usr/bin/env sh
+
+root_dir=$(cd $(dirname $0); pwd)
+
+run() {
+    full=""
+    if [ "$1" = "--full" -o "$1" = "-f" ]; then
+        full=true
+        shift
+    fi
+
+    cmd="$1"; shift
+    args="$@"
+
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        return 1
+    fi
+
+    # Some commands like dbus-daemon need to be run with --full because they has
+    # some other instance running for example, dbus run the system bus but also
+    # its needed to run the user session bus.
+    #
+    # If running without --full, the command will be run only if there is no
+    # other instance of the command running because only is checked if the
+    # command is running not the entire command line.
+    if [ -n "$full" ]; then
+        cmd="$cmd $args"
+        args=""
+    fi
+
+    if [ -z "$(pgrep -f "$cmd")" ]; then
+        eval "$cmd $args" &
+    fi
+}
+
+## Start syncthing daemon
+run syncthing --no-browser --no-restart --no-default-folder \
+    --logfile=$HOME/.cache/syncthing.log
+
+## Start dbus user session
+run --full dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS
+
+
+## Start udiskie
+run udiskie \
+    --no-notify \
+    --smart-tray \
+    --automount \
+    --file-manager yazi \
+    --terminal footclient
+
+## Start pipewire
+# With this PipeWire will automatic start pipewire-pulse and WirePlumber
+# if the PipeWire configuration is installed
+run pipewire
+
+
+## Start notification server
+run dunst
+
+
+## Start swww daemon (wallpaper setter)
+run swww-daemon
+
+
+## Start eww (widgets)
+# if [ -z "$(pgrep -f eww)" ]; then
+#     $root_dir/eww_init
+# fi
+# sh $root_dir/scripter color-reloader eww &
+
+
+## Start sway idle
+run swayidle -w \
+    timeout 90 "'swaymsg \"output * dpms off\"'" \
+        resume "'swaymsg \"output * dpms on\"'" \
+    timeout 100 "'exec zzz'"
+
+
+## Start foot server and always restart if closed
+(
+    if [ -z "$(pgrep -f 'foot --server')" ]; then
+        while true; do
+            foot --server --override shell="$root_dir/scripter color-reloader foot" &
+            wait $!
+        done
+    fi
+) &
+
+
+## Start battery status notifier
+# sh $root_dir/scripter battery notify
+
+
+## Start color color temperature adjuster
+# sh $root_dir/scripter color-temperature run &
+
+
+## Start color re-loader
+# sh $root_dir/scripter color-reloader \
+    # rio \
+    # nvim \
+    # tmux \
+    # zsh \
+    # starship \
+    # btop \
+    # cava \
+    # bat \
+    # git \
+    # notification \
+    # wm \
+    # rofi &
+
