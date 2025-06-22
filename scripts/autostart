@@ -84,7 +84,7 @@ run swayidle -w \
             # Only restart foot if Wayland compositor is available
             [ -n "$WAYLAND_DISPLAY" ] || continue
 
-            foot --server --override shell="$root_dir/scripter color-reloader foot" &
+            foot --server --override shell="$root_dir/_scripter color-reloader foot" &
             wait $!
         done
     fi
