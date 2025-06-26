@@ -211,12 +211,6 @@ window-rule {
     draw-border-with-background false
 }
 
-// make inactive windows semitransparent
-window-rule {
-    match is-active=false
-    opacity 0.95
-}
-
 window-rule {
     match app-id=r"^[fF]irefox$" title="^Picture-in-Picture$"
 
@@ -343,6 +337,11 @@ binds {
     Mod+Control+Shift+J { move-column-to-monitor-down; }
     Mod+Control+Shift+K { move-column-to-monitor-up; }
     Mod+Control+Shift+L { move-column-to-monitor-right; }
+
+    Mod+Control+Alt+H { move-workspace-to-monitor-left; }
+    Mod+Control+Alt+J { move-workspace-to-monitor-down; }
+    Mod+Control+Alt+K { move-workspace-to-monitor-up; }
+    Mod+Control+Alt+L { move-workspace-to-monitor-right; }
 
 
     //// Layout management /////////////////////////////////////////////////////
