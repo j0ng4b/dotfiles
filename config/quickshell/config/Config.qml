@@ -8,34 +8,34 @@ import "root:/config/loaders"
 
 
 Singleton {
-    id: root
+  id: root
 
-    // Paths
-    readonly property string homePath: `${StandardPaths.writableLocation(StandardPaths.HomeLocation)}`
+  // Paths
+  readonly property string homePath: `${StandardPaths.writableLocation(StandardPaths.HomeLocation)}`
 
-    readonly property string dataPath: `${StandardPaths.writableLocation(StandardPaths.GenericDataLocation)}/system`
-    readonly property string statePath: `${StandardPaths.writableLocation(StandardPaths.GenericStateLocation)}/system`
-    readonly property string cachePath: `${StandardPaths.writableLocation(StandardPaths.GenericCacheLocation)}/system`
-    readonly property string configPath: `${StandardPaths.writableLocation(StandardPaths.GenericConfigLocation)}/system`
-
-
-    // Configurations
-    property alias lock: adapter.lock
+  readonly property string dataPath: `${StandardPaths.writableLocation(StandardPaths.GenericDataLocation)}/system`
+  readonly property string statePath: `${StandardPaths.writableLocation(StandardPaths.GenericStateLocation)}/system`
+  readonly property string cachePath: `${StandardPaths.writableLocation(StandardPaths.GenericCacheLocation)}/system`
+  readonly property string configPath: `${StandardPaths.writableLocation(StandardPaths.GenericConfigLocation)}/system`
 
 
-    // Configurations loader
-    FileView {
-        path: `${root.configPath}/config.json`
-        watchChanges: true
+  // Configurations
+  property alias lock: adapter.lock
 
-        onFileChanged: this.reload()
-        onAdapterUpdated: this.writeAdapter()
 
-        JsonAdapter {
-            id: adapter
+  // Configurations loader
+  FileView {
+    path: `${root.configPath}/config.json`
+    watchChanges: true
 
-            property JsonObject lock: Lock {}
-        }
+    onFileChanged: this.reload()
+    onAdapterUpdated: this.writeAdapter()
+
+    JsonAdapter {
+      id: adapter
+
+      property JsonObject lock: Lock {}
     }
+  }
 }
 
