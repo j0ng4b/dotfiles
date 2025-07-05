@@ -136,7 +136,17 @@ local config = function()
     }
 
 
-    for _, server in ipairs(require('mason-lspconfig').get_installed_servers()) do
+    local servers = require('mason-lspconfig').get_installed_servers()
+    if not servers or #servers == 0 then
+        return
+    end
+
+    -- Add additional system installed servers
+    servers = vim.list_extend(servers, {
+        'qmlls'
+    })
+
+    for _, server in ipairs(servers) do
         local server_config = {
             capabilities = capabilities,
             on_attach = attach,
@@ -160,6 +170,9 @@ local config = function()
                     },
                 }
             }
+        elseif server == 'qmlls' then
+            server_config.filetypes = { 'qml', 'qmljs' }
+            server_config.cmd = { '/usr/lib/qt6/bin/qmlls' }
         end
 
         lsp[server].setup(server_config)
