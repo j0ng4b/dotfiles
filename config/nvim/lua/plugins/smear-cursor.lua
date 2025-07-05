@@ -1,5 +1,8 @@
 return {
     'sphamba/smear-cursor.nvim',
+    cond = function()
+        return not vim.g.neovide
+    end,
     opts = {
         time_interval = 15,
         hide_target_hack = false,
