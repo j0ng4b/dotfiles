@@ -63,7 +63,7 @@ local config = function()
 
         -- Auto commands
         if client.server_capabilities.documentFormattingProvider then
-            map({ 'n' }, 'gf', function()
+            map({ 'n' }, 'gF', function()
                 vim.lsp.buf.format({ async = true })
             end)
         end
