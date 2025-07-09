@@ -13,6 +13,7 @@ local config = function()
             'omnisharp',
             'pyright',
             'gopls',
+            'lua_ls'
         },
     })
 end

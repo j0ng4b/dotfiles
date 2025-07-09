@@ -170,6 +170,34 @@ local config = function()
                     },
                 }
             }
+        elseif server == 'lua_ls' then
+            server_config.settings = {
+                Lua = {
+                    diagnostics = {
+                        globals = { 'vim', 'love' }
+                    },
+
+                    hint = {
+                        enable = true,
+                        setType = true,
+                        arrayIndex = 'Enable',
+                    },
+
+                    semantic = {
+                        enable = true,
+                        keyword = true,
+                    },
+
+                    workspace = {
+                        useThirdParty = { os.getenv('HOME') .. '.local/share/LuaAddons' },
+                        checkThirdParty = 'Apply',
+                    },
+
+                    telemetry = {
+                        enable = false,
+                    },
+                }
+            }
         elseif server == 'qmlls' then
             server_config.filetypes = { 'qml', 'qmljs' }
             server_config.cmd = { '/usr/lib/qt6/bin/qmlls' }
