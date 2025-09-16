@@ -121,7 +121,7 @@ layout {
     default-column-width { proportion 0.5; }
 
     // tabbed column display mode
-    default-column-display "tabbed"
+    default-column-display "normal"
 
     // custom widths for "switch-preset-column-width"
     preset-column-widths {
@@ -267,8 +267,8 @@ binds {
     Mod+Q    { close-window; }
 
     Mod+H    { focus-column-left; }
-    Mod+J    { focus-window-down; }
-    Mod+K    { focus-window-up; }
+    Mod+J    { focus-window-or-workspace-down; }
+    Mod+K    { focus-window-or-workspace-up; }
     Mod+L    { focus-column-right; }
 
     Mod+Shift+H    { move-column-left; }
