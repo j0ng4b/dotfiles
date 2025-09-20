@@ -43,28 +43,31 @@ _start_color_adjust() {
 }
 
 _update_mode_to() {
-    # From - To
-    auto_high=1
-    auto_low=2
+    target="$1"
+    mode=$(cat "$cache_mode")
 
-    high_auto=2
-    high_low=1
+    [ "$mode" = "$target" ] && return 0
 
-    low_auto=1
-    low_high=2
+    case "$mode:$target" in
+        auto:high | high:low | low:auto)
+            count=1
+            ;;
+        auto:low | low:high | high:auto)
+            count=2
+            ;;
+        *)
+            error "Invalid mode transition: $mode → $target"
+            return 1
+            ;;
+    esac
 
-    # Current mode
-    mode=$(cat $cache_mode)
-    if [ "$mode" = "$1" ]; then
-        return
-    fi
-
-    eval count=\$${mode}_${1}
-    for i in $(seq 1 $count); do
+    i=1
+    while [ $i -le $count ]; do
         pkill -USR1 wlsunset
+        i=$((i + 1))
     done
 
-    echo $1 > $cache_mode
+    echo "$target" > "$cache_mode"
 }
 
 

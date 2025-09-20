@@ -34,47 +34,33 @@ run() {
 }
 
 ## Start syncthing daemon
-run syncthing --no-browser --no-restart --no-default-folder \
-    --logfile=$HOME/.cache/syncthing.log
+# run syncthing --no-browser --no-restart --no-default-folder \
+#     --logfile=$HOME/.cache/syncthing.log
 
 ## Start dbus user session
 run --full dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS
 
 
 ## Start udiskie
-run udiskie \
-    --no-notify \
-    --smart-tray \
-    --automount \
-    --file-manager yazi \
-    --terminal footclient
+# run udiskie \
+#     --no-notify \
+#     --smart-tray \
+#     --automount \
+#     --file-manager yazi \
+#     --terminal footclient
 
 ## Start pipewire
 # With this PipeWire will automatic start pipewire-pulse and WirePlumber
-# if the PipeWire configuration is installed
+# if the PipeWire configuration is installed on setup
 run pipewire
 
 
 ## Start notification server
-run dunst
+# run dunst
 
 
 ## Start swww daemon (wallpaper setter)
 run swww-daemon
-
-
-## Start eww (widgets)
-# if [ -z "$(pgrep -f eww)" ]; then
-#     $root_dir/eww_init
-# fi
-# sh $root_dir/scripter color-reloader eww &
-
-
-## Start sway idle
-run swayidle -w \
-    timeout 90 "'swaymsg \"output * dpms off\"'" \
-        resume "'swaymsg \"output * dpms on\"'" \
-    timeout 100 "'exec zzz'"
 
 
 ## Start foot server and always restart if closed
@@ -95,8 +81,8 @@ run swayidle -w \
 # sh $root_dir/scripter battery notify
 
 
-## Start color color temperature adjuster
-# sh $root_dir/scripter color-temperature run &
+## Start color temperature adjuster
+sh $root_dir/scripter color-temperature run &
 
 
 ## Start color re-loader

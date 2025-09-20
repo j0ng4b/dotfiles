@@ -7,31 +7,22 @@ info() { echo "\033[32m[Info]\033[0m $1"; }
 
 # Helper functions
 can_call_api() {
-    timefile=$1
-    if [ ! -e $timefile ]; then
-        echo '1'
-        return
-    fi
+    timefile="$1"
+    now=$(date +%s)
 
-    time=$(cat $timefile)
-    if [ -z "$time" ]; then
-        time=0
-        echo $time > $timefile
-    fi
+    [ ! -f "$timefile" ] && echo 0 > "$timefile"
 
-    diff=$(( $(date +%s) - $time ))
+    last=$(cat "$timefile")
+    [ -z "$last" ] && last=0
 
-    # Check if last API call was 10 minutes before
-    if [ $diff -ge 600 ]; then
-        echo '0' | tee $timefile
+    diff=$(( now - last ))
+
+    if [ "$diff" -ge 600 ]; then
+        echo "$now" > "$timefile"
+        return 0
     else
-        # Cannot call API
-        echo '1'
-        return
+        return 1
     fi
-
-    # Lock next API calls
-    echo $(date +%s) > $timefile
 }
 
 str_contains() {
