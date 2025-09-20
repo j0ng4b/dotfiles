@@ -33,7 +33,3 @@
     url = https://github.com/MichaelAquilina/zsh-you-should-use.git
     shallow = true
 
-[submodule "zsh/zsh-autocomplete"]
-    path = data/zsh/plugins/01-zsh-autocomplete
-    url = https://github.com/marlonrichert/zsh-autocomplete.git
-    shallow = true
