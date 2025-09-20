@@ -30,8 +30,7 @@ setup_void() {
         libreoffice-gnome \
         libreoffice-i18n-pt-BR \
         libreoffice-impress \
-        libreoffice-writer \
-        libspa-bluetooth
+        libreoffice-writer
 
     info 'Install steam...'
     echo 'TODO: Install steam...'
@@ -40,9 +39,13 @@ setup_void() {
     echo '# Enable user to run zzz...' >> /etc/rc.local
     echo "chown $USER /sys/power/state" >> /etc/rc.local
 
-    info 'Disable wpa_supplicant and enable iwd...'
+    info 'Enable dbus service'
+    ln -s /etc//sv/dbus /var/service/
+
+    info 'Enable NetworkManager...'
     rm -f /var/service/wpa_supplicant
-    ln -s /etc/sv/iwd /var/service/
+    rm -f /var/service/dhcpcd
+    ln -s /etc/sv/NetworkManager /var/service/
 
     info 'Enable seat service and management...'
     ln -s /etc/sv/seatd /var/service/
@@ -57,7 +60,6 @@ setup_void() {
     usermod -aG docker $USER
 
     info 'Enable other services...'
-    ln -s /etc/sv/dbus /var/service/
     ln -s /etc/sv/tlp /var/service/
 
     warn '=== Please reboot the system ==='
