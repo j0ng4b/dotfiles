@@ -242,21 +242,22 @@ binds {
     ////////////////////////////////////////////////////////////////////////////
 
     // volume
-    XF86AudioRaiseVolume { spawn "~/.config/niri/scripts/scripter" "multimedia" "speaker" "set" "+5"; }
-    XF86AudioLowerVolume { spawn "~/.config/niri/scripts/scripter" "multimedia" "speaker" "set" "-5"; }
-    XF86AudioMute { spawn "~/.config/niri/scripts/scripter" "multimedia" "speaker" "mute"; }
+    XF86AudioRaiseVolume { spawn "~/.config/niri/scripter" "multimedia" "speaker" "set" "+5"; }
+    XF86AudioLowerVolume { spawn "~/.config/niri/scripter" "multimedia" "speaker" "set" "-5"; }
+    XF86AudioMute { spawn "~/.config/niri/scripter" "multimedia" "speaker" "mute"; }
 
     // microphone
-    XF86AudioMicMute { spawn "~/.config/niri/scripts/scripter" "multimedia" "mic" "mute"; }
+    XF86AudioMicMute { spawn "~/.config/niri/scripter" "multimedia" "mic" "mute"; }
 
     // brightness
-    XF86MonBrightnessUp { spawn "~/.config/niri/scripts/scripter" "brightness" "set" "+5%"; }
-    XF86MonBrightnessDown { spawn "~/.config/niri/scripts/scripter" "brightness" "set" "-5%"; }
+    XF86MonBrightnessUp { spawn "~/.config/niri/scripter" "brightness" "set" "+5%"; }
+    XF86MonBrightnessDown { spawn "~/.config/niri/scripter" "brightness" "set" "-5%"; }
 
     // screenshot
-    Print { screenshot; }
-    Ctrl+Print { screenshot-screen; }
-    Alt+Print { screenshot-window; }
+    Print { spawn "~/.config/niri/scripter" "screenshot" "screen"; }
+    Ctrl+Print { spawn "~/.config/niri/scripter" "screenshot" "--clipboard" "screen"; }
+    Alt+Print { spawn "~/.config/niri/scripter" "screenshot" "area"; }
+    Ctrl+Alt+Print { spawn "~/.config/niri/scripter" "screenshot" "--clipboard" "area"; }
 
 
     //// Window Management /////////////////////////////////////////////////////
