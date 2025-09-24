@@ -93,18 +93,23 @@ setup_void() {
 
     info 'Updating xbps...'
     [ "$dry_run" = "true" ] || xbps-install -Syu xbps >/dev/null 2>&1
+    [ $? -ne 0 ] && error 'Failed to update xbps' && exit 1
 
     info 'Updating system...'
     [ "$dry_run" = "true" ] || xbps-install -Syu >/dev/null 2>&1
+    [ $? -ne 0 ] && error 'Failed to update system' && exit 1
 
     info 'Installing others repositories...'
     [ "$dry_run" = "true" ] || xbps-install -Sy void-repo-nonfree void-repo-multilib >/dev/null 2>&1
+    [ $? -ne 0 ] && error 'Failed to add others repositories' && exit 1
 
     info 'Installing base packages...'
     [ "$dry_run" = "true" ] || xbps-install -Sy j0ng4b-base >/dev/null 2>&1
+    [ $? -ne 0 ] && error 'Failed to install base packages' && exit 1
 
     info 'Installing development packages...'
     [ "$dry_run" = "true" ] || xbps-install -Sy j0ng4b-dev >/dev/null 2>&1
+    [ $? -ne 0 ] && error 'Failed to install development packages' && exit 1
 
     info 'Installing office packages...'
     [ "$dry_run" = "true" ] || xbps-install -Sy \
@@ -113,6 +118,7 @@ setup_void() {
         libreoffice-i18n-pt-BR \
         libreoffice-impress \
         libreoffice-writer >/dev/null 2>&1
+    [ $? -ne 0 ] && error 'Failed to install office packages' && exit 1
 
     info 'Install steam...'
     echo 'TODO: Install steam...'
