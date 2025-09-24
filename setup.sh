@@ -4,6 +4,7 @@
 . ./scripts/_common
 
 real_user=${SUDO_USER:-$USER}
+dry_run=false
 
 ## Helpers
 enable_service() {
@@ -19,7 +20,7 @@ enable_service() {
     if [ -L "/var/service/$svc" ]; then
         warn "Service $svc already enabled"
     else
-        ln -s "/etc/sv/$svc" "/var/service/$svc"
+        [ "$dry_run" = "true" ] || ln -s "/etc/sv/$svc" "/var/service/$svc"
         info "Service $svc enabled"
     fi
 }
@@ -31,7 +32,7 @@ disable_service() {
         return 1
     fi
     if [ -L "/var/service/$svc" ]; then
-        rm -f "/var/service/$svc"
+        [ "$dry_run" = "true" ] || rm -f "/var/service/$svc"
         info "Service $svc disabled"
     else
         warn "Service $svc already disabled"
@@ -47,6 +48,8 @@ setup_pipewire() {
     mkdir -p /etc/pipewire/pipewire.conf.d
 
     info 'Creating custom pipewire configuration file...'
+
+    [ "$dry_run" = "true" ] || return 0
     cat <<EOF > /etc/pipewire/pipewire.conf.d/99-custom.conf
 context.exec = [
     # Start pipewire-pulse
@@ -85,30 +88,31 @@ EOF
 setup_void() {
     info '=== Setup Void Linux ==='
     info 'Installing my own custom repository...'
-    echo 'repository=https://j0ng4b.github.io/void-repo/current' > /etc/xbps.d/99-j0ng4b-repo.conf
+    [ "$dry_run" = "true" ] || \
+        echo 'repository=https://j0ng4b.github.io/void-repo/current' > /etc/xbps.d/99-j0ng4b-repo.conf
 
     info 'Updating xbps...'
-    xbps-install -Syu xbps
+    [ "$dry_run" = "true" ] || xbps-install -Syu xbps >/dev/null 2>&1
 
     info 'Updating system...'
-    xbps-install -Syu
+    [ "$dry_run" = "true" ] || xbps-install -Syu >/dev/null 2>&1
 
     info 'Installing others repositories...'
-    xbps-install -Sy void-repo-nonfree void-repo-multilib
+    [ "$dry_run" = "true" ] || xbps-install -Sy void-repo-nonfree void-repo-multilib >/dev/null 2>&1
 
     info 'Installing base packages...'
-    xbps-install -Sy j0ng4b-base
+    [ "$dry_run" = "true" ] || xbps-install -Sy j0ng4b-base >/dev/null 2>&1
 
     info 'Installing development packages...'
-    xbps-install -Sy j0ng4b-dev
+    [ "$dry_run" = "true" ] || xbps-install -Sy j0ng4b-dev >/dev/null 2>&1
 
     info 'Installing office packages...'
-    xbps-install -Sy \
+    [ "$dry_run" = "true" ] || xbps-install -Sy \
         libreoffice-calc \
         libreoffice-gnome \
         libreoffice-i18n-pt-BR \
         libreoffice-impress \
-        libreoffice-writer
+        libreoffice-writer >/dev/null 2>&1
 
     info 'Install steam...'
     echo 'TODO: Install steam...'
@@ -131,14 +135,31 @@ setup_void() {
     enable_service docker
     enable_service tlp
 
-    info 'Adding user to necessary groups...'
-    usermod -aG _seatd $real_user
-    usermod -aG bluetooth $real_user
-    usermod -aG docker $real_user
+    for grp in bluetooth docker network _seatd; do
+        if id -nG "$real_user" | grep -qw "$grp"; then
+            warn "User $real_user already in $grp group"
+        else
+            info "Adding user $real_user to $grp group"
+            [ "$dry_run" = "true" ] || usermod -aG $grp $real_user
+        fi
+    done
 
     warn '=== Please reboot the system ==='
 }
 
+## Parse arguments
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --dry-run | -n)
+            dry_run=true
+            shift
+            ;;
+        *)
+            error "Unknown argument: $1"
+            exit 1
+            ;;
+    esac
+done
 
 ## Check if running as root
 if [ "$(id -u)" -ne 0 ]; then
