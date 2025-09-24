@@ -31,7 +31,7 @@ hotkey-overlay {
     skip-at-startup
 
     // hide all actions not bound to any key (only on next release)
-    // hide-not-bound
+    hide-not-bound
 }
 
 // cursor setup
@@ -52,8 +52,6 @@ overview {
 }
 
 environment {
-    DISPLAY ":0"
-
     QT_QPA_PLATFORM "wayland"
 
     _JAVA_AWT_WM_NONREPARENTING "1"
