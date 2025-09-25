@@ -101,34 +101,6 @@ _git_reloader() {
     _bat_reloader
 }
 
-_eww_reloader() {
-    config_dir="$XDG_CONFIG_HOME/eww"
-    colors_output_path="$config_dir/styles/colors.scss"
-
-    __generate_colors_file eww $colors_output_path
-
-    # NOTE: eww automatically reloads colors
-}
-
-_rofi_reloader() {
-    config_dir="$XDG_CONFIG_HOME/rofi"
-    colors_output_path="$config_dir/colors.rasinc"
-
-    __generate_colors_file rofi $colors_output_path
-
-    # Can't automatic reload rofi(?)
-}
-
-_rio_reloader() {
-    config_dir="$XDG_CONFIG_HOME/rio"
-    colors_output_path="$config_dir/themes/colors.toml"
-
-    __generate_colors_file rio $colors_output_path
-
-    # Reload rio config to reload theme
-    touch $config_dir/config.toml
-}
-
 _nvim_reloader() {
     theme_name=$(cat $theme_file)
 
@@ -150,44 +122,12 @@ _tmux_reloader() {
     tmux run-shell "$config_dir/style.tmux"
 }
 
-_zsh_reloader() {
-    config_dir="$XDG_CONFIG_HOME/zsh/utils/"
-    colors_output_path="$config_dir/colors.zsh"
-
-    __generate_colors_file zsh $colors_output_path
-    sleep 1 ; pkill -USR1 zsh
-}
-
 _starship_reloader() {
     config_dir="$XDG_CONFIG_HOME/starship"
     colors_output_path="$config_dir/config.toml"
 
     __generate_colors_file starship $colors_output_path
     sleep 1 ; pkill -USR1 zsh
-}
-
-_notification_reloader() {
-    config_dir="$XDG_CONFIG_HOME/dunst/dunstrc.d"
-    colors_output_path="$config_dir/colors.conf"
-
-    __generate_colors_file dunst $colors_output_path
-
-    # Workaround: for some reason on dunst 1.12.1 when reload config with
-    # visible notifications hide notifications and any other notifications
-    # aren't displayed.
-    dunstctl set-paused true
-
-    # If on config there are some notification with override_pause_level set to
-    # 100 this loop will wait until it desapear to reload config.
-    #
-    # Ensuring that any configuration can't set override_pause_level to 100 this
-    # can be simplified to only use sleep 0.01.
-    while [ "$(dunstctl count displayed)" -gt 0 ]; do
-        sleep 0.01
-    done
-    sleep 0.01
-
-    dunstctl reload
 }
 
 _wm_reloader() {
