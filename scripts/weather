@@ -18,6 +18,11 @@ elif [ ! -d "$cache_dir" ]; then
     touch $cache_json
 fi
 
+if [ -z "$WEATHER_API_KEY" ]; then
+    error "Please set WEATHER_API_KEY environment variable"
+    exit 1
+fi
+
 _get() {
     # NOTE: location script will block until can fetch location data
     LAT=$(sh $root/_scripter location latitude)
@@ -28,7 +33,7 @@ _get() {
     json=$(cat $cache_json)
     if [ -z "$json" ]; then
         json=$(curl -s $url | tee $cache_json)
-    elif [ $(can_call_api $cache_time) -eq 0 ]; then
+    elif can_call_api $cache_time; then
         json=$(curl -s $url | tee $cache_json)
     fi
 
@@ -37,15 +42,15 @@ _get() {
 
 case $1 in
     temperature)
-        printf '%.0f\n' $(echo $(_get) | jq --raw-output '.main.temp')
+        printf '%.0f\n' $(_get | jq --raw-output '.main.temp')
         ;;
 
     description)
-        printf '%s\n' $(echo $(_get) | jq --raw-output '.weather[0].main')
+        printf '%s\n' $(_get | jq --raw-output '.weather[0].main')
         ;;
 
     icon)
-        case $(echo $(_get) | jq --raw-output '.weather[0].icon') in
+        case $(_get | jq --raw-output '.weather[0].icon') in
             # Clear sky
             01d) icon='󰖨' ;;
             01n) icon='' ;;
