@@ -86,17 +86,12 @@ sh $root_dir/scripter color-temperature run &
 
 
 ## Start color re-loader
-# sh $root_dir/scripter color-reloader \
-    # rio \
-    # nvim \
-    # tmux \
-    # zsh \
-    # starship \
-    # btop \
-    # cava \
-    # bat \
-    # git \
-    # notification \
-    # wm \
-    # rofi &
-
+sh $root_dir/scripter color-reloader \
+    nvim \
+    tmux \
+    starship \
+    btop \
+    cava \
+    bat \
+    git &
+    # wm &
