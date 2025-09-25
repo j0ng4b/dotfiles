@@ -37,7 +37,7 @@ hotkey-overlay {
 // cursor setup
 cursor {
     // theme and size
-    xcursor-size 32
+    xcursor-size 28
     xcursor-theme "default"
 
     // hide conditions
