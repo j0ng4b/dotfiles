@@ -125,6 +125,14 @@ setup_void() {
 
     setup_pipewire
 
+    info 'Setup user shell...'
+    if [ "$SHELL" = "/bin/zsh" ]; then
+        warn "User $real_user already using zsh as default shell"
+    else
+        info "Changing default shell to zsh for user $real_user"
+        [ "$dry_run" = "true" ] || chsh -s /bin/zsh $real_user
+    fi
+
     info 'Enable user to run zzz...'
     echo '# Enable user to run zzz...' >> /etc/rc.local
     echo "chown $real_user /sys/power/state" >> /etc/rc.local
