@@ -1,0 +1,30 @@
+////////////////////////////////////////////////////////////////////////////////
+//  ╦═╗┬ ┬┬  ┌─┐┌─┐
+//  ╠╦╝│ ││  ├┤ └─┐
+//  ╩╚═└─┘┴─┘└─┘└─┘
+////////////////////////////////////////////////////////////////////////////////
+
+window-rule {
+    // window rounding borders
+    geometry-corner-radius 10
+
+    clip-to-geometry true
+
+    // never draw focus ring and border behind the window
+    draw-border-with-background false
+}
+
+window-rule {
+    match app-id=r"^[fF]irefox$" title="^Picture-in-Picture$"
+
+    open-floating true
+    default-column-width { fixed 480; }
+    default-window-height { fixed 270; }
+}
+
+// apply wallpaper to backdrop not only workspace view
+layer-rule {
+    match namespace="^swww-daemon$"
+    place-within-backdrop true
+}
+

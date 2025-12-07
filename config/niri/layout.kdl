@@ -1,0 +1,92 @@
+////////////////////////////////////////////////////////////////////////////////
+//  ╦  ┌─┐┬ ┬┌─┐┬ ┬┌┬┐
+//  ║  ├─┤└┬┘│ ││ │ │
+//  ╩═╝┴ ┴ ┴ └─┘└─┘ ┴
+////////////////////////////////////////////////////////////////////////////////
+
+layout {
+    gaps 20
+
+    // no background color for workspaces
+    background-color "transparent"
+
+    // center a column when changing focus
+    center-focused-column "on-overflow"
+
+    // default width of the new windows
+    default-column-width { proportion 0.5; }
+
+    // tabbed column display mode
+    default-column-display "normal"
+
+    // custom widths for "switch-preset-column-width"
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+        proportion 1.0
+    }
+
+    // custom heights for "switch-preset-window-height"
+    preset-window-heights {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+        proportion 1.0
+    }
+
+    // borders (only focused windows)
+    focus-ring {
+        width 4
+
+        active-gradient from="#17BAEB" to="#D12626" angle=135 relative-to="workspace-view"
+        inactive-color "#232350"
+        urgent-color "#ff7f7f"
+    }
+
+    // shadows
+    shadow {
+        on
+
+        // shadow color
+        color "#000F"
+
+        // shadow blur radius
+        softness 20
+
+        // expands the shadow
+        spread 5
+
+        // moves the shadow relative to the window
+        offset x=0 y=10
+    }
+
+    // shrink the area occupied by windows
+    struts {
+        left 40
+        right 40
+    }
+
+    // window insert position hint
+    insert-hint {
+        gradient from="#ff0b00" to="#ffc88080" angle=45 relative-to="workspace-view"
+    }
+
+    // column tab indicator
+    tab-indicator {
+        // gaps
+        gap 8
+        gaps-between-tabs 10
+
+        // tab dimensions
+        width 8
+        length total-proportion=0.3
+
+        corner-radius 10
+
+        // tab indicator tweaks
+        place-within-column
+        hide-when-single-tab
+    }
+}
+

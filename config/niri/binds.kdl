@@ -1,0 +1,181 @@
+////////////////////////////////////////////////////////////////////////////////
+//  ╦╔═┌─┐┬ ┬┌┐ ┬┌┐┌┌┬┐┌─┐
+//  ╠╩╗├┤ └┬┘├┴┐││││ ││└─┐
+//  ╩ ╩└─┘ ┴ └─┘┴┘└┘─┴┘└─┘
+////////////////////////////////////////////////////////////////////////////////
+
+binds {
+    //// Programs //////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    // terminal
+    Mod+Return hotkey-overlay-title="Open a Terminal" { spawn "footclient"; }
+
+
+    //// Multimedia Keys ///////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    // volume
+    XF86AudioRaiseVolume { spawn "~/.config/niri/scripter" "multimedia" "speaker" "set" "+5"; }
+    XF86AudioLowerVolume { spawn "~/.config/niri/scripter" "multimedia" "speaker" "set" "-5"; }
+    XF86AudioMute { spawn "~/.config/niri/scripter" "multimedia" "speaker" "mute"; }
+
+    // microphone
+    XF86AudioMicMute { spawn "~/.config/niri/scripter" "multimedia" "mic" "mute"; }
+
+    // brightness
+    XF86MonBrightnessUp { spawn "~/.config/niri/scripter" "brightness" "set" "+5%"; }
+    XF86MonBrightnessDown { spawn "~/.config/niri/scripter" "brightness" "set" "-5%"; }
+
+    // screenshot
+    Print { spawn "~/.config/niri/scripter" "screenshot" "screen"; }
+    Ctrl+Print { spawn "~/.config/niri/scripter" "screenshot" "--clipboard" "screen"; }
+    Alt+Print { spawn "~/.config/niri/scripter" "screenshot" "area"; }
+    Ctrl+Alt+Print { spawn "~/.config/niri/scripter" "screenshot" "--clipboard" "area"; }
+
+
+    //// Window Management /////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    Mod+Q    { close-window; }
+
+    Mod+H    { focus-column-left; }
+    Mod+J    { focus-window-or-workspace-down; }
+    Mod+K    { focus-window-or-workspace-up; }
+    Mod+L    { focus-column-right; }
+
+    Mod+Shift+H    { move-column-left; }
+    Mod+Shift+J    { move-window-down; }
+    Mod+Shift+K    { move-window-up; }
+    Mod+Shift+L    { move-column-right; }
+
+    Mod+Space    { switch-focus-between-floating-and-tiling; }
+
+
+    //// Column and Window Management //////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    Mod+R { switch-preset-column-width; }
+    Mod+Shift+R { switch-preset-window-height; }
+
+    Mod+Minus { set-column-width "-5%"; }
+    Mod+Equal { set-column-width "+5%"; }
+
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+
+
+    //// Workspace Management //////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    Mod+I { focus-workspace-up; }
+    Mod+U { focus-workspace-down; }
+
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+
+    Mod+Shift+U { move-column-to-workspace-down; }
+    Mod+Shift+I { move-column-to-workspace-up; }
+
+
+    //// Monitor Management ////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    Mod+Control+H { focus-monitor-left; }
+    Mod+Control+J { focus-monitor-down; }
+    Mod+Control+K { focus-monitor-up; }
+    Mod+Control+L { focus-monitor-right; }
+
+    Mod+Control+Shift+H { move-column-to-monitor-left; }
+    Mod+Control+Shift+J { move-column-to-monitor-down; }
+    Mod+Control+Shift+K { move-column-to-monitor-up; }
+    Mod+Control+Shift+L { move-column-to-monitor-right; }
+
+    Mod+Control+Alt+H { move-workspace-to-monitor-left; }
+    Mod+Control+Alt+J { move-workspace-to-monitor-down; }
+    Mod+Control+Alt+K { move-workspace-to-monitor-up; }
+    Mod+Control+Alt+L { move-workspace-to-monitor-right; }
+
+
+    //// Layout management /////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    // move the focused window in and out of a column.
+    Mod+BracketLeft  { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+
+    // consume one window from the right to the bottom of the focused column
+    Mod+Comma { consume-window-into-column; }
+
+    // expel the bottom window from the focused column to the right
+    Mod+Period { expel-window-from-column; }
+
+    // move the focused window between the floating and the tiling layout
+    Mod+V { toggle-window-floating; }
+
+    // toggle tabbed column display mode
+    Mod+T { toggle-column-tabbed-display; }
+
+
+    //// Mouse and Touchpad Scrolling //////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    Mod+WheelScrollDown       cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp         cooldown-ms=150 { focus-workspace-up; }
+
+    Mod+Shift+WheelScrollDown cooldown-ms=150 { focus-column-right; }
+    Mod+Shift+WheelScrollUp   cooldown-ms=150 { focus-column-left; }
+
+    Mod+TouchpadScrollDown    cooldown-ms=150 { focus-workspace-down; }
+    Mod+TouchpadScrollUp      cooldown-ms=150 { focus-workspace-up; }
+
+    Mod+TouchpadScrollLeft    cooldown-ms=150 { focus-column-left; }
+    Mod+TouchpadScrollRight   cooldown-ms=150 { focus-column-right; }
+
+
+    //// Miscellaneous /////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    // quit the niri session
+    Mod+Shift+Q { quit skip-confirmation=true; }
+
+    // shows a list of important hotkeys.
+    Mod+Alt+H { show-hotkey-overlay; }
+
+    // open/close the Overview
+    Mod+O repeat=false { toggle-overview; }
+
+    // powers off the monitors
+    Mod+Shift+P { power-off-monitors; }
+
+    // Applications such as remote-desktop clients and software KVM switches may
+    // request that niri stops processing the keyboard shortcuts defined here
+    // so they may, for example, forward the key presses as-is to a remote machine.
+    // It's a good idea to bind an escape hatch to toggle the inhibitor,
+    // so a buggy application can't hold your session hostage.
+    //
+    // The allow-inhibiting=false property can be applied to other binds as well,
+    // which ensures niri always processes them, even when an inhibitor is active.
+    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+}
+

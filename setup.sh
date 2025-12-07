@@ -151,7 +151,7 @@ setup_void() {
     enable_service socklog-unix
     enable_service nanoklogd
 
-    for grp in bluetooth docker network _seatd socklog; do
+    for grp in _seatd audio bluetooth docker network socklog video; do
         if id -nG "$real_user" | grep -qw "$grp"; then
             warn "User $real_user already in $grp group"
         else
