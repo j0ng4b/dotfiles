@@ -22,9 +22,6 @@ input {
     // move focus when mouse moves
     focus-follows-mouse max-scroll-amount="0%"
 
-    // move mouse when focus change
-    warp-mouse-to-focus
-
     // repeating workspace command switch back to prior workspace
     workspace-auto-back-and-forth
 }
