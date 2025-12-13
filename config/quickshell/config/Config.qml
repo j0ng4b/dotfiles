@@ -57,11 +57,15 @@ Singleton {
 
         // Restart generators if needed when wallpaper source changes
         onSourceChanged: {
-          if (source !== '' && colors.dynamic && !colorsGenerator.running)
-              colorsGenerator.running = true
+          if (source !== '' && colors.dynamic && !colorsGenerator.running) {
+            colorsGenerator.wallpaperSource = source
+            colorsGenerator.running = true
+          }
 
-          if (source !== '' && layered && !wallpaperFgGenerator.running)
-              wallpaperFgGenerator.running = true
+          if (source !== '' && layered && !wallpaperFgGenerator.running) {
+            wallpaperFgGenerator.wallpaperSource = source
+            wallpaperFgGenerator.running = true
+          }
         }
       }
     }
@@ -69,20 +73,23 @@ Singleton {
 
   Process {
     id: colorsGenerator
+    property string wallpaperSource
 
     command: [
       Paths.url2Path(Qt.resolvedUrl('../scripts/colorsGenerator')),
-      Paths.url2Path(root.wallpaper.source),
-      Paths.url2Path(root.configPath + '/colors.json')
+      Paths.url2Path(wallpaperSource),
+      Paths.url2Path(root.configPath + '/colors.json'),
+      Paths.url2Path(root.cachePath)
     ]
   }
 
   Process {
     id: wallpaperFgGenerator
+    property string wallpaperSource
 
     command: [
       Paths.url2Path(Qt.resolvedUrl('../scripts/rembg')),
-      Paths.url2Path(root.wallpaper.source),
+      Paths.url2Path(wallpaperSource),
       Paths.url2Path(root.cachePath)
     ]
 

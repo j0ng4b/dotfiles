@@ -8,6 +8,26 @@ fi
 INPUT_IMG=$1
 OUTPUT_PATH=$2
 
+COLOR_HASH=$(sha1sum $1 | cut -d' ' -f1)
+CACHED_COLOR_SCHEME=$3/colors/$COLOR_HASH
+CURRENT_COLOR_SCHEME=$3/colors/current
+
+
 mkdir -p $(dirname $OUTPUT_PATH)
-matugen image --json hex "$INPUT_IMG" > $OUTPUT_PATH
+mkdir -p $(dirname $CACHED_COLOR_SCHEME)
+
+# Check if the color its already in use
+if [ "$(cat $CURRENT_COLOR_SCHEME)" = "$COLOR_HASH" ]; then
+    exit 0
+fi
+
+# Generate and cache the color scheme if not already cached
+if [ ! -f "$CACHED_COLOR_SCHEME" ]; then
+    matugen image --json hex "$INPUT_IMG" | tee $CACHED_COLOR_SCHEME > $OUTPUT_PATH
+else
+    cat $CACHED_COLOR_SCHEME > $OUTPUT_PATH
+fi
+
+# Update the current color scheme
+echo $COLOR_HASH > $CURRENT_COLOR_SCHEME
 
