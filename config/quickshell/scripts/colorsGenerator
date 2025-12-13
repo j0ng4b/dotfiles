@@ -8,7 +8,7 @@ fi
 INPUT_IMG=$1
 OUTPUT_PATH=$2
 
-COLOR_HASH=$(sha1sum $1 | cut -d' ' -f1)
+COLOR_HASH=$(sha1sum "$1" | cut -d' ' -f1)
 CACHED_COLOR_SCHEME=$3/colors/$COLOR_HASH
 CURRENT_COLOR_SCHEME=$3/colors/current
 

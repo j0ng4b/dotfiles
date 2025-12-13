@@ -7,11 +7,11 @@ fi
 
 
 INPUT_IMG=$1
-OUTPUT_IMG=$2/wallpapers-fg/$(sha1sum $1 | cut -d' ' -f1)
+OUTPUT_IMG=$2/wallpapers-fg/$(sha1sum "$1" | cut -d' ' -f1)
 mkdir -p $(dirname $OUTPUT_IMG)
 
 if [ ! -f $OUTPUT_IMG ]; then
-    if rembg i -m 'birefnet-general-lite' $INPUT_IMG $OUTPUT_IMG; then
+    if rembg i -m 'birefnet-general-lite' "$INPUT_IMG" "$OUTPUT_IMG"; then
         echo $OUTPUT_IMG
     else
         exit 1
