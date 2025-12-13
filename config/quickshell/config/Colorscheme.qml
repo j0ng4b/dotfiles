@@ -3,7 +3,6 @@ pragma Singleton
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import qs.config as Cfg
 
 Singleton {
   property var current: dark
@@ -14,7 +13,7 @@ Singleton {
 
   FileView {
     watchChanges: true
-    path: Cfg.Path.config + '/colorscheme.json'
+    path: Config.configPath + '/colorscheme.json'
 
     onFileChanged: this.reload()
     onAdapterUpdated: this.writeAdapter()
