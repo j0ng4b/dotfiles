@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if ! command -v rembg >/dev/null 2>&1; then
+    echo 'rembg is not installed. Please install it first.'
+    exit 1
+fi
+
+
+INPUT_IMG=$1
+OUTPUT_IMG=$2/wallpapers-fg/$(sha1sum $1 | cut -d' ' -f1)
+mkdir -p $(dirname $OUTPUT_IMG)
+
+if [ ! -f $OUTPUT_IMG ]; then
+    if rembg i -m 'birefnet-general-lite' $INPUT_IMG $OUTPUT_IMG; then
+        echo $OUTPUT_IMG
+    else
+        exit 1
+    fi
+fi
+

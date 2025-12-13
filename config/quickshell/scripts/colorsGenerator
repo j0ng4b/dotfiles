@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if ! command -v matugen >/dev/null 2>&1; then
+    echo 'matugen is not installed. Please install matugen to use this script.'
+    exit 1
+fi
+
+INPUT_IMG=$1
+OUTPUT_PATH=$2
+
+mkdir -p $(dirname $OUTPUT_PATH)
+matugen image --json hex "$INPUT_IMG" > $OUTPUT_PATH
+

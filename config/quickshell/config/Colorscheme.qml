@@ -5,7 +5,7 @@ import Quickshell.Io
 import QtQuick
 
 Singleton {
-  property var current: dark
+  property var current: Config.colors.scheme == 'dark' ? dark : light
 
   property alias dark: dark
   property alias light: light
@@ -13,7 +13,7 @@ Singleton {
 
   FileView {
     watchChanges: true
-    path: Config.configPath + '/colorscheme.json'
+    path: Config.configPath + '/colors.json'
 
     onFileChanged: this.reload()
     onAdapterUpdated: this.writeAdapter()
