@@ -25,7 +25,7 @@ window-rule {
 // apply wallpaper to backdrop not only workspace view
 layer-rule {
     match namespace="^swww-daemon$"
-    match namespace="^ohmyshell-wallpaper$"
+    match namespace=".*shell-wallpaper$"
     place-within-backdrop true
 }
 
