@@ -34,23 +34,19 @@ Variants {
       asynchronous: true
       retainWhileLoading: true
       source: ''
-    }
-
-
-    // Animation layer for wallpaper transitions
-    Image {
-      id: animationLayer
-      anchors.fill: parent
-      fillMode: Image.PreserveAspectCrop
-      antialiasing: true
-      asynchronous: true
-      source: ''
-      visible: false
 
       Component.onCompleted: {
+        source = Config.wallpaper.source
+
         Config.wallpaper.onSourceChanged.connect(() => {
-          if (wallpaper.source == '') {
-            wallpaper.source = Config.wallpaper.source
+          // The wallpaper source can change before the current wallpaper is
+          // loaded, for example when the shell starts the source is set to the
+          // default wallpaper path but later the user config is loaded and the
+          // source is changed to the user's wallpaper.
+          //
+          // In this case we just set the source directly without animation.
+          if (status != Image.Ready) {
+            source = Config.wallpaper.source
             return
           }
 
@@ -75,6 +71,18 @@ Variants {
           animationLayer.source = ''
         })
       }
+    }
+
+
+    // Animation layer for wallpaper transitions
+    Image {
+      id: animationLayer
+      anchors.fill: parent
+      fillMode: Image.PreserveAspectCrop
+      antialiasing: true
+      asynchronous: true
+      source: ''
+      visible: false
     }
 
     MultiEffect {
