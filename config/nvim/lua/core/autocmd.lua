@@ -10,7 +10,7 @@ local update_search_higlight = function(event)
     if event == 'enter' then
         vim.opt.hlsearch = true
     elseif event == 'change' then
-        if vim.fn.exists('minimap#vim#UpdateColorSearch') then
+        if vim.fn.exists('minimap#vim#UpdateColorSearch') ~= 0 then
             -- For some way NeoVim set v:hlsearch to 0 at every command line
             -- change but minimap relies on v:hlsearch being 1 so set hlsearch
             -- again set v:hlsearch to 1.
