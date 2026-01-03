@@ -46,7 +46,20 @@ local config = function()
             },
 
             git_status = {
-                symbols = icons.git,
+                symbols = {
+                    -- Change type, I don't use it anymore
+                    added    = '',
+                    deleted  = '',
+                    modified = '',
+                    renamed  = '',
+
+                    -- Status type
+                    untracked = icons.git.untracked,
+                    ignored   = icons.git.ignored,
+                    unstaged  = icons.git.unstaged,
+                    staged    = icons.git.staged,
+                    conflict  = icons.git.conflict,
+                },
             },
 
             diagnostics = {
