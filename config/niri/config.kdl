@@ -92,6 +92,7 @@ environment {
 spawn-at-startup "~/.config/niri/scripter" "autostart"
 
 
+include "output.kdl"
 include "input.kdl"
 include "layout.kdl"
 include "rules.kdl"
