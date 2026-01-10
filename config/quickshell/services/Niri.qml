@@ -8,6 +8,9 @@ Singleton {
   id: root
   property ListModel workspaces: ListModel {}
 
+  signal workspacesUpdated()
+
+
   function focusWorkspace(index) {
     Quickshell.execDetached(['niri', 'msg', 'action', 'focus-workspace', index])
   }
@@ -23,6 +26,8 @@ Singleton {
         active: workspace.is_active,
         output: workspace.output
       })
+
+    root.workspacesUpdated()
   }
 
   function activateWorkspace(id) {
@@ -43,6 +48,8 @@ Singleton {
         output: value.output
       })
     }
+
+    root.workspacesUpdated()
   }
 
   Process {
