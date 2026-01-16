@@ -16,33 +16,70 @@ Variants {
     anchors.left: true
     anchors.right: true
 
-    implicitHeight: 30
-    color: Colorscheme.current.background
+    color: 'transparent'
+    exclusiveZone: contentHeight + 5
 
-    Workspaces {
-      output: bar.screen
-    }
+    implicitHeight: container.height
+    property int contentHeight: 30
 
-    // Clock
-    ColumnLayout {
-      anchors.right: parent.right
-      anchors.margins: 5
-      spacing: 2
 
-      Text {
-        Layout.alignment: Qt.AlignCenter
+    Column {
+      id: container
 
-        text: Clock.time
-        font.pixelSize: 12
-        color: Colorscheme.current.on_surface
+      Rectangle {
+        color: Colorscheme.current.surface
+
+        implicitWidth: content.width
+        implicitHeight: content.height
+
+        Item {
+          id: content
+          implicitWidth: bar.width
+          implicitHeight: bar.contentHeight
+
+          Workspaces {
+            output: bar.screen
+          }
+
+          // Clock
+          ColumnLayout {
+            anchors.right: parent.right
+            anchors.margins: 5
+            spacing: 2
+
+            Text {
+              Layout.alignment: Qt.AlignCenter
+
+              text: Clock.time
+              font.pixelSize: 12
+              color: Colorscheme.current.on_surface
+            }
+
+            Text {
+              Layout.alignment: Qt.AlignCenter
+
+              text: Clock.date
+              font.pixelSize: 10
+              color: Colorscheme.current.on_surface
+            }
+          }
+        }
       }
 
-      Text {
-        Layout.alignment: Qt.AlignCenter
+      RowLayout {
+        width: content.width
 
-        text: Clock.date
-        font.pixelSize: 10
-        color: Colorscheme.current.on_surface
+        Corner {
+          side: Corner.Side.Left
+          color: Colorscheme.current.surface
+          Layout.alignment: Qt.AlignLeft
+        }
+
+        Corner {
+          side: Corner.Side.Right
+          color: Colorscheme.current.surface
+          Layout.alignment: Qt.AlignRight
+        }
       }
     }
   }
