@@ -6,6 +6,7 @@ import QtQuick.Controls.Fusion
 import Quickshell.Wayland
 
 import qs.config
+import qs.services
 
 
 Rectangle {
@@ -70,38 +71,34 @@ Rectangle {
 		onClicked: root.unlocking = true
 	}
 
-	Label {
-		id: clock
-		property var date: new Date()
+  Column {
+    anchors {
+      horizontalCenter: parent.horizontalCenter
+      top: parent.top
+      topMargin: 100
+    }
 
-    color: Colorscheme.current.primary
+    Label {
+      id: clock
 
-		anchors {
-			horizontalCenter: parent.horizontalCenter
-			top: parent.top
-			topMargin: 100
-		}
+      anchors.horizontalCenter: parent.horizontalCenter
 
-		// The native font renderer tends to look nicer at large sizes.
-		renderType: Text.NativeRendering
-		font.pointSize: 90
+      color: Colorscheme.current.primary
+      renderType: Text.NativeRendering
+      font.pointSize: 90
+      text: Clock.time
+    }
 
-		// updates the clock every second
-		Timer {
-			running: true
-			repeat: true
-			interval: 1000
+    Label {
+      id: date
+      anchors.horizontalCenter: parent.horizontalCenter
 
-			onTriggered: clock.date = new Date();
-		}
-
-		// updated when the date changes
-		text: {
-			const hours = this.date.getHours().toString().padStart(2, '0');
-			const minutes = this.date.getMinutes().toString().padStart(2, '0');
-			return `${hours}:${minutes}`;
-		}
-	}
+      color: Colorscheme.current.secondary
+      renderType: Text.NativeRendering
+      font.pointSize: 20
+      text: Clock.date
+    }
+  }
 
   Image {
     id: wallpaperForeground
@@ -191,7 +188,7 @@ Rectangle {
         return Colorscheme.current.on_surface;
       }
 
-      font.family: 'Material Symbols Rounded'
+      font.family: 'Material Symbols Rounded Filled'
       font.hintingPreference: Font.PreferFullHinting
       font.pointSize: 18
       antialiasing: true

@@ -13,7 +13,10 @@ Singleton {
   readonly property string cachePath: Paths.cache + '/' + appName
 
   readonly property alias colors: adapter.colors
+
   readonly property alias wallpaper: adapter.wallpaper
+  readonly property alias wallpaperGeneratingFg: wallpaperFgGenerator.running
+
 
 
   FileView {
