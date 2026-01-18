@@ -11,6 +11,8 @@ Scope {
 
 
   property string currentText: ''
+  property string maskedText: '•'.repeat(currentText.length)
+
   onCurrentTextChanged: showFailure = false
 
   property bool unlockInProgress: false
@@ -39,6 +41,7 @@ Scope {
 
     onCompleted: result => {
       if (result == PamResult.Success) {
+        root.currentText = ''
         root.unlocked()
       } else {
         root.currentText = ''

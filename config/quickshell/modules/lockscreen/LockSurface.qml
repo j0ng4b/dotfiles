@@ -97,6 +97,35 @@ Rectangle {
     }
   }
 
+  Item {
+    clip: true
+    anchors.centerIn: parent
+
+    height: passwordMask.contentHeight
+    width: root.context.unlockInProgress ? 0 : passwordMask.contentWidth
+
+    Behavior on width {
+      NumberAnimation {
+        duration: 150
+        easing.type: Easing.Linear
+      }
+    }
+
+    Text {
+      id: passwordMask
+
+      anchors.centerIn: parent
+      color: Colorscheme.current.primary
+      layer.enabled: true
+      renderType: Text.NativeRendering
+      font.pointSize: 300
+      font.family: 'monospace'
+      font.letterSpacing: -80
+      rightPadding: Math.abs(font.letterSpacing)
+      text: root.context.maskedText
+    }
+  }
+
   Image {
     id: wallpaperForeground
     anchors.fill: parent
@@ -151,19 +180,15 @@ Rectangle {
       if (kevent.key === Qt.Key_Backspace) {
         if (kevent.modifiers & Qt.ControlModifier) {
           root.context.currentText = '';
-          // surface.maskedBuffer = "";
           return;
         }
 
         root.context.currentText = root.context.currentText.slice(0, -1);
-        // surface.maskedBuffer = surface.maskedBuffer.slice(0, -1);
         return;
       }
 
-      if (kevent.text) {
+      if (kevent.text)
         root.context.currentText += kevent.text;
-        // surface.maskedBuffer += surface.kokomi[Math.floor(Math.random() * 6)];
-      }
     }
 
     Text {
