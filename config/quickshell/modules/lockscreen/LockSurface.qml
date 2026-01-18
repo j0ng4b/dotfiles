@@ -18,12 +18,14 @@ Rectangle {
   property bool unlocking: false
 
   Component.onCompleted: {
+    let self = root;
+
     context.failedUnlock.connect(() => {
-      unlocking = false;
+      self.unlocking = false;
     });
 
     context.unlocked.connect(() => {
-      unlocking = true;
+      self.unlocking = true;
     });
   }
 
