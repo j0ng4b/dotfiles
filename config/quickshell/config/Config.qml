@@ -77,6 +77,16 @@ Singleton {
           }
         }
       }
+
+      property JsonObject lockscreen: JsonObject {
+        property JsonObject clock: JsonObject {
+          // Position of the clock on the lock screen
+          property JsonObject pos: JsonObject {
+            property real x: -1
+            property real y: -1
+          }
+        }
+      }
     }
   }
 

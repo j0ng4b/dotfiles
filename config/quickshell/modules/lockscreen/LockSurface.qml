@@ -17,6 +17,8 @@ Rectangle {
 
   property bool unlocking: false
 
+  property bool editingClock: false
+
   Component.onCompleted: {
     let self = root;
 
@@ -68,32 +70,93 @@ Rectangle {
     }
   }
 
-  Column {
-    anchors {
-      horizontalCenter: parent.horizontalCenter
-      top: parent.top
-      topMargin: 100
+
+  Item {
+    id: clockContainer
+
+    property int padding: 20
+
+    width: content.width + padding * 2
+    height: content.height + padding * 2
+
+    x: {
+      if (Config.lockscreen.clock.pos.x >= 0)
+        return Config.lockscreen.clock.pos.x;
+
+      return parent.width / 2 - width / 2
     }
 
-    Label {
-      id: clock
+    y: {
+      if (Config.lockscreen.clock.pos.y >= 0)
+        return Config.lockscreen.clock.pos.y;
 
-      anchors.horizontalCenter: parent.horizontalCenter
-
-      color: Colorscheme.current.primary
-      renderType: Text.NativeRendering
-      font.pointSize: 90
-      text: Clock.time
+      return 100
     }
 
-    Label {
-      id: date
-      anchors.horizontalCenter: parent.horizontalCenter
+    Behavior on x {
+      NumberAnimation {
+        duration: 300
+        easing.type: Easing.OutCubic
+      }
+    }
 
-      color: Colorscheme.current.secondary
-      renderType: Text.NativeRendering
-      font.pointSize: 30
-      text: Clock.date
+    Behavior on y {
+      NumberAnimation {
+        duration: 300
+        easing.type: Easing.OutCubic
+      }
+    }
+
+    Rectangle {
+      anchors.fill: parent
+      color: 'transparent'
+
+      border.color: root.editingClock ? Colorscheme.current.primary : 'transparent'
+      border.width: root.editingClock ? 4 : 0
+      radius: 20
+    }
+
+    Column {
+      id: content
+      anchors.centerIn: parent
+
+      Label {
+        id: clock
+
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        color: Colorscheme.current.primary
+        renderType: Text.NativeRendering
+        font.pointSize: 90
+        text: Clock.time
+      }
+
+      Label {
+        id: date
+        anchors.horizontalCenter: parent.horizontalCenter
+
+        color: Colorscheme.current.secondary
+        renderType: Text.NativeRendering
+        font.pointSize: 30
+        text: Clock.date
+      }
+    }
+
+    MouseArea {
+      anchors.fill: parent
+      hoverEnabled: true
+      drag.target: root.editingClock ? clockContainer : null
+      drag.axis: Drag.XAndYAxis
+      acceptedButtons: Qt.LeftButton
+      cursorShape: root.editingClock ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+
+      onDoubleClicked: root.editingClock = true
+      onReleased: {
+        root.editingClock = false
+
+        Config.lockscreen.clock.pos.x = Math.floor(clockContainer.x);
+        Config.lockscreen.clock.pos.y = Math.floor(clockContainer.y);
+      }
     }
   }
 
