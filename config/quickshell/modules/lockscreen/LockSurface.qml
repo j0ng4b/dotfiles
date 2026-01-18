@@ -66,11 +66,6 @@ Rectangle {
     }
   }
 
-	Button {
-		text: "unlock"
-		onClicked: root.unlocking = true
-	}
-
   Column {
     anchors {
       horizontalCenter: parent.horizontalCenter
@@ -95,7 +90,7 @@ Rectangle {
 
       color: Colorscheme.current.secondary
       renderType: Text.NativeRendering
-      font.pointSize: 20
+      font.pointSize: 30
       text: Clock.date
     }
   }
@@ -109,7 +104,7 @@ Rectangle {
     antialiasing: true
     asynchronous: true
     retainWhileLoading: true
-    source: ''
+    source: Config.wallpaper.foreground
 
     layer.enabled: true
     layer.smooth: true

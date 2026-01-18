@@ -58,6 +58,9 @@ Singleton {
         // Path to the wallpaper image
         property string source: root.configPath + '/wallpaper'
 
+        // Path to wallpaper foreground image
+        property string foreground: ''
+
         // Restart generators if needed when wallpaper source changes
         onSourceChanged: {
           if (source !== '' && colors.dynamic && !colorsGenerator.running) {
@@ -98,7 +101,7 @@ Singleton {
 
     stdout: StdioCollector {
       onStreamFinished: {
-        // Todo: set a property with foreground wallpaper path
+        root.wallpaper.foreground = this.text.trim()
       }
     }
   }
