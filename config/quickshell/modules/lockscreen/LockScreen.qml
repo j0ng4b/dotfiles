@@ -9,18 +9,18 @@ import Quickshell.Wayland
 ShellRoot {
   LockContext {
     id: lockContext
-    onUnlocked: lock.locked = false;
   }
 
 
   WlSessionLock {
     id: lock
-
     locked: false
 
     WlSessionLockSurface {
       LockSurface {
         anchors.fill: parent
+
+        lock: lock
         context: lockContext
       }
     }

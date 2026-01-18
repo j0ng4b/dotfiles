@@ -33,6 +33,7 @@ Variants {
       antialiasing: true
       asynchronous: true
       retainWhileLoading: true
+      layer.enabled: true
       source: ''
 
       Component.onCompleted: {
