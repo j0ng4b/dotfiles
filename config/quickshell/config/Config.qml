@@ -56,10 +56,13 @@ Singleton {
         property bool layered: true
 
         // Path to the wallpaper image
-        property string source: root.configPath + '/wallpaper'
+        //
+        // Note: this is now empty to force wallpaper foreground generation
+        // even on startup.
+        property string source
 
         // Path to wallpaper foreground image
-        property string foreground: ''
+        property string foreground
 
         // Restart generators if needed when wallpaper source changes
         onSourceChanged: {
@@ -101,7 +104,17 @@ Singleton {
 
     stdout: StdioCollector {
       onStreamFinished: {
-        root.wallpaper.foreground = this.text.trim()
+        let text = this.text.trim()
+
+        if (text === '')
+          return
+
+        if (text.startsWith('Error: ')) {
+          console.warn('Failed to generate wallpaper foreground:', text.substring(7))
+          return
+        }
+
+        root.wallpaper.foreground = text;
       }
     }
   }

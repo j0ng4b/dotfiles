@@ -1,22 +1,51 @@
 #!/bin/sh
 
 if ! command -v rembg >/dev/null 2>&1; then
-    echo 'rembg is not installed. Please install it first.'
+    echo 'Error: rembg is not installed. Please install it first.'
     exit 1
 fi
 
-
 INPUT_IMG=$1
-OUTPUT_IMG=$2/wallpapers-fg/$(sha1sum "$1" | cut -d' ' -f1)
+HASH=$(sha1sum "$INPUT_IMG" | cut -d' ' -f1)
+OUTPUT_IMG=$2/wallpapers-fg/$HASH
 mkdir -p $(dirname $OUTPUT_IMG)
 
-if [ ! -f $OUTPUT_IMG ]; then
-    if rembg i -m 'birefnet-general-lite' "$INPUT_IMG" "$OUTPUT_IMG"; then
-        echo $OUTPUT_IMG
-    else
-        exit 1
-    fi
-else
+
+if [ -f "$OUTPUT_IMG" ]; then
     echo $OUTPUT_IMG
+    exit 0
 fi
 
+
+LOCK_FILE="/tmp/rembg_$HASH.lock"
+if [ ! -f "$LOCK_FILE" ]; then
+    touch "$LOCK_FILE"
+
+    if ! rembg i -m 'birefnet-general-lite' "$INPUT_IMG" "$OUTPUT_IMG"; then
+        echo "Error: rembg failed to process the image."
+        exit 1
+    fi
+
+    rm -f "$LOCK_FILE"
+    echo "$OUTPUT_IMG"
+    exit 0
+fi
+
+
+TIMEOUT=210
+WAITED=0
+SLEEP_INTERVAL=2
+while [ ! -s "$OUTPUT_IMG" ]; do
+    if [ $WAITED -ge $TIMEOUT ]; then
+        rm -f "$LOCK_FILE"
+
+        echo "Error: Timeout waiting for rembg to finish processing."
+        exit 1
+    fi
+
+    sleep $SLEEP_INTERVAL
+    WAITED=$((WAITED + SLEEP_INTERVAL))
+done
+
+rm -f "$LOCK_FILE"
+echo "$OUTPUT_IMG"

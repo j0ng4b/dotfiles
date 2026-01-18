@@ -19,11 +19,11 @@ Rectangle {
 
   Component.onCompleted: {
     context.failedUnlock.connect(() => {
-      root.unlocking = false;
+      unlocking = false;
     });
 
     context.unlocked.connect(() => {
-      root.unlocking = true;
+      unlocking = true;
     });
   }
 
