@@ -16,7 +16,6 @@ Rectangle {
 	required property LockContext context
 
   property bool unlocking: false
-
   property bool editingClock: false
 
   Component.onCompleted: {
@@ -76,6 +75,9 @@ Rectangle {
 
     property int padding: 20
     property real scaleFactor: Config.lockscreen.clock.scale
+
+    readonly property real maxScaleFactor: 3.5
+    readonly property real minScaleFactor: 0.5
 
     width: content.implicitWidth + padding * 2
     height: content.implicitHeight + padding * 2
@@ -202,8 +204,9 @@ Rectangle {
         onPositionChanged: {
           const dx = mouseX - startX;
 
-          clockContainer.scaleFactor =
-          Math.max(0.5, clockContainer.scaleFactor + dx / 300)
+          clockContainer.scaleFactor = Math.min(
+            clockContainer.maxScaleFactor,
+            Math.max(clockContainer.minScaleFactor, clockContainer.scaleFactor + dx / 300));
         }
       }
     }
@@ -229,8 +232,9 @@ Rectangle {
         onPositionChanged: {
           const dy = mouseY - startY;
 
-          clockContainer.scaleFactor =
-          Math.max(0.5, clockContainer.scaleFactor + dy / 300)
+          clockContainer.scaleFactor = Math.min(
+            clockContainer.maxScaleFactor,
+            Math.max(clockContainer.minScaleFactor, clockContainer.scaleFactor + dy / 300));
         }
       }
     }
@@ -261,8 +265,9 @@ Rectangle {
 
           const delta = (dx + dy) / 2;
 
-          clockContainer.scaleFactor =
-          Math.max(0.5, clockContainer.scaleFactor + delta / 300)
+          clockContainer.scaleFactor = Math.min(
+            clockContainer.maxScaleFactor,
+            Math.max(clockContainer.minScaleFactor, clockContainer.scaleFactor + delta / 300));
         }
       }
     }
