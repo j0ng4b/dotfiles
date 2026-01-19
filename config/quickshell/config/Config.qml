@@ -14,6 +14,8 @@ Singleton {
 
   readonly property alias colors: adapter.colors
 
+  readonly property alias lockscreen: adapter.lockscreen
+
   readonly property alias wallpaper: adapter.wallpaper
   readonly property alias wallpaperGeneratingFg: wallpaperFgGenerator.running
 
@@ -80,6 +82,9 @@ Singleton {
 
       property JsonObject lockscreen: JsonObject {
         property JsonObject clock: JsonObject {
+          // Scale of the clock on the lock screen
+          property real scale: 1.0
+
           // Position of the clock on the lock screen
           property JsonObject pos: JsonObject {
             property real x: -1

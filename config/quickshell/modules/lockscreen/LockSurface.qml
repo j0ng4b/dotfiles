@@ -75,9 +75,10 @@ Rectangle {
     id: clockContainer
 
     property int padding: 20
+    property real scaleFactor: Config.lockscreen.clock.scale
 
-    width: content.width + padding * 2
-    height: content.height + padding * 2
+    width: content.implicitWidth + padding * 2
+    height: content.implicitHeight + padding * 2
 
     x: {
       if (Config.lockscreen.clock.pos.x >= 0)
@@ -107,6 +108,13 @@ Rectangle {
       }
     }
 
+    Behavior on scaleFactor {
+      NumberAnimation {
+        duration: 300
+        easing.type: Easing.OutCubic
+      }
+    }
+
     Rectangle {
       anchors.fill: parent
       color: 'transparent'
@@ -127,7 +135,7 @@ Rectangle {
 
         color: Colorscheme.current.primary
         renderType: Text.NativeRendering
-        font.pointSize: 90
+        font.pointSize: 90 * clockContainer.scaleFactor
         text: Clock.time
       }
 
@@ -137,7 +145,7 @@ Rectangle {
 
         color: Colorscheme.current.secondary
         renderType: Text.NativeRendering
-        font.pointSize: 30
+        font.pointSize: 30 * clockContainer.scaleFactor
         text: Clock.date
       }
     }
@@ -162,6 +170,92 @@ Rectangle {
       onReleased: {
         Config.lockscreen.clock.pos.x = Math.floor(clockContainer.x);
         Config.lockscreen.clock.pos.y = Math.floor(clockContainer.y);
+      }
+    }
+
+    Rectangle {
+      width: 12
+      anchors {
+        right: parent.right
+        top: parent.top
+        bottom: parent.bottom
+      }
+      visible: root.editingClock
+      color: 'transparent'
+
+      MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.SizeHorCursor
+
+        property real startX
+
+        onPressed: startX = mouseX
+        onReleased: Config.lockscreen.clock.scale = clockContainer.scaleFactor
+        onPositionChanged: {
+          const dx = mouseX - startX;
+
+          clockContainer.scaleFactor =
+          Math.max(0.5, clockContainer.scaleFactor + dx / 300)
+        }
+      }
+    }
+
+    Rectangle {
+      height: 12
+      anchors {
+        right: parent.right
+        left: parent.left
+        bottom: parent.bottom
+      }
+      visible: root.editingClock
+      color: 'transparent'
+
+      MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.SizeVerCursor
+
+        property real startY
+
+        onPressed: startY = mouseY
+        onReleased: Config.lockscreen.clock.scale = clockContainer.scaleFactor
+        onPositionChanged: {
+          const dy = mouseY - startY;
+
+          clockContainer.scaleFactor =
+          Math.max(0.5, clockContainer.scaleFactor + dy / 300)
+        }
+      }
+    }
+
+    Rectangle {
+      width: 16
+      height: 16
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      visible: root.editingClock
+      color: 'transparent'
+
+      MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.SizeFDiagCursor
+
+        property real startX
+        property real startY
+
+        onPressed: {
+          startX = mouseX
+          startY = mouseY
+        }
+        onReleased: Config.lockscreen.clock.scale = clockContainer.scaleFactor
+        onPositionChanged: {
+          const dx = mouseX - startX;
+          const dy = mouseY - startY;
+
+          const delta = (dx + dy) / 2;
+
+          clockContainer.scaleFactor =
+          Math.max(0.5, clockContainer.scaleFactor + delta / 300)
+        }
       }
     }
   }
