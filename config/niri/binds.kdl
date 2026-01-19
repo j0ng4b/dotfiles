@@ -180,6 +180,9 @@ binds {
     // open/close the Overview
     Mod+O repeat=false { toggle-overview; }
 
+    // Lock the screen
+    Mod+B { spawn "qs" "ipc" "call" "lockscreen" "lock"; }
+
     // powers off the monitors
     Mod+Shift+P { power-off-monitors; }
 
@@ -192,5 +195,9 @@ binds {
     // The allow-inhibiting=false property can be applied to other binds as well,
     // which ensures niri always processes them, even when an inhibitor is active.
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+}
+
+switch-events {
+    lid-open { spawn "qs" "ipc" "call" "lockscreen" "lock"; }
 }
 
