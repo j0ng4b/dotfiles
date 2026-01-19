@@ -148,12 +148,18 @@ Rectangle {
       drag.target: root.editingClock ? clockContainer : null
       drag.axis: Drag.XAndYAxis
       acceptedButtons: Qt.LeftButton
-      cursorShape: root.editingClock ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+      cursorShape: {
+        if (!root.editingClock)
+          return Qt.ArrowCursor;
 
-      onDoubleClicked: root.editingClock = true
+        if (pressed)
+          return Qt.ClosedHandCursor;
+
+        return Qt.OpenHandCursor;
+      }
+
+      onDoubleClicked: root.editingClock = !root.editingClock;
       onReleased: {
-        root.editingClock = false
-
         Config.lockscreen.clock.pos.x = Math.floor(clockContainer.x);
         Config.lockscreen.clock.pos.y = Math.floor(clockContainer.y);
       }
