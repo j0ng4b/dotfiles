@@ -94,6 +94,14 @@ Rectangle {
       return 100
     }
 
+    NumberAnimation on opacity {
+      duration: 900
+      easing.type: Easing.Linear
+      running: root.unlocking
+      from: 1
+      to: 0
+    }
+
     Behavior on x {
       NumberAnimation {
         duration: 300
@@ -302,6 +310,14 @@ Rectangle {
 
     layer.enabled: true
     layer.smooth: true
+
+    NumberAnimation on opacity {
+      duration: 900
+      easing.type: Easing.Linear
+      running: root.unlocking
+      from: 1
+      to: 0
+    }
   }
 
   Rectangle {
