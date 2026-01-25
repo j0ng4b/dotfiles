@@ -12,7 +12,7 @@ alias gbD='git branch --delete --force'
 alias gbm='git branch --move'
 alias gbM='git branch --move --force'
 alias gbr='git branch --remote'
-alias gbu='git branch --set-upstreat-to'
+alias gbu='git branch --set-upstream-to'
 
 # git checkout
 alias gco='git checkout'
