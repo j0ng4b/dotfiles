@@ -40,14 +40,24 @@ function M.close(bufnum)
     vim.cmd(winnr .. 'wincmd w')
 end
 
-function M.move(bufcmd)
-    if bufcmd ~= 'bnext' and bufcmd ~= 'bprevious' then
-        return
+function M.go(direction)
+    local cmd = nil
+
+    if direction ~= 'next' and direction ~= 'prev' then
+        error('Invalid buffer direction: ' .. direction)
     end
 
-    vim.cmd(bufcmd)
+    -- Check if bufferline.nvim is installed
+    local is_bufferline = pcall(require, 'bufferline')
+    if is_bufferline then
+        cmd = direction == 'next' and 'BufferLineCycleNext' or 'BufferLineCyclePrev'
+    else
+        cmd = direction == 'next' and 'bnext' or 'bprevious'
+    end
+
+    vim.cmd(cmd)
     while vim.fn.getbufvar('%', '&buftype') == 'terminal' do
-        vim.cmd(bufcmd)
+        vim.cmd(cmd)
     end
 end
 

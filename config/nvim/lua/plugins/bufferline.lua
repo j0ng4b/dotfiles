@@ -9,6 +9,7 @@ local config = function()
             themable = false,
             separator_style = 'slant',
             modified_icon = icons.file.modified,
+            sort_by = 'directory',
 
             close_command = function(bufnr) buffer.close(bufnr) end,
             right_mouse_command = function(bufnr) buffer.close(bufnr) end,
@@ -26,6 +27,22 @@ local config = function()
                 enabled = true,
                 delay = 100,
                 reveal = { 'close' },
+            },
+
+            groups = {
+                options = {
+                    toggle_hidden_on_enter = false,
+                },
+
+                items = {
+                    {
+                        name = 'Terminal',
+                        auto_close = true,
+                        matcher = function(buf)
+                            return buf.buftype == 'terminal'
+                        end,
+                    },
+                },
             },
 
             custom_filter = function(buf_number, buf_numbers)

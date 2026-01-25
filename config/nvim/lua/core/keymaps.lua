@@ -41,11 +41,11 @@ map({ 'n' }, 'bd', function()
 end)
 
 map({ 'n' }, 'bn', function()
-    buffer.move('bnext')
+    buffer.go('next')
 end)
 
 map({ 'n' }, 'bp', function()
-    buffer.move('bprevious')
+    buffer.go('prev')
 end)
 
 
