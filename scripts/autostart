@@ -59,10 +59,6 @@ run pipewire
 run dunst
 
 
-## Start swww daemon (wallpaper setter)
-run swww-daemon
-
-
 ## Start foot server and always restart if closed
 (
     if [ -z "$(pgrep -f 'foot --server')" ]; then
