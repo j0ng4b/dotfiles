@@ -82,6 +82,18 @@ map({ 'n', 'v' }, '<A-k>', '<Cmd>move .-2<CR>==') -- move up
 
 
 ---
+-- Editing
+---
+map({ 'n' }, '<leader>ld', 'yyp', 'duplicate line down')
+map({ 'v' }, '<leader>ld', 'y`>p', 'duplicate selection down')
+
+map({ 'n', 'v' }, '<leader>d', '"_d', 'delete without yank')
+map({ 'n' }, '<leader>D', '"_D', 'delete line without yank')
+
+map({ 'x' }, 'p', '"_dP', 'paste without losing register')
+
+
+---
 -- Indentation
 ---
 map({ 'v' }, '<Tab>', '>gv')
@@ -97,6 +109,16 @@ map({ 'n' }, '<S-Tab>', '<<')
 
 -- Enable which-key
 map.use_which_key()
+
+
+---
+-- Quickfix
+---
+map.group('QuickFix', '<leader>q')
+map({ 'n' }, '<leader>qo', '<cmd>copen<cr>', 'open quickfix')
+map({ 'n' }, '<leader>qc', '<cmd>cclose<cr>', 'close quickfix')
+map({ 'n' }, '<leader>qn', '<cmd>cnext<cr>', 'next quickfix item')
+map({ 'n' }, '<leader>qp', '<cmd>cprev<cr>', 'previous quickfix item')
 
 
 ---
