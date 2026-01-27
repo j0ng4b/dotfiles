@@ -11,16 +11,11 @@ local config = function()
         'tsx',
         'typescript',
 
-        'sql',
-
         'java',
-        'php',
         'python',
 
         'dockerfile',
         'yaml',
-
-        'yuck',
 
         'json',
         'json5',
@@ -33,7 +28,7 @@ local config = function()
 
     if vim.fn.executable('cc') == 0 or vim.fn.executable('make') == 0 then
         ensure_installed = nil
-        vim.notify('Install a C compiler and Make to proper use treesitter!')
+        vim.notify('Install a C compiler and Make to proper use treesitter!', vim.log.level.WARN)
     end
 
 
@@ -57,13 +52,20 @@ local config = function()
         indent = {
             enable = true,
         },
+
+        context_commentstring = {
+            enable = true,
+        },
     })
 end
 
 
 return {
     'nvim-treesitter/nvim-treesitter',
-    dependencies = 'nvim-treesitter/nvim-treesitter-textobjects',
+    dependencies = {
+        'nvim-treesitter/nvim-treesitter-textobjects',
+        'JoosepAlviste/nvim-ts-context-commentstring',
+    },
     config = config,
     priority = 100,
 }
