@@ -46,7 +46,10 @@ local config = function()
             },
 
             custom_filter = function(buf_number, buf_numbers)
-                if vim.bo[buf_number].filetype == 'codecompanion' then
+                if vim.bo[buf_number].filetype == 'qf'
+                    or vim.bo[buf_number].buftype == 'quickfix' then
+                    return false
+                elseif vim.bo[buf_number].filetype == 'codecompanion' then
                     return false
                 end
 
