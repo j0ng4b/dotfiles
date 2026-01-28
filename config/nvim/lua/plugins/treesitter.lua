@@ -52,10 +52,6 @@ local config = function()
         indent = {
             enable = true,
         },
-
-        context_commentstring = {
-            enable = true,
-        },
     })
 end
 

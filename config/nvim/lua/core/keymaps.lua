@@ -84,13 +84,13 @@ map({ 'n', 'v' }, '<A-k>', '<Cmd>move .-2<CR>==') -- move up
 ---
 -- Editing
 ---
-map({ 'n' }, '<leader>ld', 'yyp', 'duplicate line down')
-map({ 'v' }, '<leader>ld', 'y`>p', 'duplicate selection down')
+map({ 'n' }, '<leader>ld', 'yyp')  -- duplicate line down
+map({ 'v' }, '<leader>ld', 'y`>p')  -- duplicate selection down
 
-map({ 'n', 'v' }, '<leader>d', '"_d', 'delete without yank')
-map({ 'n' }, '<leader>D', '"_D', 'delete line without yank')
+map({ 'n', 'v' }, '<leader>d', '"_d')  -- delete without yank
+map({ 'n' }, '<leader>D', '"_D')  -- delete line without yank
 
-map({ 'x' }, 'p', '"_dP', 'paste without losing register')
+map({ 'x' }, 'p', '"_dP')  -- paste without losing register
 
 
 ---
@@ -112,9 +112,16 @@ map.use_which_key()
 
 
 ---
+-- Todo Comments
+---
+map({ 'n' }, ']t', require('todo-comments').jump_next, 'jump to next todo comment')
+map({ 'n' }, '[t', require('todo-comments').jump_prev, 'jump to previous todo comment')
+
+
+---
 -- Quickfix
 ---
-map.group('QuickFix', '<leader>q')
+map.group('󰉹 QuickFix', '<leader>q')
 map({ 'n' }, '<leader>qo', '<cmd>copen<cr>', 'open quickfix')
 map({ 'n' }, '<leader>qc', '<cmd>cclose<cr>', 'close quickfix')
 map({ 'n' }, '<leader>qn', '<cmd>cnext<cr>', 'next quickfix item')
@@ -306,13 +313,3 @@ map({ 'n' }, '<Leader>tW', function()
     end,
     'watch tests on current file'
 )
-
-
----
--- DBUI
----
--- map({ 'n' }, '<leader>db',
-    -- '<Cmd>DBUIToggle<CR>'
--- )
-
-

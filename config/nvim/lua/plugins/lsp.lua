@@ -63,7 +63,7 @@ local server_configs = {
 
 local setup_keymaps = function(bufnr, map)
     local opts = { buffer = bufnr }
-    
+
     -- Hover documentation
     map('n', 'K', vim.lsp.buf.hover, opts)
 
@@ -121,7 +121,7 @@ end
 
 local setup_inlay_hints_toggle = function(bufnr)
     local augroup = vim.api.nvim_create_augroup('LspInlayHints_' .. bufnr, { clear = true })
-    
+
     vim.api.nvim_create_autocmd('InsertEnter', {
         group = augroup,
         buffer = bufnr,
@@ -278,7 +278,7 @@ local config = function()
 
     -- Get servers
     local servers = require('mason-lspconfig').get_installed_servers()
-    
+
     -- Add additional system installed servers
     servers = vim.list_extend(servers or {}, {
         'qmlls'
