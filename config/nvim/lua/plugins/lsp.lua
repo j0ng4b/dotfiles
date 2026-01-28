@@ -183,22 +183,6 @@ end
 
 
 local setup_diagnostics = function(icons)
-    local signs = {
-        Error = icons.diagnostics.error,
-        Warn = icons.diagnostics.warn,
-        Info = icons.diagnostics.info,
-        Hint = icons.diagnostics.hint,
-    }
-
-    for type, icon in pairs(signs) do
-        local hl = 'DiagnosticSign' .. type
-        vim.fn.sign_define(hl, {
-            text = icon,
-            texthl = hl,
-            numhl = '',
-        })
-    end
-
     vim.diagnostic.config({
         virtual_text = {
             prefix = '●',
@@ -208,7 +192,14 @@ local setup_diagnostics = function(icons)
             source = 'always',
             border = 'rounded',
         },
-        signs = true,
+        signs = {
+            text = {
+                [vim.diagnostic.severity.ERROR] = icons.diagnostics.error,
+                [vim.diagnostic.severity.WARN] = icons.diagnostics.warn,
+                [vim.diagnostic.severity.INFO] = icons.diagnostics.info,
+                [vim.diagnostic.severity.HINT] = icons.diagnostics.hint,
+            },
+        },
         underline = true,
         update_in_insert = false,
         severity_sort = true,
