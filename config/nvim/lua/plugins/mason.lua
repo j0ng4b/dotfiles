@@ -2,6 +2,7 @@ local config = function()
     require('mason').setup()
 
     require('mason-lspconfig').setup({
+        automatic_enable = false,
         ensure_installed = {
             'cssls',
             'html',
