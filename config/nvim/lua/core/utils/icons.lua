@@ -26,6 +26,14 @@ return {
         error = '',
     },
 
+    debug = {
+        rejectedpoint = '',
+        breakpoint = '',
+        condpoint = '',
+        logpoint = '',
+        stopped = '',
+    },
+
     kinds = {
         Array         = '󰅪',
         Boolean       = '󰨙',

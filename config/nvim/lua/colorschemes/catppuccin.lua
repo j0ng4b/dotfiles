@@ -7,6 +7,7 @@ local config = function()
 
         integrations = {
             cmp = true,
+            dap = true,
             neotree = true,
             gitsigns = true,
             treesitter = true,

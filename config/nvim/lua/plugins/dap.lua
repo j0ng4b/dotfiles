@@ -1,4 +1,6 @@
 local config = function ()
+    local icons = require('core.utils.icons')
+
     local dap = require('dap')
     local repl = require('dap.repl')
     local ui = require('dapui')
@@ -58,6 +60,32 @@ local config = function ()
         down             = { 'd',  'down' },
         goto_            = { 'g',  'goto' },
         pause            = { 'p',  'pause' },
+    })
+
+    vim.fn.sign_define('DapBreakpoint', {
+        text = icons.debug.breakpoint,
+        texthl = 'DapBreakpoint',
+    })
+
+    vim.fn.sign_define('DapLogPoint', {
+        text = icons.debug.logpoint,
+        texthl = 'DapLogPoint',
+    })
+
+    vim.fn.sign_define('DapStopped', {
+        text = icons.debug.stopped,
+        texthl = 'DapStopped',
+
+    })
+
+    vim.fn.sign_define('DapBreakpointCondition', {
+        text = icons.debug.condpoint,
+        texthl = 'DapBreakpointCondition',
+    })
+
+    vim.fn.sign_define('DapBreakpointRejected', {
+        text = icons.debug.rejectedpoint,
+        texthl = 'DapBreakpointRejected',
     })
 
     -- -- DAP ui setup
