@@ -313,3 +313,43 @@ map({ 'n' }, '<Leader>tW', function()
     end,
     'watch tests on current file'
 )
+
+
+---
+-- DAP
+---
+map({ 'n' }, '<F5>', function()
+        require('dap').continue()
+    end,
+    'Start or continue debugging'
+)
+
+map({ 'n' }, '<F10>', function()
+        require('dap').step_over()
+    end,
+    'Step over the current function'
+)
+
+map({ 'n' }, '<F11>', function()
+        require('dap').step_into()
+    end,
+    'Step into the current function'
+)
+
+map({ 'n' }, '<F12>', function()
+        require('dap').step_out()
+    end,
+    'Step out of the current function'
+)
+
+map({ 'n' }, '<Leader>bt', function()
+        require('dap').toggle_breakpoint()
+    end,
+    'Toggle breakpoint'
+)
+
+map({ 'n' }, '<Leader>bl', function()
+        require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: '))
+    end,
+    'Set log point breakpoint with message'
+)
