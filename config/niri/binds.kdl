@@ -195,6 +195,9 @@ binds {
     // The allow-inhibiting=false property can be applied to other binds as well,
     // which ensures niri always processes them, even when an inhibitor is active.
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+
+    // Switch keyboard layout (if multiple are configured in the system)
+    Alt+Shift+Space { switch-layout "next"; }
 }
 
 switch-events {

@@ -7,9 +7,11 @@
 input {
     keyboard {
         numlock
+        track-layout "window"
 
         xkb {
             layout "br,us"
+            variant ",altgr-intl"
         }
     }
 
