@@ -10,8 +10,8 @@ input {
         track-layout "window"
 
         xkb {
-            layout "br,us"
-            variant ",altgr-intl"
+            layout "us,br"
+            variant "altgr-intl,"
         }
     }
 
