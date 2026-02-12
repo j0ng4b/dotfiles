@@ -10,6 +10,7 @@ local config = function()
         'javascript',
         'tsx',
         'typescript',
+        'vue',
 
         'java',
         'python',

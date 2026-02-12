@@ -34,7 +34,6 @@ local server_configs = {
                     hint = {
                         enable = true,
                         setType = true,
-                        arrayIndex = 'Enable',
                     },
                     semantic = {
                         enable = true,
@@ -49,6 +48,52 @@ local server_configs = {
                     },
                 }
             }
+        }
+    end,
+
+    ts_ls = function()
+        local vue_typescript_plugin = vim.fn.expand(
+            vim.fn.stdpath('data')
+                .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
+        )
+
+        return {
+            init_options = {
+                plugins = {
+                    {
+                        name = '@vue/typescript-plugin',
+                        location = vue_typescript_plugin,
+                        languages = { 'vue' },
+                    }
+                },
+            },
+
+            filetypes = {
+                'javascript',
+                'typescript',
+                'javascriptreact',
+                'typescriptreact',
+                'vue',
+            },
+
+            settings = {
+                typescript = {
+                    tsserver = {
+                        useSyntaxServer = false,
+                    },
+
+                    inlayHints = {
+                        includeInlayParameterNameHints = 'all',
+                        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+                        includeInlayFunctionParameterTypeHints = true,
+                        includeInlayVariableTypeHints = true,
+                        includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+                        includeInlayPropertyDeclarationTypeHints = true,
+                        includeInlayFunctionLikeReturnTypeHints = true,
+                        includeInlayEnumMemberValueHints = true,
+                    },
+                },
+            },
         }
     end,
 
@@ -182,12 +227,9 @@ local get_capabilities = function()
 end
 
 
-local setup_diagnostics = function(icons)
+local setup_diagnostics = function(auto, icons)
     vim.diagnostic.config({
-        virtual_text = {
-            prefix = '●',
-            source = 'if_many',
-        },
+        virtual_text = false,
         float = {
             source = 'always',
             border = 'rounded',
@@ -204,6 +246,8 @@ local setup_diagnostics = function(icons)
         update_in_insert = false,
         severity_sort = true,
     })
+
+    auto.cmd('CursorHold', '', 'lua vim.diagnostic.open_float()', 'Lsp')
 end
 
 
@@ -253,12 +297,15 @@ end
 
 
 local config = function()
+    local auto = require('core.utils.autocmd')
     local map = require('core.utils.map')
     local icons = require('core.utils.icons')
     local navic = require('nvim-navic')
 
+    auto.group('Lsp')
+
     -- Setup global configurations
-    setup_diagnostics(icons)
+    setup_diagnostics(auto, icons)
     setup_handlers()
 
     -- Create attach function with dependencies

@@ -8,6 +8,7 @@ return {
         'scss',
         'javascriptreact',
         'typescriptreact',
+        'vue',
     },
 }
 

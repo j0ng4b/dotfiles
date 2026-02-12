@@ -8,6 +8,7 @@ local config = function()
             'html',
             'tailwindcss',
             'ts_ls',
+            'vue_ls',
 
             'clangd',
             'jdtls',
