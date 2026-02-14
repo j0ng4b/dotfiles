@@ -84,6 +84,7 @@ local config = function()
 
     local fold_methods_by_filetype = {
         git = '',
+        ['neo-tree'] = ''
     }
 
     ufo.setup({

@@ -112,6 +112,9 @@ set.spelllang = 'en,pt_br'
 set.spelloptions = 'camel'
 set.spellsuggest = 'fast,10'
 
+-- Scroll
+set.scrolloff = 10
+
 -- Timeout
 set.ttimeoutlen = 100
 
