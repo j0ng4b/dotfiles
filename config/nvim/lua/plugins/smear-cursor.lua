@@ -28,5 +28,7 @@ return {
         particle_damping = 0.15,
         particle_gravity = -80,
         min_distance_emit_particles = 0,
+
+        filetypes_disabled = { 'neo-tree' }
     }
 }

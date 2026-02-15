@@ -33,6 +33,12 @@ set.colorcolumn = '+1'
 set.cursorline = true
 set.display = 'truncate'
 set.termguicolors = true
+set.guicursor = 'n-v-c:block,'
+    .. 'i-ci-ve:ver25,'
+    .. 'r-cr:hor20,'
+    .. 'o:hor50,'
+    .. 'a:blinkwait700-blinkoff400-blinkon250-Cursor,'
+    .. 'sm:block-blinkwait175-blinkoff150-blinkon175'
 
 -- Behaviour
 set.backspace = 'indent,eol,start'

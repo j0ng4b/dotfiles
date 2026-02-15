@@ -119,6 +119,19 @@ local config = function()
                     map.del({ 'i' }, '<Right>')
 
                     vim.cmd 'highlight! Cursor blend=100'
+
+                    -- Compatibility with smear-cursor
+                    vim.cmd 'highlight! SmearCursorHideable blend=100'
+                end
+            },
+
+            {
+                event = 'neo_tree_buffer_leave',
+                handler = function()
+                    vim.cmd 'highlight! Cursor blend=0 cterm=reverse gui=reverse'
+
+                    -- Compatibility with smear-cursor
+                    vim.cmd 'highlight! SmearCursorHideable blend=0 cterm=reverse gui=reverse'
                 end
             },
 
