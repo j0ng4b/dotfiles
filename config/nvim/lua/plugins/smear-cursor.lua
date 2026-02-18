@@ -1,6 +1,7 @@
 return {
     'sphamba/smear-cursor.nvim',
     opts = {
+        time_interval = 10,
         legacy_computing_symbols_support = true,
         legacy_computing_symbols_support_vertical_bars = true,
 

@@ -24,8 +24,9 @@ local config = function()
             },
 
             chat = {
+                intro_message = '',
                 show_header_separator = false,
-                start_in_insert_mode = true,
+                start_in_insert_mode = false,
 
                 icons = {
                     pinned_buffer = ' ',
@@ -33,17 +34,29 @@ local config = function()
                 },
 
                 window = {
+                    buflisted = false,
+                    sticky = false,
+
                     layout = 'vertical',
 
                     height = 0.85,
                     width = 0.30,
+
+                    opts = {
+                        number = false,
+                        relativenumber = false,
+                        foldenable = false,
+                        foldcolumn = '0',
+                        signcolumn = 'no',
+                        statuscolumn = '',
+                    }
                 },
             },
 
             diff = {
                 enabled = true,
                 layout = 'vertical',
-                provider = 'mini_diff',
+                provider = 'inline',
             },
         },
 
@@ -78,6 +91,14 @@ local config = function()
             },
         },
 
+        interactions = {
+            chat = {
+                opts = {
+                    completion_provider = 'cmp',
+                }
+            }
+        },
+
         adapters = {
             copilot = function()
                 return require('codecompanion.adapters').extend('copilot', {
@@ -93,12 +114,6 @@ local config = function()
                 })
             end,
         },
-
-        -- opts = {
-        --     system_prompt = function(opts)
-        --         return ''
-        --     end,
-        -- }
     })
 end
 

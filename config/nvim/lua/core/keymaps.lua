@@ -318,6 +318,7 @@ map({ 'n' }, '<Leader>tW', function()
 ---
 -- DAP
 ---
+map.group('󰕷 Debug', '<Leader>b')
 map({ 'n' }, '<F5>', function()
         require('dap').continue()
     end,
