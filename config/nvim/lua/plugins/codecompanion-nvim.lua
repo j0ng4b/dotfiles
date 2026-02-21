@@ -60,7 +60,7 @@ local config = function()
             },
         },
 
-        strategies = {
+        interactions = {
             chat = {
                 adapter = 'copilot',
 
@@ -84,19 +84,15 @@ local config = function()
 
                     user = vim.fn.system('whoami'):match('%S+'),
                 },
+
+                opts = {
+                    completion_provider = 'cmp',
+                },
             },
 
             inline = {
                 adapter = 'copilot',
             },
-        },
-
-        interactions = {
-            chat = {
-                opts = {
-                    completion_provider = 'cmp',
-                }
-            }
         },
 
         adapters = {
