@@ -34,6 +34,7 @@ local server_configs = {
                     hint = {
                         enable = true,
                         setType = true,
+                        arrayIndex = 'Disable',
                     },
                     semantic = {
                         enable = true,
@@ -93,6 +94,16 @@ local server_configs = {
                         includeInlayEnumMemberValueHints = true,
                     },
                 },
+            },
+        }
+    end,
+
+    jinja_ls = function()
+        return {
+            filetypes = {
+                'html',
+                'htmldjango',
+                'jinja',
             },
         }
     end,

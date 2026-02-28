@@ -1,4 +1,4 @@
-function get_search_command()
+local get_search_command = function()
     local cmd = 'rg'
     local args = {
         '--color=never',

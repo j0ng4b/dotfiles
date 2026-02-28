@@ -16,7 +16,7 @@ return {
         { ';w', '<cmd>HopWord<cr>', desc = 'Hop to word in current buffer', mode = { 'v', 'n' } },
         { ';a', '<cmd>HopWordAC<cr>', desc = 'Hop to word after cursor', mode = { 'v', 'n' } },
         { ';c', '<cmd>HopCamelCaseMW<cr>', desc = 'Hop to camelCase word', mode = { 'v', 'n' } },
-        { ';d', '<cmd>HopLine<cr>', desc = 'Hop to line', mode = { 'v', 'n' } },
+        { ';d', '<cmd>HopLineStart<cr>', desc = 'Hop to line', mode = { 'v', 'n' } },
         { ';f', '<cmd>HopNodes<cr>', desc = 'Hop to node', mode = { 'v', 'n' } },
         { ';s', '<cmd>HopPatternMW<cr>', desc = 'Hop to pattern', mode = { 'v', 'n' } },
         { ';j', '<cmd>HopVertical<cr>', desc = 'Hop to location vertically', mode = { 'v', 'n' } },

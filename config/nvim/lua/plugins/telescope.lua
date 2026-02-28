@@ -2,7 +2,7 @@ local config = function()
     local telescope = require('telescope')
     local actions = require('telescope.actions')
 
-    vimgrep_arguments = nil
+    local vimgrep_arguments = nil
     if vim.fn.executable('rg') == 1 then
         vimgrep_arguments = {
           'rg',

@@ -18,12 +18,23 @@ local config = function()
             'lua_ls'
         },
     })
+
+    require('mason-tool-installer').setup({
+        ensure_installed = {
+            'prettier',
+            'isort',
+            'black',
+        },
+    })
 end
 
 
 return {
     'williamboman/mason.nvim',
-    dependencies = 'williamboman/mason-lspconfig.nvim',
+    dependencies = {
+        'williamboman/mason-lspconfig.nvim',
+        'WhoIsSethDaniel/mason-tool-installer.nvim',
+    },
     config = config,
     priority = 100,
 }

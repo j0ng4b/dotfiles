@@ -51,7 +51,7 @@ local config = function()
 
     local icons = require('core.utils.icons')
 
-    codecompanion_component = codecompanion()
+    local codecompanion_component = codecompanion()
     lualine.setup({
         options = {
             icons_enabled = true,
