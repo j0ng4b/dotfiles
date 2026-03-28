@@ -1,56 +1,37 @@
-autoload -Uz add-zsh-hook
+## Setup prompt
+if command -v starship >/dev/null 2>&1; then
+    eval "$(starship init zsh)"
 
-zle-line-init() {
-    [ "$CONTEXT" = "start" ] || return 0
+    autoload -Uz add-zsh-hook add-zle-hook-widget
 
-    while true; do
-        zle .recursive-edit
+    # Transient prompt
+    TRANSIENT_PROMPT="${PROMPT// prompt / prompt --profile transient }"
 
-        ret=$?
-        [ $ret -eq 0 -a "$KEYS" = $'\4' ] || break
+    function _transient_prompt() {
+        [ "$CONTEXT" = "start" ] || return 0
 
-        exit 0
-    done
+        # Save original prompt
+        SAVED_PROMPT="$PROMPT"
+        SAVED_RPROMPT="$RPROMPT"
 
-    ps=$PROMPT
-    rps=$RPROMPT
+        # Use transient prompt
+        PROMPT="$TRANSIENT_PROMPT"
+        RPROMPT=""
+        zle reset-prompt && zle -R
 
+        # Restore prompt to original prompt
+        PROMPT="$SAVED_PROMPT"
+        RPROMPT="$SAVED_RPROMPT"
+    }
+    add-zle-hook-widget zle-line-finish _transient_prompt
 
-    bgcolor="%(?.$base01.$base08)"
-    fgcolor="%(?.$base05.$base01)"
+    # Use transient prompt on ctrl+c
+    TRAPINT() { _transient_prompt; return $(( 128 + $1 )) }
 
-    echo ""
-    PROMPT="%K{$bgcolor}%F{$fgcolor} %(?.➜.✗) %k%F{$bgcolor}%f "
-    RPROMPT=""
-
-    zle .reset-prompt
-
-
-    PROMPT=$ps
-    RPROMPT=$rps
-
-
-    if [ $ret -eq 0 ]; then
-        zle .accept-line
-    else
-        zle .send-break
-    fi
-
-    return ret
-}
-
-
-bottom-prompt() {
-    [ "${ZPROMPT_POS}" = "UP" ] && return
-
-    # Move the cursor to bottom of screen
-    print -n "\e[$LINES;H"
-
-    # Check if ZLE is active
-    [ -n "$ZLE_VERSION" ] && zle .reset-prompt
-}
-
-
-zle -N zle-line-init
-add-zsh-hook precmd bottom-prompt
-
+    # Bottom positioning
+    _bottom_prompt() {
+        [ "${ZPROMPT_POS}" = "UP" ] && return
+        print -n "\e[$LINES;H"
+    }
+    add-zsh-hook precmd _bottom_prompt
+fi

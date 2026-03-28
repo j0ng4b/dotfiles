@@ -84,6 +84,12 @@ when = true
 format = '[](fg:prev_bg)'
 
 
+[profiles]
+transient="""
+$character
+"""
+
+
 # Disable the package module, hiding it from the prompt completely
 [package]
 disabled = true

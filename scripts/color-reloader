@@ -124,7 +124,7 @@ _nvim_reloader() {
 
 _tmux_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/colors.tmux"
-    __generate_colors_file zsh "$colors_output_path" || return
+    __generate_colors_file shell "$colors_output_path" || return
     tmux run-shell "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/style.tmux"
 }
 

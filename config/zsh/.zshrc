@@ -97,15 +97,8 @@ for plugin in $plugins; do
 done
 
 
-## Start starship
-if command -v starship >/dev/null 2>&1; then
-    eval "$(starship init zsh)"
-fi
-
 # Prompt reload on SIGUSR1
 TRAPUSR1() {
-    source $ZDOTDIR/utils/colors.zsh
-
     if [[ -n $ZLE ]]; then
         # If in zle (line editor), reset the prompt
         zle .reset-prompt
@@ -114,7 +107,3 @@ TRAPUSR1() {
         echo ""
     fi
 }
-
-# Apply foot colors when available
-foot_seqs="${XDG_CACHE_HOME:-$HOME/.cache}/scripter/color-reloader/foot_seqs"
-[ -f "$foot_seqs" ] && command cat "$foot_seqs"
