@@ -143,12 +143,12 @@ _wm_reloader() {
 }
 
 # Utility functions
-__available_reloaders() {
+_available_reloaders() {
     grep -o "^_[^_].*_reloader" "$root/$script" | sed 's/^_//;s/_reloader$//'
 }
 
-__validate_reloader() {
-    if str_contains "$(__available_reloaders)" "$1"; then
+_validate_reloader() {
+    if str_contains "$(_available_reloaders)" "$1"; then
         return 0
     fi
 
@@ -176,7 +176,7 @@ _run_all() {
 _cmd_run() {
     # Register initial re-loaders set
     for name in "$@"; do
-        __validate_reloader "$name" || continue
+        _validate_reloader "$name" || continue
         grep -qxF "$name" "$registry_filepath" 2>/dev/null \
             || echo "$name" >> "$registry_filepath"
     done
@@ -213,7 +213,7 @@ _cmd_run() {
 
 _cmd_register() {
     for name in "$@"; do
-        __validate_reloader "$name" || continue
+        _validate_reloader "$name" || continue
         if grep -qxF "$name" "$registry_filepath" 2>/dev/null; then
             warn "color-reloader: '$name' already registered"
         else
@@ -233,6 +233,24 @@ _cmd_unregister() {
 
 _cmd_reload() {
     _run_all
+}
+
+_cmd_list() {
+    largest_name=0
+    for reloader in $(_available_reloaders); do
+        [ "${#reloader}" -gt "$largest_name" ] && largest_name="${#reloader}"
+    done
+
+    info "Available reloaders:"
+    for reloader in $(_available_reloaders); do
+        printf '  · %-'"${largest_name}"'s' "$reloader"
+        if grep -qxF "$reloader" "$registry_filepath" 2>/dev/null; then
+            printf '    \033[32mrunning\033[0m'
+        else
+            printf '    stopped'
+        fi
+        printf '\n'
+    done
 }
 
 # Parse args
@@ -266,10 +284,7 @@ case "$cmd" in
     register)   _cmd_register "$@" ;;
     unregister) _cmd_unregister "$@" ;;
     reload)     _cmd_reload ;;
-    list)
-        echo "Available reloaders:"
-        __available_reloaders | sed 's/^/- /'
-        ;;
+    list)       _cmd_list ;;
     help)
         echo "Usage: $0 color-reloader [options] <command> [reloaders...]"
         echo ""
