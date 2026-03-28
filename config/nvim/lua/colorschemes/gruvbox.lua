@@ -1,5 +1,5 @@
 return {
-    'ellisonleao/gruvbox.nvim',
+    "ellisonleao/gruvbox.nvim",
     priority = 1000,
     config = true,
     opts = {
@@ -23,17 +23,16 @@ return {
         invert_selection = false,
         invert_intend_guides = false,
 
-        contrast = 'hard',
+        contrast = "hard",
         overrides = {
-            FoldColumn = { link = 'LineNr' },
+            FoldColumn = { link = "LineNr" },
 
-            CursorLineFold = { link = 'LineNr' },
-            CursorLineNr = { link = 'LineNr' },
-            CursorLineSign = { link = 'LineNr' },
+            CursorLineFold = { link = "LineNr" },
+            CursorLineNr = { link = "LineNr" },
+            CursorLineSign = { link = "LineNr" },
         },
 
         dim_inactive = false,
         transparent_mode = false,
-    }
+    },
 }
-

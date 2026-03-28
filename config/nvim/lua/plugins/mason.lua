@@ -1,8 +1,7 @@
 local config = function()
     require('mason').setup()
 
-    require('mason-lspconfig').setup({
-        automatic_enable = false,
+    require('mason-tool-installer').setup({
         ensure_installed = {
             'cssls',
             'html',
@@ -14,16 +13,19 @@ local config = function()
             'jdtls',
             'omnisharp',
             'pyright',
-            'gopls',
-            'lua_ls'
-        },
-    })
+            'lua_ls',
 
-    require('mason-tool-installer').setup({
-        ensure_installed = {
             'prettier',
+            'stylua',
             'isort',
             'black',
+
+            {
+                'gopls',
+                condition = function()
+                    return vim.fn.executable('go') == 1
+                end,
+            },
         },
     })
 end

@@ -1,39 +1,38 @@
 local config = function()
     local ensure_installed = {
-        'c',
-        'cmake',
-        'cpp',
-        'make',
+        "c",
+        "cmake",
+        "cpp",
+        "make",
 
-        'css',
-        'html',
-        'javascript',
-        'tsx',
-        'typescript',
-        'vue',
+        "css",
+        "html",
+        "javascript",
+        "tsx",
+        "typescript",
+        "vue",
 
-        'java',
-        'python',
+        "java",
+        "python",
 
-        'dockerfile',
-        'yaml',
+        "dockerfile",
+        "yaml",
 
-        'json',
-        'json5',
-        'jsonc',
+        "json",
+        "json5",
+        "jsonc",
 
-        'lua',
-        'vim',
-        'vimdoc',
+        "lua",
+        "vim",
+        "vimdoc",
     }
 
-    if vim.fn.executable('cc') == 0 or vim.fn.executable('make') == 0 then
+    if vim.fn.executable("cc") == 0 or vim.fn.executable("make") == 0 then
         ensure_installed = nil
-        vim.notify('Install a C compiler and Make to proper use treesitter!', vim.log.level.WARN)
+        vim.notify("Install a C compiler and Make to proper use treesitter!", vim.log.level.WARN)
     end
 
-
-    require('nvim-treesitter.configs').setup({
+    require("nvim-treesitter.configs").setup({
         ensure_installed = ensure_installed,
 
         highlight = {
@@ -43,10 +42,10 @@ local config = function()
         incremental_selection = {
             enable = true,
             keymaps = {
-                init_selection = 'gnn',
-                node_incremental = 'grn',
-                scope_incremental = 'grc',
-                node_decremental = 'grm',
+                init_selection = "gnn",
+                node_incremental = "grn",
+                scope_incremental = "grc",
+                node_decremental = "grm",
             },
         },
 
@@ -56,14 +55,12 @@ local config = function()
     })
 end
 
-
 return {
-    'nvim-treesitter/nvim-treesitter',
+    "nvim-treesitter/nvim-treesitter",
     dependencies = {
-        'nvim-treesitter/nvim-treesitter-textobjects',
-        'JoosepAlviste/nvim-ts-context-commentstring',
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        "JoosepAlviste/nvim-ts-context-commentstring",
     },
     config = config,
     priority = 100,
 }
-

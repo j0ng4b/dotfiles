@@ -1,5 +1,5 @@
 return {
-    'sphamba/smear-cursor.nvim',
+    "sphamba/smear-cursor.nvim",
     opts = {
         time_interval = 10,
         legacy_computing_symbols_support = true,
@@ -8,13 +8,13 @@ return {
         hide_target_hack = true,
         never_draw_over_target = true,
 
-        cursor_color = '#ff4000',
+        cursor_color = "#ff4000",
 
         stiffness = 0.6,
         trailing_stiffness = 0.35,
         matrix_pixel_threshold = 0.2,
 
-        particles_enabled = true,
+        particles_enabled = false,
         particle_spread = 1,
 
         particles_per_second = 100,
@@ -30,6 +30,6 @@ return {
         particle_gravity = -80,
         min_distance_emit_particles = 0,
 
-        filetypes_disabled = { 'neo-tree' }
-    }
+        filetypes_disabled = { "neo-tree" },
+    },
 }

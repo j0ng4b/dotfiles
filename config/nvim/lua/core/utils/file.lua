@@ -1,21 +1,21 @@
 local M = {}
 
 function M.read(filename)
-    local file = io.open(filename, 'r')
+    local file = io.open(filename, "r")
     if not file then
-      return nil
+        return nil
     end
 
-    local content = file:read('*a')
+    local content = file:read("*a")
 
     file:close()
     return content
 end
 
 function M.write(filename, content)
-    local file = io.open(filename, 'w')
+    local file = io.open(filename, "w")
     if not file then
-      return false
+        return false
     end
 
     file:write(content)

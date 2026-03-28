@@ -1,10 +1,9 @@
 return {
-    'kylechui/nvim-surround',
-    event = 'VeryLazy',
+    "kylechui/nvim-surround",
+    event = "VeryLazy",
     config = function()
-        require('nvim-surround').setup({
-            move_cursor = 'stick',
+        require("nvim-surround").setup({
+            move_cursor = "stick",
         })
-    end
+    end,
 }
-

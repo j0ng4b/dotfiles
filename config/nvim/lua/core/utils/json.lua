@@ -1,21 +1,21 @@
 local M = {}
 
 function M.read(filename)
-    local file = io.open(filename, 'r')
+    local file = io.open(filename, "r")
     if not file then
-      return nil
+        return nil
     end
 
-    local ok, json = pcall(vim.json.decode, file:read('*a'))
+    local ok, json = pcall(vim.json.decode, file:read("*a"))
 
     file:close()
     return ok and json or {}
 end
 
 function M.write(filename, json)
-    local file = io.open(filename, 'w')
+    local file = io.open(filename, "w")
     if not file then
-      return false
+        return false
     end
 
     local ok, content = pcall(vim.json.encode, json)

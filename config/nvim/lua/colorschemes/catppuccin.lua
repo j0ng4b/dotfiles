@@ -1,5 +1,5 @@
 local config = function()
-    local catppuccin = require('catppuccin')
+    local catppuccin = require("catppuccin")
 
     catppuccin.setup({
         default_integration = false,
@@ -15,38 +15,36 @@ local config = function()
             native_lsp = {
                 enabled = true,
                 virtual_text = {
-                    errors = { 'italic' },
-                    hints = { 'italic' },
-                    warnings = { 'italic' },
-                    information = { 'italic' },
-                    ok = { 'italic' },
+                    errors = { "italic" },
+                    hints = { "italic" },
+                    warnings = { "italic" },
+                    information = { "italic" },
+                    ok = { "italic" },
                 },
                 underlines = {
-                    errors = { 'undercurl' },
-                    hints = { 'undercurl' },
-                    warnings = { 'undercurl' },
-                    information = { 'undercurl' },
-                    ok = { 'undercurl' },
+                    errors = { "undercurl" },
+                    hints = { "undercurl" },
+                    warnings = { "undercurl" },
+                    information = { "undercurl" },
+                    ok = { "undercurl" },
                 },
                 inlay_hints = {
                     background = true,
                 },
-            }
+            },
         },
 
         dim_inactive = {
             enabled = true,
-            shade = 'dark',
+            shade = "dark",
             percentage = 0.35,
         },
     })
 end
 
-
 return {
-    'catppuccin/nvim',
-    name = 'catppuccin',
+    "catppuccin/nvim",
+    name = "catppuccin",
     config = config,
     priority = 1000,
 }
-

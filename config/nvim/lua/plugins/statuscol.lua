@@ -1,12 +1,12 @@
 local config = function()
-    local statuscol = require('statuscol')
+    local statuscol = require("statuscol")
 
     local ft_ignore = {
-        'neo-tree',
-        'dbui',
+        "neo-tree",
+        "dbui",
     }
 
-    local builtin = require('statuscol.builtin')
+    local builtin = require("statuscol.builtin")
     statuscol.setup({
         relculright = true,
 
@@ -15,25 +15,23 @@ local config = function()
 
         segments = {
             {
-                text = { '%s' },
-                click = 'v:lua.ScSa',
+                text = { "%s" },
+                click = "v:lua.ScSa",
             },
             {
                 text = { builtin.lnumfunc },
                 condition = { true, builtin.not_empty },
-                click = 'v:lua.ScLa',
+                click = "v:lua.ScLa",
             },
             {
-                text = { ' ', builtin.foldfunc, ' ' },
-                click = 'v:lua.ScFa',
+                text = { " ", builtin.foldfunc, " " },
+                click = "v:lua.ScFa",
             },
         },
     })
 end
 
-
 return {
-    'luukvbaal/statuscol.nvim',
+    "luukvbaal/statuscol.nvim",
     config = config,
 }
-

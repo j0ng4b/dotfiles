@@ -1,13 +1,12 @@
 local install_required_treesitters = function()
-    local treesitter = require('nvim-treesitter.configs')
+    local treesitter = require("nvim-treesitter.configs")
     local ensure_installed = treesitter.get_ensure_installed_parsers()
 
     local treesitter_languages = {
-        'markdown',
-        'markdown_inline',
-        'html',
-        -- 'latex',
-        'yaml',
+        "markdown",
+        "markdown_inline",
+        "html",
+        "yaml",
     }
 
     for _, language in ipairs(treesitter_languages) do
@@ -16,64 +15,62 @@ local install_required_treesitters = function()
         end
     end
 
-    treesitter.setup { ensure_installed = ensure_installed }
+    treesitter.setup({ ensure_installed = ensure_installed })
 end
-
 
 local config = function()
     install_required_treesitters()
 
-
-    local presets = require('markview.presets');
-    require('markview').setup({
+    local presets = require("markview.presets")
+    require("markview").setup({
         markdown = {
             headings = presets.headings.simple,
             horizontal_rules = presets.horizontal_rules.thick,
             tables = presets.tables.rounded,
-        }
+        },
     })
 
-    require('markview').setup({
+    require("markview").setup({
         preview = {
-            hybrid_modes = { 'n', 'v', 'i', },
+            hybrid_modes = { "n", "v", "i" },
             linewise_hybrid_mode = true,
 
-            filetypes = { 'markdown', 'codecompanion' },
+            filetypes = { "markdown", "codecompanion" },
             ignore_buftypes = {},
 
-            icon_provider = 'devicons',
+            icon_provider = "devicons",
         },
 
         markdown = {
             headings = {
                 heading_1 = {
-                    hl = 'CursorLineNr',
-                    sign_hl = 'CursorLineNr',
+                    hl = "CursorLineNr",
+                    sign_hl = "CursorLineNr",
                 },
 
                 heading_2 = {
-                    hl = 'Character',
-                    sign_hl = 'Character',
+                    hl = "Character",
+                    sign_hl = "Character",
                 },
 
                 heading_3 = {
-                    hl = 'DiagnosticInfo',
-                    sign_hl = 'DiagnosticInfo',
+                    hl = "DiagnosticInfo",
+                    sign_hl = "DiagnosticInfo",
                 },
 
                 heading_4 = {
-                    hl = 'DiagnosticError',
-                    sign_hl = 'DiagnosticError',
+                    hl = "DiagnosticError",
+                    sign_hl = "DiagnosticError",
                 },
 
                 heading_5 = {
-                    hl = 'Identifier',
-                    sign_hl = 'Identifier',
+                    hl = "Identifier",
+                    sign_hl = "Identifier",
                 },
 
                 heading_6 = {
-                    hl = 'Comment',
-                    sign_hl = 'Comment',
+                    hl = "Comment",
+                    sign_hl = "Comment",
                 },
             },
 
@@ -85,10 +82,8 @@ local config = function()
     })
 end
 
-
 return {
-    'OXY2DEV/markview.nvim',
+    "OXY2DEV/markview.nvim",
     lazy = false,
     config = config,
 }
-

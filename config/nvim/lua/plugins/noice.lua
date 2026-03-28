@@ -1,14 +1,14 @@
 local install_required_treesitters = function()
-    local treesitter = require('nvim-treesitter.configs')
+    local treesitter = require("nvim-treesitter.configs")
     local ensure_installed = treesitter.get_ensure_installed_parsers()
 
     local noice_treesitter_languages = {
-        'vim',
-        'lua',
-        'bash',
-        'regex',
-        'markdown',
-        'markdown_inline',
+        "vim",
+        "lua",
+        "bash",
+        "regex",
+        "markdown",
+        "markdown_inline",
     }
 
     for _, language in ipairs(noice_treesitter_languages) do
@@ -17,61 +17,61 @@ local install_required_treesitters = function()
         end
     end
 
-    treesitter.setup { ensure_installed = ensure_installed }
+    treesitter.setup({ ensure_installed = ensure_installed })
 end
 
 local config = function()
     install_required_treesitters()
 
-    require('noice').setup({
+    require("noice").setup({
         cmdline = {
             enable = true,
-            view = 'cmdline_popup',
+            view = "cmdline_popup",
             format = {
                 cmdline = {
-                    pattern = '^:',
-                    icon = '',
-                    lang = 'vim',
+                    pattern = "^:",
+                    icon = "",
+                    lang = "vim",
                 },
 
                 search_down = {
-                    kind = 'search',
-                    pattern = '^/',
-                    icon = '󰱽',
-                    lang = 'regex',
+                    kind = "search",
+                    pattern = "^/",
+                    icon = "󰱽",
+                    lang = "regex",
                 },
 
                 search_up = {
-                    kind = 'search',
-                    pattern = '^%?',
-                    icon = '󰱽',
-                    lang = 'regex',
+                    kind = "search",
+                    pattern = "^%?",
+                    icon = "󰱽",
+                    lang = "regex",
                 },
 
                 filter = {
-                    pattern = '^:%s*!',
-                    icon = '󰈲',
-                    lang = 'bash',
+                    pattern = "^:%s*!",
+                    icon = "󰈲",
+                    lang = "bash",
                 },
 
                 lua = {
                     pattern = {
-                        '^:%s*lua%s+',
-                        '^:%s*lua%s*=%s*',
-                        '^:%s*=%s*',
+                        "^:%s*lua%s+",
+                        "^:%s*lua%s*=%s*",
+                        "^:%s*=%s*",
                     },
-                    icon = '',
-                    lang = 'lua',
+                    icon = "",
+                    lang = "lua",
                 },
 
                 help = {
-                    pattern = '^:%s*he?l?p?%s+',
-                    icon = '󰋗',
+                    pattern = "^:%s*he?l?p?%s+",
+                    icon = "󰋗",
                 },
 
                 input = {
-                    view = 'cmdline_input',
-                    icon = '󰌓 '
+                    view = "cmdline_input",
+                    icon = "󰌓 ",
                 },
             },
         },
@@ -80,21 +80,21 @@ local config = function()
             cmdline_popup = {
                 position = {
                     row = vim.api.nvim_win_get_height(0) / 2 - 5,
-                    col = '50%',
+                    col = "50%",
                 },
 
                 size = {
                     width = 60,
-                    height = 'auto',
+                    height = "auto",
                 },
             },
 
             popupmenu = {
-                relative = 'editor',
+                relative = "editor",
 
                 position = {
                     row = vim.api.nvim_win_get_height(0) / 2 - 2,
-                    col = '50%',
+                    col = "50%",
                 },
 
                 size = {
@@ -103,14 +103,14 @@ local config = function()
                 },
 
                 border = {
-                    style = 'rounded',
+                    style = "rounded",
                     padding = { 0, 1 },
                 },
 
                 win_options = {
                     winhighlight = {
-                        Normal = 'Normal',
-                        FloatBorder = 'DiagnosticInfo',
+                        Normal = "Normal",
+                        FloatBorder = "DiagnosticInfo",
                     },
                 },
             },
@@ -119,10 +119,10 @@ local config = function()
         routes = {
             -- Re-route long notifications to split
             {
-                view = 'split',
+                view = "split",
                 filter = {
                     event = "notify",
-                    min_height = 10
+                    min_height = 10,
                 },
             },
         },
@@ -130,13 +130,13 @@ local config = function()
 end
 
 return {
-    'folke/noice.nvim',
+    "folke/noice.nvim",
     config = config,
     dependencies = {
-        'MunifTanjim/nui.nvim',
-        'nvim-treesitter/nvim-treesitter',
+        "MunifTanjim/nui.nvim",
+        "nvim-treesitter/nvim-treesitter",
         {
-            'rcarriga/nvim-notify',
+            "rcarriga/nvim-notify",
             opts = {
                 fps = 60,
                 timeout = 1000,
@@ -146,4 +146,3 @@ return {
         },
     },
 }
-

@@ -10,7 +10,6 @@ M.del = function(modes, left)
     end
 end
 
-
 M.which_key = false
 M.use_which_key = function(enable)
     M.which_key = enable or true
@@ -21,7 +20,7 @@ M.group = function(name, prefix)
         return
     end
 
-    require('which-key').add({
+    require("which-key").add({
         lhs = prefix,
         group = name,
     })
@@ -32,7 +31,7 @@ local wk_map = function(modes, left, right, opts)
         return
     end
 
-    if type(opts) == 'string' then
+    if type(opts) == "string" then
         opts = {
             desc = opts,
         }
@@ -40,8 +39,7 @@ local wk_map = function(modes, left, right, opts)
         opts = opts or {}
     end
 
-
-    require('which-key').add({
+    require("which-key").add({
         left,
         right,
 
@@ -54,7 +52,6 @@ local wk_map = function(modes, left, right, opts)
     })
 end
 
-
 local normal_map = function(modes, left, right, opts)
     local opts = opts or {}
 
@@ -64,18 +61,18 @@ local normal_map = function(modes, left, right, opts)
         -- Don't pass buffer value to neovim function
         opts.buffer = nil
 
-        if type(right) == 'function' then
+        if type(right) == "function" then
             opts.callback = right
-            right = ''
+            right = ""
         end
 
         for _, mode in ipairs(modes) do
             vim.api.nvim_buf_set_keymap(buffer, mode, left, right, opts)
         end
     else
-        if type(right) == 'function' then
+        if type(right) == "function" then
             opts.callback = right
-            right = ''
+            right = ""
         end
 
         for _, mode in ipairs(modes) do
@@ -83,7 +80,6 @@ local normal_map = function(modes, left, right, opts)
         end
     end
 end
-
 
 setmetatable(M, {
     __call = function(self, ...)
@@ -93,7 +89,7 @@ setmetatable(M, {
         end
 
         normal_map(...)
-    end
+    end,
 })
 
 return M

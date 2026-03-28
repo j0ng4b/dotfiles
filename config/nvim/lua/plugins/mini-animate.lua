@@ -1,24 +1,24 @@
 return {
-    'echasnovski/mini.animate',
+    "echasnovski/mini.animate",
     opts = function(_, opts)
         local mouse_scrolled = false
 
-        for _, scroll in ipairs({ 'Up', 'Down' }) do
-            local key = '<ScrollWheel' .. scroll .. '>'
-            vim.keymap.set({ '', 'i' }, key, function()
+        for _, scroll in ipairs({ "Up", "Down" }) do
+            local key = "<ScrollWheel" .. scroll .. ">"
+            vim.keymap.set({ "", "i" }, key, function()
                 mouse_scrolled = true
                 return key
             end, { expr = true })
         end
 
-        local animate = require('mini.animate')
-        return vim.tbl_deep_extend('force', opts, {
+        local animate = require("mini.animate")
+        return vim.tbl_deep_extend("force", opts, {
             cursor = {
                 enable = false,
             },
 
             scroll = {
-                timing = animate.gen_timing.linear({ duration = 150, unit = 'total' }),
+                timing = animate.gen_timing.linear({ duration = 150, unit = "total" }),
                 subscroll = animate.gen_subscroll.equal({
                     predicate = function(total_scroll)
                         if mouse_scrolled then
@@ -33,4 +33,3 @@ return {
         })
     end,
 }
-

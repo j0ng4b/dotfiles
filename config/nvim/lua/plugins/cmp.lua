@@ -1,8 +1,8 @@
 local config = function()
-    local cmp = require('cmp')
+    local cmp = require("cmp")
 
-    local auto = require('core.utils.autocmd')
-    local icons = require('core.utils.icons')
+    local auto = require("core.utils.autocmd")
+    local icons = require("core.utils.icons")
 
     local has_words_before = function()
         unpack = unpack or table.unpack
@@ -18,15 +18,15 @@ local config = function()
         },
 
         mapping = {
-            ['<C-d>'] = cmp.mapping.scroll_docs(-5),
-            ['<C-f>'] = cmp.mapping.scroll_docs(5),
-            ['<C-Space>'] = cmp.mapping.complete(),
-            ['<CR>'] = cmp.mapping({
+            ["<C-d>"] = cmp.mapping.scroll_docs(-5),
+            ["<C-f>"] = cmp.mapping.scroll_docs(5),
+            ["<C-Space>"] = cmp.mapping.complete(),
+            ["<CR>"] = cmp.mapping({
                 i = function(fallback)
                     if cmp.visible() and cmp.get_selected_entry() then
                         cmp.confirm({
                             behavior = cmp.ConfirmBehavior.Replace,
-                            select = false
+                            select = false,
                         })
                     else
                         fallback()
@@ -34,7 +34,7 @@ local config = function()
                 end,
                 s = cmp.mapping.confirm({ select = true }),
             }),
-            ['<Tab>'] = cmp.mapping(function(fallback)
+            ["<Tab>"] = cmp.mapping(function(fallback)
                 if cmp.visible() then
                     cmp.select_next_item()
                 elseif vim.snippet.active({ direction = 1 }) then
@@ -44,8 +44,8 @@ local config = function()
                 else
                     fallback()
                 end
-            end, { 'i', 's' }),
-            ['<S-Tab>'] = cmp.mapping(function(fallback)
+            end, { "i", "s" }),
+            ["<S-Tab>"] = cmp.mapping(function(fallback)
                 if cmp.visible() then
                     cmp.select_prev_item()
                 elseif vim.snippet.active({ direction = -1 }) then
@@ -53,7 +53,7 @@ local config = function()
                 else
                     fallback()
                 end
-            end, { 'i', 's' }),
+            end, { "i", "s" }),
         },
 
         completion = {
@@ -69,33 +69,34 @@ local config = function()
 
         view = {
             entries = {
-                name = 'custom',
-                selection_order = 'near_cursor',
+                name = "custom",
+                selection_order = "near_cursor",
             },
         },
 
         formatting = {
-            fields = { 'kind', 'abbr', 'menu' },
+            fields = { "kind", "abbr", "menu" },
             format = function(entry, item)
-                local color_item = require('nvim-highlight-colors').format(entry, { kind = item.kind })
+                local color_item = require("nvim-highlight-colors").format(entry, { kind = item.kind })
 
-                item.menu = ' · ' .. ({
-                    nvim_lsp = '[Lsp]',
-                    nvim_lsp_signature_help = '[LspSig]',
-                    snippets = '[Snippet]',
-                    buffer = '[Buffer]',
-                    emmet_vim = '[Emmet]',
-                    path = '[Path]',
-                    codecompanion_tools = '[CC]',
-                    codecompanion_variables = '[CC]',
-                    codecompanion_slash_commands = '[CC]',
-                    ['vim-dadbod-completion'] = '[DB]',
-                })[entry.source.name]
+                item.menu = " · "
+                    .. ({
+                        nvim_lsp = "[Lsp]",
+                        nvim_lsp_signature_help = "[LspSig]",
+                        snippets = "[Snippet]",
+                        buffer = "[Buffer]",
+                        emmet_vim = "[Emmet]",
+                        path = "[Path]",
+                        codecompanion_tools = "[CC]",
+                        codecompanion_variables = "[CC]",
+                        codecompanion_slash_commands = "[CC]",
+                        ["vim-dadbod-completion"] = "[DB]",
+                    })[entry.source.name]
 
-                item.kind = ' ' .. (icons.kinds[item.kind] or '') .. ' '
+                item.kind = " " .. (icons.kinds[item.kind] or "") .. " "
 
                 if color_item.abbr_hl_group then
-                    item.kind_hl_group = 'cmp-item-' .. color_item.abbr_hl_group
+                    item.kind_hl_group = "cmp-item-" .. color_item.abbr_hl_group
 
                     local hl_attrs = {}
                     for k, v in pairs(vim.api.nvim_get_hl(0, { name = color_item.abbr_hl_group })) do
@@ -109,79 +110,76 @@ local config = function()
                 end
 
                 return item
-            end
+            end,
         },
 
         sources = cmp.config.sources({
-            { name = 'nvim_lsp' },
-            { name = 'nvim_lsp_signature_help' },
-            { name = 'snippets' },
-            { name = 'buffer' },
-            { name = 'emmet_vim' },
-            { name = 'path' },
+            { name = "nvim_lsp" },
+            { name = "nvim_lsp_signature_help" },
+            { name = "snippets" },
+            { name = "buffer" },
+            { name = "emmet_vim" },
+            { name = "path" },
         }),
     })
 
-    cmp.event:on('menu_opened', function()
+    cmp.event:on("menu_opened", function()
         vim.b.copilot_suggestion_hidden = true
     end)
 
-    cmp.event:on('menu_closed', function()
+    cmp.event:on("menu_closed", function()
         vim.b.copilot_suggestion_hidden = false
     end)
 
-
     local names = {
-        'CmpItemKindField',
-        'CmpItemKindProperty',
-        'CmpItemKindEvent',
+        "CmpItemKindField",
+        "CmpItemKindProperty",
+        "CmpItemKindEvent",
 
-        'CmpItemKindText',
-        'CmpItemKindEnum',
-        'CmpItemKindKeyword',
+        "CmpItemKindText",
+        "CmpItemKindEnum",
+        "CmpItemKindKeyword",
 
-        'CmpItemKindConstant',
-        'CmpItemKindConstructor',
-        'CmpItemKindReference',
+        "CmpItemKindConstant",
+        "CmpItemKindConstructor",
+        "CmpItemKindReference",
 
-        'CmpItemKindFunction',
-        'CmpItemKindStruct',
-        'CmpItemKindClass',
-        'CmpItemKindModule',
-        'CmpItemKindOperator',
+        "CmpItemKindFunction",
+        "CmpItemKindStruct",
+        "CmpItemKindClass",
+        "CmpItemKindModule",
+        "CmpItemKindOperator",
 
-        'CmpItemKindVariable',
-        'CmpItemKindFile',
+        "CmpItemKindVariable",
+        "CmpItemKindFile",
 
-        'CmpItemKindUnit',
-        'CmpItemKindSnippet',
-        'CmpItemKindFolder',
+        "CmpItemKindUnit",
+        "CmpItemKindSnippet",
+        "CmpItemKindFolder",
 
-        'CmpItemKindMethod',
-        'CmpItemKindValue',
-        'CmpItemKindEnumMember',
+        "CmpItemKindMethod",
+        "CmpItemKindValue",
+        "CmpItemKindEnumMember",
 
-        'CmpItemKindInterface',
-        'CmpItemKindColor',
-        'CmpItemKindTypeParameter',
+        "CmpItemKindInterface",
+        "CmpItemKindColor",
+        "CmpItemKindTypeParameter",
     }
 
     for _, name in ipairs(names) do
-        vim.cmd.highlight({ name, 'term=reverse', 'cterm=reverse', 'gui=reverse' })
+        vim.cmd.highlight({ name, "term=reverse", "cterm=reverse", "gui=reverse" })
     end
 end
 
-
 return {
-    'hrsh7th/nvim-cmp',
-    event = 'InsertEnter',
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
     config = config,
     dependencies = {
-        'hrsh7th/cmp-nvim-lsp',
-        'hrsh7th/cmp-nvim-lsp-signature-help',
-        'hrsh7th/cmp-buffer',
-        'hrsh7th/cmp-path',
-        'dcampos/cmp-emmet-vim',
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-nvim-lsp-signature-help",
+        "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-path",
+        "dcampos/cmp-emmet-vim",
     },
 }
-

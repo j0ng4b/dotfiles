@@ -1,12 +1,12 @@
 return {
-    'folke/which-key.nvim',
-    event = 'VeryLazy',
+    "folke/which-key.nvim",
+    event = "VeryLazy",
 
     opts = {
-        preset = 'helix',
+        preset = "helix",
 
         triggers = {
-            { '<auto>', mode = 'nixsotc' },
+            { "<auto>", mode = "nixsotc" },
         },
 
         filter = function(mapping)
@@ -17,7 +17,7 @@ return {
             height = { min = 4, max = 10 },
 
             title = true,
-            title_pos = 'center',
+            title_pos = "center",
 
             wo = {
                 winblend = 60,
@@ -25,11 +25,11 @@ return {
         },
 
         layout = {
-            align = 'center',
+            align = "center",
         },
 
         icons = {
-            group = '',
+            group = "",
             rules = false,
         },
 
@@ -44,12 +44,11 @@ return {
 
     keys = {
         {
-            '<leader>?',
+            "<leader>?",
             function()
-                require('which-key').show({ global = false })
+                require("which-key").show({ global = false })
             end,
-            desc = 'Buffer Local Keymaps (which-key)',
+            desc = "Buffer Local Keymaps (which-key)",
         },
     },
 }
-

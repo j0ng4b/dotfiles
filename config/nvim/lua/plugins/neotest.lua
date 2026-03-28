@@ -1,12 +1,12 @@
 local adapters = {}
 
 local config = function()
-    require('neotest').setup({
+    require("neotest").setup({
         adapters = {},
         summary = {
             mappings = {
-                expand = { '<space>', '<right>', '<left>', '<2-LeftMouse>' },
-                jumpto = '<CR>',
+                expand = { "<space>", "<right>", "<left>", "<2-LeftMouse>" },
+                jumpto = "<CR>",
             },
         },
     })
@@ -15,56 +15,55 @@ local config = function()
         signs = false,
         virtual_text = {
             format = function(diagnostic)
-                local message = diagnostic.message:gsub('\n', ' '):gsub('\t', ' '):gsub('%s+', ' '):gsub('^%s+', '')
+                local message = diagnostic.message:gsub("\n", " "):gsub("\t", " "):gsub("%s+", " "):gsub("^%s+", "")
                 return message
             end,
-        }
-    }, vim.api.nvim_create_namespace('neotest'))
+        },
+    }, vim.api.nvim_create_namespace("neotest"))
 end
 
 M = {
     {
-        'nvim-neotest/neotest',
+        "nvim-neotest/neotest",
         config = config,
         dependencies = {
-            'nvim-neotest/nvim-nio',
-            'nvim-lua/plenary.nvim',
-            'nvim-treesitter/nvim-treesitter',
+            "nvim-neotest/nvim-nio",
+            "nvim-lua/plenary.nvim",
+            "nvim-treesitter/nvim-treesitter",
         },
     },
 
     -- Adapters
     {
-        'nvim-neotest/neotest-python',
+        "nvim-neotest/neotest-python",
         lazy = true,
-        dependencies = 'nvim-neotest/neotest',
+        dependencies = "nvim-neotest/neotest",
 
         init = function()
-            require('plugins.neotest').add_adapter('python', 'neotest-python')
+            require("plugins.neotest").add_adapter("python", "neotest-python")
         end,
 
         config = function()
-            local adapters = require('neotest.config').adapters
-            table.insert(adapters, require('neotest-python'))
+            local adapters = require("neotest.config").adapters
+            table.insert(adapters, require("neotest-python"))
         end,
     },
 
     {
-        'fredrikaverpil/neotest-golang',
+        "fredrikaverpil/neotest-golang",
         lazy = true,
-        dependencies = 'nvim-neotest/neotest',
+        dependencies = "nvim-neotest/neotest",
 
         init = function()
-            require('plugins.neotest').add_adapter('go', 'neotest-golang')
+            require("plugins.neotest").add_adapter("go", "neotest-golang")
         end,
 
         config = function()
-            local adapters = require('neotest.config').adapters
-            table.insert(adapters, require('neotest-golang'))
+            local adapters = require("neotest.config").adapters
+            table.insert(adapters, require("neotest-golang"))
         end,
     },
 }
-
 
 M.add_adapter = function(filetype, adapter)
     adapters[filetype] = adapter

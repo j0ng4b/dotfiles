@@ -1,14 +1,13 @@
 return {
-    'mattn/emmet-vim',
+    "mattn/emmet-vim",
     ft = {
-        'html',
-        'htmldjango',
-        'htmlangular',
-        'css',
-        'scss',
-        'javascriptreact',
-        'typescriptreact',
-        'vue',
+        "html",
+        "htmldjango",
+        "htmlangular",
+        "css",
+        "scss",
+        "javascriptreact",
+        "typescriptreact",
+        "vue",
     },
 }
-

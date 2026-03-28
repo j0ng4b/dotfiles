@@ -1,20 +1,19 @@
 return {
-    'navarasu/onedark.nvim',
-    version = '*',
+    "navarasu/onedark.nvim",
+    version = "*",
     priority = 1000,
     opts = {
-        style = 'dark',
+        style = "dark",
         transparent = false,
         term_colors = true,
         cmp_itemkind_reverse = true,
 
-
         code_style = {
-            comments = 'italic',
-            keywords = 'none',
-            functions = 'bold',
-            strings = 'none',
-            variables = 'none'
+            comments = "italic",
+            keywords = "none",
+            functions = "bold",
+            strings = "none",
+            variables = "none",
         },
 
         diagnostics = {
@@ -22,6 +21,5 @@ return {
             undercurl = true,
             background = true,
         },
-    }
+    },
 }
-
