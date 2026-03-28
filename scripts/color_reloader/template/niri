@@ -1,0 +1,20 @@
+layout {
+    // borders (only focused windows)
+    focus-ring {
+        active-color "#{base0C}"
+        inactive-color "#{base03}"
+        urgent-color "#{base08}"
+    }
+
+    // window insert position hint
+    insert-hint {
+        gradient from="#{base05}" to="#{base01}" angle=45 relative-to="workspace-view"
+    }
+
+
+    shadow {
+        color "#{base00}"
+    }
+}
+
+// vim: ft=kdl
