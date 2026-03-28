@@ -103,12 +103,6 @@ Singleton {
             Paths.url2Path(root.configPath + '/colors.json'),
             Paths.url2Path(root.cachePath)
         ]
-
-        stdout: StdioCollector {
-            onStreamFinished: {
-                console.log(this.text.trim());
-            }
-        }
     }
 
     Process {

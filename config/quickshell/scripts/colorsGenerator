@@ -23,7 +23,11 @@ fi
 
 # Generate and cache the color scheme if not already cached
 if [ ! -f "$CACHED_COLOR_SCHEME" ]; then
-    matugen image --json hex "$INPUT_IMG" | tee $CACHED_COLOR_SCHEME > $OUTPUT_PATH
+    matugen image \
+        --source-color-index 0 \
+        --json hex \
+        --include-image-in-json false \
+        "$INPUT_IMG" | tee $CACHED_COLOR_SCHEME > $OUTPUT_PATH
 else
     cat $CACHED_COLOR_SCHEME > $OUTPUT_PATH
 fi
