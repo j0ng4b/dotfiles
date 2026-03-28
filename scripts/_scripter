@@ -1,81 +1,58 @@
 #!/usr/bin/env sh
 
 # Scripts directory root
-root=$(cd $(dirname $0); pwd)
+root=$(cd "$(dirname "$0")" && pwd)
 
-# Source Commons & Keys
-. $root/_common
-
+if [ ! -f "$root/_common" ]; then
+    printf '\033[31m[Error]\033[0m _common not found at %s\n' "$root/_common" >&2
+    exit 1
+fi
+. "$root/_common"
 
 ## Cache
-cache_dir=${XDG_CACHE_HOME:-${HOME}/.cache}/scripter
-if [ ! -d "$cache_dir" ]; then
-    mkdir -p "$cache_dir"
-fi
-
-
-_get_dotfiles_root() {
-    test_dir=$(realpath $root)
-
-    while [ "$test_dir" != "$HOME" ]; do
-        if [ -x "$test_dir/dotfile" ]; then
-            break
-        fi
-
-        test_dir=$(realpath $(dirname $test_dir))
-    done
-
-    if [ "$test_dir" != "$HOME" ]; then
-        echo "$test_dir"
-        return 0
-    else
-        echo ""
-        return 1
-    fi
-}
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/scripter"
+mkdir -p "$cache_dir"
 
 _run_script() {
-    script=$1
-
-    # Get script arguments. As scripts are run as sub-shell it will inherits
-    # all arguments passed to _runner so a simple shift of argument list will
-    # pass the correct arguments to script that will be run.
+    script="$1"
     shift
 
-    # Try find scripts directory
-    if [ -e "$root/$script" ]; then
-        if [ -x "$root/$script" ]; then
-            (
-                export SCRIPT_CACHE_DIR=$cache_dir/$script
-
-                # Common script
-                . $root/_common
-
-                if [ -e $root/_keys ]; then
-                    . $root/_keys
-                fi
-
-                # Run script
-                . $root/$script
-            )
-            # WARNING: Do not remove!
-            #
-            # Never should be echoed after script execution. Immediately exit
-            # the runner script!
-            #
-            # If some script call another script (e.g. weather calls location)
-            # through this script (_scripter) the output of this script (_scripter)
-            # will be passed to caller script alongside with callee script
-            # output.
-            exit $?
-        else
-            error "Script hasn't executable permission!"
-        fi
-    else
-        error "Can't find script $script to run!"
+    if [ ! -e "$root/$script" ]; then
+        error "Can't find script '$script' to run!"
         exit 1
     fi
+
+    if [ ! -x "$root/$script" ]; then
+        error "Script '$script' hasn't executable permission!"
+        exit 1
+    fi
+
+    script_cache="$cache_dir/$script"
+    mkdir -p "$script_cache"
+
+    (
+        export SCRIPT_CACHE_DIR="$script_cache"
+
+        . "$root/_common"
+
+        if [ -f "$root/_keys" ]; then
+            . "$root/_keys"
+        fi
+
+        . "$root/$script"
+    )
+
+    # WARNING: Do not remove!
+    #
+    # Never should be echoed after script execution. Immediately exit the runner
+    # script!
+    #
+    # If some script call another script (e.g. weather calls location) through
+    # this script (_scripter) the output of this script (_scripter) will be
+    # passed to caller script alongside with callee script output.
+    exit $?
 }
 
 _run_script "$@"
 
+# vim: ft=sh

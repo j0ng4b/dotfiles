@@ -1,11 +1,23 @@
 #!/usr/bin/env sh
 
 # Log functions
-error() { echo "\033[31m[Error]\033[0m $1"; }
-warn() { echo "\033[33m[Warning]\033[0m $1"; }
-info() { echo "\033[32m[Info]\033[0m $1"; }
+error() { printf '\033[31m[Error]\033[0m %s\n'   "$*" >&2; }
+warn()  { printf '\033[33m[Warning]\033[0m %s\n' "$*" >&2; }
+info()  { printf '\033[32m[Info]\033[0m %s\n'    "$*" >&2; }
 
 # Helper functions
+get_dotfiles_root() {
+    test_dir=$(cd "$(dirname "$1")" && pwd)
+
+    while [ "$test_dir" != "/" ]; do
+        [ -x "$test_dir/dotfile" ] && echo "$test_dir" && return 0
+        test_dir=$(dirname "$test_dir")
+    done
+
+    error "Can't find dotfiles root from: $1"
+    return 1
+}
+
 can_call_api() {
     timefile="$1"
     now=$(date +%s)
@@ -27,23 +39,9 @@ can_call_api() {
 
 str_contains() {
     case $1 in
-        *"$2"*)
-            return 0
-            ;;
-
-        *)
-            return 1
-            ;;
+        *"$2"*) return 0 ;;
+        *) return 1 ;;
     esac
 }
 
-
-# Signals
-SIGHUP=1
-SIGINT=2
-SIGQUIT=3
-SIGABRT=4
-SIGKILL=9
-SIGTERM=15
-
-# vim ft=bash
+# vim: ft=sh
