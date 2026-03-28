@@ -1,110 +1,118 @@
 #!/usr/bin/env sh
 
 # Create theme file if not exists
-theme_file=${XDG_CONFIG_HOME:-$HOME/.config}/sysconf/theme
-if [ ! -e "$theme_file" ]; then
-    echo 'catppuccin' > $theme_file
-fi
+theme_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sysconf"
+theme_filename="theme"
+theme_filepath="$theme_dir/$theme_filename"
+[ ! -e "$theme_filepath" ] && echo 'catppuccin' > $theme_filepath
 
-# TODO: send a notification when the theme is changed
+# Enabled re-loaders
+registry_dir="$SCRIPT_CACHE_DIR"
+registry_filename="reloaders"
+registry_filepath="$registry_dir/$registry_filename"
+
+pending_filename="reloaders_pending"
+pending_filepath="$registry_dir/$pending_filename"
+
 
 __generate_colors_file() {
-    template_name=$1
-    output_path=$2
-    theme_name=$(cat $theme_file)
+    template_name="$1"
+    output_path="$2"
+    theme_name="$(cat "$theme_filepath")"
 
     if [ ! -e "$root/color_reloader/template/$template_name" ]; then
-        warn "no template found for $template_name"
-        return
+        warn "color-reloader: no template found for '$template_name'"
+        return 1
     fi
 
     if [ ! -e "$root/color_reloader/color/$theme_name" ]; then
-        error "theme file not found: $theme_name"
-        return
+        error "color-reloader: theme not found: '$theme_name'"
+        return 1
     fi
 
-    # Load theme colors
     . "$root/color_reloader/color/$theme_name"
-
-    # Create
-    mkdir -p $(dirname $output_path)
+    mkdir -p "$(dirname "$output_path")"
 
     # Generate color file
-    cp --force "$root/color_reloader/template/$template_name" $output_path
-    for color_name in base00 base01 base02 base03 base04 base05 base06 base07 base08 base09 base0A base0B base0C base0D base0E base0F; do
-        eval "sed -i -e "s/{$color_name}/\${$color_name}/g" "$output_path""
+    cp --force "$root/color_reloader/template/$template_name" "$output_path"
+    for color in base00 base01 base02 base03 base04 base05 base06 base07 \
+                 base08 base09 base0A base0B base0C base0D base0E base0F; do
+        eval "sed -i \"s/{$color}/\${$color}/g\" \"$output_path\""
     done
-
-
-    # skip reload?
-    [ -n "$generate_only" ] && exit 0
 }
 
+# Reload colors for all foot terminals
+_foot_broadcast() {
+    seqs_file="$1"
+
+    for foot_pid in $(pgrep -x foot 2>/dev/null); do
+        for child_pid in $(pgrep -P "$foot_pid" 2>/dev/null); do
+            for fd_path in /proc/"$child_pid"/fd/*; do
+                pts=$(readlink "$fd_path" 2>/dev/null)
+                case "$pts" in
+                    /dev/pts/[0-9]*)
+                        cat "$seqs_file" > "$pts" 2>/dev/null
+                        break
+                        ;;
+                esac
+            done
+        done
+    done
+}
 
 _foot_reloader() {
-    config_dir="$XDG_CONFIG_HOME/foot"
-    colors_output_path="$config_dir/colors.ini"
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/foot/colors.ini"
+    __generate_colors_file foot "$colors_output_path" || return
 
-    __generate_colors_file foot $colors_output_path
+    seqs_file="$SCRIPT_CACHE_DIR/foot_seqs"
 
-    # Update normal colors
     sed -nr 's/.*(regular|bright)([0-9])\s*=\s*([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$colors_output_path" |
-        while read type num color; do
-            [ "$type" = "bright" ] && num=$(($num + 8))
-            printf "\033]4;$num;#$color\a"
-        done
+        while read -r type num color; do
+            [ "$type" = "bright" ] && num=$(( num + 8 ))
+            printf '\033]4;%d;#%s\a' "$num" "$color"
+        done >> "$seqs_file"
 
-    # Update foreground color
-    sed -nr 's/.*foreground\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$colors_output_path" |
-        while read color; do
-            printf "\033]10;#$color\a"
-        done
+    fg=$(sed -nr 's/.*foreground\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$colors_output_path")
+    [ -n "$fg" ] && printf '\033]10;#%s\a' "$fg" >> "$seqs_file"
 
-    # Update background color
-    sed -nr 's/.*background\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$colors_output_path" |
-        while read color; do
-            printf "\033]11;#$color\a"
-        done
+    bg=$(sed -nr 's/.*background\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$colors_output_path")
+    [ -n "$bg" ] && printf '\033]11;#%s\a' "$bg" >> "$seqs_file"
+
+    _foot_broadcast "$seqs_file"
 }
 
 _cava_reloader() {
-    config_dir="$XDG_CONFIG_HOME/cava"
-    colors_output_path="$config_dir/config"
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/cava/config"
+    __generate_colors_file cava "$colors_output_path" || return
 
-    __generate_colors_file cava $colors_output_path
     pkill -USR1 cava
 }
 
 _btop_reloader() {
-    config_dir="$XDG_CONFIG_HOME/btop/themes"
-    colors_output_path="$config_dir/generated.theme"
-
-    __generate_colors_file btop $colors_output_path
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/btop/themes/generated.theme"
+    __generate_colors_file btop "$colors_output_path" || return
     pkill -USR2 btop
 }
 
 _bat_reloader() {
-    config_dir="$XDG_CONFIG_HOME/bat/themes"
-    colors_output_path="$config_dir/colors.tmTheme"
-
-    __generate_colors_file bat $colors_output_path
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/bat/themes/colors.tmTheme"
+    __generate_colors_file bat "$colors_output_path" || return
     bat cache --build >/dev/null
 }
 
 _git_reloader() {
-    config_dir="$XDG_CONFIG_HOME/git/"
-    colors_output_path="$config_dir/colors.gitconfig"
-
-    __generate_colors_file git $colors_output_path
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/git/colors.gitconfig"
+    __generate_colors_file git "$colors_output_path" || return
 
     # Also require bat colors
     _bat_reloader
 }
 
 _nvim_reloader() {
-    theme_name=$(cat $theme_file)
+    theme_name=$(cat "$theme_filepath")
 
-    for sock in "$XDG_RUNTIME_DIR"/nvim.*.0; do
+    for sock in "${XDG_RUNTIME_DIR}"/nvim.*.0; do
+        [ -e "$sock" ] || continue
         nvim --clean --headless --server "$sock" \
             --remote-send \
                 "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' |\
@@ -115,201 +123,171 @@ _nvim_reloader() {
 }
 
 _tmux_reloader() {
-    config_dir="$XDG_CONFIG_HOME/tmux"
-    colors_output_path="$config_dir/colors.tmux"
-
-    __generate_colors_file zsh $colors_output_path
-    tmux run-shell "$config_dir/style.tmux"
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/colors.tmux"
+    __generate_colors_file zsh "$colors_output_path" || return
+    tmux run-shell "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/style.tmux"
 }
 
 _starship_reloader() {
-    config_dir="$XDG_CONFIG_HOME/starship"
-    colors_output_path="$config_dir/config.toml"
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/starship/config.toml"
+    __generate_colors_file starship "$colors_output_path" || return
 
-    __generate_colors_file starship $colors_output_path
-    sleep 1 ; pkill -USR1 zsh
+    pkill -USR1 zsh # reload config
+    pkill -WINCH zsh # force redraw
 }
 
 _wm_reloader() {
-    config_dir="$XDG_CONFIG_HOME/sway"
-    colors_output_path="$config_dir/colors"
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/niri/colors.kdl"
+    __generate_colors_file niri $colors_output_path
+    # automatic reload for niri - no action needed
+}
 
-    __generate_colors_file sway $colors_output_path
+# Utility functions
+__available_reloaders() {
+    grep -o "^_[^_].*_reloader" "$root/$script" | sed 's/^_//;s/_reloader$//'
+}
 
-    swaymsg reload
+__validate_reloader() {
+    if str_contains "$(__available_reloaders)" "$1"; then
+        return 0
+    fi
 
-    # Update title colors
-    focused=$(swaymsg -r -t get_seats | jq '.[0].focus')
-    swaymsg -q "[con_id=${focused}]" title_format "<span rise='-2000' font_desc='Poppins 14'>\$dot_0\$dot_1\$dot_2</span>" &>/dev/null
+    error "color-reloader: unknown reloader '$1'"
+    return 1
+}
+
+_run_reloader() {
+    name="$1"
+    info "color-reloader: reloading $name"
+    "_${name}_reloader"
+}
+
+_run_all() {
+    [ ! -f "$registry_filepath" ] && return
+    while IFS= read -r name; do
+        [ -z "$name" ] && continue
+        _run_reloader "$name" &
+    done < "$registry_filepath"
+    wait
 }
 
 
-main() {
-    # List available re-loader
-    reloaders_available="$(grep -o "^_.*_reloader" $root/$script)"
-
-    # List already running re-loaders
-    pid_files_list="$(ls /tmp/color_reloader.* 2>/dev/null)"
-    if [ -n "$pid_files_list" ]; then
-        reloaders_already_running=""
-        for pid_file in $pid_files_list; do
-            file_reloaders="$(sed -n '2p' $pid_file)"
-            if ! str_contains "$reloaders_already_running" "$file_reloaders"; then
-                file_reloaders="$pid_file%$file_reloaders"
-                reloaders_already_running="$reloaders_already_running $file_reloaders"
-            fi
-        done
-    fi
-
-    # Check which re-loader should run
-    reloader="_$1_reloader"
-
-    # Check if re-loader is already running
-    reloader_running=""
-    for cur_reloader_running in $reloaders_already_running; do
-        # Foot re-loader should start always
-        [ "$1" = "foot" ] && continue
-
-        if str_contains "$cur_reloader_running" "$reloader"; then
-            reloader_running=$(echo "$cur_reloader_running" | cut -d'%' -f1)
-            break
-        fi
+# Script commands
+_cmd_run() {
+    # Register initial re-loaders set
+    for name in "$@"; do
+        __validate_reloader "$name" || continue
+        grep -qxF "$name" "$registry_filepath" 2>/dev/null \
+            || echo "$name" >> "$registry_filepath"
     done
 
-    if [ -n "$reloader_running" ]; then
-        pids=$(sed -n '3p' $reloader_running | cut -d' ' -f2-)
-        pid1=$(echo $pids | cut -d' ' -f1)
-        pid2=$(echo $pids | cut -d' ' -f2)
+    _run_all
+    [ -n "$generate_only" ] && return 0
 
-        # When some of pids are not running also kill other
-        kill_pid1=$pid1
-        kill_pid2=$pid2
-
-
-        if kill -0 $pid1 2>/dev/null; then
-            # When pid 1 is running do not also kill pid 2
-            kill_pid2=''
-        fi
-
-        if kill -0 $pid2 2>/dev/null; then
-            # When pid 2 is running do not also kill pid 1
-            kill_pid1=''
-        fi
-
-        # Kill pids
-        kill -9 $kill_pid1 $kill_pid2 2>/dev/null
-
-        if [ -z "$kill_pid1" -a -z "$kill_pid2" ]; then
-            warn "Re-loader \`$1\` already running! Skipped"
-
-            return 1
-        else
-            # Remove old file
-            rm $reloader_running
-        fi
-    fi
-
-
-    # Check if re-loader exists to be run
-    if ! str_contains "$reloaders_available" "$reloader"; then
-        reloader=""
-        warn "Re-loader for \`$1\` not found! Skipped"
-    fi
-
-    # If there're no re-loader to run then exit
-    [ -z "$reloader" ] && exit 0
-
-    # Generate the colors and exit
-    if [ -n "$generate_only" ]; then
-        eval "$reloader"
-
-        # Implicit exit 0
-        # __generate_colors_file never returns when only generating colors
-    fi
-
-
-    pid_file=$(mktemp /tmp/color_reloader.XXXXXXX) || exit 1
+    info "color-reloader: running daemon"
     while true; do
-        eval "$reloader"
+        changed=$(inotifywait --quiet \
+            --event close_write \
+            --event moved_to \
+            --format '%f' \
+            "$theme_dir" "$registry_dir" 2>/dev/null)
 
-        inotifywait --quiet --event modify "$theme_file" >/dev/null &
+        if [ "$changed" = "$theme_filename" ]; then
+            _run_all
 
-        # Copy inotifywait pid to stop if needed
-        content="$(cat $pid_file)"
-        if str_contains "$content" "$reloader"; then
-            sed -i "1s/.*/$!/" $pid_file
-        else
-            [ -n "$content" ] && content="\n$content"
-            echo "$!\n$reloader$content" > $pid_file
-        fi
+        elif [ "$changed" = "$registry_filename" ] || [ "$changed" = "$pending_filename" ]; then
+            [ ! -f "$pending_filepath" ] && continue
+            pending=$(cat "$pending_filepath")
+            [ -z "$pending" ] && continue
 
-        # Wait until modify event finish or be stopped
-        while kill -0 $! 2>/dev/null; do
-            sleep 1
-        done
-    done &
-    loop1=$!
+            : > "$pending_filepath"
 
-    # Watch changes on theme file (symbolic link)
-    while true; do
-        inotifywait --quiet --event delete_self "$theme_file" | {
-            while true; do
-                sleep 0.5
-
-                # Sometimes when the reloader deletes their file this loop keeps
-                # running, break if the file does not exits.
-                if [ ! -e $pid_file ]; then
-                    break
-                else
-                    pid="$(cat $pid_file | head -n1)"
-                fi
-
-                if ! str_contains "$pid" "loops: "; then
-                    # Kill old modify event watcher
-                    kill -9 $pid 2>/dev/null
-
-                    break
-                fi
+            printf '%s\n' "$pending" | while IFS= read -r name; do
+                [ -z "$name" ] && continue
+                _run_reloader "$name" &
             done
-        }
-    done &
-    loop2=$!
-
-    echo "loops: $loop1 $loop2" >> $pid_file
-
-
-    # To dynamic change foot colors its need to setup this script as shell of
-    # it, below case check if foot re-loader is need the do the job.
-    if str_contains "$reloader" "_foot_reloader"; then
-        exec "$SHELL"
-    fi
+            wait
+        fi
+    done
 }
 
+_cmd_register() {
+    for name in "$@"; do
+        __validate_reloader "$name" || continue
+        if grep -qxF "$name" "$registry_filepath" 2>/dev/null; then
+            warn "color-reloader: '$name' already registered"
+        else
+            echo "$name" >> "$registry_filepath"
+            echo "$name" >> "$pending_filepath"
+            info "color-reloader: '$name' registered"
+        fi
+    done
+}
 
-if [ $# -eq 0 ]; then
-    exit 1
-elif [ $# -eq 1 ]; then
-    main "$1"
-    exit $?
-fi
+_cmd_unregister() {
+    for name in "$@"; do
+        sed -i "/^${name}$/d" "$registry_filepath" 2>/dev/null
+        info "color-reloader: '$name' unregistered"
+    done
+}
+
+_cmd_reload() {
+    _run_all
+}
+
+# Parse args
+generate_only=""
+cmd=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --generate-only|-g)
+        --generate-only | -g)
             generate_only=true
             ;;
-
+        run | register | unregister | reload | list | help)
+            cmd="$1"
+            shift
+            break
+            ;;
         -*)
-            error "Invalid option '$1'!"
+            error "color-reloader: invalid option '$1'!"
             exit 1
             ;;
-
         *)
-            # This will ensure that the process get the correct name
-            eval "generate_only="$generate_only" $0 $script $1" &
+            error "color-reloader: unknown command '$1'! Use: run, register, unregister"
+            exit 1
             ;;
     esac
-
     shift
 done
 
+case "$cmd" in
+    run)        _cmd_run "$@" ;;
+    register)   _cmd_register "$@" ;;
+    unregister) _cmd_unregister "$@" ;;
+    reload)     _cmd_reload ;;
+    list)
+        echo "Available reloaders:"
+        __available_reloaders | sed 's/^/- /'
+        ;;
+    help)
+        echo "Usage: $0 color-reloader [options] <command> [reloaders...]"
+        echo ""
+        echo "Commands:"
+        echo "  run         Run the color reloader daemon with specified reloaders"
+        echo "  register    Register reloaders to be automatically reloaded on theme change"
+        echo "  unregister  Unregister reloaders"
+        echo "  reload      Manually trigger reload for all registered reloaders"
+        echo "  list        List available reloaders"
+        echo "  help        Show this help message"
+        echo ""
+        echo "Options:"
+        echo "  -g, --generate-only  Only generate color files without running the daemon"
+        ;;
+    *)
+        error "color-reloader: no command given! Use: run, register, unregister"
+        exit 1
+        ;;
+esac
+
+# vim: ft=sh

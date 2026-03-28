@@ -2,7 +2,7 @@
 ###  ║  │ ││  │ │├┬┘└─┐
 ###  ╚═╝└─┘┴─┘└─┘┴└─└─┘
 
-[colors]
+[colors-dark]
 foreground={base05}
 background={base00}
 

@@ -12,28 +12,28 @@ run() {
     bin=$(basename "$cmd")
 
     if ! command -v "$cmd" >/dev/null 2>&1; then
-        warn "run: command not found: '$cmd'"
+        warn "autostart: command not found: '$cmd'"
         return 1
     fi
 
     if [ -n "$match" ]; then
         if pgrep -f "$match" >/dev/null 2>&1; then
-            warn "run: '$match' already running, skipping"
+            warn "autostart: '$match' already running, skipping"
             return 0
         fi
     else
         if pgrep -x "$bin" >/dev/null 2>&1; then
-            warn "run: '$bin' already running, skipping"
+            warn "autostart: '$bin' already running, skipping"
             return 0
         fi
     fi
 
-    info "run: starting '$bin $*'"
+    info "autostart: starting '$bin $*'"
     "$cmd" "$@" &
 }
 
 ## Start dbus user session
-run --match "dbus-daemon --session" dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS
+run --match "dbus-daemon --session" dbus-daemon --session --address="$DBUS_SESSION_BUS_ADDRESS"
 
 
 ## Start pipewire
@@ -49,17 +49,28 @@ run dunst
 
 ## Start foot server and always restart if closed
 (
+    if pgrep -f "foot --server" >/dev/null 2>&1; then
+        warn "autostart: 'foot server' already running, skipping"
+        exit 0
+    fi
+
     stop_restart=0
     trap 'stop_restart=1' USR1
 
+    info "autostart: starting 'foot server'"
     while true; do
-        if ! pgrep -f "foot --server" >/dev/null 2>&1; then
-            if [ -n "$WAYLAND_DISPLAY" ]; then
-                foot --server --override shell="$root/_scripter color-reloader foot" &
-                wait $!
+        if [ -n "$WAYLAND_DISPLAY" ]; then
+            foot --server &
+            wait $!
+            exit_code=$?
 
-                [ "$stop_restart" -eq 1 ] && break
-            fi
+            [ "$stop_restart" -eq 1 ] \
+                && info "autostart: 'foot server' restart stopped" \
+                && break
+
+            info "autostart: 'foot server' exited (code $exit_code), restarting..."
+        else
+            warn "autostart: 'WAYLAND_DISPLAY' not set, waiting..."
         fi
 
         sleep 2
