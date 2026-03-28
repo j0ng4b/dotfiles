@@ -243,6 +243,10 @@ _cmd_list() {
 
     info "Available reloaders:"
     for reloader in $(_available_reloaders); do
+        [ "$reloader" != "available" ] || break
+        [ "$reloader" != "validate" ] || break
+        [ "$reloader" != "run" ] || break
+
         printf '  · %-'"${largest_name}"'s' "$reloader"
         if grep -qxF "$reloader" "$registry_filepath" 2>/dev/null; then
             printf '    \033[32mrunning\033[0m'
