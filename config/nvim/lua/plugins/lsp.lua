@@ -1,8 +1,8 @@
 local server_configs = {
     omnisharp = function()
-        local omnisharp_root = vim.fn.stdpath('data') .. '/mason/packages/omnisharp/omnisharp'
+        local omnisharp_root = vim.fn.stdpath("data") .. "/mason/packages/omnisharp/omnisharp"
         return {
-            cmd = { omnisharp_root }
+            cmd = { omnisharp_root },
         }
     end,
 
@@ -19,8 +19,8 @@ local server_configs = {
                         compositeLiteralTypes = true,
                         compositeLiteralFields = true,
                     },
-                }
-            }
+                },
+            },
         }
     end,
 
@@ -29,52 +29,51 @@ local server_configs = {
             settings = {
                 Lua = {
                     diagnostics = {
-                        globals = { 'vim', 'love' }
+                        globals = { "vim", "love" },
                     },
                     hint = {
                         enable = true,
                         setType = true,
-                        arrayIndex = 'Disable',
+                        arrayIndex = "Disable",
                     },
                     semantic = {
                         enable = true,
                         keyword = true,
                     },
                     workspace = {
-                        useThirdParty = { os.getenv('HOME') .. '/.local/share/LuaAddons' },
-                        checkThirdParty = 'Apply',
+                        useThirdParty = { os.getenv("HOME") .. "/.local/share/LuaAddons" },
+                        checkThirdParty = "Apply",
                     },
                     telemetry = {
                         enable = false,
                     },
-                }
-            }
+                },
+            },
         }
     end,
 
     ts_ls = function()
         local vue_typescript_plugin = vim.fn.expand(
-            vim.fn.stdpath('data')
-                .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
+            vim.fn.stdpath("data") .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
         )
 
         return {
             init_options = {
                 plugins = {
                     {
-                        name = '@vue/typescript-plugin',
+                        name = "@vue/typescript-plugin",
                         location = vue_typescript_plugin,
-                        languages = { 'vue' },
-                    }
+                        languages = { "vue" },
+                    },
                 },
             },
 
             filetypes = {
-                'javascript',
-                'typescript',
-                'javascriptreact',
-                'typescriptreact',
-                'vue',
+                "javascript",
+                "typescript",
+                "javascriptreact",
+                "typescriptreact",
+                "vue",
             },
 
             settings = {
@@ -84,14 +83,14 @@ local server_configs = {
                     },
 
                     inlayHints = {
-                        includeInlayParameterNameHints = 'all',
-                        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-                        includeInlayFunctionParameterTypeHints = true,
-                        includeInlayVariableTypeHints = true,
-                        includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-                        includeInlayPropertyDeclarationTypeHints = true,
-                        includeInlayFunctionLikeReturnTypeHints = true,
-                        includeInlayEnumMemberValueHints = true,
+                        -- includeInlayParameterNameHints = 'all',
+                        -- includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+                        -- includeInlayFunctionParameterTypeHints = true,
+                        -- includeInlayVariableTypeHints = true,
+                        -- includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+                        -- includeInlayPropertyDeclarationTypeHints = true,
+                        -- includeInlayFunctionLikeReturnTypeHints = true,
+                        -- includeInlayEnumMemberValueHints = true,
                     },
                 },
             },
@@ -101,84 +100,81 @@ local server_configs = {
     jinja_ls = function()
         return {
             filetypes = {
-                'html',
-                'htmldjango',
-                'jinja',
+                "html",
+                "htmldjango",
+                "jinja",
             },
         }
     end,
 
     qmlls = function()
         return {
-            filetypes = { 'qml', 'qmljs' },
-            cmd = { '/usr/lib/qt6/bin/qmlls' }
+            filetypes = { "qml", "qmljs" },
+            cmd = { "/usr/lib/qt6/bin/qmlls" },
         }
     end,
 }
-
 
 local setup_keymaps = function(bufnr, map)
     local opts = { buffer = bufnr }
 
     -- Hover documentation
-    map('n', 'K', vim.lsp.buf.hover, opts)
+    map("n", "K", vim.lsp.buf.hover, opts)
 
     -- Navigation (Gotos)
-    map('n', 'gD', vim.lsp.buf.declaration, opts)
+    map("n", "gD", vim.lsp.buf.declaration, opts)
 
-    map('n', 'gd', function()
-        require('telescope.builtin').lsp_definitions {
+    map("n", "gd", function()
+        require("telescope.builtin").lsp_definitions({
             trim_text = true,
             reuse_win = true,
-        }
+        })
     end, opts)
 
-    map('n', 'gi', function()
-        require('telescope.builtin').lsp_implementations {
+    map("n", "gi", function()
+        require("telescope.builtin").lsp_implementations({
             trim_text = true,
             reuse_win = true,
-        }
+        })
     end, opts)
 
-    map('n', 'gt', function()
-        require('telescope.builtin').lsp_type_definitions {
+    map("n", "gt", function()
+        require("telescope.builtin").lsp_type_definitions({
             trim_text = true,
             reuse_win = true,
-        }
+        })
     end, opts)
 
-    map('n', 'gr', function()
-        require('telescope.builtin').lsp_references {
+    map("n", "gr", function()
+        require("telescope.builtin").lsp_references({
             trim_text = true,
             reuse_win = true,
-        }
+        })
     end, opts)
 
     -- Rename
-    map('n', 'gR', vim.lsp.buf.rename, opts)
-    map({ 'n', 'i' }, '<F2>', vim.lsp.buf.rename, opts)
+    map("n", "gR", vim.lsp.buf.rename, opts)
+    map({ "n", "i" }, "<F2>", vim.lsp.buf.rename, opts)
 
     -- Signature help
-    map('n', 'gk', vim.lsp.buf.signature_help, opts)
-    map('i', '<C-k>', vim.lsp.buf.signature_help, opts)
+    map("n", "gk", vim.lsp.buf.signature_help, opts)
+    map("i", "<C-k>", vim.lsp.buf.signature_help, opts)
 
     -- Code actions
-    map('n', 'gf', vim.lsp.buf.code_action, opts)
-    map({ 'n', 'i' }, '<F3>', vim.lsp.buf.code_action, opts)
+    map("n", "gf", vim.lsp.buf.code_action, opts)
+    map({ "n", "i" }, "<F3>", vim.lsp.buf.code_action, opts)
 end
 
-
 local setup_formatting = function(bufnr, map)
-    map('n', 'gF', function()
+    map("n", "gF", function()
         vim.lsp.buf.format({ async = true })
     end, { buffer = bufnr })
 end
 
-
 local setup_inlay_hints_toggle = function(bufnr)
-    local augroup = vim.api.nvim_create_augroup('LspInlayHints_' .. bufnr, { clear = true })
+    local augroup = vim.api.nvim_create_augroup("LspInlayHints_" .. bufnr, { clear = true })
 
-    vim.api.nvim_create_autocmd('InsertEnter', {
+    vim.api.nvim_create_autocmd("InsertEnter", {
         group = augroup,
         buffer = bufnr,
         callback = function()
@@ -188,7 +184,7 @@ local setup_inlay_hints_toggle = function(bufnr)
         end,
     })
 
-    vim.api.nvim_create_autocmd('InsertLeave', {
+    vim.api.nvim_create_autocmd("InsertLeave", {
         group = augroup,
         buffer = bufnr,
         callback = function()
@@ -197,26 +193,24 @@ local setup_inlay_hints_toggle = function(bufnr)
     })
 end
 
-
 local setup_document_highlight = function(bufnr)
-    local augroup = vim.api.nvim_create_augroup('LspDocumentHighlight_' .. bufnr, { clear = true })
+    local augroup = vim.api.nvim_create_augroup("LspDocumentHighlight_" .. bufnr, { clear = true })
 
-    vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+    vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
         group = augroup,
         buffer = bufnr,
         callback = vim.lsp.buf.document_highlight,
     })
 
-    vim.api.nvim_create_autocmd('CursorMoved', {
+    vim.api.nvim_create_autocmd("CursorMoved", {
         group = augroup,
         buffer = bufnr,
         callback = vim.lsp.buf.clear_references,
     })
 end
 
-
 local get_capabilities = function()
-    local capabilities = require('cmp_nvim_lsp').default_capabilities()
+    local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
     -- Enable color provider
     capabilities.textDocument.colorProvider = {
@@ -237,13 +231,12 @@ local get_capabilities = function()
     return capabilities
 end
 
-
 local setup_diagnostics = function(auto, icons)
     vim.diagnostic.config({
         virtual_text = false,
         float = {
-            source = 'always',
-            border = 'rounded',
+            source = "always",
+            border = "rounded",
         },
         signs = {
             text = {
@@ -258,17 +251,16 @@ local setup_diagnostics = function(auto, icons)
         severity_sort = true,
     })
 
-    auto.cmd('CursorHold', '', 'lua vim.diagnostic.open_float()', 'Lsp')
+    auto.cmd("CursorHold", "", "lua vim.diagnostic.open_float()", "Lsp")
 end
-
 
 local setup_handlers = function()
     local handlers = {
-        ['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-            border = 'rounded',
+        ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+            border = "rounded",
         }),
-        ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-            border = 'rounded',
+        ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+            border = "rounded",
         }),
     }
 
@@ -276,7 +268,6 @@ local setup_handlers = function()
         vim.lsp.handlers[handler] = handler_config
     end
 end
-
 
 local create_attach = function(map, navic)
     return function(client, bufnr)
@@ -306,14 +297,13 @@ local create_attach = function(map, navic)
     end
 end
 
-
 local config = function()
-    local auto = require('core.utils.autocmd')
-    local map = require('core.utils.map')
-    local icons = require('core.utils.icons')
-    local navic = require('nvim-navic')
+    local auto = require("core.utils.autocmd")
+    local map = require("core.utils.map")
+    local icons = require("core.utils.icons")
+    local navic = require("nvim-navic")
 
-    auto.group('Lsp')
+    auto.group("Lsp")
 
     -- Setup global configurations
     setup_diagnostics(auto, icons)
@@ -326,15 +316,15 @@ local config = function()
     local capabilities = get_capabilities()
 
     -- Get servers
-    local servers = require('mason-lspconfig').get_installed_servers()
+    local servers = require("mason-lspconfig").get_installed_servers()
 
     -- Add additional system installed servers
     servers = vim.list_extend(servers or {}, {
-        'qmlls'
+        "qmlls",
     })
 
     if #servers == 0 then
-        vim.notify('No LSP servers found', vim.log.levels.WARN)
+        vim.notify("No LSP servers found", vim.log.levels.WARN)
         return
     end
 
@@ -347,7 +337,7 @@ local config = function()
 
         -- Merge server-specific config if exists
         if server_configs[server] then
-            server_config = vim.tbl_deep_extend('force', server_config, server_configs[server]())
+            server_config = vim.tbl_deep_extend("force", server_config, server_configs[server]())
         end
 
         vim.lsp.config(server, server_config)
@@ -356,14 +346,13 @@ local config = function()
     vim.lsp.enable(servers)
 end
 
-
 return {
-    'neovim/nvim-lspconfig',
-    event = { 'BufReadPre', 'BufNewFile' },
+    "neovim/nvim-lspconfig",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-        'hrsh7th/cmp-nvim-lsp',
-        'SmiteshP/nvim-navic',
-        'williamboman/mason-lspconfig.nvim',
+        "hrsh7th/cmp-nvim-lsp",
+        "SmiteshP/nvim-navic",
+        "williamboman/mason-lspconfig.nvim",
     },
     config = config,
 }
