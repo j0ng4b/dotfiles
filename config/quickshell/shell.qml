@@ -4,9 +4,8 @@ import qs.modules.wallpaper
 import qs.modules.lockscreen
 
 ShellRoot {
-  Wallpaper {}
-  Bar {}
+    Wallpaper {}
+    Bar {}
 
-  LockScreen {}
+    LockScreen {}
 }
-

@@ -6,82 +6,80 @@ import qs.services
 import qs.modules.bar.workspaces
 
 Variants {
-  model: Quickshell.screens
-  delegate: PanelWindow {
-    id: bar
-    required property var modelData
-    screen: modelData
+    model: Quickshell.screens
+    delegate: PanelWindow {
+        id: bar
+        required property var modelData
+        screen: modelData
 
-    anchors.top: true
-    anchors.left: true
-    anchors.right: true
+        anchors.top: true
+        anchors.left: true
+        anchors.right: true
 
-    color: 'transparent'
-    exclusiveZone: contentHeight + 5
+        color: 'transparent'
+        exclusiveZone: contentHeight + 5
 
-    implicitHeight: container.height
-    property int contentHeight: 30
+        implicitHeight: container.height
+        property int contentHeight: 30
 
+        Column {
+            id: container
 
-    Column {
-      id: container
+            Rectangle {
+                color: Colorscheme.current.surface
 
-      Rectangle {
-        color: Colorscheme.current.surface
+                implicitWidth: content.width
+                implicitHeight: content.height
 
-        implicitWidth: content.width
-        implicitHeight: content.height
+                Item {
+                    id: content
+                    implicitWidth: bar.width
+                    implicitHeight: bar.contentHeight
 
-        Item {
-          id: content
-          implicitWidth: bar.width
-          implicitHeight: bar.contentHeight
+                    Workspaces {
+                        output: bar.screen
+                    }
 
-          Workspaces {
-            output: bar.screen
-          }
+                    // Clock
+                    ColumnLayout {
+                        anchors.right: parent.right
+                        anchors.margins: 5
+                        spacing: 2
 
-          // Clock
-          ColumnLayout {
-            anchors.right: parent.right
-            anchors.margins: 5
-            spacing: 2
+                        Text {
+                            Layout.alignment: Qt.AlignCenter
 
-            Text {
-              Layout.alignment: Qt.AlignCenter
+                            text: Clock.time
+                            font.pixelSize: 12
+                            color: Colorscheme.current.on_surface
+                        }
 
-              text: Clock.time
-              font.pixelSize: 12
-              color: Colorscheme.current.on_surface
+                        Text {
+                            Layout.alignment: Qt.AlignCenter
+
+                            text: Clock.date
+                            font.pixelSize: 10
+                            color: Colorscheme.current.on_surface
+                        }
+                    }
+                }
             }
 
-            Text {
-              Layout.alignment: Qt.AlignCenter
+            RowLayout {
+                width: content.width
 
-              text: Clock.date
-              font.pixelSize: 10
-              color: Colorscheme.current.on_surface
+                Corner {
+                    side: Corner.Side.Left
+                    color: Colorscheme.current.surface
+                    Layout.alignment: Qt.AlignLeft
+                }
+
+                Corner {
+                    side: Corner.Side.Right
+                    color: Colorscheme.current.surface
+                    Layout.alignment: Qt.AlignRight
+                }
             }
-          }
         }
-      }
-
-      RowLayout {
-        width: content.width
-
-        Corner {
-          side: Corner.Side.Left
-          color: Colorscheme.current.surface
-          Layout.alignment: Qt.AlignLeft
-        }
-
-        Corner {
-          side: Corner.Side.Right
-          color: Colorscheme.current.surface
-          Layout.alignment: Qt.AlignRight
-        }
-      }
     }
-  }
 }
-
