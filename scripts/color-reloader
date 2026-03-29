@@ -282,7 +282,7 @@ case "$cmd" in
     reload)     _cmd_reload ;;
     list)       _cmd_list ;;
     help)
-        echo "Usage: $0 color-reloader [options] <command> [reloaders...]"
+        echo "Usage: scripter color-reloader [options] <command> [reloaders...]"
         echo ""
         echo "Commands:"
         echo "  run         Run the color reloader daemon with specified reloaders"

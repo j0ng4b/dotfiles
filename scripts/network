@@ -1,569 +1,567 @@
 #!/usr/bin/env sh
 
 # Cache
-cache_dir=$SCRIPT_CACHE_DIR
+cache_dir="$SCRIPT_CACHE_DIR"
 
-cache_dir_wifi=$cache_dir/wifi
-cache_wifi_interface=$cache_dir_wifi/interface
-cache_wifi_power=$cache_dir_wifi/power
-cache_wifi_signal_level=$cache_dir_wifi/signal_level
-
-cache_dir_bluetooth=$cache_dir/bluetooth
-cache_bluetooth_power=$cache_dir_bluetooth/power
+cache_dir_wifi="$cache_dir/wifi"
+cache_wifi_interface="$cache_dir_wifi/interface"
+cache_wifi_power="$cache_dir_wifi/power"
+cache_wifi_signal_level="$cache_dir_wifi/signal_level"
 
 if [ -z "$cache_dir" ]; then
     exit 1
 elif [ ! -d "$cache_dir" ]; then
-    mkdir -p $cache_dir
-    mkdir -p $cache_dir_wifi
-    mkdir -p $cache_dir_bluetooth
-
-    # Bluetooth
-    touch $cache_bluetooth_power
+    mkdir -p "$cache_dir_wifi"
 
     # WiFi
-    touch $cache_wifi_signal_level
-    touch $cache_wifi_power
-    interface=$(find /sys/class/net \( -name "wlan*" -or -name "wl*" \) -exec basename {} \;)
-    if [ -n "$interface" ]; then
-        echo $interface > $cache_wifi_interface
-    fi
+    touch "$cache_wifi_signal_level"
+    touch "$cache_wifi_power"
+    interface=$(find /sys/class/net \( -name "wlan*" -o -name "wl*" \) -exec basename {} \; | head -1)
+    [ -n "$interface" ] && echo "$interface" > "$cache_wifi_interface"
 
     for i in $(seq 1 5); do
-        echo -50 >> $cache_wifi_signal_level
+        echo -50 >> "$cache_wifi_signal_level"
     done
 fi
 
+##
+## Backend detection
+##
 
-_net_check_connection() {
-    for url in google.com duckduckgo.com wikipedia.org; do
-        ping -c 1 $url 1>/dev/null
-        if [ $? -eq 0 ]; then
-            return 1
-        fi
-    done
-
-    return 0
+_detect_wifi_backend() {
+    if command -v nmcli >/dev/null 2>&1; then echo "nmcli"
+    elif command -v iwctl >/dev/null 2>&1; then echo "iwctl"
+    elif command -v wpa_cli >/dev/null 2>&1; then echo "wpa"
+    else echo "none"
+    fi
 }
 
-_net_get_info() {
-    type=$1
-    if [ "$type" = "wifi" ]; then
-        interfaces=$(cat $cache_wifi_interface)
-    elif [ "$type" = "ethernet" ]; then
-        interfaces=$(find /sys/class/net \( -name "en*" -or -name "eth*" \) -exec basename {} \;)
+_wifi_op() {
+    op="$1"; shift
+    "_wifi_${op}_${wifi_backend}" "$@"
+}
+
+_wifi_interface() {
+    if [ -f "$cache_wifi_interface" ]; then
+        cat "$cache_wifi_interface"
+    else
+        find /sys/class/net \( -name "wlan*" -o -name "wl*" \) -exec basename {} \; | head -1
     fi
+}
 
-    connected=0
-    for net in $interfaces; do
-        carrier=$(cat /sys/class/net/$net/carrier 2>/dev/null)
-        operstate=$(cat /sys/class/net/$net/operstate)
 
-        if [ -n "$carrier" ]; then
-            connected=$carrier
-        elif [ "$operstate" = "up" ]; then
-            # Maybe this isn't needed, if interface is up carrier will never be
-            # empty
-            connected=1
-        elif [ "$operstate" = "down" ]; then
-            # This is when the interface is "soft" down, i.e., using ip link, in
-            # this case the carrier will be empty
-            connected=0
-        elif [ "$operstate" = "unknown" ]; then
-            # Maybe this isn't needed too, if interface operational state is
-            # unknown carrier also will never be empty
-            connected=$carrier
-        fi
+##
+## WiFi — nmcli backend
+##
 
-        # Stop at any connected interface
-        if [ "$connected" = 1 ]; then
-            break
-        fi
-    done
+_wifi_status_nmcli() {
+    iface="$(_wifi_interface)"
+    [ -z "$iface" ] && echo '{"enable": 0, "state": "unknown"}' && return
 
-    # Immediately return if disconnected
-    if [ "$connected" = 0 ]; then
-        echo "{ \"enable\": \"$connected\", \"state\": \"unknown\" }"
+    connected=$(nmcli -g GENERAL.STATE device show "$iface" 2>/dev/null | grep -c "connected")
+
+    if [ "$connected" -eq 0 ]; then
+        echo '{"enable": 0, "state": "unknown"}'
         return
     fi
 
-    # Get interface name
-    interface="$(cat $cache_wifi_interface)"
+    name=$(nmcli -g GENERAL.CONNECTION device show "$iface" 2>/dev/null)
+    signal=$(nmcli -g IN-USE,SIGNAL device wifi list ifname "$iface" 2>/dev/null | \
+        grep '^\*' | head -1 | cut -d: -f2)
+    signal_level=$(( -100 + signal / 2 ))
 
-    # Get connection quality
-    if [ "$type" = "wifi" ]; then
-        if command -v iwctl >/dev/null 2>&1; then
-            # Get WiFi name from iwd
-            iwctl_output="$(iwctl station $interface show)"
+    _net_check_connection && state="noconnection" || state="connected"
 
-            name="$(echo "$iwctl_output" | sed '1,6d;8,$d;s/.*network\s*//;s/\s*$//')"
-        elif command -v wpa_cli >/dev/null 2>&1; then
-            # Get WiFi name from wpa_supplicant
-            name=$(wpa_cli status | tr '\n' ';' | cut -d';' -f4 | cut -d'=' -f2)
-        else
-            name=""
-        fi
-
-        _net_check_connection
-        if [ $? -gt 0 ]; then
-            if command -v iwctl >/dev/null 2>&1; then
-                # Get WiFi quality from iwd
-                signal_level="$(echo "$iwctl_output" | sed '1,13d;15,$d;s/.*\(-[0-9]*\).*/\1/
-')"
-            elif command -v wpa_cli >/dev/null 2>&1; then
-                # Get WiFi signal_level from wpa_supplicant
-                signal_level=$(wpa_cli signal_poll | tr '\n' ';' | cut -d';' -f8 | cut -d'=' -f2)
-            else
-                # Get WiFi signal_level from Linux
-                signal_level=$(cat /proc/net/wireless | sed -ne 's/.*\(-[0-9]\{2,4\}\)\..*/\1/p')
-            fi
-
-            # Update WiFi signal level file
-            sed -ie '1d' "$cache_wifi_signal_level"
-            echo "$signal_level" >> $cache_wifi_signal_level
-
-            # Calculate average WiFi signal level
-            sum=0
-            count=0
-            for value in $(cat $cache_wifi_signal_level); do
-                sum=$(($sum + $value))
-                count=$(( $count + 1 ))
-            done
-            signal_level=$(( $sum / $count ))
-            state='connected'
-        else
-            state="noconnection"
-        fi
-    elif [ "$type" = "ethernet" ]; then
-        _net_check_connection
-        if [ $? -gt 0 ]; then
-            state="unkown"
-        else
-            state="noconnection"
-        fi
-    fi
-
-    printf '{'
-    printf '"enable": %s, ' $connected
-    printf '"state": "%s", ' $state
-    printf '"signal_level": %d' $signal_level
-    if [ -n "$name" ]; then
-        printf ', '
-        printf '"name": "%s"' "$name"
-    fi
-    printf '}\n'
+    printf '{"enable": 1, "state": "%s", "signal_level": %d, "name": "%s"}\n' \
+        "$state" "$signal_level" "$name"
 }
 
-_net_wifi_enabled() {
-    cmd="$1"
+_wifi_list_nmcli() {
+    iface="$(_wifi_interface)"
+    nmcli -g IN-USE,SSID,SIGNAL,SECURITY device wifi list ifname "$iface" 2>/dev/null | \
+    while IFS=: read -r inuse ssid signal security; do
+        [ -z "$ssid" ] && continue
+        current='false'
+        [ "$inuse" = "*" ] && current='true'
+        saved='false'
+        nmcli -g NAME connection show 2>/dev/null | grep -qxF "$ssid" && saved='true'
+        signal_level=$(( -100 + signal / 2 ))
+        printf '%d|%s|%s|%s|%s\n' "$signal_level" "$ssid" "$current" "$security" "$saved"
+    done | sort -t'|' -k1 -rn | _wifi_list_to_json
+}
 
-    # Get interface name
-    interface=$(cat $cache_wifi_interface)
+_wifi_list_saved_nmcli() {
+    nmcli -g NAME,TYPE connection show | grep wireless | cut -d: -f1 | \
+    while read -r ssid; do
+        printf '{"ssid": "%s", "saved": true}\n' "$ssid"
+    done
+}
 
-    if command -v iwctl >/dev/null 2>&1; then
-        iwctl device $interface set-property Powered $cmd
-    elif command -v wpa_cli >/dev/null 2>&1; then
-        error "Not available to wpa_supplicant!"
-        exit 1
+_wifi_connect_nmcli() {
+    ssid="$1"
+    password="$2"
+
+    if nmcli -g NAME connection show 2>/dev/null | grep -qxF "$ssid"; then
+        nmcli connection up "$ssid" >/dev/null
+    elif [ -n "$password" ]; then
+        nmcli device wifi connect "$ssid" password "$password" >/dev/null
     else
-        error "Not available without some WiFi manager!"
-        exit 1
+        return 1
     fi
-
-    echo $cmd > $cache_wifi_power
 }
 
-_net_wifi_list() {
-    # Create temporary files for network details
+_wifi_disconnect_nmcli() {
+    iface="$(_wifi_interface)"
+    nmcli device disconnect "$iface" >/dev/null
+}
+
+_wifi_forget_nmcli() {
+    ssid="$1"
+    [ -z "$ssid" ] && error "network: no SSID provided" && return 1
+    nmcli connection delete "$ssid" >/dev/null
+    info "network: forgot '$ssid'"
+}
+
+_wifi_power_nmcli() {
+    nmcli radio wifi "$1" >/dev/null
+    echo "$1" > "$cache_wifi_power"
+}
+
+
+##
+## WiFi — iwctl backend
+##
+
+_wifi_status_iwctl() {
+    iface="$(_wifi_interface)"
+    [ -z "$iface" ] && echo '{"enable": 0, "state": "unknown"}' && return
+
+    iwctl_output=$(iwctl station "$iface" show 2>/dev/null)
+    state_raw=$(echo "$iwctl_output" | sed -ne 's/.*State\s*\(.*\)/\1/p' | tr -d ' ')
+
+    if [ "$state_raw" != "connected" ]; then
+        echo '{"enable": 0, "state": "unknown"}'
+        return
+    fi
+
+    name=$(echo "$iwctl_output" | sed '1,6d;8,$d;s/.*network\s*//;s/\s*$//')
+    signal_level=$(echo "$iwctl_output" | sed -n '/AverageRSSI/s/.*\(-[0-9]*\).*/\1/p')
+
+    _net_check_connection && state="noconnection" || state="connected"
+
+    printf '{"enable": 1, "state": "%s", "signal_level": %d, "name": "%s"}\n' \
+        "$state" "${signal_level:-0}" "$name"
+}
+
+_wifi_list_iwctl() {
+    iface="$(_wifi_interface)"
     temp_file=$(mktemp)
 
-    # Get interface name
-    interface=$(cat $cache_wifi_interface)
+    iwctl station "$iface" scan >/dev/null
+    sleep 1
 
-    if command -v iwctl >/dev/null 2>&1; then
-        # Scan for networks first
-        iwctl station "$interface" scan >/dev/null
-        sleep 1
+    saved_networks="|$(iwctl known-networks list \
+        | sed -e '1,4d' -e 's/\x1b\[[0-9;]*m//g' -e 's/^[ \t]*//g' -e 's/[ ]\{3,\}.*$//' \
+        | tr '\n' '|')"
 
-        # Get the list of saved networks
-        saved_networks="|$(iwctl known-networks list \
-            | sed -e '1,4d' -e 's/\x1b\[[0-9;]*m//g' -e 's/^[ \t]*//g' -e 's/[ ]\{3,\}.*$//' \
-            | tr '\n' '|')"
-
-        # Get network list
-        network_list=$(iwctl station "$interface" get-networks \
-            | sed -e '1,4d' -e 's/\x1b\[[0-9;]*m//g' \
-            | tr '\n' ';')
-
-        if [ "$network_list" = "No networks available" ]; then
-            echo "[]"
-            rm "$temp_file"
-            return
-        fi
-
-        IFS=';'
-        for network in $network_list; do
+    iwctl station "$iface" get-networks 2>/dev/null \
+        | sed -e '1,4d' -e 's/\x1b\[[0-9;]*m//g' \
+        | while IFS= read -r network; do
             [ -z "$network" ] && continue
 
-            # Extract signal strength symbol (typically in column 3)
             strength=$(echo "$network" | tr -s ' ' | sed -e 's/^[ \t>]*//' -e 's/^>* *//' | cut -d' ' -f3)
-
-            # Skip lines that don't have proper network info
             [ -z "$strength" ] && continue
 
-            signal_level="-100"
             case "$strength" in
                 "****") signal_level="-50" ;;
-                "***") signal_level="-60" ;;
-                "**") signal_level="-75" ;;
-                "*") signal_level="-85" ;;
+                "***")  signal_level="-60" ;;
+                "**")   signal_level="-75" ;;
+                "*")    signal_level="-85" ;;
+                *)      signal_level="-100" ;;
             esac
 
-            # Check if network is current
             current='false'
-            if echo "$network" | grep -q '[ \t]>[ \t]'; then
-                current='true'
-            fi
+            echo "$network" | grep -q '>' && current='true'
 
-            # Extract SSID
             ssid=$(echo "$network" | sed -e 's/^[ \t>]*//' -e 's/[ ]\{3,\}.*$//')
             [ -z "$ssid" ] && continue
 
-            # Extract security type
             security='open'
-            case $network in
-                *'   psk   '*) security='wpa' ;;
-                *'   8021x   '*) security='wep' ;;
+            case "$network" in
+                *'   psk   '*)   security='wpa' ;;
+                *'   8021x   '*) security='enterprise' ;;
             esac
 
-            # Check if network is saved
             saved='false'
-            if str_contains "$saved_networks" "|$ssid|"; then
-                saved='true'
-            fi
+            str_contains "$saved_networks" "|$ssid|" && saved='true'
 
-            # Store all the information with the signal level as the first
-            # field for sorting
             echo "$signal_level|$ssid|$current|$security|$saved" >> "$temp_file"
         done
-    elif command -v wpa_cli >/dev/null 2>&1; then
-        error "wpa_supplicant back-end not full implemented"
-        exit 1
 
-        [ "$(wpa_cli scan | tail -n 1)" = "OK" ] && sleep 0.5
+    sort -t'|' -k1 -rn "$temp_file"
+    rm -f "$temp_file"
+}
 
-        raw_network_list=$(wpa_cli scan_results)
-        network_list=$(echo "$raw_network_list" | sed -ne '2,$s/.*\(-[0-9]*\)\s\+\[.*\]\s\+\(.*\)/\1:\2/p' | sort | tr '\n' ';')
+_wifi_list_saved_iwctl() {
+    iwctl known-networks list | sed -e '1,4d' \
+        -e 's/\x1b\[[0-9;]*m//g' \
+        -e 's/^[ \t]*//' \
+        -e 's/[ ]\{3,\}.*$//' | \
+    while read -r ssid; do
+        [ -z "$ssid" ] && continue
+        printf '{"ssid": "%s", "saved": true}\n' "$ssid"
+    done
+}
 
-        IFS=';'
-        for network in $network_list; do
-            signal_level=$(echo $network | cut -d':' -f1)
+_wifi_connect_iwctl() {
+    ssid="$1"
+    password="$2"
+    iface="$(_wifi_interface)"
 
-            ssid=$(echo $network | cut -d':' -f2)
-            [ -z "$ssid" ] && continue
+    if [ -n "$password" ]; then
+        iwctl --passphrase "$password" station "$iface" connect "$ssid" >/dev/null
+    else
+        iwctl station "$iface" connect "$ssid" >/dev/null
+    fi
+}
 
-            # TODO: extract if is current network connected
-            # TODO: extract security level
+_wifi_disconnect_iwctl() {
+    iface="$(_wifi_interface)"
+    iwctl station "$iface" disconnect >/dev/null
+}
 
-            echo "$signal_level|$ssid|$current|$security" >> "$temp_file"
-        done
+_wifi_forget_iwctl() {
+    ssid="$1"
+    [ -z "$ssid" ] && error "network: no SSID provided" && return 1
+    iwctl known-networks "$ssid" forget >/dev/null
+    info "network: forgot '$ssid'"
+}
+
+_wifi_power_iwctl() {
+    iface="$(_wifi_interface)"
+    iwctl device "$iface" set-property Powered "$1" >/dev/null
+    echo "$1" > "$cache_wifi_power"
+}
+
+
+##
+## WiFi — wpa backend
+##
+
+_wifi_status_wpa() {
+    iface="$(_wifi_interface)"
+    [ -z "$iface" ] && echo '{"enable": 0, "state": "unknown"}' && return
+
+    wpa_state=$(wpa_cli -i "$iface" status 2>/dev/null | grep '^wpa_state=' | cut -d= -f2)
+
+    if [ "$wpa_state" != "COMPLETED" ]; then
+        echo '{"enable": 0, "state": "unknown"}'
+        return
     fi
 
-    # Sort the networks by signal level (numerically)
-    # The "-n" option is for numeric sort, "-r" for reverse order (strongest signal first)
-    sorted_networks=$(sort -n -r "$temp_file")
-    rm "$temp_file"
+    name=$(wpa_cli -i "$iface" status 2>/dev/null | grep '^ssid=' | cut -d= -f2)
+    signal_level=$(wpa_cli -i "$iface" signal_poll 2>/dev/null | grep '^RSSI=' | cut -d= -f2)
 
-    # Output the sorted networks as JSON
+    _net_check_connection && state="noconnection" || state="connected"
+
+    printf '{"enable": 1, "state": "%s", "signal_level": %d, "name": "%s"}\n' \
+        "$state" "${signal_level:-0}" "$name"
+}
+
+_wifi_list_wpa() {
+    iface="$(_wifi_interface)"
+    temp_file=$(mktemp)
+
+    wpa_cli -i "$iface" scan >/dev/null
+    sleep 0.5
+
+    wpa_cli -i "$iface" scan_results 2>/dev/null \
+        | sed -ne '2,$s/.*\(-[0-9]*\)\s\+\[.*\]\s\+\(.*\)/\1|\2/p' \
+        | while IFS='|' read -r signal ssid; do
+            [ -z "$ssid" ] && continue
+            current='false'
+            wpa_cli -i "$iface" status 2>/dev/null | grep -q "^ssid=$ssid$" && current='true'
+            saved='false'
+            wpa_cli -i "$iface" list_networks 2>/dev/null | grep -q "$ssid" && saved='true'
+            echo "$signal|$ssid|$current|open|$saved" >> "$temp_file"
+        done
+
+    sort -t'|' -k1 -rn "$temp_file"
+    rm -f "$temp_file"
+}
+
+_wifi_list_saved_wpa() {
+    iface="$(_wifi_interface)"
+    wpa_cli -i "$iface" list_networks 2>/dev/null | sed -ne '2,$p' | \
+    while IFS='	' read -r _ ssid _; do
+        [ -z "$ssid" ] && continue
+        printf '{"ssid": "%s", "saved": true}\n' "$ssid"
+    done
+}
+
+_wifi_connect_wpa() {
+    ssid="$1"
+    password="$2"
+    iface="$(_wifi_interface)"
+
+    # Verifica se já está salva
+    if wpa_cli -i "$iface" list_networks 2>/dev/null | grep -q "$ssid"; then
+        id=$(wpa_cli -i "$iface" list_networks | grep "$ssid" | cut -f1)
+        wpa_cli -i "$iface" select_network "$id" >/dev/null
+        return
+    fi
+
+    [ -z "$password" ] && return 1
+
+    _wifi_disconnect_wpa
+
+    id=$(wpa_cli -i "$iface" add_network | tail -1)
+    wpa_cli -i "$iface" set_network "$id" ssid "\"$ssid\"" >/dev/null
+    wpa_cli -i "$iface" set_network "$id" psk "\"$password\"" >/dev/null
+    wpa_cli -i "$iface" set_network "$id" priority 10 >/dev/null
+    wpa_cli -i "$iface" enable_network "$id" >/dev/null
+    wpa_cli -i "$iface" reconnect >/dev/null
+    wpa_cli -i "$iface" save_config >/dev/null
+}
+
+_wifi_disconnect_wpa() {
+    iface="$(_wifi_interface)"
+    id=$(wpa_cli -i "$iface" list_networks 2>/dev/null \
+        | grep '\[CURRENT\]' | cut -f1)
+    [ -n "$id" ] && wpa_cli -i "$iface" disable_network "$id" >/dev/null
+    wpa_cli -i "$iface" disconnect >/dev/null
+}
+
+_wifi_forget_wpa() {
+    ssid="$1"
+    iface="$(_wifi_interface)"
+    [ -z "$ssid" ] && error "network: no SSID provided" && return 1
+
+    id=$(wpa_cli -i "$iface" list_networks 2>/dev/null | grep "$ssid" | cut -f1)
+    [ -z "$id" ] && error "network: '$ssid' not found" && return 1
+
+    wpa_cli -i "$iface" remove_network "$id" >/dev/null
+    wpa_cli -i "$iface" save_config >/dev/null
+    info "network: forgot '$ssid'"
+}
+
+_wifi_power_wpa() {
+    error "network: wifi power control not supported by wpa_supplicant"
+    return 1
+}
+
+
+##
+## Common utilities
+##
+
+_net_check_connection() {
+    for url in google.com duckduckgo.com wikipedia.org; do
+        ping -c 1 -W 1 "$url" >/dev/null 2>&1 && return 1
+    done
+    return 0
+}
+
+_wifi_list_to_json() {
     comma=false
-    printf "["
-    echo "$sorted_networks" | while IFS= read -r line; do
-        [ -z "$line" ] && continue
-
-        # Parse the line to extract all fields
-        signal_level=$(echo "$line" | cut -d'|' -f1)
-        ssid=$(echo "$line" | cut -d'|' -f2)
-        current=$(echo "$line" | cut -d'|' -f3)
-        security=$(echo "$line" | cut -d'|' -f4)
-        saved=$(echo "$line" | cut -d'|' -f5)
-
-        [ $comma = "true" ] && printf ','
-        printf "{"
-        printf "\"ssid\": \"%s\", " "$ssid"
-        printf "\"current\": %s, " "$current"
-        printf "\"saved\": %s, " "$saved"
-        printf "\"security\": \"%s\", " "$security"
-        printf "\"signal_level\": %d" "$signal_level"
-        printf "}"
-
+    printf '['
+    while IFS='|' read -r signal_level ssid current security saved; do
+        [ -z "$ssid" ] && continue
+        [ "$comma" = "true" ] && printf ','
+        printf '{"ssid": "%s", "current": %s, "saved": %s, "security": "%s", "signal_level": %d}' \
+            "$ssid" "$current" "$saved" "$security" "$signal_level"
         comma=true
     done
-    printf "]"
+    printf ']\n'
 }
 
-_net_wifi_disconnect() {
-    # Get interface name
-    interface=$(cat $cache_wifi_interface)
-
-    if command -v iwctl >/dev/null 2>&1; then
-        iwctl station "$interface" disconnect >/dev/null
-    elif command -v wpa_cli >/dev/null 2>&1; then
-        # List of previous connected WiFis
-        networks_saved=$(wpa_cli list_networks | sed -ne '2,$s/\(^[0-9]*\)\s\+\(.*\)\s\+any\(\s\+\[\(.*\)\].*\|.*$\)/\1:\2:\4/p' | tr '\n' ';')
-
-        IFS=';'
-        for network in $networks_saved; do
-            id=$(echo $network | cut -d':' -f1)
-            status=$(echo $network | cut -d':' -f3)
-
-            if [ "$status" = "CURRENT" ]; then
-                wpa_cli set_network $id priority 0 1>/dev/null
-                wpa_cli disconnect 1>/dev/null
-
-                break
-            fi
-        done
-    fi
+_wifi_saved_to_json() {
+    comma=false
+    printf '['
+    while IFS= read -r line; do
+        [ -z "$line" ] && continue
+        [ "$comma" = "true" ] && printf ','
+        printf '%s' "$line"
+        comma=true
+    done
+    printf ']\n'
 }
 
-_net_wifi_connect() {
-    if command -v iwctl >/dev/null 2>&1; then
-        error "iwctl back-end not implemented"
-    elif command -v wpa_cli >/dev/null 2>&1; then
-        # On Eww the space on ssid name is converted to `~` to properly pass the
-        # ssid name to this script, convert back to space.
-        network_to_connect_ssid=$(echo "$1" | tr '~' ' ')
-        network_to_connect_password=$2
+##
+## Ethernet
+##
 
-        # List of previous connected WiFis
-        networks_saved=$(wpa_cli list_networks | sed -ne '2,$s/\(^[0-9]*\)\s\+\(.*\)\s\+any\(\s\+\[\(.*\)\].*\|.*$\)/\1:\2:\4/p' | tr '\n' ';')
+_eth_status() {
+    interfaces=$(find /sys/class/net \( -name "en*" -o -name "eth*" \) -exec basename {} \;)
 
-        if str_contains "$networks_saved" ":$network_to_connect_ssid:"; then
-            connect_to=""
-
-            IFS=';'
-            for network in $networks_saved; do
-                id=$(echo $network | cut -d':' -f1)
-                ssid=$(echo $network | cut -d':' -f2)
-                status=$(echo $network | cut -d':' -f3)
-
-                if [ "$status" = "CURRENT" ]; then
-                    # If already connected exit
-                    if [ "$ssid" = "$network_to_connect_ssid" ]; then
-                        exit 0
-                    else
-                        wpa_cli set_network $id priority 0 1>/dev/null
-                        wpa_cli disconnect 1>/dev/null
-
-                        break
-                    fi
-                fi
-
-                # This skip the next for loop if possible, if ssid to connect is
-                # found here save its id.
-                if [ "$ssid" = "$network_to_connect_ssid" ]; then
-                    connect_to="$id"
-                fi
-            done
-
-            # If the network to connect is already found connect and exit
-            if [ -n "$connect_to" ]; then
-                wpa_cli set_network $connect_to priority 10 1>/dev/null
-                wpa_cli reconnect 1>/dev/null
-
-                exit 0
-            fi
-
-            # Connect to network
-            IFS=';'
-            for network in $networks_saved; do
-                id=$(echo $network | cut -d':' -f1)
-                ssid=$(echo $network | cut -d':' -f2)
-
-                if [ "$ssid" = "$network_to_connect_ssid" ]; then
-                    wpa_cli set_network $id priority 10 1>/dev/null
-                    wpa_cli reconnect 1>/dev/null
-
-                    break
-                fi
-            done
-        else
-            # When eww call this script no password is give at first but when its a
-            # new connection the password must be provided!
-            #
-            # Open password pop-up to recall this script with the password passed.
-            if [ -z "$network_to_connect_password" ]; then
-                exit 1
-            fi
-
-            _net_wifi_disconnect
-
-            # Create a new network
-            network_id=$(wpa_cli add_network | tail -n 1)
-
-            # Configure the new network
-            wpa_cli set_network $network_id ssid \"$network_to_connect_ssid\" 1>/dev/null
-            wpa_cli set_network $network_id psk \"$network_to_connect_password\" 1>/dev/null
-            wpa_cli set_network $network_id priority 10 1>/dev/null
-
-            # Enable and connect to new network
-            wpa_cli enable_network $network_id 1>/dev/null
-            wpa_cli reconnect 1>/dev/null
-
-            # Save configuration
-            wpa_cli save_config 1>/dev/null
+    for iface in $interfaces; do
+        operstate=$(cat "/sys/class/net/$iface/operstate" 2>/dev/null)
+        if [ "$operstate" = "up" ]; then
+            _net_check_connection && state="noconnection" || state="connected"
+            printf '{"enable": 1, "state": "%s", "interface": "%s"}\n' "$state" "$iface"
+            return
         fi
-    fi
+    done
+
+    echo '{"enable": 0, "state": "unknown"}'
 }
 
-_bl_get_info() {
-    info=$(bluetoothctl show)
-
-    if [ "$(echo $info | sed -ne 's/.*Powered: \([a-z]\{2,3\}\).*/\1/p')" = "yes" ]; then
-        enable=1
-
-        if [ -n "$(bluetoothctl devices Connected)" ]; then
-            status="connected"
-        else
-            status="disconnected"
-        fi
-
-        echo "on" > $cache_bluetooth_power
-    else
-        enable=0
-        status="unknown"
-
-        echo "off" > $cache_bluetooth_power
+_eth_power() {
+    cmd="$1"
+    if [ "$wifi_backend" != "nmcli" ]; then
+        error "network: ethernet on/off requires nmcli"
+        return 1
     fi
-
-    echo "{ \"enable\": \"$enable\", \"status\": \"$status\"}"
+    nmcli networking "$cmd" >/dev/null
 }
 
+
+##
+## Interface management
+##
+
+_wifi_iface_list() {
+    interfaces=$(find /sys/class/net \( -name "wlan*" -o -name "wl*" \) -exec basename {} \;)
+    [ -z "$interfaces" ] && error "network: no WiFi interfaces found" && exit 1
+
+    comma=false
+    printf '['
+    for iface in $interfaces; do
+        [ "$comma" = "true" ] && printf ','
+        printf '"%s"' "$iface"
+        comma=true
+    done
+    printf ']\n'
+}
+
+_wifi_iface_get() {
+    echo "$(_wifi_interface)"
+}
+
+_wifi_iface_set() {
+    iface="$1"
+    [ -z "$iface" ] && error "network: no interface name provided" && exit 1
+    [ "$iface" = "$(_wifi_interface)" ] && exit 0
+    [ ! -d "/sys/class/net/$iface" ] && error "network: interface '$iface' not found" && exit 1
+
+    echo "$iface" > "$cache_wifi_interface"
+    info "network: interface set to '$iface'"
+}
+
+
+##
+## Entry point
+##
+
+_usage() {
+    cat <<EOF
+Usage: scripter network <command> [options]
+
+Commands:
+  wifi status                     Show current WiFi status
+  wifi list [--saved]             List available networks (--saved: only saved networks)
+  wifi connect <ssid> [password]  Connect to a network
+  wifi disconnect                 Disconnect from current network
+  wifi forget <ssid>              Forget a saved network
+  wifi on | off | toggle          Enable/disable WiFi
+  wifi interface list             List available WiFi interfaces
+  wifi interface get              Show current WiFi interface
+  wifi interface set <iface>      Set WiFi interface
+
+  ethernet status                 Show current ethernet status
+  ethernet on | off | toggle      Enable/disable ethernet (requires nmcli)
+
+Backend: $wifi_backend
+EOF
+}
+
+wifi_backend=$(_detect_wifi_backend)
 
 case $1 in
+    help | --help | -h)
+        _usage
+        ;;
+
     wifi)
+        [ "$wifi_backend" = "none" ] && error "network: no WiFi backend found" && exit 1
+
         case $2 in
             status)
-                _net_get_info wifi
-                ;;
-
-            on | off | toggle)
-                cmd=$2
-                if [ "$cmd" = "toggle" ]; then
-                    enable=$(cat $cache_wifi_power)
-                    if [ "$enable" = "off" ]; then
-                        cmd="on"
-                    else
-                        cmd="off"
-                    fi
-                fi
-
-                _net_wifi_enabled $cmd
+                _wifi_op status
                 ;;
 
             list)
-                echo "$(_net_wifi_list)"
+                case $3 in
+                    --saved | "")
+                        case $3 in
+                            --saved) _wifi_op list_saved | _wifi_saved_to_json ;;
+                            *)       _wifi_op list | _wifi_list_to_json ;;
+                        esac
+                        ;;
+                    *)
+                        error "network: unknown list option '$3'"
+                        exit 1
+                        ;;
+                esac
                 ;;
 
             connect)
-                _net_wifi_connect "$3" "$4"
+                _wifi_op connect "$3" "$4"
                 ;;
 
-            disconnect)
-                _net_wifi_disconnect
+            forget)
+                _wifi_op forget "$3"
+                ;;
+
+            on | off)
+                _wifi_op power "$2"
+                ;;
+
+            toggle)
+                current=$(cat "$cache_wifi_power" 2>/dev/null)
+                [ "$current" = "off" ] && _wifi_op power "on" || _wifi_op power "off"
                 ;;
 
             interface)
                 case $3 in
-                    list)
-                        # List all interfaces
-                        interfaces=$(find /sys/class/net -name "wlan*" -or -name "wl*" -exec basename {} \;)
-                        if [ -z "$interfaces" ]; then
-                            error "No WiFi interfaces found"
-                            exit 1
-                        fi
-
-                        printf '['
-                        comma=false
-                        for interface in $interfaces; do
-                            if [ $comma = "true" ]; then
-                                printf ','
-                            fi
-                            printf "\"$interface\""
-                            comma=true
-                        done
-                        printf ']'
-                        ;;
-
-                    get)
-                        # Get interface name
-                        echo $(cat $cache_wifi_interface)
-                        ;;
-
-                    set)
-                        if [ -z "$4" ]; then
-                            error "No interface name provided"
-                            exit 1
-                        fi
-
-                        if [ "$4" = "$(cat $cache_wifi_interface)" ]; then
-                            exit 0
-                        fi
-
-                        # Check if interface exists
-                        if [ ! -d "/sys/class/net/$4" ]; then
-                            error "Interface $4 not found"
-                            exit 1
-                        fi
-
-                        # Set interface name
-                        echo "$4" > $cache_wifi_interface
-
-                        # Enable the interface
-                        interfaces=$(find /sys/class/net \( -name "wlan*" -or -name "wl*" \) -exec basename {} \;)
-                        for interface in $interfaces; do
-                            if [ "$interface" = "$4" ]; then
-                                # Enable selected interface
-                                iwctl device $interface set-property Powered on
-                            else
-                                # Disable other interfaces
-                                iwctl device $interface set-property Powered off
-                            fi
-                        done
-                        ;;
+                    list) _wifi_iface_list ;;
+                    get)  _wifi_iface_get ;;
+                    set)  _wifi_iface_set "$4" ;;
+                    *)    error "network: unknown interface command '$3'" && exit 1 ;;
                 esac
+                ;;
+
+            *)
+                error "network: unknown wifi command '$2'"
+                exit 1
+                ;;
         esac
         ;;
 
     ethernet)
         case $2 in
             status)
-                _net_get_info ethernet
+                _eth_status
+                ;;
+
+            on | off)
+                _eth_power "$2"
+                ;;
+
+            toggle)
+                _eth_power toggle
+                ;;
+
+            *)
+                error "network: unknown ethernet command '$2'"
+                exit 1
                 ;;
         esac
         ;;
 
-    bluetooth)
-        case $2 in
-            status)
-                _bl_get_info
-                ;;
-
-            on | off | toggle)
-                cmd=$2
-                if [ "$cmd" = "toggle" ]; then
-                    enable=$(cat $cache_bluetooth_power)
-                    if [ "$enable" = "off" ]; then
-                        cmd="on"
-                    else
-                        cmd="off"
-                    fi
-                fi
-
-                bluetoothctl power $cmd >/dev/null
-                echo $cmd > $cache_bluetooth_power
-                ;;
-        esac
+    *)
+        error "network: unknown command '$1'"
+        exit 1
         ;;
 esac
 
