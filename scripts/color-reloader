@@ -45,18 +45,9 @@ __generate_colors_file() {
 _foot_broadcast() {
     seqs_file="$1"
 
-    for foot_pid in $(pgrep -x foot 2>/dev/null); do
-        for child_pid in $(pgrep -P "$foot_pid" 2>/dev/null); do
-            for fd_path in /proc/"$child_pid"/fd/*; do
-                pts=$(readlink "$fd_path" 2>/dev/null)
-                case "$pts" in
-                    /dev/pts/[0-9]*)
-                        cat "$seqs_file" > "$pts" 2>/dev/null
-                        break
-                        ;;
-                esac
-            done
-        done
+    for pts in /dev/pts/*; do
+        [ -w "$pts" ] || continue
+        cat "$seqs_file" > "$pts" 2>/dev/null
     done
 }
 
@@ -65,6 +56,7 @@ _foot_reloader() {
     __generate_colors_file foot "$colors_output_path" || return
 
     seqs_file="$SCRIPT_CACHE_DIR/foot_seqs"
+    : > $seqs_file
 
     sed -nr 's/.*(regular|bright)([0-9])\s*=\s*([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$colors_output_path" |
         while read -r type num color; do
