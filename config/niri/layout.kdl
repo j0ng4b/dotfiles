@@ -37,7 +37,7 @@ layout {
 
     focus-ring {
         on
-        width 4
+        width 2
     }
 
     // shadows
