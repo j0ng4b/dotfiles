@@ -12,8 +12,8 @@ set.cpoptions:append("EnW")
 set.autoindent = true
 set.expandtab = true
 set.shiftround = true
-set.shiftwidth = 0 -- use tabstop value when zero
-set.softtabstop = -1 -- user shiftwidth value when negative
+set.shiftwidth = 0 -- when zero this uses tabstop value
+set.softtabstop = -1 -- when negative this use shiftwidth value
 set.tabstop = 4
 
 -- Files & Buffer
@@ -57,7 +57,7 @@ set.showbreak = "󱞪"
 
 -- Command line
 set.cmdheight = 0
-set.cmdwinheight = 5
+set.cmdwinheight = 10
 
 -- Swap
 set.updatecount = 500
@@ -80,7 +80,7 @@ set.textwidth = 80
 
 -- Window & Preview window
 set.helpheight = 0
-set.previewheight = 10
+set.previewheight = 15
 set.splitbelow = true
 set.splitright = true
 set.winblend = 20
@@ -131,7 +131,3 @@ set.wildcharm = 9 -- Used to enable use of tab in floating window
 set.wildmenu = true
 set.wildmode = "longest:full,full"
 set.wildoptions = "pum"
-
--- Leader key
-vim.g.mapleader = ","
-vim.g.maplocalleader = ","

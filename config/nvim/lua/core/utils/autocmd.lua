@@ -23,7 +23,7 @@ function M.cmd(events, pattern, cmd, opts)
         events = split(events, ",")
     end
 
-    local opts = opts or {}
+    opts = opts or {}
     if type(opts) == "string" then
         opts = { group = opts }
     end

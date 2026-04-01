@@ -53,7 +53,7 @@ local wk_map = function(modes, left, right, opts)
 end
 
 local normal_map = function(modes, left, right, opts)
-    local opts = opts or {}
+    opts = opts or {}
 
     if opts.buffer then
         local buffer = opts.buffer
