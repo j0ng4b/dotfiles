@@ -1,25 +1,25 @@
-return {
-    "neanias/everforest-nvim",
-    version = "*",
-    priority = 1000,
-    config = function()
-        require("everforest").setup({
-            background = "hard",
+vim.pack.add({
+    {
+        src = "https://github.com/neanias/everforest-nvim",
+        name = "everforest",
+    },
+})
 
-            transparent_background_level = 0,
+require("everforest").setup({
+    background = "hard",
 
-            italics = true,
+    transparent_background_level = 0,
 
-            show_eob = false,
-            ui_contrast = "high",
-            dim_inactive_windows = false,
+    italics = true,
 
-            diagnostic_virtual_text = "coloured",
-            diagnostic_line_highlight = true,
+    show_eob = false,
+    ui_contrast = "high",
+    dim_inactive_windows = false,
 
-            spell_foreground = true,
-            float_style = "dim",
-            inlay_hints_background = "none",
-        })
-    end,
-}
+    diagnostic_virtual_text = "coloured",
+    diagnostic_line_highlight = true,
+
+    spell_foreground = true,
+    float_style = "dim",
+    inlay_hints_background = "none",
+})

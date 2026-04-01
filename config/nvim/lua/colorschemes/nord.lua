@@ -1,29 +1,26 @@
-local config = function()
-    local nord = require("nord")
+vim.pack.add({
+    {
+        src = "https://github.com/gbprod/nord.nvim",
+        name = "nord",
+    },
+})
 
-    nord.setup({
-        terminal_colors = true,
+require("nord").setup({
+    terminal_colors = true,
 
-        diff = { mode = "fg" },
-        errors = { mode = "fg" },
+    diff = { mode = "fg" },
+    errors = { mode = "fg" },
 
-        styles = {
-            comments = { italic = true },
+    styles = {
+        comments = { italic = true },
 
-            bufferline = {
-                current = {},
+        bufferline = {
+            current = {},
 
-                modified = {
-                    bold = true,
-                    italic = true,
-                },
+            modified = {
+                bold = true,
+                italic = true,
             },
         },
-    })
-end
-
-return {
-    "gbprod/nord.nvim",
-    config = config,
-    priority = 1000,
-}
+    },
+})
