@@ -1,12 +1,11 @@
-local map = require("core.utils.map")
-local buffer = require("core.utils.buffer")
-
 --  ╦╔═┌─┐┬ ┬┌┬┐┌─┐┌─┐┌─┐
 --  ╠╩╗├┤ └┬┘│││├─┤├─┘└─┐
 --  ╩ ╩└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
 
+local map = vim.keymap.set
+
 -- Sane mode switcher from insert/visual/select to normal mode
-map({ "i", "v" }, "jk", "<Esc>", { noremap = true })
+map({ "i", "v" }, "jk", "<Esc>")
 
 --------------------
 -- Disable arrow keys
@@ -31,6 +30,8 @@ map({ "n" }, "<C-S-q>", "<Cmd>qall!<CR>")
 --------------------
 -- Buffer
 --------------------
+local buffer = require("core.utils.buffer")
+
 map({ "n" }, "bo", "<Cmd>enew<CR>")
 map({ "n" }, "bd", function()
     buffer.close()
@@ -53,6 +54,11 @@ map({ "n" }, "wc", "<Cmd>wincmd c<CR>") -- close
 map({ "n" }, "we", "<Cmd>wincmd =<CR>") -- equalize windows size
 map({ "n" }, "ws", "<Cmd>wincmd s<CR>") -- split horizontal
 map({ "n" }, "wv", "<Cmd>wincmd v<CR>") -- split vertical
+
+map({ "n" }, "<C-h>", "<Cmd>wincmd h<CR>") -- left
+map({ "n" }, "<C-j>", "<Cmd>wincmd j<CR>") -- bottom
+map({ "n" }, "<C-k>", "<Cmd>wincmd k<CR>") -- top
+map({ "n" }, "<C-l>", "<Cmd>wincmd l<CR>") -- right
 
 --------------------
 -- Tab management
@@ -88,3 +94,10 @@ map({ "n" }, "<Tab>", ">>")
 
 map({ "v" }, "<S-Tab>", "<gv")
 map({ "n" }, "<S-Tab>", "<<")
+
+--------------------
+-- Diagnostics
+--------------------
+map({ "n" }, "<Leader>dv", vim.diagnostic.open_float, { desc = "show diagnostic float window" })
+map({ "n" }, "<Leader>dp", vim.diagnostic.goto_prev, { desc = "go to previous diagnostic" })
+map({ "n" }, "<Leader>dn", vim.diagnostic.goto_next, { desc = "go to next diagnostic" })
