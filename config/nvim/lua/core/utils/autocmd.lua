@@ -1,11 +1,11 @@
---   ╦ ╦┌┬┐┬┬  ┌─┐
---   ║ ║ │ ││  └─┐
---   ╚═╝ ┴ ┴┴─┘└─┘
-
 local M = {}
 
-function M.group(name)
-    return vim.api.nvim_create_augroup(name, { clear = true })
+function M.group(name, opts)
+    return vim.api.nvim_create_augroup(name, opts or { clear = false })
+end
+
+function M.buf_group(prefix, bufnr)
+    return vim.api.nvim_create_augroup(prefix .. "_" .. bufnr, { clear = true })
 end
 
 function M.cmd(events, pattern, cmd, opts)

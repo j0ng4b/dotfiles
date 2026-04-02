@@ -1,24 +1,50 @@
-local config = function()
-    require("hop").setup({
-        keys = "etovxqpdygfblzhckisuran",
-        uppercase_labels = false,
-    })
-end
-
 return {
-    "smoka7/hop.nvim",
-    version = "*",
-    config = config,
-    keys = {
-        { "s", "<cmd>HopChar2AC<cr>", desc = "Hop to bigram after cursor", mode = { "v", "n" } },
-        { "S", "<cmd>HopChar2BC<cr>", desc = "Hop to bigram before cursor", mode = { "v", "n" } },
-        { ";b", "<cmd>HopWordBC<cr>", desc = "Hop to word before cursor", mode = { "v", "n" } },
-        { ";w", "<cmd>HopWord<cr>", desc = "Hop to word in current buffer", mode = { "v", "n" } },
-        { ";a", "<cmd>HopWordAC<cr>", desc = "Hop to word after cursor", mode = { "v", "n" } },
-        { ";c", "<cmd>HopCamelCaseMW<cr>", desc = "Hop to camelCase word", mode = { "v", "n" } },
-        { ";d", "<cmd>HopLineStart<cr>", desc = "Hop to line", mode = { "v", "n" } },
-        { ";f", "<cmd>HopNodes<cr>", desc = "Hop to node", mode = { "v", "n" } },
-        { ";s", "<cmd>HopPatternMW<cr>", desc = "Hop to pattern", mode = { "v", "n" } },
-        { ";j", "<cmd>HopVertical<cr>", desc = "Hop to location vertically", mode = { "v", "n" } },
-    },
+    src = "smoka7/hop.nvim",
+    config = function()
+        local hop = require("hop")
+        hop.setup({
+            keys = "etovxqpdygfblzhckisuran",
+            uppercase_labels = false,
+        })
+
+        vim.keymap.set({ "n", "v" }, "s", "<Cmd>HopChar2AC<CR>", { desc = "Hop to bigram after cursor" })
+        vim.keymap.set({ "n", "v" }, "S", "<Cmd>HopChar2BC<CR>", { desc = "Hop to bigram before cursor" })
+        vim.keymap.set({ "n", "v" }, ";w", "<Cmd>HopWord<CR>", { desc = "Hop to word in current buffer" })
+        vim.keymap.set({ "n", "v" }, ";c", "<Cmd>HopCamelCaseMW<CR>", { desc = "Hop to camelCase word" })
+        vim.keymap.set({ "n", "v" }, ";d", "<Cmd>HopLineStart<CR>", { desc = "Hop to line" })
+        vim.keymap.set({ "n", "v" }, ";f", "<Cmd>HopNodes<CR>", { desc = "Hop to node" })
+        vim.keymap.set({ "n", "v" }, ";s", "<Cmd>HopPatternMW<CR>", { desc = "Hop to pattern" })
+        vim.keymap.set({ "n", "v" }, ";j", "<Cmd>HopVertical<CR>", { desc = "Hop to location vertically" })
+
+        local directions = require("hop.hint").HintDirection
+        vim.keymap.set("", "f", function()
+            hop.hint_char1({
+                direction = directions.AFTER_CURSOR,
+                current_line_only = true,
+            })
+        end, { remap = true })
+
+        vim.keymap.set("", "F", function()
+            hop.hint_char1({
+                direction = directions.BEFORE_CURSOR,
+                current_line_only = true,
+            })
+        end, { remap = true })
+
+        vim.keymap.set("", "t", function()
+            hop.hint_char1({
+                direction = directions.AFTER_CURSOR,
+                current_line_only = true,
+                hint_offset = -1,
+            })
+        end, { remap = true })
+
+        vim.keymap.set("", "T", function()
+            hop.hint_char1({
+                direction = directions.BEFORE_CURSOR,
+                current_line_only = true,
+                hint_offset = 1,
+            })
+        end, { remap = true })
+    end,
 }

@@ -67,7 +67,7 @@ end
 
 local layout = function()
     local centralize = function(layout)
-        function get_height(layout)
+        local function get_height(layout)
             local height = 0
 
             for _, item in ipairs(layout) do
@@ -135,63 +135,58 @@ local layout = function()
     return centralize(layout)
 end
 
-local config = function()
-    local alpha = require("alpha")
-    local term = require("alpha.term")
-
-    alpha.setup({
-        layout = layout(),
-
-        opts = {
-            noautocmd = true,
-
-            setup = function()
-                local auto = require("core.utils.autocmd")
-
-                auto.cmd("User", "AlphaReady", function()
-                    if vim.g.alpha_closed then
-                        return
-                    end
-
-                    _G.alpha_win_num = vim.api.nvim_get_current_win()
-
-                    vim.opt.laststatus = 0
-                    vim.opt.showtabline = 0
-                end)
-
-                auto.cmd("BufUnload", nil, function()
-                    vim.opt.laststatus = 3
-                    vim.opt.showtabline = 2
-
-                    vim.g.alpha_closed = true
-                end, {
-                    buffer = 0,
-                })
-
-                auto.cmd("VimResized", nil, function()
-                    if vim.api.nvim_get_current_win() == _G.alpha_win_num then
-                        package.loaded.alpha.default_config.layout = layout()
-                        alpha.redraw()
-                    end
-                end, {
-                    buffer = 0,
-                })
-
-                -- Due the reloader thats changes colorscheme the highlight are
-                -- lost so we need to set them again
-                _G.alpha_cur_banner.set_highlights()
-                auto.cmd("Colorscheme", "", function()
-                    _G.alpha_cur_banner.set_highlights()
-                end, {
-                    buffer = 0,
-                })
-            end,
-        },
-    })
-end
-
 return {
     "goolord/alpha-nvim",
-    config = config,
-    dependencies = "nvim-tree/nvim-web-devicons",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+        local alpha = require("alpha")
+
+        alpha.setup({
+            layout = layout(),
+
+            opts = {
+                noautocmd = true,
+
+                setup = function()
+                    local auto = require("core.utils.autocmd")
+
+                    auto.cmd("User", "AlphaReady", function()
+                        if vim.g.alpha_closed then
+                            return
+                        end
+
+                        _G.alpha_win_num = vim.api.nvim_get_current_win()
+
+                        vim.opt.laststatus = 0
+                        vim.opt.showtabline = 0
+                    end)
+
+                    auto.cmd("BufUnload", nil, function()
+                        vim.opt.laststatus = 3
+                        vim.opt.showtabline = 2
+
+                        vim.g.alpha_closed = true
+                    end, {
+                        buffer = 0,
+                    })
+
+                    auto.cmd("VimResized", nil, function()
+                        if vim.api.nvim_get_current_win() == _G.alpha_win_num then
+                            package.loaded.alpha.default_config.layout = layout()
+                            alpha.redraw()
+                        end
+                    end, {
+                        buffer = 0,
+                    })
+
+                    -- Due the reloader thats changes colorscheme the highlight are
+                    -- lost so we need to set them again
+                    _G.alpha_cur_banner.set_highlights()
+                    auto.cmd("Colorscheme", "", function()
+                        _G.alpha_cur_banner.set_highlights()
+                    end, { buffer = 0 })
+                end,
+            },
+        })
+    end,
 }

@@ -1,8 +1,10 @@
 return {
-    "echasnovski/mini.animate",
-    opts = function(_, opts)
-        local mouse_scrolled = false
+    src = "echasnovski/mini.animate",
+    name = "mini-animate",
+    config = function()
+        local animate = require("mini.animate")
 
+        local mouse_scrolled = false
         for _, scroll in ipairs({ "Up", "Down" }) do
             local key = "<ScrollWheel" .. scroll .. ">"
             vim.keymap.set({ "", "i" }, key, function()
@@ -11,8 +13,7 @@ return {
             end, { expr = true })
         end
 
-        local animate = require("mini.animate")
-        return vim.tbl_deep_extend("force", opts, {
+        animate.setup({
             cursor = {
                 enable = false,
             },

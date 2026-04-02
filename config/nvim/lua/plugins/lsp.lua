@@ -1,3 +1,59 @@
+local auto = require("core.utils.autocmd")
+local utils = require("core.utils")
+local icons = require("core.utils.icons")
+
+--------------------
+--- Helpers
+--------------------
+local get_capabilities = function()
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+    local cmp = utils.safe_require("cmp_nvim_lsp")
+    if cmp then
+        capabilities = cmp.default_capabilities(capabilities)
+    end
+
+    capabilities.textDocument.colorProvider = { dynamicRegistration = true }
+    capabilities.textDocument.foldingRange = {
+        dynamicRegistration = true,
+        lineFoldingOnly = true,
+    }
+    capabilities.textDocument.inlayHint = {
+        dynamicRegistration = true,
+    }
+
+    return capabilities
+end
+
+local function with_cap(client, cap, fn)
+    if client.server_capabilities[cap] then
+        fn()
+    end
+end
+
+local telescope
+local function get_telescope()
+    if telescope == nil then
+        local ok, tb = pcall(require, "telescope.builtin")
+        telescope = ok and tb or false
+    end
+    return telescope
+end
+
+local function telescope_or(fallback, picker)
+    return function()
+        local tb = get_telescope()
+        if tb then
+            tb[picker]({ trim_text = true, reuse_win = true })
+        else
+            fallback()
+        end
+    end
+end
+
+--------------------
+--- Server configs
+--------------------
 local server_configs = {
     omnisharp = function()
         local omnisharp_root = vim.fn.stdpath("data") .. "/mason/packages/omnisharp/omnisharp"
@@ -81,157 +137,53 @@ local server_configs = {
                     tsserver = {
                         useSyntaxServer = false,
                     },
-
-                    inlayHints = {
-                        -- includeInlayParameterNameHints = 'all',
-                        -- includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-                        -- includeInlayFunctionParameterTypeHints = true,
-                        -- includeInlayVariableTypeHints = true,
-                        -- includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-                        -- includeInlayPropertyDeclarationTypeHints = true,
-                        -- includeInlayFunctionLikeReturnTypeHints = true,
-                        -- includeInlayEnumMemberValueHints = true,
-                    },
                 },
             },
         }
     end,
+}
 
-    jinja_ls = function()
-        return {
-            filetypes = {
-                "html",
-                "htmldjango",
-                "jinja",
-            },
-        }
-    end,
-
-    qmlls = function()
-        return {
-            filetypes = { "qml", "qmljs" },
-            cmd = { "/usr/lib/qt6/bin/qmlls" },
-        }
+--------------------
+--- Extensions
+--------------------
+local extensions = {
+    function(client, bufnr)
+        with_cap(client, "documentSymbolProvider", function()
+            local navic = utils.safe_require("nvim-navic")
+            if navic then
+                navic.attach(client, bufnr)
+            end
+        end)
     end,
 }
 
-local setup_keymaps = function(bufnr, map)
+--------------------
+--- Setup functions
+--------------------
+local setup_keymaps = function(bufnr)
     local opts = { buffer = bufnr }
 
-    -- Hover documentation
-    map("n", "K", vim.lsp.buf.hover, opts)
-
-    -- Navigation (Gotos)
-    map("n", "gD", vim.lsp.buf.declaration, opts)
-
-    map("n", "gd", function()
-        require("telescope.builtin").lsp_definitions({
-            trim_text = true,
-            reuse_win = true,
-        })
-    end, opts)
-
-    map("n", "gi", function()
-        require("telescope.builtin").lsp_implementations({
-            trim_text = true,
-            reuse_win = true,
-        })
-    end, opts)
-
-    map("n", "gt", function()
-        require("telescope.builtin").lsp_type_definitions({
-            trim_text = true,
-            reuse_win = true,
-        })
-    end, opts)
-
-    map("n", "gr", function()
-        require("telescope.builtin").lsp_references({
-            trim_text = true,
-            reuse_win = true,
-        })
-    end, opts)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts) -- Hover documentation
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- Navigation (Gotos)
+    vim.keymap.set("n", "gd", telescope_or(vim.lsp.buf.definition, "lsp_definitions"), opts)
+    vim.keymap.set("n", "gi", telescope_or(vim.lsp.buf.implementation, "lsp_implementations"), opts)
+    vim.keymap.set("n", "gt", telescope_or(vim.lsp.buf.type_definition, "lsp_type_definitions"), opts)
+    vim.keymap.set("n", "gr", telescope_or(vim.lsp.buf.references, "lsp_references"), opts)
 
     -- Rename
-    map("n", "gR", vim.lsp.buf.rename, opts)
-    map({ "n", "i" }, "<F2>", vim.lsp.buf.rename, opts)
+    vim.keymap.set("n", "gR", vim.lsp.buf.rename, opts)
+    vim.keymap.set({ "n", "i" }, "<F2>", vim.lsp.buf.rename, opts)
 
     -- Signature help
-    map("n", "gk", vim.lsp.buf.signature_help, opts)
-    map("i", "<C-k>", vim.lsp.buf.signature_help, opts)
+    vim.keymap.set("n", "gk", vim.lsp.buf.signature_help, opts)
+    vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts)
 
     -- Code actions
-    map("n", "gf", vim.lsp.buf.code_action, opts)
-    map({ "n", "i" }, "<F3>", vim.lsp.buf.code_action, opts)
+    vim.keymap.set("n", "gf", vim.lsp.buf.code_action, opts)
+    vim.keymap.set({ "n", "i" }, "<F3>", vim.lsp.buf.code_action, opts)
 end
 
-local setup_formatting = function(bufnr, map)
-    map("n", "gF", function()
-        vim.lsp.buf.format({ async = true })
-    end, { buffer = bufnr })
-end
-
-local setup_inlay_hints_toggle = function(bufnr)
-    local augroup = vim.api.nvim_create_augroup("LspInlayHints_" .. bufnr, { clear = true })
-
-    vim.api.nvim_create_autocmd("InsertEnter", {
-        group = augroup,
-        buffer = bufnr,
-        callback = function()
-            if vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }) then
-                vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
-            end
-        end,
-    })
-
-    vim.api.nvim_create_autocmd("InsertLeave", {
-        group = augroup,
-        buffer = bufnr,
-        callback = function()
-            vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-        end,
-    })
-end
-
-local setup_document_highlight = function(bufnr)
-    local augroup = vim.api.nvim_create_augroup("LspDocumentHighlight_" .. bufnr, { clear = true })
-
-    vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-        group = augroup,
-        buffer = bufnr,
-        callback = vim.lsp.buf.document_highlight,
-    })
-
-    vim.api.nvim_create_autocmd("CursorMoved", {
-        group = augroup,
-        buffer = bufnr,
-        callback = vim.lsp.buf.clear_references,
-    })
-end
-
-local get_capabilities = function()
-    local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-    -- Enable color provider
-    capabilities.textDocument.colorProvider = {
-        dynamicRegistration = true,
-    }
-
-    -- Enable folding range
-    capabilities.textDocument.foldingRange = {
-        dynamicRegistration = true,
-        lineFoldingOnly = true,
-    }
-
-    -- Enable inlay hints
-    capabilities.textDocument.inlayHint = {
-        dynamicRegistration = true,
-    }
-
-    return capabilities
-end
-
-local setup_diagnostics = function(auto, icons)
+local setup_diagnostics = function()
     vim.diagnostic.config({
         virtual_text = false,
         float = {
@@ -251,7 +203,7 @@ local setup_diagnostics = function(auto, icons)
         severity_sort = true,
     })
 
-    auto.cmd("CursorHold", "", "lua vim.diagnostic.open_float()", "Lsp")
+    auto.cmd("CursorHold", nil, vim.diagnostic.open_float)
 end
 
 local setup_handlers = function()
@@ -269,90 +221,82 @@ local setup_handlers = function()
     end
 end
 
-local create_attach = function(map, navic)
+local create_attach = function()
     return function(client, bufnr)
-        -- Setup navic if available
-        if client.server_capabilities.documentSymbolProvider then
-            navic.attach(client, bufnr)
-        end
+        setup_keymaps(bufnr)
 
-        -- Enable inlay hints if supported
-        if client.server_capabilities.inlayHintProvider then
+        with_cap(client, "documentFormattingProvider", function()
+            vim.keymap.set("n", "gF", function()
+                vim.lsp.buf.format({ async = true })
+            end, { buffer = bufnr })
+        end)
+
+        with_cap(client, "documentHighlightProvider", function()
+            local group = auto.buf_group("LspDocumentHighlight_", bufnr)
+
+            auto.cmd({ "CursorHold", "CursorHoldI" }, nil, vim.lsp.buf.document_highlight, {
+                group = group,
+                buffer = bufnr,
+            })
+
+            auto.cmd("CursorMoved", nil, vim.lsp.buf.clear_references, {
+                group = group,
+                buffer = bufnr,
+            })
+        end)
+
+        with_cap(client, "inlayHintProvider", function()
             vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-            setup_inlay_hints_toggle(bufnr)
-        end
+            local group = auto.buf_group("LspInlayHints_", bufnr)
 
-        -- Setup keymaps
-        setup_keymaps(bufnr, map)
+            auto.cmd("InsertEnter", nil, function()
+                if vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }) then
+                    vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+                end
+            end, { group = group, buffer = bufnr })
 
-        -- Setup formatting if supported
-        if client.server_capabilities.documentFormattingProvider then
-            setup_formatting(bufnr, map)
-        end
+            auto.cmd("InsertLeave", nil, function()
+                vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+            end, { group = group, buffer = bufnr })
+        end)
 
-        -- Setup document highlight if supported
-        if client.server_capabilities.documentHighlightProvider then
-            setup_document_highlight(bufnr)
+        for _, ext in ipairs(extensions) do
+            ext(client, bufnr)
         end
     end
-end
-
-local config = function()
-    local auto = require("core.utils.autocmd")
-    local map = require("core.utils.map")
-    local icons = require("core.utils.icons")
-    local navic = require("nvim-navic")
-
-    auto.group("Lsp")
-
-    -- Setup global configurations
-    setup_diagnostics(auto, icons)
-    setup_handlers()
-
-    -- Create attach function with dependencies
-    local attach = create_attach(map, navic)
-
-    -- Get capabilities
-    local capabilities = get_capabilities()
-
-    -- Get servers
-    local servers = require("mason-lspconfig").get_installed_servers()
-
-    -- Add additional system installed servers
-    servers = vim.list_extend(servers or {}, {
-        "qmlls",
-    })
-
-    if #servers == 0 then
-        vim.notify("No LSP servers found", vim.log.levels.WARN)
-        return
-    end
-
-    -- Configure and enable servers
-    for _, server in ipairs(servers) do
-        local server_config = {
-            capabilities = capabilities,
-            on_attach = attach,
-        }
-
-        -- Merge server-specific config if exists
-        if server_configs[server] then
-            server_config = vim.tbl_deep_extend("force", server_config, server_configs[server]())
-        end
-
-        vim.lsp.config(server, server_config)
-    end
-
-    vim.lsp.enable(servers)
 end
 
 return {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
         "hrsh7th/cmp-nvim-lsp",
-        "SmiteshP/nvim-navic",
         "williamboman/mason-lspconfig.nvim",
     },
-    config = config,
+    config = function()
+        -- Get servers
+        local servers = require("mason-lspconfig").get_installed_servers()
+        if #servers == 0 then
+            vim.notify("No LSP servers found", vim.log.levels.WARN)
+            return
+        end
+
+        -- Setup global configurations
+        setup_diagnostics()
+        setup_handlers()
+
+        local attach = create_attach()
+        local capabilities = get_capabilities()
+
+        -- Configure and enable servers
+        for _, server in ipairs(servers) do
+            vim.lsp.config(
+                server,
+                vim.tbl_deep_extend("force", {
+                    capabilities = capabilities,
+                    on_attach = attach,
+                }, server_configs[server] and server_configs[server]() or {})
+            )
+        end
+        vim.lsp.enable(servers)
+    end,
 }
