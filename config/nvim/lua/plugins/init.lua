@@ -30,6 +30,7 @@ local function parse_spec(input)
         version = input.version,
         name = input.name,
         config = input.config,
+        build = input.build,
         priority = input.priority or 0,
         dependencies = input.dependencies,
     }
@@ -45,8 +46,11 @@ local function resolve_name(src, name)
 end
 
 local function setup_plugins(specs_ext)
+    local auto = require("core.utils.autocmd")
+
     local specs = {}
     local configs = {}
+    local builds = {}
 
     table.sort(specs_ext, function(a, b)
         local pa = (type(a) == "table" and a.priority) or 0
@@ -77,7 +81,42 @@ local function setup_plugins(specs_ext)
         if spec.config then
             configs[#configs + 1] = spec.config
         end
+
+        if spec.build then
+            builds[spec.name] = spec.build
+        end
     end
+
+    auto.group("PackHooks", { clear = true })
+    auto.cmd("PackChanged", nil, function(args)
+        local data = args.data
+        if not data or not data.spec then
+            return
+        end
+
+        local build = builds[data.spec.name]
+        if not build then
+            return
+        end
+
+        if data.kind ~= "install" and data.kind ~= "update" then
+            return
+        end
+
+        if not data.active then
+            vim.cmd.packadd(data.spec.name)
+        end
+
+        if type(build) == "function" then
+            pcall(build, data)
+        elseif type(build) == "string" then
+            if build:sub(1, 1) == ":" then
+                vim.cmd(build:sub(2))
+            else
+                vim.fn.system(build)
+            end
+        end
+    end)
 
     vim.pack.add(specs, { confirm = false })
 

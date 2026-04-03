@@ -18,6 +18,9 @@ return {
     dependencies = {
         "JoosepAlviste/nvim-ts-context-commentstring",
     },
+    build = function()
+        require("nvim-treesitter").update()
+    end,
     config = function()
         if vim.fn.executable("cc") == 0 or vim.fn.executable("make") == 0 then
             vim.notify("Install a C compiler and Make to proper use treesitter!", vim.log.level.WARN)
