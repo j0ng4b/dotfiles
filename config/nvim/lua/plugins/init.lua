@@ -72,7 +72,7 @@ local function setup_plugins(specs_ext)
         end
     end
 
-    vim.pack.add(specs)
+    vim.pack.add(specs, { confirm = false })
 
     for _, config in ipairs(configs) do
         pcall(config)

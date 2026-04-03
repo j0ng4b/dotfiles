@@ -73,7 +73,7 @@ local function setup_highlights()
         local hl = resolve_hl(name)
         if hl.fg then
             vim.api.nvim_set_hl(0, name, {
-                fg = get_contrast_fg(bg),
+                fg = get_contrast_fg(hl.fg),
                 bg = hl.fg,
                 bold = hl.bold,
                 italic = hl.italic,
@@ -127,7 +127,9 @@ return {
                 }),
                 ["<Tab>"] = cmp.mapping(function(fallback)
                     if cmp.visible() then
-                        cmp.select_next_item()
+                        cmp.select_next_item({
+                            behavior = cmp.SelectBehavior.Select,
+                        })
                     elseif vim.snippet.active({ direction = 1 }) then
                         vim.snippet.jump(1)
                     elseif has_words_before() then
@@ -138,7 +140,9 @@ return {
                 end, { "i", "s" }),
                 ["<S-Tab>"] = cmp.mapping(function(fallback)
                     if cmp.visible() then
-                        cmp.select_prev_item()
+                        cmp.select_prev_item({
+                            behavior = cmp.SelectBehavior.Select,
+                        })
                     elseif vim.snippet.active({ direction = -1 }) then
                         vim.snippet.jump(-1)
                     else

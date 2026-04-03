@@ -20,7 +20,6 @@ return {
     },
     config = function()
         if vim.fn.executable("cc") == 0 or vim.fn.executable("make") == 0 then
-            ensure_installed = nil
             vim.notify("Install a C compiler and Make to proper use treesitter!", vim.log.level.WARN)
         end
 
