@@ -30,6 +30,7 @@ local function parse_spec(input)
         version = input.version,
         name = input.name,
         config = input.config,
+        priority = input.priority or 0,
         dependencies = input.dependencies,
     }
 end
@@ -46,6 +47,12 @@ end
 local function setup_plugins(specs_ext)
     local specs = {}
     local configs = {}
+
+    table.sort(specs_ext, function(a, b)
+        local pa = (type(a) == "table" and a.priority) or 0
+        local pb = (type(b) == "table" and b.priority) or 0
+        return pa > pb
+    end)
 
     for _, raw in ipairs(specs_ext) do
         local spec = parse_spec(raw)
