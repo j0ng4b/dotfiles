@@ -1,5 +1,6 @@
 return {
     "mason-org/mason.nvim",
+    priority = 100,
     dependencies = { "WhoIsSethDaniel/mason-tool-installer.nvim" },
     config = function()
         require("mason").setup()
