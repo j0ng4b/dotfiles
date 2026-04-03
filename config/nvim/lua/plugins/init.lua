@@ -84,6 +84,7 @@ setup_plugins({
     require("plugins.autopairs"),
     require("plugins.bufferline"),
     require("plugins.conform"),
+    require("plugins.cmp"),
     require("plugins.gitsigns"),
     require("plugins.highlight-colors"),
     require("plugins.hop"),
@@ -100,6 +101,7 @@ setup_plugins({
     require("plugins.statuscol"),
     require("plugins.surround"),
     require("plugins.tmux-navigator"),
+    require("plugins.treesitter"),
     require("plugins.which-key"),
 
     "https://github.com/mattn/emmet-vim",

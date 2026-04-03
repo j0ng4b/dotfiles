@@ -1,66 +1,73 @@
-local config = function()
-    local ensure_installed = {
-        "c",
-        "cmake",
-        "cpp",
-        "make",
+local function get_installed_parsers()
+    local parser_filepaths = vim.api.nvim_get_runtime_file("parser/*.*", true)
 
-        "css",
-        "html",
-        "javascript",
-        "tsx",
-        "typescript",
-        "vue",
+    local installed_parsers = {}
+    for _, filepath in ipairs(parser_filepaths) do
+        local parser = string.match(filepath, ".*[/\\]([^/\\]+)%.%w+$")
 
-        "java",
-        "python",
-
-        "dockerfile",
-        "yaml",
-
-        "json",
-        "json5",
-        "jsonc",
-
-        "lua",
-        "vim",
-        "vimdoc",
-    }
-
-    if vim.fn.executable("cc") == 0 or vim.fn.executable("make") == 0 then
-        ensure_installed = nil
-        vim.notify("Install a C compiler and Make to proper use treesitter!", vim.log.level.WARN)
+        if not (vim.list_contains(installed_parsers, parser)) then
+            table.insert(installed_parsers, parser)
+        end
     end
 
-    require("nvim-treesitter.configs").setup({
-        ensure_installed = ensure_installed,
-
-        highlight = {
-            enable = true,
-        },
-
-        incremental_selection = {
-            enable = true,
-            keymaps = {
-                init_selection = "gnn",
-                node_incremental = "grn",
-                scope_incremental = "grc",
-                node_decremental = "grm",
-            },
-        },
-
-        indent = {
-            enable = true,
-        },
-    })
+    return installed_parsers
 end
 
 return {
     "nvim-treesitter/nvim-treesitter",
     dependencies = {
-        "nvim-treesitter/nvim-treesitter-textobjects",
         "JoosepAlviste/nvim-ts-context-commentstring",
     },
-    config = config,
-    priority = 100,
+    config = function()
+        if vim.fn.executable("cc") == 0 or vim.fn.executable("make") == 0 then
+            ensure_installed = nil
+            vim.notify("Install a C compiler and Make to proper use treesitter!", vim.log.level.WARN)
+        end
+
+        local treesitter = require("nvim-treesitter")
+        treesitter.install({
+            "c",
+            "cpp",
+            "cmake",
+            "make",
+
+            "html",
+            "tsx",
+            "jsx",
+            "vue",
+            "css",
+            "javascript",
+            "typescript",
+
+            "go",
+            "java",
+
+            "jinja",
+            "python",
+
+            "dockerfile",
+            "yaml",
+
+            "json",
+            "json5",
+
+            "lua",
+            "vim",
+            "vimdoc",
+        })
+
+        local auto = require("core.utils.autocmd")
+        auto.cmd(
+            "FileType",
+            vim.iter(get_installed_parsers()):map(vim.treesitter.language.get_filetypes):flatten():totable(),
+            function(args)
+                -- enable highlight
+                vim.treesitter.start(args.buf)
+
+                -- enable indentation
+                vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            end,
+            { group = auto.group("Treesitter", { clear = true }) }
+        )
+    end,
 }
