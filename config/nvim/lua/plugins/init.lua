@@ -75,16 +75,17 @@ local function setup_plugins(specs_ext)
     vim.pack.add(specs)
 
     for _, config in ipairs(configs) do
-        config()
+        pcall(config)
     end
 end
 
 setup_plugins({
     require("plugins.alpha"),
     require("plugins.autopairs"),
+    require("plugins.autotag"),
     require("plugins.bufferline"),
-    require("plugins.conform"),
     require("plugins.cmp"),
+    require("plugins.conform"),
     require("plugins.gitsigns"),
     require("plugins.highlight-colors"),
     require("plugins.hop"),
@@ -97,6 +98,7 @@ setup_plugins({
     require("plugins.navic"),
     require("plugins.neocord"),
     require("plugins.neotree"),
+    require("plugins.noice"),
     require("plugins.smear-cursor"),
     require("plugins.statuscol"),
     require("plugins.surround"),

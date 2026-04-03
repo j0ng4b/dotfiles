@@ -163,8 +163,8 @@ local extensions = {
 local setup_keymaps = function(bufnr)
     local opts = { buffer = bufnr }
 
-    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts) -- Hover documentation
-    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- Navigation (Gotos)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
     vim.keymap.set("n", "gd", telescope_or(vim.lsp.buf.definition, "lsp_definitions"), opts)
     vim.keymap.set("n", "gi", telescope_or(vim.lsp.buf.implementation, "lsp_implementations"), opts)
     vim.keymap.set("n", "gt", telescope_or(vim.lsp.buf.type_definition, "lsp_type_definitions"), opts)
@@ -204,21 +204,6 @@ local setup_diagnostics = function()
     })
 
     auto.cmd("CursorHold", nil, vim.diagnostic.open_float)
-end
-
-local setup_handlers = function()
-    local handlers = {
-        ["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-            border = "rounded",
-        }),
-        ["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-            border = "rounded",
-        }),
-    }
-
-    for handler, handler_config in pairs(handlers) do
-        vim.lsp.handlers[handler] = handler_config
-    end
 end
 
 local create_attach = function()
@@ -282,7 +267,6 @@ return {
 
         -- Setup global configurations
         setup_diagnostics()
-        setup_handlers()
 
         local attach = create_attach()
         local capabilities = get_capabilities()

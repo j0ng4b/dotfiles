@@ -1,27 +1,11 @@
-local install_required_treesitters = function()
-    local treesitter = require("nvim-treesitter.configs")
-    local ensure_installed = treesitter.get_ensure_installed_parsers()
-
-    local noice_treesitter_languages = {
+local config = function()
+    require("nvim-treesitter").install({
         "vim",
         "lua",
         "bash",
         "regex",
         "markdown",
-        "markdown_inline",
-    }
-
-    for _, language in ipairs(noice_treesitter_languages) do
-        if not vim.tbl_contains(ensure_installed, language) then
-            table.insert(ensure_installed, language)
-        end
-    end
-
-    treesitter.setup({ ensure_installed = ensure_installed })
-end
-
-local config = function()
-    install_required_treesitters()
+    })
 
     require("noice").setup({
         cmdline = {
@@ -135,14 +119,6 @@ return {
     dependencies = {
         "MunifTanjim/nui.nvim",
         "nvim-treesitter/nvim-treesitter",
-        {
-            "rcarriga/nvim-notify",
-            opts = {
-                fps = 60,
-                timeout = 1000,
-                max_width = 40,
-                top_down = false,
-            },
-        },
+        "rcarriga/nvim-notify",
     },
 }
