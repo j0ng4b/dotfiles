@@ -164,21 +164,18 @@ local config = function()
             fields = { "kind", "abbr", "menu" },
             format = function(entry, item)
                 local color_item = require("nvim-highlight-colors").format(entry, { kind = item.kind })
+                local source_labels = {
+                    nvim_lsp = "[Lsp]",
+                    nvim_lsp_signature_help = "[LspSig]",
+                    buffer = "[Buffer]",
+                    cmdline = "[CMD]",
+                    async_path = "[Path]",
+                    codecompanion_tools = "[CC]",
+                    codecompanion_variables = "[CC]",
+                    codecompanion_slash_commands = "[CC]",
+                }
 
-                item.menu = " · "
-                    .. ({
-                        nvim_lsp = "[Lsp]",
-                        nvim_lsp_signature_help = "[LspSig]",
-                        snippets = "[Snippet]",
-                        buffer = "[Buffer]",
-                        emmet_vim = "[Emmet]",
-                        path = "[Path]",
-                        codecompanion_tools = "[CC]",
-                        codecompanion_variables = "[CC]",
-                        codecompanion_slash_commands = "[CC]",
-                        ["vim-dadbod-completion"] = "[DB]",
-                    })[entry.source.name]
-
+                item.menu = " · " .. (source_labels[entry.source.name] or entry.source.name)
                 item.kind = " " .. (icons.kinds[item.kind] or "") .. " "
 
                 if color_item.abbr_hl_group then
@@ -222,7 +219,6 @@ local config = function()
         mapping = cmp.mapping.preset.cmdline(),
         sources = cmp.config.sources({
             { name = "async_path" },
-        }, {
             { name = "cmdline" },
         }),
         matching = { disallow_symbol_nonprefix_matching = false },
@@ -236,7 +232,9 @@ local config = function()
         vim.b.copilot_suggestion_hidden = false
     end)
 
-    -- Setup highlights every colorscheme change
+    -- Setup highlights
+    setup_highlights()
+
     local auto = require("core.utils.autocmd")
     auto.cmd("Colorscheme", nil, setup_highlights)
 end
