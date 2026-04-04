@@ -5,8 +5,10 @@ Shape {
     id: root
 
     enum Side {
-        Left,
-        Right
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
     }
 
     property var side
@@ -21,17 +23,52 @@ Shape {
         fillColor: root.color
 
         PathAngleArc {
-            startAngle: root.side == Corner.Side.Left ? 180 : -90
+            startAngle: {
+                switch (root.side) {
+                    case Corner.Side.TopLeft:    return 180;
+                    case Corner.Side.TopRight:   return -90;
+                    case Corner.Side.BottomLeft: return 90;
+                    case Corner.Side.BottomRight: return 0;
+                }
+            }
             sweepAngle: 90
-            centerX: root.side == Corner.Side.Left ? root.size : 0
-            centerY: root.size
+            centerX: {
+                switch (root.side) {
+                    case Corner.Side.TopLeft:    return root.size;
+                    case Corner.Side.TopRight:   return 0;
+                    case Corner.Side.BottomLeft: return root.size;
+                    case Corner.Side.BottomRight: return 0;
+                }
+            }
+            centerY: {
+                switch (root.side) {
+                    case Corner.Side.TopLeft:    return root.size;
+                    case Corner.Side.TopRight:   return root.size;
+                    case Corner.Side.BottomLeft: return 0;
+                    case Corner.Side.BottomRight: return 0;
+                }
+            }
             radiusX: root.size
             radiusY: root.size
         }
 
         PathLine {
-            x: root.side == Corner.Side.Left ? 0 : root.size
-            y: 0
+            x: {
+                switch (root.side) {
+                    case Corner.Side.TopLeft:    return 0;
+                    case Corner.Side.TopRight:   return root.size;
+                    case Corner.Side.BottomLeft: return 0;
+                    case Corner.Side.BottomRight: return root.size;
+                }
+            }
+            y: {
+                switch (root.side) {
+                    case Corner.Side.TopLeft:    return 0;
+                    case Corner.Side.TopRight:   return 0;
+                    case Corner.Side.BottomLeft: return root.size;
+                    case Corner.Side.BottomRight: return root.size;
+                }
+            }
         }
     }
 }

@@ -105,13 +105,13 @@ Variants {
                 width: content.width
 
                 Corner {
-                    side: Corner.Side.Left
+                    side: Corner.Side.TopLeft
                     color: Colorscheme.current.surface
                     Layout.alignment: Qt.AlignLeft
                 }
 
                 Corner {
-                    side: Corner.Side.Right
+                    side: Corner.Side.TopRight
                     color: Colorscheme.current.surface
                     Layout.alignment: Qt.AlignRight
                 }
