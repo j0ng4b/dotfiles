@@ -7,7 +7,7 @@ Rectangle {
     id: workspaces
     property var output
 
-    color: Colorscheme.current.surface_container_high
+    color: Colorscheme.current.surface
 
     width: workspaceIndicator.implicitWidth + 24
     height: workspaceIndicator.implicitHeight + 12

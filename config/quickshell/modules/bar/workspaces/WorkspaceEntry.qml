@@ -8,7 +8,7 @@ Rectangle {
 
     implicitWidth: 18 + (modelData.active ? 6 : 0)
     implicitHeight: 8
-    color: modelData.active ? Colorscheme.current.primary : Colorscheme.current.surface_variant
+    color: modelData.active ? Colorscheme.current.primary : Colorscheme.current.surface_container_high
     radius: 10
 
     MouseArea {
