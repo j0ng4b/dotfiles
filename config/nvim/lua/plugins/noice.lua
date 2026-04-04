@@ -115,10 +115,10 @@ end
 
 return {
     "folke/noice.nvim",
-    config = config,
     dependencies = {
         "MunifTanjim/nui.nvim",
         "nvim-treesitter/nvim-treesitter",
         "rcarriga/nvim-notify",
     },
+    config = config,
 }

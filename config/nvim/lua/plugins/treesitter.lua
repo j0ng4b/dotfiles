@@ -15,9 +15,8 @@ end
 
 return {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = {
-        "JoosepAlviste/nvim-ts-context-commentstring",
-    },
+    dependencies = "JoosepAlviste/nvim-ts-context-commentstring",
+    priority = 100,
     build = function()
         require("nvim-treesitter").update()
     end,

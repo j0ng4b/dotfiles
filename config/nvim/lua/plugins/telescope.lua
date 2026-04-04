@@ -1,5 +1,6 @@
 local config = function()
     local telescope = require("telescope")
+    local builtin = require("telescope.builtin")
     local actions = require("telescope.actions")
 
     local vimgrep_arguments = nil
@@ -126,17 +127,35 @@ local config = function()
     telescope.load_extension("fzf")
     telescope.load_extension("ui-select")
     telescope.load_extension("notify")
-    telescope.load_extension("undo")
+
+    -- setup keymaps
+    vim.keymap.set({ "n" }, "<leader>ff", builtin.find_files, {
+        desc = "find file",
+    })
+
+    vim.keymap.set({ "n" }, "<leader>fg", builtin.live_grep, {
+        desc = "search text in files",
+    })
+
+    vim.keymap.set({ "n" }, "<leader>fb", builtin.buffers, {
+        desc = "find buffer",
+    })
+
+    vim.keymap.set({ "n" }, "<leader>fs", builtin.current_buffer_fuzzy_find, {
+        desc = "search text on current file",
+    })
+
+    vim.keymap.set({ "n" }, "<leader>fo", builtin.lsp_document_symbols, {
+        desc = "search for lsp symbols on current file",
+    })
 end
 
 return {
     "nvim-telescope/telescope.nvim",
-    lazy = true,
     config = config,
     dependencies = {
-        { "nvim-lua/plenary.nvim" },
-        { "nvim-telescope/telescope-ui-select.nvim" },
-        { "debugloop/telescope-undo.nvim" },
+        "nvim-lua/plenary.nvim",
+        "nvim-telescope/telescope-ui-select.nvim",
 
         {
             "nvim-telescope/telescope-fzf-native.nvim",

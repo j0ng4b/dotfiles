@@ -15,11 +15,8 @@ local get_capabilities = function()
 
     capabilities.textDocument.colorProvider = { dynamicRegistration = true }
     capabilities.textDocument.foldingRange = {
-        dynamicRegistration = true,
+        dynamicRegistration = false,
         lineFoldingOnly = true,
-    }
-    capabilities.textDocument.inlayHint = {
-        dynamicRegistration = true,
     }
 
     return capabilities
