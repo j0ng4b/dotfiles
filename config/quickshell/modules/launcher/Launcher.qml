@@ -1,12 +1,13 @@
-pragma ComponentBehavior: Bound
+ pragma ComponentBehavior: Bound
 
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 import qs.config
+import qs.components
 import qs.services
+import qs.modules.launcher.components
 
 Variants {
     model: Quickshell.screens
@@ -15,16 +16,16 @@ Variants {
         required property var modelData
         screen: modelData
 
-        anchors.top: true
         anchors.left: true
-        anchors.bottom: true
-
-        implicitWidth: 280
+        implicitWidth: 320
+        implicitHeight: Math.round(launcher.screen.height * Config.launcher.heightFraction)
         color: 'transparent'
         exclusionMode: ExclusionMode.Ignore
 
         readonly property bool shouldShow:
             LauncherState.open && LauncherState.activeScreen === launcher.modelData.name
+
+        readonly property bool isGrid: Config.launcher.viewMode === 'grid'
 
         visible: shouldShow || hideTimer.running
 
@@ -32,227 +33,153 @@ Variants {
             ? WlrKeyboardFocus.OnDemand
             : WlrKeyboardFocus.None
 
-        onShouldShowChanged: {
-            if (!shouldShow)
-                hideTimer.restart();
-        }
+        onShouldShowChanged: if (!shouldShow) hideTimer.restart()
 
-        Timer {
-            id: hideTimer
-            interval: 310
-            repeat: false
-        }
+        Timer { id: hideTimer;        interval: 310; repeat: false }
+        Timer { id: focusTimer;       interval: 30;  repeat: false; onTriggered: searchBar.activate() }
 
         readonly property list<DesktopEntry> entries: DesktopEntries.applications.values
         property list<DesktopEntry> filtered: entries
 
-        Rectangle {
-            id: panel
-            width: launcher.implicitWidth
-            height: launcher.height
-            color: Colorscheme.current.surface
+        Column {
+            id: container
 
             x: launcher.shouldShow ? 0 : -launcher.implicitWidth
-
             Behavior on x {
-                NumberAnimation {
-                    duration: 300
-                    easing.type: launcher.shouldShow ? Easing.OutCubic : Easing.InCubic
-                }
+                NumberAnimation { duration: 200; easing.type: Easing.InOut }
+            }
+
+            Corner {
+                id: cornerTop
+                side: Corner.Side.BottomLeft
+                color: Colorscheme.current.surface
             }
 
             Rectangle {
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                anchors.right: parent.right
-                width: 1
-                color: Colorscheme.current.surface_variant
-                opacity: 0.5
-            }
+                id: panel
+                width: launcher.implicitWidth
+                height: launcher.implicitHeight - cornerTop.size - cornerBottom.size
+                topRightRadius: 10
+                bottomRightRadius: 10
+                color: Colorscheme.current.surface
 
-            ColumnLayout {
-                anchors.fill: parent
-                anchors.margins: 10
-                spacing: 8
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: 8
 
-                Rectangle {
-                    Layout.fillWidth: true
-                    height: 36
-                    radius: 8
-                    color: Colorscheme.current.surface_container_high
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
 
-                    Text {
-                        anchors.fill: parent
-                        anchors.leftMargin: 12
-                        verticalAlignment: Text.AlignVCenter
-                        visible: searchInput.text === ''
-                        text: 'Search apps...'
-                        color: Colorscheme.current.on_surface
-                        opacity: 0.4
-                        font.pixelSize: 13
-                    }
-
-                    TextInput {
-                        id: searchInput
-                        anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
-                        verticalAlignment: TextInput.AlignVCenter
-                        color: Colorscheme.current.on_surface
-                        font.pixelSize: 13
-                        clip: true
-                        onTextChanged: launcher.filter()
-
-                        Keys.onPressed: event => {
-                            if (event.key === Qt.Key_Escape) {
-                                LauncherState.close();
-                                event.accepted = true;
-                            } else if (event.key === Qt.Key_Down) {
-                                appList.incrementCurrentIndex();
-                                event.accepted = true;
-                            } else if (event.key === Qt.Key_Up) {
-                                appList.decrementCurrentIndex();
-                                event.accepted = true;
-                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                                launcher.launchSelected();
-                                event.accepted = true;
-                            }
+                        SearchBar {
+                            id: searchBar
+                            Layout.fillWidth: true
+                            onTextChanged: launcher.filter()
+                            onClose:    LauncherState.close()
+                            onConfirm:   launcher.launchSelected()
+                            onMoveUp:    launcher.isGrid ? gridView.moveCurrentIndexUp()   : listView.decrementCurrentIndex()
+                            onMoveDown:  launcher.isGrid ? gridView.moveCurrentIndexDown() : listView.incrementCurrentIndex()
+                            onMoveLeft:  if (launcher.isGrid) gridView.moveCurrentIndexLeft()
+                            onMoveRight: if (launcher.isGrid) gridView.moveCurrentIndexRight()
                         }
-                    }
-                }
 
-                ListView {
-                    id: appList
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    clip: true
-                    spacing: 2
-                    model: launcher.filtered
-                    highlightFollowsCurrentItem: true
-                    keyNavigationEnabled: false
-                    currentIndex: -1
+                        Rectangle {
+                            width: 36
+                            height: 36
+                            radius: 8
+                            color: viewToggle.containsMouse
+                                ? Colorscheme.current.surface_variant
+                                : Colorscheme.current.surface_container_high
 
-                    highlight: Rectangle {
-                        color: Colorscheme.current.surface_container_high
-                        radius: 6
-                    }
-
-                    delegate: Rectangle {
-                        id: entry
-                        required property var modelData
-                        required property int index
-                        width: appList.width
-                        height: 40
-                        radius: 6
-                        color: appList.currentIndex === index || ma.containsMouse
-                            ? Colorscheme.current.surface_container_high
-                            : 'transparent'
-
-                        Behavior on color { ColorAnimation { duration: 100 } }
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            spacing: 10
-
-                            Image {
-                                id: appIcon
-                                Layout.preferredWidth: 24
-                                Layout.preferredHeight: 24
-                                sourceSize: Qt.size(24, 24)
-                                source: Quickshell.iconPath(entry.modelData.icon) || ''
-
-                                Rectangle {
-                                    anchors.fill: parent
-                                    color: Colorscheme.current.primary
-                                    radius: 4
-                                    visible: appIcon.source === '' || appIcon.status === Image.Error
-
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: entry.modelData.name.charAt(0).toUpperCase()
-                                        color: Colorscheme.current.on_primary
-                                        font.pixelSize: 12
-                                        font.bold: true
-                                    }
-                                }
-                            }
+                            Behavior on color { ColorAnimation { duration: 100 } }
 
                             Text {
-                                Layout.fillWidth: true
-                                text: entry.modelData.name
+                                anchors.centerIn: parent
+                                font.family: 'Material Symbols Rounded Filled'
+                                font.pixelSize: 18
                                 color: Colorscheme.current.on_surface
-                                font.pixelSize: 13
-                                elide: Text.ElideRight
-                                verticalAlignment: Text.AlignVCenter
+                                text: launcher.isGrid ? 'list' : 'grid_view'
                             }
-                        }
 
-                        MouseArea {
-                            id: ma
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                appList.currentIndex = index;
-                                launcher.launchSelected();
+                            MouseArea {
+                                id: viewToggle
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: Config.launcher.viewMode = launcher.isGrid ? 'list' : 'grid'
                             }
-                            onEntered: appList.currentIndex = index
                         }
                     }
+
+                    AppList {
+                        id: listView
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        visible: !launcher.isGrid
+                        model: launcher.filtered
+                        onLaunch: launcher.launchSelected()
+                    }
+
+                    AppGrid {
+                        id: gridView
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        visible: launcher.isGrid
+                        model: launcher.filtered
+                        onLaunch: launcher.launchSelected()
+                    }
                 }
+            }
+
+            Corner {
+                id: cornerBottom
+                side: Corner.Side.TopLeft
+                color: Colorscheme.current.surface
             }
         }
 
         function filter() {
-            appList.currentIndex = -1;
-            const q = searchInput.text.toLowerCase().trim();
+            const q = searchBar.text.toLowerCase().trim();
             filtered = entries.filter(a =>
                 q === '' || a.name.toLowerCase().includes(q)
             );
+
+            listView.currentIndex = -1;
+            gridView.currentIndex = -1;
         }
 
         function launchSelected() {
-            if (appList.currentIndex < 0 || appList.currentIndex >= filtered.length)
+            const idx = launcher.isGrid ? gridView.currentIndex : listView.currentIndex;
+            if (idx < 0 || idx >= filtered.length)
                 return;
 
-            const app = filtered[appList.currentIndex];
+            const app = filtered[idx];
             const execArgs = app.runInTerminal
-                ? [Config.terminal.exec, Config.terminal.execFlag, ...app.command]
+                ? [Config.launcher.terminal.exec, Config.launcher.terminal.execFlag, ...app.command]
                 : app.command;
 
             Quickshell.execDetached({
                 command: execArgs,
                 workingDirectory: app.workingDirectory,
             });
-
             LauncherState.close();
         }
 
         Connections {
             target: LauncherState
 
-            function onOpenChanged()        { _maybeActivate(); }
+            function onOpenChanged()         { _maybeActivate(); }
             function onActiveScreenChanged() { _maybeActivate(); }
 
             function _maybeActivate() {
                 if (!LauncherState.open || LauncherState.activeScreen !== launcher.modelData.name)
                     return;
 
-                searchInput.text = '';
+                searchBar.clear();
                 launcher.filter();
-
-                appList.currentIndex = -1;
                 focusTimer.restart();
             }
-        }
-
-        Timer {
-            id: focusTimer
-            interval: 30
-            repeat: false
-            onTriggered: searchInput.forceActiveFocus()
         }
     }
 }

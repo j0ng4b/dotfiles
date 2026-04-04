@@ -16,7 +16,7 @@ Singleton {
 
     readonly property alias lockscreen: adapter.lockscreen
 
-    readonly property alias terminal: adapter.terminal
+    readonly property alias launcher: adapter.launcher
 
     readonly property alias wallpaper: adapter.wallpaper
     readonly property alias wallpaperGeneratingFg: wallpaperFgGenerator.running
@@ -93,11 +93,22 @@ Singleton {
                 }
             }
 
-            property JsonObject terminal: JsonObject {
-                // Terminal emulator used to launch apps with runInTerminal: true
-                // The '-e' flag is standard for most terminals (foot, alacritty, kitty, xterm...)
-                property string exec: 'foot'
-                property string execFlag: '-e'
+            property JsonObject launcher: JsonObject {
+                property JsonObject terminal: JsonObject {
+                    // Terminal emulator used to launch apps with runInTerminal: true
+                    // The '-e' flag is standard for most terminals (foot, alacritty, kitty, xterm...)
+                    property string exec: 'foot'
+                    property string execFlag: '-e'
+                }
+
+                // Launcher max height in fraction of monitor height (0.0 - 1.0)
+                property real heightFraction: 0.75
+
+                // Possible values: 'grid' or 'list'
+                property string viewMode: 'list'
+
+                // Grid columns (only used when viewMode is 'grid')
+                property int gridColumns: 3
             }
         }
     }
