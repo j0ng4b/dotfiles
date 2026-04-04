@@ -86,6 +86,31 @@ local config = function()
         texthl = "DapBreakpointRejected",
     })
 
+    -- setup keymaps
+    vim.keymap.set({ "n" }, "<F5>", function()
+        require("dap").continue()
+    end, { desc = "Start or continue debugging" })
+
+    vim.keymap.set({ "n" }, "<F10>", function()
+        require("dap").step_over()
+    end, { desc = "Step over the current function" })
+
+    vim.keymap.set({ "n" }, "<F11>", function()
+        require("dap").step_into()
+    end, { desc = "Step into the current function" })
+
+    vim.keymap.set({ "n" }, "<F12>", function()
+        require("dap").step_out()
+    end, { desc = "Step out of the current function" })
+
+    vim.keymap.set({ "n" }, "<Leader>bt", function()
+        require("dap").toggle_breakpoint()
+    end, { desc = "Toggle breakpoint" })
+
+    vim.keymap.set({ "n" }, "<Leader>bl", function()
+        require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
+    end, { desc = "Set log point breakpoint with message" })
+
     -- -- DAP ui setup
     ui.setup()
 
@@ -103,7 +128,6 @@ end
 
 return {
     "mfussenegger/nvim-dap",
-    event = "VeryLazy",
     config = config,
     dependencies = {
         "rcarriga/nvim-dap-ui",

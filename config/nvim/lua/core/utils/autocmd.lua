@@ -28,12 +28,10 @@ function M.cmd(events, pattern, cmd, opts)
         opts = { group = opts }
     end
 
-    if pattern ~= nil then
-        if type(pattern) == "string" and string.find(pattern, ",") then
-            opts.pattern = split(pattern, ",")
-        else
-            opts.pattern = pattern
-        end
+    if type(pattern) == "string" and string.find(pattern, ",") then
+        opts.pattern = split(pattern, ",")
+    elseif type(pattern) == "table" then
+        opts.pattern = pattern
     end
 
     if type(cmd) == "function" then

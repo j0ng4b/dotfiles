@@ -60,6 +60,16 @@ local config = function()
             "<leader>d",
             group = "󰓙 Diagnostics",
         },
+
+        {
+            "<Leader>t",
+            group = "󰙨 Test",
+        },
+
+        {
+            "<Leader>b",
+            group = "󰕷 Debug",
+        },
     })
 
     vim.keymap.set({ "n" }, "<leader>?", function()
