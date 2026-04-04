@@ -7,7 +7,14 @@ import QtQuick
 Singleton {
     id: root
 
-    property var current: Config.colors.scheme == 'dark' ? dark : light
+    property var current: {
+        const base = Config.colors.scheme === 'dark' ? dark : light;
+        return new Proxy(base, {
+            get(target, key) {
+                return key in target ? target[key] : 'transparent';
+            }
+        });
+    }
 
     property var dark: ({})
     property var light: ({})

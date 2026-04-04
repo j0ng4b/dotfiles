@@ -7,7 +7,6 @@ Rectangle {
     id: workspaces
     property var output
 
-    anchors.centerIn: parent
     color: Colorscheme.current.surface_container_high
 
     width: workspaceIndicator.implicitWidth + 24

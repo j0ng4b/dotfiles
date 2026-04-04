@@ -16,6 +16,8 @@ Singleton {
 
     readonly property alias lockscreen: adapter.lockscreen
 
+    readonly property alias terminal: adapter.terminal
+
     readonly property alias wallpaper: adapter.wallpaper
     readonly property alias wallpaperGeneratingFg: wallpaperFgGenerator.running
 
@@ -90,6 +92,21 @@ Singleton {
                     }
                 }
             }
+
+            property JsonObject terminal: JsonObject {
+                // Terminal emulator used to launch apps with runInTerminal: true
+                // The '-e' flag is standard for most terminals (foot, alacritty, kitty, xterm...)
+                property string exec: 'foot'
+                property string execFlag: '-e'
+            }
+        }
+    }
+
+    IpcHandler {
+        target: 'config'
+
+        function setWallpaper(path: string) {
+            root.wallpaper.source = Qt.resolvedUrl(path);
         }
     }
 
