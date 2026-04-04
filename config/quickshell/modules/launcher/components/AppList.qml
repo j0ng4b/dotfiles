@@ -9,10 +9,11 @@ ListView {
 
     clip: true
     spacing: 2
-    highlightFollowsCurrentItem: true
-    keyNavigationEnabled: false
     currentIndex: -1
 
+    highlightFollowsCurrentItem: true
+    highlightMoveDuration: 250
+    highlightMoveVelocity: -1
     highlight: Rectangle {
         color: Colorscheme.current.surface_container_high
         radius: 6
@@ -25,8 +26,8 @@ ListView {
 
         width: root.width
         height: 40
-        radius: 6
-        color: 'transparent'
+        radius: 8
+        color: "transparent"
 
         Row {
             anchors.fill: parent
@@ -40,13 +41,13 @@ ListView {
                 height: 24
                 anchors.verticalCenter: parent.verticalCenter
                 sourceSize: Qt.size(24, 24)
-                source: Quickshell.iconPath(entry.modelData.icon) || ''
+                source: Quickshell.iconPath(entry.modelData.icon) || ""
 
                 Rectangle {
                     anchors.fill: parent
                     color: Colorscheme.current.primary
                     radius: 4
-                    visible: icon.source === '' || icon.status === Image.Error
+                    visible: icon.source === "" || icon.status === Image.Error
 
                     Text {
                         anchors.centerIn: parent
@@ -70,7 +71,7 @@ ListView {
         }
 
         MouseArea {
-            id: ma
+            id: mouseArea
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor

@@ -12,7 +12,7 @@ Rectangle {
     signal moveRight
     signal confirm
 
-    function clear() { input.text = ''; }
+    function clear() { input.text = ""; }
     function activate() { input.forceActiveFocus(); }
 
     property alias text: input.text
@@ -25,8 +25,8 @@ Rectangle {
         anchors.fill: parent
         anchors.leftMargin: 12
         verticalAlignment: Text.AlignVCenter
-        visible: input.text === ''
-        text: 'Search apps...'
+        visible: input.text === ""
+        text: "Search apps..."
         color: Colorscheme.current.on_surface
         opacity: 0.4
         font.pixelSize: 13

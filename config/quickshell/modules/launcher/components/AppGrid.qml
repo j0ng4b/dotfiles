@@ -14,11 +14,12 @@ GridView {
     cellWidth: Math.floor(width / cols)
     cellHeight: cellWidth
 
+    highlightFollowsCurrentItem: true
+    highlightMoveDuration: 200
     highlight: Rectangle {
         color: Colorscheme.current.surface_container_high
         radius: 8
     }
-    highlightFollowsCurrentItem: true
 
     delegate: Item {
         id: entry
@@ -32,7 +33,7 @@ GridView {
             anchors.fill: parent
             anchors.margins: 4
             radius: 8
-            color: 'transparent'
+            color: "transparent"
 
             Column {
                 anchors.centerIn: parent
@@ -44,13 +45,13 @@ GridView {
                     height: 36
                     anchors.horizontalCenter: parent.horizontalCenter
                     sourceSize: Qt.size(36, 36)
-                    source: Quickshell.iconPath(entry.modelData.icon) || ''
+                    source: Quickshell.iconPath(entry.modelData.icon) || ""
 
                     Rectangle {
                         anchors.fill: parent
                         color: Colorscheme.current.primary
                         radius: 6
-                        visible: icon.source === '' || icon.status === Image.Error
+                        visible: icon.source === "" || icon.status === Image.Error
 
                         Text {
                             anchors.centerIn: parent

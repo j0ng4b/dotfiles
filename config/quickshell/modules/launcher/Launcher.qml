@@ -16,37 +16,33 @@ Variants {
         required property var modelData
         screen: modelData
 
+        color: "transparent"
         anchors.left: true
         implicitWidth: 320
         implicitHeight: Math.round(launcher.screen.height * Config.launcher.heightFraction)
-        color: 'transparent'
         exclusionMode: ExclusionMode.Ignore
-
-        readonly property bool shouldShow:
-            LauncherState.open && LauncherState.activeScreen === launcher.modelData.name
-
-        readonly property bool isGrid: Config.launcher.viewMode === 'grid'
-
         visible: shouldShow || hideTimer.running
 
-        WlrLayershell.keyboardFocus: shouldShow
+        WlrLayershell.keyboardFocus: LauncherState.isOpen(launcher.modelData.name)
             ? WlrKeyboardFocus.OnDemand
             : WlrKeyboardFocus.None
 
-        onShouldShowChanged: if (!shouldShow) hideTimer.restart()
-
-        Timer { id: hideTimer;        interval: 310; repeat: false }
-        Timer { id: focusTimer;       interval: 30;  repeat: false; onTriggered: searchBar.activate() }
-
-        readonly property list<DesktopEntry> entries: DesktopEntries.applications.values
+        property bool shouldShow: LauncherState.isOpen(launcher.modelData.name)
         property list<DesktopEntry> filtered: entries
+
+        readonly property bool isGrid: Config.launcher.viewMode === "grid"
+        readonly property list<DesktopEntry> entries: DesktopEntries.applications.values
+
+        readonly property int animationDuration: 200
+
+        onShouldShowChanged: if (!shouldShow) hideTimer.restart();
 
         Column {
             id: container
 
-            x: launcher.shouldShow ? 0 : -launcher.implicitWidth
+            x: LauncherState.isOpen(launcher.modelData.name) ? 0 : -launcher.implicitWidth
             Behavior on x {
-                NumberAnimation { duration: 200; easing.type: Easing.InOut }
+                NumberAnimation { duration: launcher.animationDuration; easing.type: Easing.InOut }
             }
 
             Corner {
@@ -64,24 +60,25 @@ Variants {
                 color: Colorscheme.current.surface
 
                 ColumnLayout {
+                    spacing: 8
                     anchors.fill: parent
                     anchors.margins: 20
-                    spacing: 8
 
                     RowLayout {
-                        Layout.fillWidth: true
                         spacing: 8
+                        Layout.fillWidth: true
 
                         SearchBar {
                             id: searchBar
                             Layout.fillWidth: true
+
                             onTextChanged: launcher.filter()
-                            onClose:    LauncherState.close()
-                            onConfirm:   launcher.launchSelected()
-                            onMoveUp:    launcher.isGrid ? gridView.moveCurrentIndexUp()   : listView.decrementCurrentIndex()
-                            onMoveDown:  launcher.isGrid ? gridView.moveCurrentIndexDown() : listView.incrementCurrentIndex()
-                            onMoveLeft:  if (launcher.isGrid) gridView.moveCurrentIndexLeft()
-                            onMoveRight: if (launcher.isGrid) gridView.moveCurrentIndexRight()
+                            onClose:       LauncherState.close()
+                            onConfirm:     launcher.launchSelected()
+                            onMoveUp:      launcher.isGrid ? gridView.moveCurrentIndexUp()   : listView.decrementCurrentIndex()
+                            onMoveDown:    launcher.isGrid ? gridView.moveCurrentIndexDown() : listView.incrementCurrentIndex()
+                            onMoveLeft:    if (launcher.isGrid) gridView.moveCurrentIndexLeft()
+                            onMoveRight:   if (launcher.isGrid) gridView.moveCurrentIndexRight()
                         }
 
                         Rectangle {
@@ -96,10 +93,10 @@ Variants {
 
                             Text {
                                 anchors.centerIn: parent
-                                font.family: 'Material Symbols Rounded Filled'
+                                font.family: "Material Symbols Rounded Filled"
                                 font.pixelSize: 18
                                 color: Colorscheme.current.on_surface
-                                text: launcher.isGrid ? 'list' : 'grid_view'
+                                text: launcher.isGrid ? "list" : "grid_view"
                             }
 
                             MouseArea {
@@ -107,7 +104,7 @@ Variants {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: Config.launcher.viewMode = launcher.isGrid ? 'list' : 'grid'
+                                onClicked: Config.launcher.viewMode = launcher.isGrid ? "list" : "grid"
                             }
                         }
                     }
@@ -142,7 +139,7 @@ Variants {
         function filter() {
             const q = searchBar.text.toLowerCase().trim();
             filtered = entries.filter(a =>
-                q === '' || a.name.toLowerCase().includes(q)
+                q === "" || a.name.toLowerCase().includes(q)
             );
 
             listView.currentIndex = -1;
@@ -169,7 +166,7 @@ Variants {
         Connections {
             target: LauncherState
 
-            function onOpenChanged()         { _maybeActivate(); }
+            function onOpenChanged() { _maybeActivate(); }
             function onActiveScreenChanged() { _maybeActivate(); }
 
             function _maybeActivate() {
@@ -181,5 +178,8 @@ Variants {
                 focusTimer.restart();
             }
         }
+
+        Timer { id: hideTimer;   interval: animationDuration + 20; repeat: false }
+        Timer { id: focusTimer;  interval: 30;  repeat: false; onTriggered: searchBar.activate() }
     }
 }
