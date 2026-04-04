@@ -45,7 +45,7 @@ set.backspace = "indent,eol,start"
 set.belloff = "all"
 set.completeopt = "menuone,popup,noinsert,noselect"
 set.history = 250
-set.shortmess = "stTASWIFcC"
+set.shortmess = "stTAWIFcC"
 set.showmode = false
 set.signcolumn = "number"
 
