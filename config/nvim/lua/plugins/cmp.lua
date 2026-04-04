@@ -211,6 +211,23 @@ local config = function()
         },
     })
 
+    cmp.setup.cmdline({ "/", "?" }, {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = {
+            { name = "buffer" },
+        },
+    })
+
+    cmp.setup.cmdline(":", {
+        mapping = cmp.mapping.preset.cmdline(),
+        sources = cmp.config.sources({
+            { name = "async_path" },
+        }, {
+            { name = "cmdline" },
+        }),
+        matching = { disallow_symbol_nonprefix_matching = false },
+    })
+
     cmp.event:on("menu_opened", function()
         vim.b.copilot_suggestion_hidden = true
     end)
@@ -231,6 +248,7 @@ return {
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-nvim-lsp-signature-help",
         "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-cmdline",
         "https://codeberg.org/FelipeLema/cmp-async-path",
     },
     config = config,

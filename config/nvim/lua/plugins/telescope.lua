@@ -126,7 +126,6 @@ local config = function()
 
     telescope.load_extension("fzf")
     telescope.load_extension("ui-select")
-    telescope.load_extension("notify")
 
     -- setup keymaps
     vim.keymap.set({ "n" }, "<leader>ff", builtin.find_files, {
