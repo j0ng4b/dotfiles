@@ -127,24 +127,145 @@ _watch() {
 }
 
 ##
+## Player — MPRIS via playerctl
+##
+
+_require_playerctl() {
+    if ! command -v playerctl >/dev/null 2>&1; then
+        error "multimedia: playerctl is required for player control"
+        exit 1
+    fi
+}
+
+_player_args() {
+    [ -n "$player_name" ] && echo "--player=$player_name"
+}
+
+_player_list_json() {
+    changed_player="$1"  # player name that changed, or "none"
+
+    comma=false
+    printf '['
+    playerctl --list-all 2>/dev/null | while IFS= read -r name; do
+        [ "$comma" = "true" ] && printf ','
+
+        status=$(playerctl --player="$name" status 2>/dev/null \
+            | tr '[:upper:]' '[:lower:]')
+        title=$(playerctl --player="$name" metadata title 2>/dev/null)
+        artist=$(playerctl --player="$name" metadata artist 2>/dev/null)
+        album=$(playerctl --player="$name" metadata album 2>/dev/null)
+        volume=$(playerctl --player="$name" volume 2>/dev/null)
+        position=$(playerctl --player="$name" position 2>/dev/null)
+        length=$(playerctl --player="$name" metadata mpris:length 2>/dev/null)
+
+        changed='false'
+        [ "$name" = "$changed_player" ] && changed='true'
+
+        printf '{"name": "%s", "status": "%s", "title": "%s", "artist": "%s", "album": "%s", "volume": "%s", "position": "%s", "length": "%s", "changed": %s}' \
+            "$name" "$status" "$title" "$artist" "$album" \
+            "$volume" "$position" "$length" "$changed"
+        comma=true
+    done
+    printf ']\n'
+}
+
+_player_status() {
+    args=$(_player_args)
+    status=$(playerctl $args status 2>/dev/null | tr '[:upper:]' '[:lower:]')
+    title=$(playerctl $args metadata title 2>/dev/null)
+    artist=$(playerctl $args metadata artist 2>/dev/null)
+    album=$(playerctl $args metadata album 2>/dev/null)
+    volume=$(playerctl $args volume 2>/dev/null)
+    position=$(playerctl $args position 2>/dev/null)
+    length=$(playerctl $args metadata mpris:length 2>/dev/null)
+
+    printf '{"status": "%s", "title": "%s", "artist": "%s", "album": "%s", "volume": "%s", "position": "%s", "length": "%s"}\n' \
+        "$status" "$title" "$artist" "$album" "$volume" "$position" "$length"
+}
+
+_player_play_pause() {
+    playerctl $(_player_args) play-pause 2>/dev/null
+}
+
+_player_next() {
+    playerctl $(_player_args) next 2>/dev/null
+}
+
+_player_previous() {
+    playerctl $(_player_args) previous 2>/dev/null
+}
+
+_player_stop() {
+    playerctl $(_player_args) stop 2>/dev/null
+}
+
+_player_volume_get() {
+    volume=$(playerctl $(_player_args) volume 2>/dev/null)
+    printf '{"volume": "%s"}\n' "$volume"
+}
+
+_player_volume_set() {
+    input="$1"
+
+    # playerctl volume accepts: 0.5 (absolute), 0.1+ (relative up), 0.1- (relative down)
+    signal="${input%%[0-9.]*}"
+    value="${input#"$signal"}"
+
+    # Convert percent to float if needed
+    case "$input" in
+        *%) value=$(echo "$value" | awk '{printf "%.2f", $1 / 100}') ;;
+    esac
+
+    case "$signal" in
+        "+") playerctl $(_player_args) volume "$value+" 2>/dev/null ;;
+        "-") playerctl $(_player_args) volume "$value-" 2>/dev/null ;;
+        *)   playerctl $(_player_args) volume "$value" 2>/dev/null ;;
+    esac
+}
+
+_player_watch() {
+    # Emit initial state — nothing changed yet
+    _player_list_json "none"
+
+    # playerctl --follow outputs the player name that changed on each line
+    playerctl --follow --player=%all metadata --format '{{playerName}}' 2>/dev/null | \
+        while IFS= read -r changed_player; do
+            _player_list_json "$changed_player"
+        done
+}
+
+##
 ## Usage
 ##
 
 _usage() {
     cat <<EOF
-Usage: scripter multimedia <command>
+Usage: scripter multimedia [--player <name>] <command> [options]
 
 Commands:
   status                          Show speaker and mic status
   watch                           Emit speaker/mic status on change
 
   speaker get                     Show speaker volume and mute state
-  speaker set <value>             Set speaker volume (e.g. 50%, +5%, -5%)
+  speaker set <value>             Set speaker volume [0-100] (e.g. 50, +5, -5)
   speaker mute                    Toggle speaker mute
 
   mic get                         Show mic volume and mute state
   mic set <value>                 Set mic volume
   mic mute                        Toggle mic mute
+
+  player list                     List active MPRIS players with status
+  player status                   Show current player status
+  player play-pause               Toggle play/pause
+  player next                     Skip to next track
+  player previous                 Go to previous track
+  player stop                     Stop playback
+  player volume get               Show player volume
+  player volume set <value>       Set player volume (e.g. 0.5, +0.1, -0.1, 50%)
+  player watch                    Emit all players status on any change
+
+Options:
+  --player <name>                 Target a specific MPRIS player
 EOF
 }
 
@@ -194,6 +315,31 @@ case "$cmd" in
             set)  _volume_set "$target" "$3" ;;
             mute) _volume_mute "$target" ;;
             *)    error "multimedia: unknown mic command '$2'"; _usage; exit 1 ;;
+        esac
+        ;;
+
+    player)
+        _require_playerctl
+        case "$2" in
+            list)       _player_list_json "none" ;;
+            status)     _player_status ;;
+            play-pause) _player_play_pause ;;
+            next)       _player_next ;;
+            previous)   _player_previous ;;
+            stop)       _player_stop ;;
+            watch)      _player_watch ;;
+            volume)
+                case "$3" in
+                    get) _player_volume_get ;;
+                    set) _player_volume_set "$4" ;;
+                    *)   error "multimedia: unknown player volume command '$3'"; _usage; exit 1 ;;
+                esac
+                ;;
+            *)
+                error "multimedia: unknown player command '$2'"
+                _usage
+                exit 1
+                ;;
         esac
         ;;
 
