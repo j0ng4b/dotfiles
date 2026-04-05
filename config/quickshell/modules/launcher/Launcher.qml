@@ -1,4 +1,4 @@
- pragma ComponentBehavior: Bound
+pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Wayland
@@ -33,7 +33,7 @@ Variants {
         readonly property bool isGrid: Config.launcher.viewMode === "grid"
         readonly property list<DesktopEntry> entries: DesktopEntries.applications.values
 
-        readonly property int animationDuration: 600
+        readonly property int animationDuration: 400
 
         onShouldShowChanged: if (!shouldShow) hideTimer.restart();
 
@@ -42,7 +42,10 @@ Variants {
 
             x: LauncherState.isOpen(launcher.modelData.name) ? 0 : -launcher.implicitWidth
             Behavior on x {
-                NumberAnimation { duration: launcher.animationDuration; easing.type: Easing.OutCubic }
+                NumberAnimation {
+                    duration: launcher.animationDuration
+                    easing.type: shouldShow ? Easing.OutCubic : Easing.InCubic
+                }
             }
 
             Corner {
@@ -55,8 +58,8 @@ Variants {
                 id: panel
                 width: launcher.implicitWidth
                 height: launcher.implicitHeight - cornerTop.size - cornerBottom.size
-                topRightRadius: 10
-                bottomRightRadius: 10
+                topRightRadius: Config.general.radius
+                bottomRightRadius: Config.general.radius
                 color: Colorscheme.current.surface
 
                 ColumnLayout {
