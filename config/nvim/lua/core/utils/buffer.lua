@@ -1,20 +1,51 @@
---   ╦ ╦┌┬┐┬┬  ┌─┐
---   ║ ║ │ ││  └─┐
---   ╚═╝ ┴ ┴┴─┘└─┘
+--  ╔╗ ┬ ┬┌─┐┌─┐┌─┐┬─┐
+--  ╠╩╗│ │├┤ ├┤ ├┤ ├┬┘
+--  ╚═╝└─┘└  └  └─┘┴└─
 
 local M = {}
 
-function M.close(bufnum)
-    local bufnr = bufnum or vim.fn.bufnr()
-    local winnr = vim.fn.winnr()
+local ignored_buftypes = {
+    "help",
+    "qf",
+    "terminal",
+    "prompt",
+}
 
-    if vim.fn.getbufvar(bufnr, "&modified") ~= 0 then
-        print("Can't close: the buffer was modified!")
+local ignored_filetypes = {
+    "lazy",
+    "neo-tree",
+    "TelescopePrompt",
+    "alpha",
+    "mason",
+}
+
+local function is_ignored(bufnr)
+    bufnr = bufnr or 0
+    local bt = vim.bo[bufnr].buftype
+    local ft = vim.bo[bufnr].filetype
+    return vim.tbl_contains(ignored_buftypes, bt) or vim.tbl_contains(ignored_filetypes, ft)
+end
+
+-- Safely closes a buffer without messing up the window layout (splits).
+-- It replaces the dying buffer with another open buffer or an empty one before deleting it.
+function M.close(bufnum)
+    local bufnr = bufnum or vim.api.nvim_get_current_buf()
+    local winid = vim.api.nvim_get_current_win()
+
+    if vim.bo[bufnr].modified then
+        vim.notify("Can't close: the buffer was modified!", vim.log.levels.WARN)
         return
     end
 
+    if is_ignored(bufnr) then
+        vim.cmd("silent! bdelete " .. bufnr)
+        return
+    end
+
+    -- List all window with the buffer marked to be deleted
     local windowsBuffer = vim.fn.filter(vim.fn.range(1, vim.fn.winnr("$")), "winbufnr(v:val) == " .. bufnr)
 
+    -- List all buffers available excepted the buffer marked to be deleted
     local listedBuffers = vim.fn.filter(vim.fn.range(1, vim.fn.bufnr("$")), "buflisted(v:val) && v:val != " .. bufnr)
 
     for _, window in ipairs(windowsBuffer) do
@@ -23,6 +54,8 @@ function M.close(bufnum)
         local hiddenBuffers = vim.fn.filter(listedBuffers, "bufwinnr(v:val) < 0")
         local buffers = { unpack(hiddenBuffers), unpack(listedBuffers) }
 
+        -- Try to set a new buffer to the window with marked buffer
+        -- priority: hidden buffer > any visible buffer > new empty buffer
         if buffers[1] then
             vim.cmd.buffer(buffers[1])
         else
@@ -30,18 +63,23 @@ function M.close(bufnum)
         end
     end
 
-    vim.cmd.bdelete(bufnr)
-    vim.cmd(winnr .. "wincmd w")
+    vim.cmd("silent! bdelete " .. bufnr)
+    pcall(vim.api.nvim_set_current_win, winid)
 end
 
+-- Cycles through buffers (next/prev) while skipping ignored filetypes/buftypes
 function M.go(direction)
-    local cmd = nil
-
     if direction ~= "next" and direction ~= "prev" then
         error("Invalid buffer direction: " .. direction)
     end
 
-    -- Check if bufferline.nvim is installed
+    if is_ignored() then
+        return
+    end
+
+    -- Use bufferline commands if installed to respect visual tab order,
+    -- fallback to native commands
+    local cmd = nil
     local is_bufferline = pcall(require, "bufferline")
     if is_bufferline then
         cmd = direction == "next" and "BufferLineCycleNext" or "BufferLineCyclePrev"
@@ -49,8 +87,15 @@ function M.go(direction)
         cmd = direction == "next" and "bnext" or "bprevious"
     end
 
+    local start_buf = vim.api.nvim_get_current_buf()
+
     vim.cmd(cmd)
-    while vim.fn.getbufvar("%", "&buftype") == "terminal" do
+    while is_ignored() do
+        local cur_buf = vim.api.nvim_get_current_buf()
+        if cur_buf == start_buf then
+            break
+        end
+
         vim.cmd(cmd)
     end
 end

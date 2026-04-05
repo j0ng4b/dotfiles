@@ -1,3 +1,7 @@
+--   ╦╔═╗╔═╗╔╗╔
+--   ║╚═╗║ ║║║║
+--  ╚╝╚═╝╚═╝╝╚╝
+
 local M = {}
 
 function M.read(filename)
