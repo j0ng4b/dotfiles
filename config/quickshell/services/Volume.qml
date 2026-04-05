@@ -16,8 +16,8 @@ Singleton {
     Process {
         running: true
         command: [
-            Paths.url2Path(Qt.resolvedUrl('../scripts/scripter')),
-            'multimedia', 'watch'
+            Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")),
+            "multimedia", "watch"
         ]
 
         stdout: SplitParser {
@@ -25,7 +25,8 @@ Singleton {
                 try {
                     const json = JSON.parse(data.trim());
                     const speaker = json.speaker;
-                    if (!speaker) return;
+                    if (!speaker)
+                        return;
 
                     root.level = Math.min(parseFloat(speaker.volume), 1.0);
                     root.muted = speaker.mute === 1;
@@ -33,7 +34,7 @@ Singleton {
                     if (speaker.changed)
                         root.changed();
                 } catch (e) {
-                    console.warn('Volume: parse error:', e);
+                    console.warn("Volume: parse error:", e);
                 }
             }
         }
