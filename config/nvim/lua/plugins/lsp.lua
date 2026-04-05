@@ -138,6 +138,13 @@ local server_configs = {
             },
         }
     end,
+
+    qmlls = function()
+        return {
+            filetypes = { "qml", "qmljs" },
+            cmd = { "/usr/lib/qt6/bin/qmlls" },
+        }
+    end,
 }
 
 --------------------
@@ -250,10 +257,8 @@ end
 
 return {
     "neovim/nvim-lspconfig",
-    dependencies = {
-        "hrsh7th/cmp-nvim-lsp",
-        "williamboman/mason-lspconfig.nvim",
-    },
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = "williamboman/mason-lspconfig.nvim",
     config = function()
         -- Get servers
         local servers = require("mason-lspconfig").get_installed_servers()
