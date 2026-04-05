@@ -12,12 +12,11 @@ Singleton {
     readonly property string configPath: Paths.config + '/' + appName
     readonly property string cachePath: Paths.cache + '/' + appName
 
+    readonly property alias general: adapter.general
     readonly property alias colors: adapter.colors
-
     readonly property alias lockscreen: adapter.lockscreen
-
     readonly property alias launcher: adapter.launcher
-
+    readonly property alias osd: adapter.osd
     readonly property alias wallpaper: adapter.wallpaper
     readonly property alias wallpaperGeneratingFg: wallpaperFgGenerator.running
 
@@ -34,6 +33,10 @@ Singleton {
 
         adapter: JsonAdapter {
             id: adapter
+
+            property JsonObject general: JsonObject {
+                property int radius: 10
+            }
 
             property JsonObject colors: JsonObject {
                 // Enable dynamic color scheme based on wallpaper colors.
@@ -101,7 +104,7 @@ Singleton {
                     property string execFlag: '-e'
                 }
 
-                // Launcher max height in fraction of monitor height (0.0 - 1.0)
+                // Launcher height as a fraction of the screen height (0.0 - 1.0)
                 property real heightFraction: 0.75
 
                 // Possible values: 'grid' or 'list'
@@ -109,6 +112,26 @@ Singleton {
 
                 // Grid columns (only used when viewMode is 'grid')
                 property int gridColumns: 3
+            }
+
+            property JsonObject osd: JsonObject {
+                // Time in milliseconds before the OSD hides automatically
+                property int hideTimeout: 2000
+
+                // Width of the progress bar (volume/brightness)
+                property int barWidth: 10
+
+                // Size of the Material Symbols icon
+                property int iconSize: 18
+
+                // Margins around the content inside the OSD panel
+                property int contentMargins: 10
+
+                // Panel height as a fraction of the screen height (0.0 - 1.0)
+                property real heightFraction: 0.25
+
+                // Corner radius of the OSD panel
+                property int radius: 10
             }
         }
     }

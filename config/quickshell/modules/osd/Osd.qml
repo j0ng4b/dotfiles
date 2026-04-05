@@ -15,11 +15,11 @@ Variants {
         required property var modelData
         screen: modelData
 
-        readonly property int contentMargins: 10
-        readonly property int barWidth: 10
-        readonly property int iconSize: 18
+        readonly property int contentMargins: Config.osd.contentMargins
+        readonly property int barWidth: Config.osd.barWidth
+        readonly property int iconSize: Config.osd.iconSize
         readonly property int panelWidth: contentMargins * 2 + Math.max(barWidth, iconSize)
-        readonly property int panelHeight: Math.round(osd.screen.height * 0.25)
+        readonly property int panelHeight: Math.round(osd.screen.height * Config.osd.heightFraction)
 
         readonly property bool isActiveScreen: osd.modelData.name === Niri.focusedOutput
 
@@ -55,8 +55,8 @@ Variants {
                 id: panel
                 width: osd.panelWidth
                 height: osd.panelHeight
-                topLeftRadius: 10
-                bottomLeftRadius: 10
+                topLeftRadius: Config.general.radius
+                bottomLeftRadius: Config.general.radius
                 color: Colorscheme.current.surface
 
                 ColumnLayout {

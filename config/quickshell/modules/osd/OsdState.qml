@@ -2,6 +2,7 @@ pragma Singleton
 
 import Quickshell
 import QtQuick
+import qs.config
 import qs.services
 
 Singleton {
@@ -50,8 +51,8 @@ Singleton {
 
     Timer {
         id: hideTimer
-        interval: 2500
         repeat: false
+        interval: Config.osd.hideTimeout
         onTriggered: root.visible = false
     }
 
