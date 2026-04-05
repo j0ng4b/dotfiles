@@ -40,7 +40,7 @@ function M.cmd(events, pattern, cmd, opts)
         opts.command = cmd
     end
 
-    vim.api.nvim_create_autocmd(events, opts)
+    return vim.api.nvim_create_autocmd(events, opts)
 end
 
 return M

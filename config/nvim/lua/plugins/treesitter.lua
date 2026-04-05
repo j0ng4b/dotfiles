@@ -18,11 +18,11 @@ return {
     dependencies = "JoosepAlviste/nvim-ts-context-commentstring",
     priority = 100,
     build = function()
-        require("nvim-treesitter").update()
+        require("nvim-treesitter").update(nil, { summary = true })
     end,
     config = function()
-        if vim.fn.executable("cc") == 0 or vim.fn.executable("make") == 0 then
-            vim.notify("Install a C compiler and Make to proper use treesitter!", vim.log.level.WARN)
+        if vim.fn.executable("cc") == 0 or vim.fn.executable("make") == 0 or vim.fn.executable("tree-sitter") == 0 then
+            vim.notify("Install a C compiler, Make and tree-sitter cli to proper use treesitter!", vim.log.levels.WARN)
         end
 
         local treesitter = require("nvim-treesitter")
@@ -31,6 +31,9 @@ return {
             "cpp",
             "cmake",
             "make",
+
+            "zsh",
+            "bash",
 
             "html",
             "tsx",
@@ -63,12 +66,12 @@ return {
             vim.iter(get_installed_parsers()):map(vim.treesitter.language.get_filetypes):flatten():totable(),
             function(args)
                 -- enable highlight
-                vim.treesitter.start(args.buf)
+                local lang = vim.treesitter.language.get_lang(args.match)
+                vim.treesitter.start(args.buf, lang)
 
                 -- enable indentation
                 vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-            end,
-            { group = auto.group("Treesitter", { clear = true }) }
+            end
         )
     end,
 }
