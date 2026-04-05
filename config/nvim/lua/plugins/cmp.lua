@@ -1,39 +1,39 @@
+local function hex_to_rgb(hex)
+    return tonumber(hex:sub(2, 3), 16), tonumber(hex:sub(4, 5), 16), tonumber(hex:sub(6, 7), 16)
+end
+
+local function get_contrast_fg(bg)
+    if not bg then
+        return 0xFFFFFF
+    end
+
+    local hex = string.format("#%06x", bg)
+    local r, g, b = hex_to_rgb(hex)
+
+    if 0.299 * r + 0.587 * g + 0.114 * b > 186 then
+        return 0x000000
+    else
+        return 0xFFFFFF
+    end
+end
+
+local function resolve_hl(name, seen)
+    seen = seen or {}
+
+    if seen[name] then
+        return {}
+    end
+    seen[name] = true
+
+    local hl = vim.api.nvim_get_hl(0, { name = name })
+    if hl.link then
+        return resolve_hl(hl.link, seen)
+    end
+
+    return hl
+end
+
 local function setup_highlights()
-    local function hex_to_rgb(hex)
-        return tonumber(hex:sub(2, 3), 16), tonumber(hex:sub(4, 5), 16), tonumber(hex:sub(6, 7), 16)
-    end
-
-    local function get_contrast_fg(bg)
-        if not bg then
-            return 0xFFFFFF
-        end
-
-        local hex = string.format("#%06x", bg)
-        local r, g, b = hex_to_rgb(hex)
-
-        if 0.299 * r + 0.587 * g + 0.114 * b > 186 then
-            return 0x000000
-        else
-            return 0xFFFFFF
-        end
-    end
-
-    local function resolve_hl(name, seen)
-        seen = seen or {}
-
-        if seen[name] then
-            return {}
-        end
-        seen[name] = true
-
-        local hl = vim.api.nvim_get_hl(0, { name = name })
-        if hl.link then
-            return resolve_hl(hl.link, seen)
-        end
-
-        return hl
-    end
-
     local names = {
         "CmpItemKindField",
         "CmpItemKindProperty",
@@ -83,6 +83,7 @@ local function setup_highlights()
 end
 
 local config = function()
+    local utils = require("core.utils")
     local icons = require("core.utils.icons")
     local cmp = require("cmp")
 
@@ -163,7 +164,9 @@ local config = function()
         formatting = {
             fields = { "kind", "abbr", "menu" },
             format = function(entry, item)
-                local color_item = require("nvim-highlight-colors").format(entry, { kind = item.kind })
+                local hl_colors = utils.safe_require("nvim-highlight-colors")
+                local color_item = hl_colors and hl_colors.format(entry, { kind = item.kind }) or nil
+
                 local source_labels = {
                     nvim_lsp = "[Lsp]",
                     nvim_lsp_signature_help = "[LspSig]",
@@ -179,18 +182,20 @@ local config = function()
                 item.menu = " · " .. (source_labels[entry.source.name] or entry.source.name)
                 item.kind = " " .. (icons.kinds[item.kind] or "") .. " "
 
-                if color_item.abbr_hl_group then
-                    item.kind_hl_group = "cmp-item-" .. color_item.abbr_hl_group
+                if color_item and color_item.abbr_hl_group then
+                    -- Q: Why use a different name for item kind_hl_group?
+                    -- A: Because of the override os colors, when selecting a
+                    --    item the color changes and this make the color
+                    --    calculation do not work properly.
+                    item.kind_hl_group = "cmp-color-item-" .. color_item.abbr_hl_group
 
-                    local hl_attrs = {}
-                    for k, v in pairs(vim.api.nvim_get_hl(0, { name = color_item.abbr_hl_group })) do
-                        hl_attrs[k] = v
+                    local hl = resolve_hl(color_item.abbr_hl_group)
+                    if hl.fg then
+                        vim.api.nvim_set_hl(0, item.kind_hl_group, {
+                            fg = get_contrast_fg(hl.fg),
+                            bg = hl.fg,
+                        })
                     end
-
-                    hl_attrs.reverse = true
-                    hl_attrs.force = true
-
-                    vim.api.nvim_set_hl(0, item.kind_hl_group, hl_attrs)
                 end
 
                 return item
