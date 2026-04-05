@@ -1,35 +1,277 @@
 #!/usr/bin/env sh
 
+##
+## Backend detection
+##
+
+_detect_brightness_backend() {
+    if command -v brightnessctl >/dev/null 2>&1; then
+        echo "brightnessctl"
+    elif command -v light >/dev/null 2>&1; then
+        echo "light"
+    elif [ -n "$(ls /sys/class/backlight/ 2>/dev/null)" ]; then
+        echo "raw"
+    else
+        echo "none"
+    fi
+}
+
+_list_backends() {
+    for backend in brightnessctl light raw; do
+        available='false'
+        case "$backend" in
+            brightnessctl) command -v brightnessctl >/dev/null 2>&1 && available='true' ;;
+            light)         command -v light >/dev/null 2>&1 && available='true' ;;
+            raw)           [ -n "$(ls /sys/class/backlight/ 2>/dev/null)" ] && available='true' ;;
+        esac
+
+        active='false'
+        [ "$backend" = "$brightness_backend" ] && active='true'
+
+        printf '{"backend": "%s", "available": %s, "active": %s}\n' \
+            "$backend" "$available" "$active"
+    done
+}
+
+##
+## Device detection over sysfs
+##
+
+_get_sysfs_backlight() {
+    device=$(ls /sys/class/backlight/ 2>/dev/null | head -1)
+    [ -z "$device" ] && return 1
+    echo "/sys/class/backlight/$device"
+}
+
+_get_sysfs_keyboard() {
+    device=$(ls /sys/class/leds/ 2>/dev/null | grep 'kbd_backlight' | head -1)
+    [ -z "$device" ] && return 1
+    echo "/sys/class/leds/$device"
+}
+
+##
+## Get / Watch — always over sysfs
+##
+
+_brightness_get() {
+    sysfs="$1"
+    cur=$(cat "$sysfs/brightness" 2>/dev/null)
+    max=$(cat "$sysfs/max_brightness" 2>/dev/null)
+    printf '{"current": "%s", "max": "%s"}\n' "$cur" "$max"
+}
+
+_brightness_watch() {
+    sysfs="$1"
+
+    # emit initial state
+    _brightness_get "$sysfs"
+
+    last=""
+    inotifywait --quiet --monitor --event modify "$sysfs/brightness" 2>/dev/null |
+        while IFS= read -r _; do
+            cur=$(cat "$sysfs/brightness" 2>/dev/null)
+            [ "$cur" = "$last" ] && continue
+
+            last="$cur"
+            _brightness_get "$sysfs"
+        done
+}
+
+##
+## Set backends
+##
+
+_brightness_set_brightnessctl() {
+    sysfs="$1"
+
+    value="$2"
+    signal="${value%%[0-9]*}"
+    num="${value#"$signal"}"
+
+    case "$signal" in
+        "+") brightnessctl_value="$signal$num" ;;
+        "-") brightnessctl_value="$num$signal" ;;
+        *)   brightnessctl_value="$num" ;;
+    esac
+    device=$(basename "$sysfs")
+    brightnessctl --device "$device" set "$brightnessctl_value" >/dev/null 2>&1
+}
+
+_brightness_set_light() {
+    sysfs="$1"
+
+    value="$2"
+    signal="${value%%[0-9]*}"
+
+    num="${value#"$signal"}"
+    max=$(cat "$sysfs/max_brightness" 2>/dev/null)
+
+    case "$value" in
+        *%*)
+            pct="${num%%%}"
+            case "$signal" in
+                "+") light -A "$pct" >/dev/null 2>&1 ;;
+                "-") light -U "$pct" >/dev/null 2>&1 ;;
+                *)   light -S "$pct" >/dev/null 2>&1 ;;
+            esac
+            ;;
+        *)
+            # Converte absoluto para percentagem
+            pct=$(( num * 100 / max ))
+            case "$signal" in
+                "+") light -A "$pct" >/dev/null 2>&1 ;;
+                "-") light -U "$pct" >/dev/null 2>&1 ;;
+                *)   light -S "$pct" >/dev/null 2>&1 ;;
+            esac
+            ;;
+    esac
+}
+
+_brightness_set_raw() {
+    sysfs="$1"
+    value="$2"
+
+    cur=$(cat "$sysfs/brightness" 2>/dev/null)
+    max=$(cat "$sysfs/max_brightness" 2>/dev/null)
+
+    signal="${value%%[0-9]*}"
+    num="${value#"$signal"}"
+
+    case "$value" in
+        *%*)
+            pct="${num%%%}"
+            num=$(( max * pct / 100 ))
+            ;;
+    esac
+
+    case "$signal" in
+        "+") result=$(( cur + num )) ;;
+        "-") result=$(( cur - num )) ;;
+        *)   result="$num" ;;
+    esac
+
+    [ "$result" -lt 0 ]    && result=0
+    [ "$result" -gt "$max" ] && result="$max"
+
+    if [ ! -w "$sysfs/brightness" ]; then
+        error "brightness: no write permission on '$sysfs/brightness'"
+        exit 1
+    fi
+
+    echo "$result" > "$sysfs/brightness"
+}
+
+_brightness_set() {
+    sysfs="$1"
+    value="$2"
+
+    case "$brightness_backend" in
+        brightnessctl) _brightness_set_brightnessctl "$sysfs" "$value" ;;
+        light)         _brightness_set_light "$sysfs" "$value" ;;
+        raw)           _brightness_set_raw "$sysfs" "$value" ;;
+        none)
+            error "brightness: no backend available"
+            exit 1
+            ;;
+    esac
+}
+
+##
+## Usage
+##
+
+_usage() {
+    cat <<EOF
+Usage: scripter brightness [--backend <backend>] <target> <command> [value]
+
+Targets:
+  screen    Screen backlight
+  keyboard  Keyboard backlight (kbd_backlight)
+
+Commands:
+  get                  Show current and max brightness
+  set <value>          Set brightness (e.g. 50, 50%, +10%, -10%)
+  watch                Emit brightness on change
+  list-backends        List available backends
+
+Options:
+  --backend <name>     Force a specific backend (brightnessctl, light, raw)
+
+Active backend: $brightness_backend
+EOF
+}
+
+##
+## Entry point
+##
+
+brightness_backend=$(_detect_brightness_backend)
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --backend)
+            shift
+            case "$1" in
+                brightnessctl | light | raw)
+                    brightness_backend="$1"
+                    ;;
+                *)
+                    error "brightness: unknown backend '$1'"
+                    exit 1
+                    ;;
+            esac
+            shift
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
 case $1 in
-    # TODO: include a --save and --restores option to save set value to later
-    # be restored.
-    set)
-        signal="${2%%[0-9]*}"
-        value="${2#"$signal"}"
+    screen)
+        sysfs=$(_get_sysfs_backlight)
+        if [ -z "$sysfs" ]; then
+            error "brightness: no backlight device found"
+            exit 1
+        fi
 
-        # For brightnessctl the minus signal should be at end of value and plus
-        # signal must be at start but on this script all signal must be at start
-        # of the value, so conversion is needed.
-        #
-        # E.g.:
-        #   -50 or -50% -> 50- or 50%-
-        #   +50 or +50% -> no conversion
-        [ "$signal" = '+' ] && value=$signal$value
-        [ "$signal" = '-' ] && value=$value$signal
-
-        brightnessctl --class backlight set "$value" >/dev/null 2>&1
+        case $2 in
+            get)   _brightness_get "$sysfs" ;;
+            set)   _brightness_set "$sysfs" "$3" ;;
+            watch) _brightness_watch "$sysfs" ;;
+            *)     error "brightness: unknown command '$2'"; _usage; exit 1 ;;
+        esac
         ;;
 
-    get)
-        cur=$(brightnessctl --class backlight get)
-        max=$(brightnessctl --class backlight max)
+    keyboard)
+        sysfs=$(_get_sysfs_keyboard)
+        if [ -z "$sysfs" ]; then
+            error "brightness: no keyboard backlight device found"
+            exit 1
+        fi
 
-        echo "{ \"current\": \"$cur\", \"max\": \"$max\" }"
+        case $2 in
+            get)   _brightness_get "$sysfs" ;;
+            set)   _brightness_set "$sysfs" "$3" ;;
+            watch) _brightness_watch "$sysfs" ;;
+            *)     error "brightness: unknown command '$2'"; _usage; exit 1 ;;
+        esac
+        ;;
+
+    list-backends)
+        _list_backends
+        ;;
+
+    help | --help | -h)
+        _usage
         ;;
 
     *)
-        error "Unknown command '$1'!"
+        error "brightness: unknown target '$1'"
+        _usage
         exit 1
         ;;
 esac
 
+# vim: ft=sh
