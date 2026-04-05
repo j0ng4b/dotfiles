@@ -17,6 +17,8 @@ _detect_brightness_backend() {
 }
 
 _list_backends() {
+    printf '['
+    comma='false'
     for backend in brightnessctl light raw; do
         available='false'
         case "$backend" in
@@ -28,9 +30,12 @@ _list_backends() {
         active='false'
         [ "$backend" = "$brightness_backend" ] && active='true'
 
-        printf '{"backend": "%s", "available": %s, "active": %s}\n' \
+        [ "$comma" = 'true' ] && printf ','
+        printf '{"backend": "%s", "available": %s, "active": %s}' \
             "$backend" "$available" "$active"
+        comma='true'
     done
+    printf ']\n'
 }
 
 ##
@@ -50,7 +55,49 @@ _get_sysfs_keyboard() {
 }
 
 ##
-## Get / Watch — always over sysfs
+## Status
+##
+
+_get_status_with_changed() {
+    changed="$1"
+    comma='false'
+
+    printf '{'
+
+    screen_sysfs=$(_get_sysfs_backlight)
+    if [ -n "$screen_sysfs" ]; then
+        screen_cur=$(cat "$screen_sysfs/brightness" 2>/dev/null || echo "0")
+        screen_max=$(cat "$screen_sysfs/max_brightness" 2>/dev/null || echo "1")
+        screen_changed='false'
+        [ "$changed" = "screen" ] && screen_changed='true'
+
+        printf '"screen": {"current": "%s", "max": "%s", "changed": %s}' \
+            "$screen_cur" "$screen_max" "$screen_changed"
+        comma='true'
+    fi
+
+    kbd_sysfs=$(_get_sysfs_keyboard)
+    if [ -n "$kbd_sysfs" ]; then
+        kbd_cur=$(cat "$kbd_sysfs/brightness" 2>/dev/null || echo "0")
+        kbd_max=$(cat "$kbd_sysfs/max_brightness" 2>/dev/null || echo "1")
+        kbd_changed='false'
+        [ "$changed" = "keyboard" ] && kbd_changed='true'
+
+        [ "$comma" = 'true' ] && printf ','
+
+        printf '"keyboard": {"current": "%s", "max": "%s", "changed": %s}' \
+            "$kbd_cur" "$kbd_max" "$kbd_changed"
+    fi
+
+    printf '}\n'
+}
+
+_get_status() {
+    _get_status_with_changed "none"
+}
+
+##
+## Brightness — get
 ##
 
 _brightness_get() {
@@ -60,21 +107,62 @@ _brightness_get() {
     printf '{"current": "%s", "max": "%s"}\n' "$cur" "$max"
 }
 
-_brightness_watch() {
-    sysfs="$1"
+##
+## Brightness — watch
+##
 
-    # emit initial state
-    _brightness_get "$sysfs"
+_watch() {
+    # Emit initial state — nothing changed yet
+    _get_status_with_changed "none"
 
-    last=""
-    inotifywait --quiet --monitor --event modify "$sysfs/brightness" 2>/dev/null |
-        while IFS= read -r _; do
-            cur=$(cat "$sysfs/brightness" 2>/dev/null)
-            [ "$cur" = "$last" ] && continue
+    screen_sysfs=$(_get_sysfs_backlight)
+    kbd_sysfs=$(_get_sysfs_keyboard)
 
-            last="$cur"
-            _brightness_get "$sysfs"
+    # Track last known state for change detection
+    last_screen_cur=$([ -n "$screen_sysfs" ] && cat "$screen_sysfs/brightness" 2>/dev/null || echo "0")
+    last_kbd_cur=$([ -n "$kbd_sysfs" ] && cat "$kbd_sysfs/brightness" 2>/dev/null || echo "0")
+
+    _check_and_emit() {
+        cur_screen_cur=$([ -n "$screen_sysfs" ] && cat "$screen_sysfs/brightness" 2>/dev/null || echo "0")
+        cur_kbd_cur=$([ -n "$kbd_sysfs" ] && cat "$kbd_sysfs/brightness" 2>/dev/null || echo "0")
+
+        changed="none"
+
+        if [ "$cur_screen_cur" != "$last_screen_cur" ]; then
+            changed="screen"
+        elif [ "$cur_kbd_cur" != "$last_kbd_cur" ]; then
+            changed="keyboard"
+        fi
+
+        if [ "$changed" != "none" ]; then
+            _get_status_with_changed "$changed"
+            last_screen_cur="$cur_screen_cur"
+            last_kbd_cur="$cur_kbd_cur"
+        fi
+    }
+
+    watch_files=""
+    [ -n "$screen_sysfs" ] && watch_files="$watch_files $screen_sysfs/brightness"
+    [ -n "$kbd_sysfs" ] && watch_files="$watch_files $kbd_sysfs/brightness"
+
+    if [ -z "$watch_files" ]; then
+        warn "brightness: no devices found, prevent loop from eating CPU"
+        return 1
+    fi
+
+    if command -v inotifywait >/dev/null 2>&1; then
+        # Event-driven via inotifywait
+        inotifywait --quiet --monitor --event modify $watch_files 2>/dev/null |
+            while IFS= read -r event; do
+                _check_and_emit
+            done
+    else
+        warn "brightness: inotifywait not found, falling back to polling"
+        while true; do
+            _check_and_emit
+            sleep 0.1
         done
+    fi
 }
 
 ##
@@ -83,7 +171,6 @@ _brightness_watch() {
 
 _brightness_set_brightnessctl() {
     sysfs="$1"
-
     value="$2"
     signal="${value%%[0-9]*}"
     num="${value#"$signal"}"
@@ -99,10 +186,8 @@ _brightness_set_brightnessctl() {
 
 _brightness_set_light() {
     sysfs="$1"
-
     value="$2"
     signal="${value%%[0-9]*}"
-
     num="${value#"$signal"}"
     max=$(cat "$sysfs/max_brightness" 2>/dev/null)
 
@@ -116,7 +201,6 @@ _brightness_set_light() {
             esac
             ;;
         *)
-            # Converte absoluto para percentagem
             pct=$(( num * 100 / max ))
             case "$signal" in
                 "+") light -A "$pct" >/dev/null 2>&1 ;;
@@ -182,20 +266,22 @@ _brightness_set() {
 
 _usage() {
     cat <<EOF
-Usage: scripter brightness [--backend <backend>] <target> <command> [value]
-
-Targets:
-  screen    Screen backlight
-  keyboard  Keyboard backlight (kbd_backlight)
+Usage: scripter brightness [--backend <backend>] <command> [options]
 
 Commands:
-  get                  Show current and max brightness
-  set <value>          Set brightness (e.g. 50, 50%, +10%, -10%)
-  watch                Emit brightness on change
-  list-backends        List available backends
+  status                   Show screen and keyboard backlight status
+  watch                    Emit brightness status on change
+
+  screen get               Show current and max screen brightness
+  screen set <value>       Set screen brightness (e.g. 50, 50%, +10%, -10%)
+
+  keyboard get             Show current and max keyboard brightness
+  keyboard set <value>     Set keyboard brightness
+
+  list-backends            List available backends
 
 Options:
-  --backend <name>     Force a specific backend (brightnessctl, light, raw)
+  --backend <name>         Force a specific backend (brightnessctl, light, raw)
 
 Active backend: $brightness_backend
 EOF
@@ -228,7 +314,16 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-case $1 in
+cmd="$1"
+case "$cmd" in
+    status)
+        _get_status
+        ;;
+
+    watch)
+        _watch
+        ;;
+
     screen)
         sysfs=$(_get_sysfs_backlight)
         if [ -z "$sysfs" ]; then
@@ -236,10 +331,9 @@ case $1 in
             exit 1
         fi
 
-        case $2 in
+        case "$2" in
             get)   _brightness_get "$sysfs" ;;
             set)   _brightness_set "$sysfs" "$3" ;;
-            watch) _brightness_watch "$sysfs" ;;
             *)     error "brightness: unknown command '$2'"; _usage; exit 1 ;;
         esac
         ;;
@@ -251,10 +345,9 @@ case $1 in
             exit 1
         fi
 
-        case $2 in
+        case "$2" in
             get)   _brightness_get "$sysfs" ;;
             set)   _brightness_set "$sysfs" "$3" ;;
-            watch) _brightness_watch "$sysfs" ;;
             *)     error "brightness: unknown command '$2'"; _usage; exit 1 ;;
         esac
         ;;
