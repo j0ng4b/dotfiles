@@ -33,7 +33,7 @@ Variants {
         readonly property bool isGrid: Config.launcher.viewMode === "grid"
         readonly property list<DesktopEntry> entries: DesktopEntries.applications.values
 
-        readonly property int animationDuration: 200
+        readonly property int animationDuration: 600
 
         onShouldShowChanged: if (!shouldShow) hideTimer.restart();
 
@@ -42,7 +42,7 @@ Variants {
 
             x: LauncherState.isOpen(launcher.modelData.name) ? 0 : -launcher.implicitWidth
             Behavior on x {
-                NumberAnimation { duration: launcher.animationDuration; easing.type: Easing.InOut }
+                NumberAnimation { duration: launcher.animationDuration; easing.type: Easing.OutCubic }
             }
 
             Corner {
