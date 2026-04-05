@@ -6,9 +6,11 @@ import QtQuick
 
 Singleton {
     id: root
-    property ListModel workspaces: ListModel {}
 
     signal workspacesUpdated
+
+    property ListModel workspaces: ListModel {}
+    property string focusedOutput: ''
 
     function focusWorkspace(index) {
         Quickshell.execDetached(['niri', 'msg', 'action', 'focus-workspace', index]);
@@ -47,6 +49,7 @@ Singleton {
             });
         }
 
+        root.focusedOutput = newActiveWorkspace.output;
         root.workspacesUpdated();
     }
 
@@ -63,6 +66,24 @@ Singleton {
                     root.updateWorkspaces(event.WorkspacesChanged.workspaces);
                 else if (event.WorkspaceActivated)
                     root.activateWorkspace(event.WorkspaceActivated.id);
+            }
+        }
+    }
+
+    // Sync focusedOutput on startup
+    Process {
+        running: true
+        command: ['niri', 'msg', '--json', 'focused-output']
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const output = JSON.parse(this.text.trim());
+                    if (output?.name)
+                        root.focusedOutput = output.name;
+                } catch (e) {
+                    console.warn('Niri: failed to parse focused-output:', e);
+                }
             }
         }
     }
