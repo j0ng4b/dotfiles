@@ -115,15 +115,59 @@ _watch() {
     # Emit initial state — nothing changed yet
     _get_status_with_changed "none"
 
-    pactl subscribe 2>/dev/null | while IFS= read -r event; do
-        echo "$event" | grep -q "change" || continue
+    # Track last known state for change detection
+    last_speaker_vol=$(_get_volume_float "@DEFAULT_SINK@")
+    last_speaker_mute=0
+    _is_muted "@DEFAULT_SINK@" && last_speaker_mute=1
 
-        if echo "$event" | grep -q "sink"; then
-            _get_status_with_changed "speaker"
-        elif echo "$event" | grep -q "source"; then
-            _get_status_with_changed "mic"
+    last_mic_vol=$(_get_volume_float "@DEFAULT_SOURCE@")
+    last_mic_mute=0
+    _is_muted "@DEFAULT_SOURCE@" && last_mic_mute=1
+
+    _check_and_emit() {
+        cur_speaker_vol=$(_get_volume_float "@DEFAULT_SINK@")
+        cur_speaker_mute=0
+        _is_muted "@DEFAULT_SINK@" && cur_speaker_mute=1
+
+        cur_mic_vol=$(_get_volume_float "@DEFAULT_SOURCE@")
+        cur_mic_mute=0
+        _is_muted "@DEFAULT_SOURCE@" && cur_mic_mute=1
+
+        changed="none"
+
+        if [ "$cur_speaker_vol" != "$last_speaker_vol" ] || \
+           [ "$cur_speaker_mute" != "$last_speaker_mute" ]; then
+            changed="speaker"
+        elif [ "$cur_mic_vol" != "$last_mic_vol" ] || \
+             [ "$cur_mic_mute" != "$last_mic_mute" ]; then
+            changed="mic"
         fi
-    done
+
+        if [ "$changed" != "none" ]; then
+            _get_status_with_changed "$changed"
+            last_speaker_vol="$cur_speaker_vol"
+            last_speaker_mute="$cur_speaker_mute"
+            last_mic_vol="$cur_mic_vol"
+            last_mic_mute="$cur_mic_mute"
+        fi
+    }
+
+    if command -v pactl >/dev/null 2>&1; then
+        # Event-driven via pactl — filter only sink/source change events
+        pactl subscribe 2>/dev/null | while IFS= read -r event; do
+            case "$event" in
+                *"change"*"sink #"* | *"change"*"source #"*)
+                    _check_and_emit
+                    ;;
+            esac
+        done
+    else
+        warn "multimedia: pactl not found, falling back to polling"
+        while true; do
+            _check_and_emit
+            sleep 0.1
+        done
+    fi
 }
 
 ##
