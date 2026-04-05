@@ -42,6 +42,6 @@ end
 
 return {
     "stevearc/conform.nvim",
-    config = config,
     event = { "BufReadPre", "BufNewFile" },
+    config = config,
 }

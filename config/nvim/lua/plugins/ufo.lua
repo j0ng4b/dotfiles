@@ -1,73 +1,55 @@
 local function get_provider(bufnr, filetype)
     local ignore_ft = { "git", "neo-tree" }
-    if ignore_ft[filetype] then
+    if vim.tbl_contains(ignore_ft, filetype) then
         return ""
     end
 
-    local ufo = require("ufo")
+    return function()
+        local ufo = require("ufo")
 
-    local function handle_exception(err, provider_name)
-        if type(err) == "string" and err:match("UfoFallbackException") then
-            return ufo.getFolds(bufnr, provider_name)
-        end
-
-        return require("promise").reject(err)
-    end
-
-    return ufo.getFolds(bufnr, "lsp")
-        :catch(function(err)
-            return handle_exception(err, "treesitter")
-        end)
-        :catch(function(err)
-            return handle_exception(err, "indent")
-        end)
-end
-
-local handler = function(virt_text, lnum, end_lnum, width, truncate, ctx)
-    local new_virt_text = {}
-
-    local end_line_virt_text = {}
-    local end_line_real_text = ""
-
-    for _, virt in ipairs(ctx.get_fold_virt_text(end_lnum)) do
-        if virt[2] ~= "UfoFoldedFg" then
-            table.insert(end_line_virt_text, virt)
-            end_line_real_text = end_line_real_text .. virt[1]
-        end
-    end
-
-    local suffix = (" 󰁂 %d "):format(end_lnum - lnum)
-
-    local cur_width = 0
-    local max_width = width - vim.fn.strdisplaywidth(suffix) - vim.fn.strdisplaywidth(end_line_real_text)
-
-    for _, chunk in ipairs(virt_text) do
-        local text = chunk[1]
-        local text_width = vim.fn.strdisplaywidth(text)
-
-        if max_width > cur_width + text_width then
-            table.insert(new_virt_text, chunk)
-        else
-            text = truncate(text, max_width - cur_width)
-            table.insert(new_virt_text, { text, chunk[2] })
-
-            text_width = vim.fn.strdisplaywidth(text)
-            if cur_width + text_width < max_width then
-                suffix = suffix .. (" "):rep(max_width - cur_width - text_width)
+        local function handle_exception(err, provider_name)
+            if type(err) == "string" and err:match("UfoFallbackException") then
+                return ufo.getFolds(bufnr, provider_name)
             end
 
-            break
+            return require("promise").reject(err)
         end
 
-        cur_width = cur_width + text_width
+        return ufo.getFolds(bufnr, "lsp")
+            :catch(function(err)
+                return handle_exception(err, "treesitter")
+            end)
+            :catch(function(err)
+                return handle_exception(err, "indent")
+            end)
     end
+end
 
-    table.insert(new_virt_text, { suffix, "MoreMsg" })
-    for _, virt in ipairs(end_line_virt_text) do
-        table.insert(new_virt_text, virt)
+local handler = function(virtText, lnum, endLnum, width, truncate)
+    local newVirtText = {}
+    local suffix = (" 󰁂 %d "):format(endLnum - lnum)
+    local sufWidth = vim.fn.strdisplaywidth(suffix)
+    local targetWidth = width - sufWidth
+    local curWidth = 0
+    for _, chunk in ipairs(virtText) do
+        local chunkText = chunk[1]
+        local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+        if targetWidth > curWidth + chunkWidth then
+            table.insert(newVirtText, chunk)
+        else
+            chunkText = truncate(chunkText, targetWidth - curWidth)
+            local hlGroup = chunk[2]
+            table.insert(newVirtText, { chunkText, hlGroup })
+            chunkWidth = vim.fn.strdisplaywidth(chunkText)
+            if curWidth + chunkWidth < targetWidth then
+                suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
+            end
+            break
+        end
+        curWidth = curWidth + chunkWidth
     end
-
-    return new_virt_text
+    table.insert(newVirtText, { suffix, "MoreMsg" })
+    return newVirtText
 end
 
 local config = function()
@@ -100,7 +82,6 @@ end
 
 return {
     "kevinhwang91/nvim-ufo",
-    enabled = false,
     dependencies = "kevinhwang91/promise-async",
     config = config,
 }

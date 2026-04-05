@@ -151,7 +151,6 @@ end
 
 return {
     "nvim-telescope/telescope.nvim",
-    config = config,
     dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-telescope/telescope-ui-select.nvim",
@@ -161,4 +160,5 @@ return {
             build = "make",
         },
     },
+    config = config,
 }
