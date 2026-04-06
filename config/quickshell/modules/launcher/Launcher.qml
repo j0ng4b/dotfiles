@@ -24,7 +24,7 @@ Variants {
         visible: shouldShow || hideTimer.running
 
         WlrLayershell.keyboardFocus: LauncherState.isOpen(launcher.modelData.name)
-            ? WlrKeyboardFocus.OnDemand
+            ? WlrKeyboardFocus.Exclusive
             : WlrKeyboardFocus.None
 
         property bool shouldShow: LauncherState.isOpen(launcher.modelData.name)
