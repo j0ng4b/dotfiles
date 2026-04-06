@@ -9,7 +9,8 @@ _detect_brightness_backend() {
         echo "brightnessctl"
     elif command -v light >/dev/null 2>&1; then
         echo "light"
-    elif [ -n "$(ls /sys/class/backlight/ 2>/dev/null)" ]; then
+    elif [ -w "$(ls /sys/class/backlight/*/brightness 2>/dev/null | head -1)" ]; then
+        # Raw sysfs — works if user has write permission (e.g. video group)
         echo "raw"
     else
         echo "none"
