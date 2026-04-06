@@ -1,22 +1,17 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.config
 import qs.services
 
-Rectangle {
+Item {
     id: workspaces
     property var output
 
-    color: Colorscheme.current.surface
-
-    width: workspaceIndicator.implicitWidth + 24
-    height: workspaceIndicator.implicitHeight + 12
-    radius: 10
+    width: workspaceIndicator.implicitWidth
+    height: workspaceIndicator.implicitHeight
 
     RowLayout {
         id: workspaceIndicator
         anchors.centerIn: parent
-        anchors.margins: 5
         spacing: 5
 
         property ListModel filteredWorkspaces: ListModel {}
@@ -29,13 +24,29 @@ Rectangle {
         Connections {
             target: Niri
             function onWorkspacesUpdated() {
-                workspaceIndicator.filteredWorkspaces.clear();
+                const model = workspaceIndicator.filteredWorkspaces;
+
+                let existing = {};
+                let incoming = {};
+
+                for (let i = 0; i < model.count; i++)
+                    existing[model.get(i).index] = i;
 
                 for (let i = 0; i < Niri.workspaces.count; i++) {
                     let ws = Niri.workspaces.get(i);
                     if (ws.output === workspaces.output.name)
-                        workspaceIndicator.filteredWorkspaces.append(ws);
+                        incoming[ws.index] = ws;
                 }
+
+                for (let idx in incoming)
+                    if (existing[idx] !== undefined)
+                        model.set(existing[idx], incoming[idx]);
+                    else
+                        model.append(incoming[idx]);
+
+                for (let i = model.count - 1; i >= 0; i--)
+                    if (incoming[model.get(i).index] === undefined)
+                        model.remove(i);
             }
         }
     }

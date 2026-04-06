@@ -6,10 +6,16 @@ Rectangle {
     id: indicator
     required property var modelData
 
-    implicitWidth: 18 + (modelData.active ? 6 : 0)
+    color: modelData.active
+        ? Colorscheme.current.primary
+        : Colorscheme.current.surface_container_high;
+
+    Behavior on color  { ColorAnimation  { duration: 200 } }
+    Behavior on width { NumberAnimation { duration: 100 } }
+
+    implicitWidth: 20 + (modelData.active ? 10 : 0)
     implicitHeight: 8
-    color: modelData.active ? Colorscheme.current.primary : Colorscheme.current.surface_container_high
-    radius: 10
+    radius: Config.general.radius
 
     MouseArea {
         cursorShape: Qt.PointingHandCursor
