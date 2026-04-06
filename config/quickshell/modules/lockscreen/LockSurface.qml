@@ -11,7 +11,6 @@ import qs.services
 Rectangle {
     id: root
 
-    required property WlSessionLock lock
     required property LockContext context
 
     property bool unlocking: false
@@ -471,6 +470,6 @@ Rectangle {
     Timer {
         interval: 1000
         running: root.unlocking
-        onTriggered: root.lock.locked = false
+        onTriggered: LockScreenState.unlock()
     }
 }

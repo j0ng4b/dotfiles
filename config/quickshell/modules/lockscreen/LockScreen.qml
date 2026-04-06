@@ -14,7 +14,6 @@ ShellRoot {
         WlSessionLockSurface {
             LockSurface {
                 anchors.fill: parent
-                lock: lock
                 context: lockContext
             }
         }
