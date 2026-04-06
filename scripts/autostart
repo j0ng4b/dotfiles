@@ -87,7 +87,7 @@ sh "$root/_scripter" color-temperature run &
 
 
 ## Start color re-loader
-sh "$root/_scripter" color-reloader \
+sh "$root/_scripter" color-reloader run \
     foot \
     nvim \
     tmux \
