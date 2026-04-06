@@ -136,14 +136,6 @@ Singleton {
         }
     }
 
-    IpcHandler {
-        target: 'config'
-
-        function setWallpaper(path: string) {
-            root.wallpaper.source = Qt.resolvedUrl(path);
-        }
-    }
-
     Process {
         id: colorsGenerator
         property string wallpaperSource

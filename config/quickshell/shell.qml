@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Io
+import qs.config
 import qs.modules.bar
 import qs.modules.wallpaper
 import qs.modules.launcher
@@ -13,6 +14,14 @@ ShellRoot {
     Wallpaper {}
     LockScreen {}
     Osd {}
+
+    IpcHandler {
+        target: 'wallpaper'
+
+        function set(path: string) {
+            Config.wallpaper.source = Qt.resolvedUrl(path);
+        }
+    }
 
     IpcHandler {
         target: 'launcher'
