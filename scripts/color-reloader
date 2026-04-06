@@ -163,6 +163,21 @@ _run_all() {
     wait
 }
 
+_usage() {
+    echo "Usage: scripter color-reloader [options] <command> [reloaders...]"
+    echo ""
+    echo "Commands:"
+    echo "  run         Run the color reloader daemon with specified reloaders"
+    echo "  register    Register reloaders to be automatically reloaded on theme change"
+    echo "  unregister  Unregister reloaders"
+    echo "  reload      Manually trigger reload for all registered reloaders"
+    echo "  list        List available reloaders"
+    echo "  help        Show this help message"
+    echo ""
+    echo "Options:"
+    echo "  -g, --generate-only  Only generate color files without running the daemon"
+}
+
 
 # Script commands
 _cmd_run() {
@@ -282,21 +297,10 @@ case "$cmd" in
     reload)     _cmd_reload ;;
     list)       _cmd_list ;;
     help)
-        echo "Usage: scripter color-reloader [options] <command> [reloaders...]"
-        echo ""
-        echo "Commands:"
-        echo "  run         Run the color reloader daemon with specified reloaders"
-        echo "  register    Register reloaders to be automatically reloaded on theme change"
-        echo "  unregister  Unregister reloaders"
-        echo "  reload      Manually trigger reload for all registered reloaders"
-        echo "  list        List available reloaders"
-        echo "  help        Show this help message"
-        echo ""
-        echo "Options:"
-        echo "  -g, --generate-only  Only generate color files without running the daemon"
+        _usage
         ;;
     *)
-        error "color-reloader: no command given! Use: run, register, unregister"
+        _usage
         exit 1
         ;;
 esac
