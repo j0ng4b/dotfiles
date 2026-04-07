@@ -87,7 +87,7 @@ _wifi_list_nmcli() {
         nmcli -g NAME connection show 2>/dev/null | grep -qxF "$ssid" && saved='true'
         signal_level=$(( -100 + signal / 2 ))
         printf '%d|%s|%s|%s|%s\n' "$signal_level" "$ssid" "$current" "$security" "$saved"
-    done | sort -t'|' -k1 -rn | _wifi_list_to_json
+    done | sort -t'|' -k1 -rn
 }
 
 _wifi_list_saved_nmcli() {
@@ -155,7 +155,6 @@ _wifi_status_iwctl() {
 
 _wifi_list_iwctl() {
     iface="$(_wifi_interface)"
-    temp_file=$(mktemp)
 
     iwctl station "$iface" scan >/dev/null
     sleep 1
@@ -195,11 +194,8 @@ _wifi_list_iwctl() {
             saved='false'
             str_contains "$saved_networks" "|$ssid|" && saved='true'
 
-            echo "$signal_level|$ssid|$current|$security|$saved" >> "$temp_file"
-        done
-
-    sort -t'|' -k1 -rn "$temp_file"
-    rm -f "$temp_file"
+            echo "$signal_level|$ssid|$current|$security|$saved"
+        done | sort -t'|' -k1 -rn
 }
 
 _wifi_list_saved_iwctl() {
