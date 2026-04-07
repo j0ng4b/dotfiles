@@ -11,6 +11,9 @@ binds {
     // terminal
     Mod+Return hotkey-overlay-title="Open a Terminal" { spawn "footclient"; }
 
+    // app launcher
+    Mod+d hotkey-overlay-title="Open apps launcher" { spawn "qs" "ipc" "call" "launcher" "toggle"; }
+
 
     //// Multimedia Keys ///////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
