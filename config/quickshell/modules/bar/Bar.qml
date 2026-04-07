@@ -19,10 +19,16 @@ Variants {
         anchors.right: true
 
         color: 'transparent'
-        exclusiveZone: contentHeight + 5
+        exclusiveZone: contentHeight - 10
 
         implicitHeight: container.height
         property int contentHeight: 30
+
+        mask: Region {
+            Region { item: content }
+            Region { item: leftCorner }
+            Region { item: rightCorner }
+        }
 
         Column {
             id: container
@@ -105,12 +111,14 @@ Variants {
                 width: content.width
 
                 Corner {
+                    id: leftCorner
                     side: Corner.Side.TopLeft
                     color: Colorscheme.current.surface
                     Layout.alignment: Qt.AlignLeft
                 }
 
                 Corner {
+                    id: rightCorner
                     side: Corner.Side.TopRight
                     color: Colorscheme.current.surface
                     Layout.alignment: Qt.AlignRight
