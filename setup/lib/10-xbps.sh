@@ -4,7 +4,7 @@
 # Update XBPS itself
 xbps_update_self() {
     _info "Updating xbps..."
-    _run xbps-install -Syu xbps >/dev/null 2>&1 || _die "Failed to update xbps"
+    _run yes | xbps-install -Syu xbps >/dev/null 2>&1 || _die "Failed to update xbps"
 }
 
 # Update system
