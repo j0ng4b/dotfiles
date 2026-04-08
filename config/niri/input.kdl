@@ -18,6 +18,8 @@ input {
     touchpad {
         tap
         dwt
+        drag true
+        drag-lock
         natural-scroll
     }
 
