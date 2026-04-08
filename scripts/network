@@ -496,6 +496,7 @@ case $1 in
                         ;;
                     *)
                         error "network: unknown list option '$3'"
+                        _usage
                         exit 1
                         ;;
                 esac
@@ -523,12 +524,13 @@ case $1 in
                     list) _wifi_iface_list ;;
                     get)  _wifi_iface_get ;;
                     set)  _wifi_iface_set "$4" ;;
-                    *)    error "network: unknown interface command '$3'" && exit 1 ;;
+                    *)    error "network: unknown interface command '$3'"; _usage; exit 1 ;;
                 esac
                 ;;
 
             *)
                 error "network: unknown wifi command '$2'"
+                _usage
                 exit 1
                 ;;
         esac
@@ -550,6 +552,7 @@ case $1 in
 
             *)
                 error "network: unknown ethernet command '$2'"
+                _usage
                 exit 1
                 ;;
         esac
@@ -557,6 +560,7 @@ case $1 in
 
     *)
         error "network: unknown command '$1'"
+        _usage
         exit 1
         ;;
 esac
