@@ -1,18 +1,38 @@
 #!/bin/sh
 
-if ! command -v rembg >/dev/null 2>&1; then
-    echo 'Error: rembg is not installed. Please install it first.'
-    exit 1
-fi
+set -e
 
 INPUT_IMG=$1
 HASH=$(sha1sum "$INPUT_IMG" | cut -d' ' -f1)
 OUTPUT_IMG=$2/wallpapers-fg/$HASH
-mkdir -p $(dirname $OUTPUT_IMG)
+mkdir -p "$(dirname "$OUTPUT_IMG")"
 
+run_rembg() {
+    if command -v rembg >/dev/null 2>&1; then
+        rembg i -m 'birefnet-general-lite' "$INPUT_IMG" "$OUTPUT_IMG"
+        return
+    fi
 
+    if command -v docker >/dev/null 2>&1; then
+        docker run --rm \
+            --cpus 6 \
+            -v "$(dirname "$INPUT_IMG")":/input:ro \
+            -v "$(dirname "$OUTPUT_IMG")":/output \
+            -v "${XDG_DATA_HOME:-$HOME/.local/share}/.u2net":/root/.u2net \
+            danielgatis/rembg \
+            i -m 'birefnet-general-lite' \
+            "/input/$(basename "$INPUT_IMG")" \
+            "/output/$(basename "$OUTPUT_IMG")"
+        return
+    fi
+
+    echo "Error: neither rembg nor docker is available."
+    exit 1
+}
+
+# Cache hit
 if [ -f "$OUTPUT_IMG" ]; then
-    echo $OUTPUT_IMG
+    echo "$OUTPUT_IMG"
     exit 0
 fi
 
@@ -21,8 +41,9 @@ LOCK_FILE="/tmp/rembg_$HASH.lock"
 if [ ! -f "$LOCK_FILE" ]; then
     touch "$LOCK_FILE"
 
-    if ! rembg i -m 'birefnet-general-lite' "$INPUT_IMG" "$OUTPUT_IMG"; then
+    if ! run_rembg; then
         echo "Error: rembg failed to process the image."
+        rm -f "$LOCK_FILE"
         exit 1
     fi
 
@@ -38,7 +59,6 @@ SLEEP_INTERVAL=2
 while [ ! -s "$OUTPUT_IMG" ]; do
     if [ $WAITED -ge $TIMEOUT ]; then
         rm -f "$LOCK_FILE"
-
         echo "Error: Timeout waiting for rembg to finish processing."
         exit 1
     fi

@@ -152,7 +152,11 @@ Singleton {
         id: wallpaperFgGenerator
         property string wallpaperSource
 
-        command: [Paths.url2Path(Qt.resolvedUrl('../scripts/rembg')), Paths.url2Path(wallpaperSource), Paths.url2Path(root.cachePath)]
+        command: [
+            Paths.url2Path(Qt.resolvedUrl('../scripts/rembg')),
+            Paths.url2Path(wallpaperSource),
+            Paths.url2Path(root.cachePath)
+        ]
 
         stdout: StdioCollector {
             onStreamFinished: {
