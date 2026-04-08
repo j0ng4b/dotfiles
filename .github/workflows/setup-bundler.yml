@@ -1,0 +1,49 @@
+name: Build & Deploy setup.sh to GitHub Pages
+
+on:
+    push:
+        branches: ["main"]
+        paths:
+            - "setup/**"
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+concurrency:
+    group: "pages"
+    cancel-in-progress: true
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Build bundle (to public/setup.sh)
+              run: |
+                  mkdir -p public
+                  sh setup/build.sh > public/setup.sh
+                  test -s public/setup.sh
+                  chmod +x public/setup.sh
+
+            - name: Configure Pages
+              uses: actions/configure-pages@v5
+
+            - name: Upload Pages artifact
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: public
+
+    deploy:
+        runs-on: ubuntu-latest
+        needs: build
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - name: Deploy to Pages
+              id: deployment
+              uses: actions/deploy-pages@v4
