@@ -9,11 +9,11 @@ setup_services() {
 
     _info "Disabling conflicting services..."
     runit_svc_disable wpa_supplicant || true
-    runit_svc_disable dhcpcd || true
 
     _info "Enabling services..."
     runit_svc_enable_start dbus || true
     runit_svc_enable_start iwd || true
+    runit_svc_enable_start dhcpcd || true
     runit_svc_enable_start seatd || true
     runit_svc_enable_start bluetoothd || true
     runit_svc_enable_start polkitd || true
