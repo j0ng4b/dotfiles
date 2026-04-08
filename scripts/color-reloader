@@ -280,10 +280,12 @@ while [ $# -gt 0 ]; do
             ;;
         -*)
             error "color-reloader: invalid option '$1'!"
+            _usage
             exit 1
             ;;
         *)
-            error "color-reloader: unknown command '$1'! Use: run, register, unregister"
+            error "color-reloader: unknown command '$1'!"
+            _usage
             exit 1
             ;;
     esac
