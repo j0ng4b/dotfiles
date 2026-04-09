@@ -41,6 +41,11 @@ __generate_colors_file() {
     done
 }
 
+
+##
+## Foot terminal
+##
+
 # Reload colors for all foot terminals
 _foot_broadcast() {
     seqs_file="$1"
@@ -72,6 +77,11 @@ _foot_reloader() {
 
     _foot_broadcast "$seqs_file"
 }
+
+
+##
+## Utilities reloaders
+##
 
 _cava_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/cava/config"
@@ -128,15 +138,88 @@ _starship_reloader() {
     pkill -WINCH zsh # force redraw
 }
 
-_wm_reloader() {
+
+##
+## Window Manager
+##
+
+_detect_wm() {
+    xdg="$(printf '%s' "$XDG_CURRENT_DESKTOP" | tr '[:upper:]' '[:lower:]')"
+    session="$(printf '%s' "$XDG_SESSION_DESKTOP" | tr '[:upper:]' '[:lower:]')"
+
+    wm=""
+
+    # try detect using XDG_CURRENT_DESKTOP
+    case "$xdg" in
+        *niri*)   wm="niri" ;;
+        *)        ;;
+    esac
+    [ -n "$wm" ] && echo "$wm" && return
+
+    # try detect using session
+    case "$session" in
+        niri) wm="niri" ;;
+    esac
+    [ -n "$wm" ] && echo "$wm" && return
+
+    # as fallback try detect using running process
+    for wm in niri; do
+        if pgrep -x "$wm" >/dev/null; then
+            echo "$wm"
+            return
+        fi
+    done
+
+    echo ""
+}
+
+_validate_wm() {
+    if [ -z "$1" ]; then
+        return 1
+    fi
+
+    if str_contains "$(_available_wm_backends)" "$1"; then
+        return 0
+    fi
+
+    return 1
+}
+
+_wm_backend_niri() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/niri/colors.kdl"
     __generate_colors_file niri $colors_output_path
     # automatic reload for niri - no action needed
 }
 
-# Utility functions
+_wm_reloader() {
+    wm="$(_detect_wm)"
+
+    if [ -z "$wm" ]; then
+        warn "color-reloader: no window manager detected"
+        _wm_backend_default
+        return
+    fi
+
+    info "color-reloader: detected WM = $wm"
+
+    if _validate_wm "$wm"; then
+        "_wm_backend_${wm}" 2>/dev/null
+    else
+        warn "color-reloader: no backend for WM '$wm', using default"
+    fi
+}
+
+
+##
+## Utility functions
+##
+
 _available_reloaders() {
     grep -o "^_[^_].*_reloader" "$root/$script" | sed 's/^_//;s/_reloader$//'
+}
+
+_available_wm_backends() {
+    grep -o "^_wm_backend_[a-z_]*" "$root/$script" | sed 's/^_wm_backend_//;/^$/d'
 }
 
 _validate_reloader() {
@@ -179,7 +262,10 @@ _usage() {
 }
 
 
-# Script commands
+##
+## Script commands
+##
+
 _cmd_run() {
     # Register initial re-loaders set
     for name in "$@"; do
@@ -264,7 +350,11 @@ _cmd_list() {
     done
 }
 
-# Parse args
+
+##
+## Parse args
+##
+
 generate_only=""
 cmd=""
 
