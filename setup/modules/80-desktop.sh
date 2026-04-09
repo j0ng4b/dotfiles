@@ -35,9 +35,6 @@ setup_desktop() {
     _run flatpak install -y --noninteractive flathub com.discordapp.Discord || \
         _warn "Failed to install Discord"
 
-    _run flatpak install -y --noninteractive flathub com.spotify.Client || \
-        _warn "Failed to install Spotify"
-
     _run flatpak install -y --noninteractive flathub org.telegram.desktop || \
         _warn "Failed to install Telegram"
 
