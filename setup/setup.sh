@@ -13,7 +13,7 @@ REAL_USER="${SUDO_USER:-${USER:-}}"
 VERBOSE=false
 
 # Setup plan (order matters)
-SETUP_PLAN="repository user base flatpak dotfiles shell pipewire dev desktop services integrations"
+SETUP_PLAN="repository user base flatpak dotfiles shell pipewire dev desktop fonts services integrations"
 
 # Feature flags (--skip <feature> to disable)
 SKIP_REPOSITORY=false
@@ -25,6 +25,7 @@ SKIP_SHELL=false
 SKIP_PIPEWIRE=false
 SKIP_DEV=false
 SKIP_DESKTOP=false
+SKIP_FONTS=false
 SKIP_SERVICES=false
 SKIP_INTEGRATIONS=false
 
