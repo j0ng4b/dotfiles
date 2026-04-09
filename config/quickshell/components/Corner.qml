@@ -18,6 +18,10 @@ Shape {
     implicitWidth: size
     implicitHeight: size
 
+    layer.enabled: true
+    layer.smooth: true
+    layer.samples: 4
+
     ShapePath {
         strokeWidth: 0
         fillColor: root.color
