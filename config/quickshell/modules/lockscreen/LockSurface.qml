@@ -144,7 +144,7 @@ Rectangle {
                 color: Colorscheme.current.primary
                 renderType: Text.NativeRendering
                 font.pointSize: 90 * clockContainer.scaleFactor
-                text: Clock.time
+                text: ClockService.time
             }
 
             Label {
@@ -154,7 +154,7 @@ Rectangle {
                 color: Colorscheme.current.secondary
                 renderType: Text.NativeRendering
                 font.pointSize: 30 * clockContainer.scaleFactor
-                text: Clock.date
+                text: ClockService.date
             }
         }
 
