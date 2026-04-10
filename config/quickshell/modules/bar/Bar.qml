@@ -58,17 +58,15 @@ Variants {
 
                         Behavior on color { ColorAnimation { duration: 150 } }
 
-                        Text {
+                        Icon {
+                            icon: 'grid_view'
+                            fill: launcherBtn.containsMouse
                             anchors.centerIn: parent
-                            font.family: 'Material Symbols Rounded Filled'
-                            font.pixelSize: 20
                             color: launcherBtn.containsMouse
                                 ? Colorscheme.current.primary
                                 : Colorscheme.current.on_surface
 
                             Behavior on color { ColorAnimation { duration: 150 } }
-
-                            text: 'grid_view'
                         }
 
                         MouseArea {

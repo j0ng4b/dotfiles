@@ -94,12 +94,11 @@ Variants {
 
                             Behavior on color { ColorAnimation { duration: 100 } }
 
-                            Text {
+                            Icon {
+                                icon: launcher.isGrid ? "list" : "grid_view"
+                                fill: viewToggle.containsMouse
                                 anchors.centerIn: parent
-                                font.family: "Material Symbols Rounded Filled"
-                                font.pixelSize: 18
                                 color: Colorscheme.current.on_surface
-                                text: launcher.isGrid ? "list" : "grid_view"
                             }
 
                             MouseArea {

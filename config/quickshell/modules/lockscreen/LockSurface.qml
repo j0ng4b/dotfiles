@@ -6,6 +6,7 @@ import QtQuick.Controls.Fusion
 import Quickshell.Wayland
 
 import qs.config
+import qs.components
 import qs.services
 
 Rectangle {
@@ -365,8 +366,10 @@ Rectangle {
                 root.context.currentText += kevent.text;
         }
 
-        Text {
+        Icon {
             id: lockIcon
+            icon: root.unlocking ? 'lock_open_right' : 'lock'
+            fill: true
             anchors.centerIn: parent
 
             transform: Translate {
@@ -383,13 +386,6 @@ Rectangle {
 
                 return Colorscheme.current.on_surface;
             }
-
-            font.family: 'Material Symbols Rounded Filled'
-            font.hintingPreference: Font.PreferFullHinting
-            font.pointSize: 18
-            antialiasing: true
-            renderType: Text.NativeRendering
-            text: root.unlocking ? 'lock_open_right' : 'lock'
 
             Behavior on color {
                 ColorAnimation {

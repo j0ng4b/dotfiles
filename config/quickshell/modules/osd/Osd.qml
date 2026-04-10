@@ -90,14 +90,13 @@ Variants {
                         }
                     }
 
-                    Text {
+                    Icon {
+                        icon: OsdState.icon
+                        size: osd.iconSize
                         Layout.alignment: Qt.AlignHCenter
-                        font.family: "Material Symbols Rounded Filled"
-                        font.pixelSize: osd.iconSize
                         color: OsdState.muted
                             ? Colorscheme.current.error
                             : Colorscheme.current.primary
-                        text: OsdState.icon
 
                         Behavior on color { ColorAnimation { duration: 300 } }
                     }
