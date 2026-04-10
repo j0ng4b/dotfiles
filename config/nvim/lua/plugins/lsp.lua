@@ -53,7 +53,7 @@ end
 --------------------
 local server_configs = {
     omnisharp = function()
-        local omnisharp_root = vim.fn.stdpath("data") .. "/mason/packages/omnisharp/omnisharp"
+        local omnisharp_root = vim.fn.stdpath("data") .. "/mason/packages/omnisharp/OmniSharp"
         return {
             cmd = { omnisharp_root },
         }
@@ -136,13 +136,6 @@ local server_configs = {
                     },
                 },
             },
-        }
-    end,
-
-    qmlls = function()
-        return {
-            filetypes = { "qml", "qmljs" },
-            cmd = { "/usr/lib/qt6/bin/qmlls" },
         }
     end,
 }
