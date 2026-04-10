@@ -2,6 +2,7 @@ pragma Singleton
 
 import Quickshell
 import Quickshell.Io
+import QtCore
 import QtQuick
 
 Singleton {
@@ -112,6 +113,12 @@ Singleton {
 
                 // Grid columns (only used when viewMode is 'grid')
                 property int gridColumns: 3
+
+                // Path to wallpapers
+                property string wallpaperDir: {
+                    const pictures = StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0];
+                    return pictures + "/wallpapers";
+                }
             }
 
             property JsonObject osd: JsonObject {

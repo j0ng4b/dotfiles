@@ -57,22 +57,22 @@ Singleton {
     }
 
     Connections {
-        target: Volume
+        target: VolumeService
 
         function onChanged() {
-            root._show("volume", Volume.level, Volume.muted);
+            root._show("volume", VolumeService.level, VolumeService.muted);
         }
     }
 
     Connections {
-        target: Brightness
+        target: BrightnessService
 
         function onChanged(source: string) {
-            if (source == "screen" && Brightness.screen >= 0)
-                root._show("brightness-screen", Brightness.screen);
+            if (source == "screen" && BrightnessService.screen >= 0)
+                root._show("brightness-screen", BrightnessService.screen);
 
-            if (source == "keyboard" && Brightness.kbd >= 0)
-                root._show("brightness-kbd", Brightness.kbd);
+            if (source == "keyboard" && BrightnessService.kbd >= 0)
+                root._show("brightness-kbd", BrightnessService.kbd);
         }
     }
 }

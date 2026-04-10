@@ -90,14 +90,14 @@ Variants {
 
                         Text {
                             Layout.alignment: Qt.AlignCenter
-                            text: Clock.time
+                            text: ClockService.time
                             font.pixelSize: 12
                             color: Colorscheme.current.on_surface
                         }
 
                         Text {
                             Layout.alignment: Qt.AlignCenter
-                            text: Clock.date
+                            text: ClockService.date
                             font.pixelSize: 10
                             color: Colorscheme.current.on_surface
                         }

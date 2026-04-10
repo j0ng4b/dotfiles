@@ -11,6 +11,7 @@ Rectangle {
     signal moveLeft
     signal moveRight
     signal confirm
+    signal tab
 
     function clear() { input.text = ""; }
     function activate() { input.forceActiveFocus(); }
@@ -44,13 +45,14 @@ Rectangle {
 
         Keys.onPressed: event => {
             switch (event.key) {
-                case Qt.Key_Escape:  root.close();    event.accepted = true; break;
-                case Qt.Key_Up:      root.moveUp();    event.accepted = true; break;
-                case Qt.Key_Down:    root.moveDown();  event.accepted = true; break;
-                case Qt.Key_Left:    root.moveLeft();  event.accepted = true; break;
-                case Qt.Key_Right:   root.moveRight(); event.accepted = true; break;
+                case Qt.Key_Escape: root.close();    event.accepted = true; break;
+                case Qt.Key_Up:     root.moveUp();   event.accepted = true; break;
+                case Qt.Key_Down:   root.moveDown(); event.accepted = true; break;
+                case Qt.Key_Left:   root.moveLeft(); event.accepted = true; break;
+                case Qt.Key_Right:  root.moveRight();event.accepted = true; break;
+                case Qt.Key_Tab:    root.tab();      event.accepted = true; break;
                 case Qt.Key_Return:
-                case Qt.Key_Enter:   root.confirm();   event.accepted = true; break;
+                case Qt.Key_Enter:  root.confirm();  event.accepted = true; break;
             }
         }
     }

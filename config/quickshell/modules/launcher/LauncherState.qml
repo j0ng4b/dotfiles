@@ -7,6 +7,7 @@ Singleton {
 
     property bool open: false
     property string activeScreen: ""
+    property string activeTab: "apps"
 
     function isOpen(screenName) {
         if (open && (activeScreen == screenName || activeScreen == ""))
@@ -19,7 +20,6 @@ Singleton {
             open = !open;
             if (!open)
                 activeScreen = "";
-
             return;
         }
 
@@ -35,5 +35,9 @@ Singleton {
     function close() {
         open = false;
         activeScreen = "";
+    }
+
+    function switchTab(tab) {
+        activeTab = tab;
     }
 }

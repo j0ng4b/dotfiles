@@ -21,7 +21,7 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         anchors.fill: parent
         onClicked: {
-            Niri.focusWorkspace(indicator.modelData.index);
+            NiriService.focusWorkspace(indicator.modelData.index);
         }
     }
 }

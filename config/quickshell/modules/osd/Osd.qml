@@ -21,7 +21,7 @@ Variants {
         readonly property int panelWidth: contentMargins * 2 + Math.max(barWidth, iconSize)
         readonly property int panelHeight: Math.round(osd.screen.height * Config.osd.heightFraction)
 
-        readonly property bool isActiveScreen: osd.modelData.name === Niri.focusedOutput
+        readonly property bool isActiveScreen: osd.modelData.name === NiriService.focusedOutput
 
         implicitWidth:  panelWidth
         implicitHeight: panelHeight + cornerTop.size + cornerBottom.size

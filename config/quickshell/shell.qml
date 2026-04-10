@@ -26,7 +26,7 @@ ShellRoot {
     IpcHandler {
         target: 'launcher'
         function toggle() {
-            LauncherState.toggle(Niri.focusedOutput);
+            LauncherState.toggle(NiriService.focusedOutput);
         }
     }
 
