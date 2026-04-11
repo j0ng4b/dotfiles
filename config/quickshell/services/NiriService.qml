@@ -152,7 +152,52 @@ Singleton {
         }
     }
 
-    // Listener for niri events
+    property bool applying: false
+    property string applyError: ''
+
+    property var _queue: []
+    property int _queueIdx:  0
+
+    function applySettings(outputsSettings) {
+        if (applying)
+            return;
+        applyError = '';
+
+        const cmds = [];
+        for (const name in outputsSettings) {
+            const settings = outputsSettings[name];
+            if (!settings.dirty)
+                continue;
+
+            const base = ['niri', 'msg', 'output', name];
+            if (settings.mode)      cmds.push([...base, 'mode',      settings.mode]);
+            if (settings.scale)     cmds.push([...base, 'scale',     String(settings.scale)]);
+            if (settings.transform) cmds.push([...base, 'transform', settings.transform]);
+            cmds.push([...base, 'position', 'set', '--', Math.round(settings.x), Math.round(settings.y)]);
+        }
+
+        if (cmds.length === 0)
+            return;
+
+        applying = true;
+        _queue = cmds;
+        _queueIdx  = 0;
+        _runNext();
+    }
+
+    function _runNext() {
+        if (_queueIdx >= _queue.length) {
+            applying = false;
+            _queueIdx  = 0;
+            _queue = [];
+            root.refreshOutputs();
+            return;
+        }
+
+        applyRunner.command = _queue[_queueIdx];
+        applyRunner.running = true;
+    }
+
     Process {
         id: eventListener
         running: true
@@ -190,6 +235,30 @@ Singleton {
         command: ['niri', 'msg', '--json', 'outputs']
         stdout: StdioCollector {
             onStreamFinished: root._parseOutputs(this.text.trim())
+        }
+    }
+
+    Process {
+        id: applyRunner
+        running: false
+
+        stderr: StdioCollector {
+            onStreamFinished: {
+                const err = this.text.trim();
+                if (err)
+                    root.applyError = err;
+            }
+        }
+
+        onExited: code => {
+            if (code !== 0) {
+                root.applying = false;
+                root._queueIdx  = 0;
+                root._queue = [];
+            } else {
+                root._queueIdx++;
+                root._runNext();
+            }
         }
     }
 }
