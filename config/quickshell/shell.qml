@@ -4,6 +4,7 @@ import qs.config
 import qs.modules.bar
 import qs.modules.wallpaper
 import qs.modules.launcher
+import qs.modules.monitors
 import qs.modules.lockscreen
 import qs.modules.osd
 import qs.services
@@ -12,6 +13,7 @@ ShellRoot {
     Bar {}
     Launcher {}
     Wallpaper {}
+    Monitor {}
     LockScreen {}
     Osd {}
 
@@ -31,8 +33,21 @@ ShellRoot {
     }
 
     IpcHandler {
+        target: 'monitors'
+        function toggle() {
+            MonitorState.toggle();
+        }
+    }
+
+    IpcHandler {
         target: 'lockscreen'
-        function lock()   { LockScreenState.lock();   }
-        function unlock() { LockScreenState.unlock(); }
+
+        function lock() {
+            LockScreenState.lock();
+        }
+
+        function unlock() {
+            LockScreenState.unlock();
+        }
     }
 }
