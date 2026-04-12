@@ -27,8 +27,8 @@ binds {
     XF86AudioMicMute { spawn "~/.config/niri/scripter" "multimedia" "mic" "mute"; }
 
     // brightness
-    XF86MonBrightnessUp { spawn "~/.config/niri/scripter" "brightness" "set" "+5%"; }
-    XF86MonBrightnessDown { spawn "~/.config/niri/scripter" "brightness" "set" "-5%"; }
+    XF86MonBrightnessUp { spawn "~/.config/niri/scripter" "brightness" "screen" "set" "+5%"; }
+    XF86MonBrightnessDown { spawn "~/.config/niri/scripter" "brightness" "screen" "set" "-5%"; }
 
     // screenshot
     Print { spawn "~/.config/niri/scripter" "screenshot" "screen"; }

@@ -10,5 +10,6 @@ setup_base() {
         neovim \
         tmux \
         btop \
+        fzf \
         unzip
 }
