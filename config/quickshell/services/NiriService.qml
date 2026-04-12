@@ -102,7 +102,7 @@ Singleton {
                     };
                 });
 
-                const currentMode = modes[output.current_mode];
+                const currentMode = output.current_mode ? modes[output.current_mode] : modes[0];
                 const currentHz = currentMode.refreshRate;
 
                 result.push({

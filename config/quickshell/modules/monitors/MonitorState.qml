@@ -2,6 +2,7 @@ pragma Singleton
 
 import Quickshell
 import QtQuick
+
 import qs.services
 
 Singleton {
@@ -52,6 +53,9 @@ Singleton {
         settings[output.name] = {
             x: output.x,
             y: output.y,
+            mode: output.currentMode ? output.currentMode.label : '',
+            scale: output.scale,
+            transform: output.transform,
             dirty: false
         };
 
@@ -117,7 +121,7 @@ Singleton {
             _initSettings(output);
     }
 
-    function resetAllSettingss() {
+    function resetAllSettings() {
         for (const output of NiriService.outputs)
             _initSettings(output);
     }
