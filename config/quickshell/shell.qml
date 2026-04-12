@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Io
+
 import qs.config
 import qs.modules.bar
 import qs.modules.wallpaper

@@ -135,6 +135,8 @@ binds {
     Mod+Alt+Up { move-workspace-to-monitor-up; }
     Mod+Alt+Right { move-workspace-to-monitor-right; }
 
+    Mod+P { spawn "qs" "ipc" "call" "monitors" "toggle"; }
+
     //// Layout management /////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
