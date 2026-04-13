@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
+
 import qs.config
 import qs.components
 import qs.services
@@ -14,28 +15,33 @@ Variants {
     delegate: PanelWindow {
         id: launcher
         required property var modelData
-        screen: modelData
 
-        color: "transparent"
+        color: 'transparent'
+        screen: modelData
+        exclusionMode: ExclusionMode.Ignore
+
         anchors.left: true
+
+        visible: shouldShow || hideTimer.running
         implicitWidth: 320
         implicitHeight: Math.round(launcher.screen.height * Config.launcher.heightFraction)
-        exclusionMode: ExclusionMode.Ignore
-        visible: shouldShow || hideTimer.running
 
-        WlrLayershell.keyboardFocus: LauncherState.isOpen(launcher.modelData.name)
-            ? WlrKeyboardFocus.Exclusive
-            : WlrKeyboardFocus.None
+        WlrLayershell.keyboardFocus: {
+            if (LauncherState.isOpen(launcher.modelData.name))
+                return WlrKeyboardFocus.Exclusive;
+            return WlrKeyboardFocus.None;
+        }
 
         property bool shouldShow: LauncherState.isOpen(launcher.modelData.name)
         property list<DesktopEntry> filtered: entries
 
-        readonly property bool isGrid: Config.launcher.viewMode === "grid"
-        readonly property list<DesktopEntry> entries: DesktopEntries.applications.values
+        readonly property bool isGrid: Config.launcher.viewMode === 'grid'
+        readonly property int tabIndex: LauncherState.activeTab === 'wallpapers' ? 1 : 0
         readonly property int animationDuration: 400
-        readonly property int tabIndex: LauncherState.activeTab === "wallpapers" ? 1 : 0
+        readonly property list<DesktopEntry> entries: DesktopEntries.applications.values
 
-        onShouldShowChanged: if (!shouldShow) hideTimer.restart();
+        onShouldShowChanged: if (!shouldShow)
+            hideTimer.restart()
 
         Column {
             id: container
@@ -56,11 +62,11 @@ Variants {
 
             Rectangle {
                 id: panel
+                color: Colorscheme.current.surface
                 width: launcher.implicitWidth
                 height: launcher.implicitHeight - cornerTop.size - cornerBottom.size
                 topRightRadius: Config.general.radius
                 bottomRightRadius: Config.general.radius
-                color: Colorscheme.current.surface
 
                 ColumnLayout {
                     spacing: 8
@@ -69,7 +75,7 @@ Variants {
 
                     Item {
                         Layout.fillWidth: true
-                        height: 36
+                        Layout.preferredHeight: 36
 
                         Rectangle {
                             anchors.fill: parent
@@ -79,13 +85,14 @@ Variants {
 
                         Rectangle {
                             id: activePill
-                            y: 3
-                            height: parent.height - 6
+
                             width: (parent.width - 6) / 2
+                            height: parent.height - 6
                             radius: Config.general.radius - 2
                             color: Colorscheme.current.primary
 
                             x: launcher.tabIndex === 0 ? 3 : 3 + width + 3
+                            y: 3
 
                             Behavior on x {
                                 NumberAnimation {
@@ -110,23 +117,27 @@ Variants {
                                     spacing: 6
 
                                     Icon {
-                                        icon: "grid_view"
+                                        icon: 'grid_view'
                                         fill: launcher.tabIndex === 0
-                                        color: launcher.tabIndex === 0
-                                            ? Colorscheme.current.on_primary
-                                            : Colorscheme.current.on_surface
+                                        color: launcher.tabIndex === 0 ? Colorscheme.current.on_primary : Colorscheme.current.on_surface
 
-                                        Behavior on color { ColorAnimation { duration: 180 } }
+                                        Behavior on color {
+                                            ColorAnimation {
+                                                duration: 180
+                                            }
+                                        }
                                     }
 
                                     Text {
-                                        text: "Apps"
+                                        text: 'Apps'
                                         font.pixelSize: 14
-                                        color: launcher.tabIndex === 0
-                                            ? Colorscheme.current.on_primary
-                                            : Colorscheme.current.on_surface
+                                        color: launcher.tabIndex === 0 ? Colorscheme.current.on_primary : Colorscheme.current.on_surface
 
-                                        Behavior on color { ColorAnimation { duration: 180 } }
+                                        Behavior on color {
+                                            ColorAnimation {
+                                                duration: 180
+                                            }
+                                        }
                                     }
                                 }
 
@@ -134,7 +145,7 @@ Variants {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: LauncherState.switchTab("apps")
+                                    onClicked: LauncherState.switchTab('apps')
                                 }
                             }
 
@@ -148,23 +159,27 @@ Variants {
                                     spacing: 6
 
                                     Icon {
-                                        icon: "wallpaper"
+                                        icon: 'wallpaper'
                                         fill: launcher.tabIndex === 1
-                                        color: launcher.tabIndex === 1
-                                            ? Colorscheme.current.on_primary
-                                            : Colorscheme.current.on_surface
+                                        color: launcher.tabIndex === 1 ? Colorscheme.current.on_primary : Colorscheme.current.on_surface
 
-                                        Behavior on color { ColorAnimation { duration: 180 } }
+                                        Behavior on color {
+                                            ColorAnimation {
+                                                duration: 180
+                                            }
+                                        }
                                     }
 
                                     Text {
-                                        text: "Wallpapers"
+                                        text: 'Wallpapers'
                                         font.pixelSize: 14
-                                        color: launcher.tabIndex === 1
-                                            ? Colorscheme.current.on_primary
-                                            : Colorscheme.current.on_surface
+                                        color: launcher.tabIndex === 1 ? Colorscheme.current.on_primary : Colorscheme.current.on_surface
 
-                                        Behavior on color { ColorAnimation { duration: 180 } }
+                                        Behavior on color {
+                                            ColorAnimation {
+                                                duration: 180
+                                            }
+                                        }
                                     }
                                 }
 
@@ -172,7 +187,7 @@ Variants {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: LauncherState.switchTab("wallpapers")
+                                    onClicked: LauncherState.switchTab('wallpapers')
                                 }
                             }
                         }
@@ -192,7 +207,6 @@ Variants {
                             height: parent.height
 
                             x: launcher.tabIndex === 0 ? 0 : -contentStrip.singleWidth
-
                             Behavior on x {
                                 NumberAnimation {
                                     duration: 260
@@ -225,29 +239,29 @@ Variants {
                                             onTextChanged: launcher.filter()
                                             onClose: LauncherState.close()
                                             onConfirm: launcher.launchSelected()
-                                            onMoveUp: launcher.isGrid
-                                                ? gridView.moveCurrentIndexUp()
-                                                : listView.decrementCurrentIndex()
-                                            onMoveDown: launcher.isGrid
-                                                ? gridView.moveCurrentIndexDown()
-                                                : listView.incrementCurrentIndex()
-                                            onMoveLeft: if (launcher.isGrid) gridView.moveCurrentIndexLeft()
-                                            onMoveRight: if (launcher.isGrid) gridView.moveCurrentIndexRight()
+                                            onMoveUp: launcher.isGrid ? gridView.moveCurrentIndexUp() : listView.decrementCurrentIndex()
+                                            onMoveDown: launcher.isGrid ? gridView.moveCurrentIndexDown() : listView.incrementCurrentIndex()
+                                            onMoveLeft: if (launcher.isGrid)
+                                                gridView.moveCurrentIndexLeft()
+                                            onMoveRight: if (launcher.isGrid)
+                                                gridView.moveCurrentIndexRight()
                                             onTab: launcher.tabNext()
                                         }
 
                                         Rectangle {
-                                            width: 36
-                                            height: 36
+                                            Layout.preferredWidth: 36
+                                            Layout.preferredHeight: 36
                                             radius: 8
-                                            color: viewToggle.containsMouse
-                                                ? Colorscheme.current.surface_variant
-                                                : Colorscheme.current.surface_container_high
 
-                                            Behavior on color { ColorAnimation { duration: 100 } }
+                                            color: viewToggle.containsMouse ? Colorscheme.current.surface_variant : Colorscheme.current.surface_container_high
+                                            Behavior on color {
+                                                ColorAnimation {
+                                                    duration: 100
+                                                }
+                                            }
 
                                             Icon {
-                                                icon: launcher.isGrid ? "list" : "grid_view"
+                                                icon: launcher.isGrid ? 'list' : 'grid_view'
                                                 fill: viewToggle.containsMouse
                                                 anchors.centerIn: parent
                                                 color: Colorscheme.current.on_surface
@@ -258,8 +272,7 @@ Variants {
                                                 anchors.fill: parent
                                                 hoverEnabled: true
                                                 cursorShape: Qt.PointingHandCursor
-                                                onClicked: Config.launcher.viewMode =
-                                                    launcher.isGrid ? "list" : "grid"
+                                                onClicked: Config.launcher.viewMode = launcher.isGrid ? 'list' : 'grid'
                                             }
                                         }
                                     }
@@ -322,9 +335,7 @@ Variants {
 
         function filter() {
             const q = searchBar.text.toLowerCase().trim();
-            filtered = entries.filter(a =>
-                q === "" || a.name.toLowerCase().includes(q)
-            );
+            filtered = entries.filter(a => q === '' || a.name.toLowerCase().includes(q));
 
             listView.currentIndex = -1;
             gridView.currentIndex = -1;
@@ -336,13 +347,11 @@ Variants {
                 return;
 
             const app = filtered[idx];
-            const execArgs = app.runInTerminal
-                ? [Config.launcher.terminal.exec, Config.launcher.terminal.execFlag, ...app.command]
-                : app.command;
+            const execArgs = app.runInTerminal ? [Config.launcher.terminal.exec, Config.launcher.terminal.execFlag, ...app.command] : app.command;
 
             Quickshell.execDetached({
                 command: execArgs,
-                workingDirectory: app.workingDirectory,
+                workingDirectory: app.workingDirectory
             });
             LauncherState.close();
         }
@@ -350,8 +359,12 @@ Variants {
         Connections {
             target: LauncherState
 
-            function onOpenChanged() { _maybeActivate(); }
-            function onActiveScreenChanged() { _maybeActivate(); }
+            function onOpenChanged() {
+                _maybeActivate();
+            }
+            function onActiveScreenChanged() {
+                _maybeActivate();
+            }
 
             function _maybeActivate() {
                 if (!LauncherState.open || LauncherState.activeScreen !== launcher.modelData.name)
@@ -364,16 +377,16 @@ Variants {
         }
 
         Timer {
-            id: hideTimer;
-            interval: animationDuration + 20;
+            id: hideTimer
+            interval: animationDuration + 20
             repeat: false
-            onTriggered: LauncherState.switchTab("apps")
+            onTriggered: LauncherState.switchTab('apps')
         }
 
         Timer {
-            id: focusTimer;
-            interval: 30;
-            repeat: false;
+            id: focusTimer
+            interval: 30
+            repeat: false
             onTriggered: searchBar.activate()
         }
     }

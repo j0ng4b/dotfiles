@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 import qs.config
 
 Rectangle {
@@ -13,10 +12,15 @@ Rectangle {
     signal confirm
     signal tab
 
-    function clear() { input.text = ""; }
-    function activate() { input.forceActiveFocus(); }
-
     property alias text: input.text
+
+    function clear() {
+        input.text = '';
+    }
+
+    function activate() {
+        input.forceActiveFocus();
+    }
 
     height: 36
     radius: 8
@@ -26,8 +30,8 @@ Rectangle {
         anchors.fill: parent
         anchors.leftMargin: 12
         verticalAlignment: Text.AlignVCenter
-        visible: input.text === ""
-        text: "Search apps..."
+        visible: input.text === ''
+        text: 'Search apps...'
         color: Colorscheme.current.on_surface
         opacity: 0.4
         font.pixelSize: 13
@@ -45,15 +49,31 @@ Rectangle {
 
         Keys.onPressed: event => {
             switch (event.key) {
-                case Qt.Key_Escape: root.close();    event.accepted = true; break;
-                case Qt.Key_Up:     root.moveUp();   event.accepted = true; break;
-                case Qt.Key_Down:   root.moveDown(); event.accepted = true; break;
-                case Qt.Key_Left:   root.moveLeft(); event.accepted = true; break;
-                case Qt.Key_Right:  root.moveRight();event.accepted = true; break;
-                case Qt.Key_Tab:    root.tab();      event.accepted = true; break;
-                case Qt.Key_Return:
-                case Qt.Key_Enter:  root.confirm();  event.accepted = true; break;
+            case Qt.Key_Escape:
+                root.close();
+                break;
+            case Qt.Key_Up:
+                root.moveUp();
+                break;
+            case Qt.Key_Down:
+                root.moveDown();
+                break;
+            case Qt.Key_Left:
+                root.moveLeft();
+                break;
+            case Qt.Key_Right:
+                root.moveRight();
+                break;
+            case Qt.Key_Tab:
+                root.tab();
+                break;
+            case Qt.Key_Return:
+            case Qt.Key_Enter:
+                root.confirm();
+                break;
             }
+
+            event.accepted = true;
         }
     }
 }

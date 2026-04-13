@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
 import qs.config
@@ -33,7 +35,7 @@ GridView {
             anchors.fill: parent
             anchors.margins: 4
             radius: 8
-            color: "transparent"
+            color: 'transparent'
 
             Column {
                 anchors.centerIn: parent
@@ -45,13 +47,13 @@ GridView {
                     height: 36
                     anchors.horizontalCenter: parent.horizontalCenter
                     sourceSize: Qt.size(36, 36)
-                    source: Quickshell.iconPath(entry.modelData.icon) || ""
+                    source: Quickshell.iconPath(entry.modelData.icon) || ''
 
                     Rectangle {
                         anchors.fill: parent
                         color: Colorscheme.current.primary
                         radius: 6
-                        visible: icon.source === "" || icon.status === Image.Error
+                        visible: icon.source === '' || icon.status === Image.Error
 
                         Text {
                             anchors.centerIn: parent
@@ -81,10 +83,10 @@ GridView {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
-                onEntered: root.currentIndex = index
+                onEntered: root.currentIndex = entry.index
                 onClicked: {
-                    root.currentIndex = index;
-                    root.launch(index);
+                    root.currentIndex = entry.index;
+                    root.launch(entry.index);
                 }
             }
         }
