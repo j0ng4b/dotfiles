@@ -15,6 +15,6 @@ if [ ! -x "$test_dir/dotfile" ]; then
     exit 1
 fi
 
-sh "$test_dir/scripts/_scripter" "$@"
+exec sh "$test_dir"/scripts/_scripter $@
 
 # vim: ft=sh

@@ -20,7 +20,6 @@ Singleton {
 
     readonly property string compositor: _detected
 
-
     //
     // Public API
     //
@@ -40,7 +39,6 @@ Singleton {
     function applySettings(settings) {
         _active.applySettings(settings);
     }
-
 
     //
     // Compositor detections
@@ -76,7 +74,6 @@ Singleton {
             onStreamFinished: root._detected = this.text.trim()
         }
     }
-
 
     //
     // Adapters
@@ -134,7 +131,6 @@ Singleton {
             }
         }
     }
-
 
     //
     // NiriAdapter
@@ -239,7 +235,7 @@ Singleton {
                     const logical = output.logical;
 
                     const modes = (output.modes || []).map(mode => {
-                        const hz = niri._parseRefresh(mode.refresh_rate);
+                        const hz = niri._hz(mode.refresh_rate);
                         return {
                             width: mode.width,
                             height: mode.height,
@@ -394,7 +390,6 @@ Singleton {
         }
     }
 
-
     //
     // Mango
     //
@@ -422,10 +417,9 @@ Singleton {
 
         // API
         function focusOutput(name) {
-            Quickshell.execDetached(['mmsg', '-s', 'focusmon,' + name]);
-
             // Not working:
             // Quickshell.execDetached(['mmsg', '-s', '-o', name]);
+            Quickshell.execDetached(['mmsg', '-s', 'focusmon,' + name]);
         }
 
         function focusWorkspace(index) {
