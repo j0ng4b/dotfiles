@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+
 import qs.services
 
 Item {
@@ -22,7 +23,7 @@ Item {
         }
 
         Connections {
-            target: NiriService
+            target: CompositorService
             function onWorkspacesUpdated() {
                 const model = workspaceIndicator.filteredWorkspaces;
 
@@ -32,8 +33,8 @@ Item {
                 for (let i = 0; i < model.count; i++)
                     existing[model.get(i).index] = i;
 
-                for (let i = 0; i < NiriService.workspaces.count; i++) {
-                    let ws = NiriService.workspaces.get(i);
+                for (let i = 0; i < CompositorService.workspaces.count; i++) {
+                    let ws = CompositorService.workspaces.get(i);
                     if (ws.output === workspaces.output.name)
                         incoming[ws.index] = ws;
                 }

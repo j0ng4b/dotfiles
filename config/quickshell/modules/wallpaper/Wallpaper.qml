@@ -3,6 +3,7 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Shapes
+
 import qs.config
 
 Variants {
@@ -43,9 +44,8 @@ Variants {
                     // The wallpaper source can change before the current wallpaper is
                     // loaded, for example when the shell starts the source is set to the
                     // default wallpaper path but later the user config is loaded and the
-                    // source is changed to the user's wallpaper.
-                    //
-                    // In this case we just set the source directly without animation.
+                    // source is changed to the user's wallpaper in this case we just set
+                    // the source directly without animation.
                     if (status != Image.Ready) {
                         source = Config.wallpaper.source;
                         return;

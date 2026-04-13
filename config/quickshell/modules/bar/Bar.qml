@@ -1,10 +1,10 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
+
 import qs.config
 import qs.components
 import qs.services
-import qs.modules.bar.workspaces
 import qs.modules.launcher
 
 Variants {
@@ -19,15 +19,23 @@ Variants {
         anchors.right: true
 
         color: 'transparent'
-        exclusiveZone: contentHeight - 10
+        exclusiveZone: contentHeight
 
         implicitHeight: container.height
         property int contentHeight: 30
 
         mask: Region {
-            Region { item: content }
-            Region { item: leftCorner }
-            Region { item: rightCorner }
+            Region {
+                item: content
+            }
+
+            Region {
+                item: leftCorner
+            }
+
+            Region {
+                item: rightCorner
+            }
         }
 
         Column {
@@ -52,21 +60,25 @@ Variants {
                         width: 26
                         height: 26
                         radius: 6
-                        color: launcherBtn.containsMouse
-                            ? Colorscheme.current.surface_container_high
-                            : 'transparent'
 
-                        Behavior on color { ColorAnimation { duration: 150 } }
+                        color: launcherBtn.containsMouse ? Colorscheme.current.surface_container_high : 'transparent'
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+                        }
 
                         Icon {
                             icon: 'grid_view'
                             fill: launcherBtn.containsMouse
                             anchors.centerIn: parent
-                            color: launcherBtn.containsMouse
-                                ? Colorscheme.current.primary
-                                : Colorscheme.current.on_surface
+                            color: launcherBtn.containsMouse ? Colorscheme.current.primary : Colorscheme.current.on_surface
 
-                            Behavior on color { ColorAnimation { duration: 150 } }
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+                            }
                         }
 
                         MouseArea {
