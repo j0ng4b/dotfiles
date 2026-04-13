@@ -71,6 +71,8 @@ Rectangle {
             case Qt.Key_Enter:
                 root.confirm();
                 break;
+            default:
+                return;
             }
 
             event.accepted = true;
