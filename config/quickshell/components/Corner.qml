@@ -27,50 +27,74 @@ Shape {
         fillColor: root.color
 
         PathAngleArc {
-            startAngle: {
-                switch (root.side) {
-                    case Corner.Side.TopLeft:    return 180;
-                    case Corner.Side.TopRight:   return -90;
-                    case Corner.Side.BottomLeft: return 90;
-                    case Corner.Side.BottomRight: return 0;
-                }
-            }
-            sweepAngle: 90
-            centerX: {
-                switch (root.side) {
-                    case Corner.Side.TopLeft:    return root.size;
-                    case Corner.Side.TopRight:   return 0;
-                    case Corner.Side.BottomLeft: return root.size;
-                    case Corner.Side.BottomRight: return 0;
-                }
-            }
-            centerY: {
-                switch (root.side) {
-                    case Corner.Side.TopLeft:    return root.size;
-                    case Corner.Side.TopRight:   return root.size;
-                    case Corner.Side.BottomLeft: return 0;
-                    case Corner.Side.BottomRight: return 0;
-                }
-            }
             radiusX: root.size
             radiusY: root.size
+            sweepAngle: 90
+
+            startAngle: {
+                switch (root.side) {
+                case Corner.Side.TopLeft:
+                    return 180;
+                case Corner.Side.TopRight:
+                    return -90;
+                case Corner.Side.BottomLeft:
+                    return 90;
+                case Corner.Side.BottomRight:
+                    return 0;
+                }
+            }
+
+            centerX: {
+                switch (root.side) {
+                case Corner.Side.TopLeft:
+                    return root.size;
+                case Corner.Side.TopRight:
+                    return 0;
+                case Corner.Side.BottomLeft:
+                    return root.size;
+                case Corner.Side.BottomRight:
+                    return 0;
+                }
+            }
+
+            centerY: {
+                switch (root.side) {
+                case Corner.Side.TopLeft:
+                    return root.size;
+                case Corner.Side.TopRight:
+                    return root.size;
+                case Corner.Side.BottomLeft:
+                    return 0;
+                case Corner.Side.BottomRight:
+                    return 0;
+                }
+            }
         }
 
         PathLine {
             x: {
                 switch (root.side) {
-                    case Corner.Side.TopLeft:    return 0;
-                    case Corner.Side.TopRight:   return root.size;
-                    case Corner.Side.BottomLeft: return 0;
-                    case Corner.Side.BottomRight: return root.size;
+                case Corner.Side.TopLeft:
+                    return 0;
+                case Corner.Side.TopRight:
+                    return root.size;
+                case Corner.Side.BottomLeft:
+                    return 0;
+                case Corner.Side.BottomRight:
+                    return root.size;
                 }
             }
+
             y: {
                 switch (root.side) {
-                    case Corner.Side.TopLeft:    return 0;
-                    case Corner.Side.TopRight:   return 0;
-                    case Corner.Side.BottomLeft: return root.size;
-                    case Corner.Side.BottomRight: return root.size;
+                case Corner.Side.TopLeft:
+                    return 0;
+                case Corner.Side.TopRight:
+                    return 0;
+                case Corner.Side.BottomLeft:
+                    return root.size;
+                case Corner.Side.BottomRight:
+                    return root.size;
                 }
             }
         }

@@ -147,23 +147,27 @@ Singleton {
         id: colorsGenerator
         property string wallpaperSource
 
-        command: [
-            Paths.url2Path(Qt.resolvedUrl('../scripts/colorsGenerator')),
-            Paths.url2Path(wallpaperSource),
-            Paths.url2Path(root.configPath + '/colors.json'),
-            Paths.url2Path(root.cachePath)
-        ]
+        command: {
+            const script = Paths.url2Path(Qt.resolvedUrl('../scripts/colorsGenerator'));
+            const wallpaper = Paths.url2Path(wallpaperSource);
+            const outputPath = Paths.url2Path(root.configPath + '/colors.json');
+            const cachePath = Paths.url2Path(root.cachePath);
+
+            return [script, wallpaper, outputPath, cachePath];
+        }
     }
 
     Process {
         id: wallpaperFgGenerator
         property string wallpaperSource
 
-        command: [
-            Paths.url2Path(Qt.resolvedUrl('../scripts/rembg')),
-            Paths.url2Path(wallpaperSource),
-            Paths.url2Path(root.cachePath)
-        ]
+        command: {
+            const script = Paths.url2Path(Qt.resolvedUrl('../scripts/rembg'));
+            const wallpaper = Paths.url2Path(wallpaperSource);
+            const outputPath = Paths.url2Path(root.cachePath);
+
+            return [script, wallpaper, outputPath];
+        }
 
         stdout: StdioCollector {
             onStreamFinished: {

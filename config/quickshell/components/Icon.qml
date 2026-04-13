@@ -11,12 +11,12 @@ Text {
     renderType: Text.NativeRendering
     antialiasing: true
 
-    font.family: "Material Symbols Rounded"
+    font.family: 'Material Symbols Rounded'
     font.pixelSize: size
     font.hintingPreference: Font.PreferFullHinting
     font.variableAxes: {
-        "FILL": root.fill ? 1 : 0,
-        "opsz": root.fontInfo.pixelSize,
-        "wght": root.fontInfo.weight
+        'FILL': root.fill ? 1 : 0,
+        'opsz': root.fontInfo.pixelSize,
+        'wght': root.fontInfo.weight
     }
 }
