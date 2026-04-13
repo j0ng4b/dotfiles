@@ -37,15 +37,13 @@ Scope {
 
         onCompleted: result => {
             if (result == PamResult.Success) {
-                root.currentText = '';
                 root.unlocked();
             } else {
-                root.currentText = '';
                 root.showFailure = true;
-
                 root.failedUnlock();
             }
 
+            root.currentText = '';
             root.unlockInProgress = false;
         }
     }

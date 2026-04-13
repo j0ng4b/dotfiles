@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-
 import qs.config
 import qs.components
 import qs.services
@@ -13,19 +12,20 @@ Rectangle {
     radius: Config.general.radius
     color: Colorscheme.current.surface
 
-    readonly property var selectedOutput: NiriService.outputs.find(output => output.name === MonitorState.selectedOutput) ?? null
+    readonly property var selectedOutput: {
+        const selected = CompositorService.outputs.find(output => output.name === MonitorState.selectedOutput);
+        return selected ?? null;
+    }
 
     function _logicalSize(settings, output) {
         const portraitTransforms = ['90', '270', 'flipped-90', 'flipped-270'];
         const currentIsPortrait = portraitTransforms.includes(output.transform);
-        const settingsIsPortrait = settings
-            ? portraitTransforms.includes(settings.transform)
-            : currentIsPortrait;
+        const settingsIsPortrait = settings ? portraitTransforms.includes(settings.transform) : currentIsPortrait;
 
         const swap = settingsIsPortrait !== currentIsPortrait;
         return {
-            width:  swap ? output.height : output.width,
-            height: swap ? output.width  : output.height
+            width: swap ? output.height : output.width,
+            height: swap ? output.width : output.height
         };
     }
 
@@ -34,6 +34,7 @@ Rectangle {
         const size = root._logicalSize(settings, output);
         const left = settings ? settings.x : output.x;
         const top = settings ? settings.y : output.y;
+
         return {
             top: top,
             left: left,
@@ -43,7 +44,7 @@ Rectangle {
     }
 
     function _computeRelations() {
-        const active = NiriService.outputs.filter(output => !output.disabled);
+        const active = CompositorService.outputs.filter(output => !output.disabled);
         const relations = [];
 
         for (let i = 0; i < active.length; i++) {
@@ -133,7 +134,7 @@ Rectangle {
                 }
 
                 Text {
-                    visible: NiriService.applyError == ''
+                    visible: CompositorService.applyError == ''
                     Layout.fillWidth: true
                     text: 'Unsaved changes.'
                     font.pixelSize: 14
@@ -142,9 +143,9 @@ Rectangle {
                 }
 
                 Text {
-                    visible: NiriService.applyError !== ''
+                    visible: CompositorService.applyError !== ''
                     Layout.fillWidth: true
-                    text: NiriService.applyError
+                    text: CompositorService.applyError
                     font.pixelSize: 14
                     color: Colorscheme.current.error
                     elide: Text.ElideRight
@@ -182,8 +183,8 @@ Rectangle {
                     RowLayout {
                         spacing: 4
                         Rectangle {
-                            width: 9
-                            height: 9
+                            Layout.preferredWidth: 9
+                            Layout.preferredHeight: 9
                             radius: 4.5
                             color: Colorscheme.current.tertiary
                         }
@@ -198,8 +199,8 @@ Rectangle {
                     RowLayout {
                         spacing: 4
                         Rectangle {
-                            width: 9
-                            height: 9
+                            Layout.preferredWidth: 9
+                            Layout.preferredHeight: 9
                             radius: 4.5
                             color: Colorscheme.current.error
                         }
@@ -212,7 +213,9 @@ Rectangle {
                     }
 
                     // spacer
-                    Item { Layout.fillWidth: true }
+                    Item {
+                        Layout.fillWidth: true
+                    }
 
                     RowLayout {
                         visible: MonitorState.selectedOutput !== ''

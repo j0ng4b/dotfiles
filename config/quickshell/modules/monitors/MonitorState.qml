@@ -19,7 +19,7 @@ Singleton {
     function toggle() {
         open = !open;
         if (open)
-            NiriService.refreshOutputs();
+            CompositorService.refreshOutputs();
         else
             _clearSettings();
     }
@@ -34,7 +34,7 @@ Singleton {
     }
 
     function _syncSelection() {
-        const outputs = NiriService.outputs;
+        const outputs = CompositorService.outputs;
         if (outputs.length === 0) {
             selectedOutput = '';
             return;
@@ -116,30 +116,30 @@ Singleton {
     }
 
     function resetSettings(name) {
-        const output = NiriService.outputs.find(output => output.name === name);
+        const output = CompositorService.outputs.find(output => output.name === name);
         if (output)
             _initSettings(output);
     }
 
     function resetAllSettings() {
-        for (const output of NiriService.outputs)
+        for (const output of CompositorService.outputs)
             _initSettings(output);
     }
 
     function applyAll() {
-        NiriService.applySettings(root._settings);
+        CompositorService.applySettings(root._settings);
     }
 
     Connections {
-        target: NiriService
+        target: CompositorService
         function onOutputsUpdated() {
             MonitorState._syncSelection();
 
             const settings = Object.assign({}, root._settings);
             let changed = false;
             for (const name in settings) {
-                if (settings[name].dirty && !NiriService.applying) {
-                    const output = NiriService.outputs.find(output => output.name === name);
+                if (settings[name].dirty && !CompositorService.applying) {
+                    const output = CompositorService.outputs.find(output => output.name === name);
                     if (output) {
                         settings[name] = {
                             x: output.x,

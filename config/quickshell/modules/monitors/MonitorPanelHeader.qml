@@ -19,21 +19,24 @@ RowLayout {
 
     Text {
         text: 'Monitor Layout'
-        font.pixelSize: 16; font.bold: true
+        font.pixelSize: 16
+        font.bold: true
         color: Colorscheme.current.on_surface
     }
 
-    Item { Layout.fillWidth: true }
+    Item {
+        Layout.fillWidth: true
+    }
 
     HeaderButton {
         visible: MonitorState.hasDirtyOutputs()
-        icon: NiriService.applying ? 'hourglass_empty' : 'check'
-        label: NiriService.applying ? 'Applying…' : 'Apply'
+        icon: CompositorService.applying ? 'hourglass_empty' : 'check'
+        label: CompositorService.applying ? 'Applying…' : 'Apply'
         activeColor: Colorscheme.current.primary
         activeOnColor: Colorscheme.current.on_primary
         idleColor: Colorscheme.current.primary_container
         idleOnColor: Colorscheme.current.on_primary_container
-        enabled: !NiriService.applying
+        enabled: !CompositorService.applying
         onClicked: MonitorState.applyAll()
     }
 
@@ -48,7 +51,7 @@ RowLayout {
 
     HeaderButton {
         icon: 'refresh'
-        onClicked: NiriService.refreshOutputs()
+        onClicked: CompositorService.refreshOutputs()
     }
 
     HeaderButton {
@@ -61,26 +64,30 @@ RowLayout {
     component HeaderButton: Rectangle {
         id: btn
 
-        signal clicked()
+        signal clicked
 
         property string icon: ''
         property string label: ''
 
-        property color  activeColor: Colorscheme.current.surface_container_high
-        property color  activeOnColor: Colorscheme.current.on_surface
+        property color activeColor: Colorscheme.current.surface_container_high
+        property color activeOnColor: Colorscheme.current.on_surface
 
-        property color  idleColor: 'transparent'
-        property color  idleOnColor: Colorscheme.current.on_surface
+        property color idleColor: 'transparent'
+        property color idleOnColor: Colorscheme.current.on_surface
 
         readonly property bool hasLabel: label !== ''
         readonly property bool hovered: ma.containsMouse
 
-        height: 32
-        width: hasLabel ? labelRow.implicitWidth + 24 : 32
+        Layout.preferredWidth: hasLabel ? labelRow.implicitWidth + 24 : 32
+        Layout.preferredHeight: 32
         radius: Config.general.radius
 
-        Behavior on color { ColorAnimation { duration: 200 } }
         color: hovered ? activeColor : idleColor
+        Behavior on color {
+            ColorAnimation {
+                duration: 200
+            }
+        }
 
         RowLayout {
             id: labelRow
@@ -91,7 +98,11 @@ RowLayout {
                 icon: btn.icon
                 fill: btn.hovered && btn.hasLabel
 
-                Behavior on color { ColorAnimation { duration: 200 } }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 200
+                    }
+                }
                 color: btn.hovered ? btn.activeOnColor : btn.idleOnColor
             }
 
@@ -101,7 +112,11 @@ RowLayout {
                 font.pixelSize: 12
                 font.bold: btn.hasLabel
 
-                Behavior on color { ColorAnimation { duration: 200 } }
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 200
+                    }
+                }
                 color: btn.hovered ? btn.activeOnColor : btn.idleOnColor
             }
         }
@@ -111,7 +126,8 @@ RowLayout {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: if (btn.enabled) btn.clicked()
+            onClicked: if (btn.enabled)
+                btn.clicked()
         }
     }
 }

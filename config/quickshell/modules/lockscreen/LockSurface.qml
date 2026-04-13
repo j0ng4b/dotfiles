@@ -3,8 +3,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Controls.Fusion
-import Quickshell.Wayland
-
 import qs.config
 import qs.components
 import qs.services

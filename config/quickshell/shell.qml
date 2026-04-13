@@ -12,11 +12,11 @@ import qs.services
 
 ShellRoot {
     Bar {}
+    Osd {}
     Launcher {}
     Wallpaper {}
     Monitor {}
     LockScreen {}
-    Osd {}
 
     IpcHandler {
         target: 'wallpaper'
@@ -29,7 +29,7 @@ ShellRoot {
     IpcHandler {
         target: 'launcher'
         function toggle() {
-            LauncherState.toggle(NiriService.focusedOutput);
+            LauncherState.toggle(CompositorService.focusedOutput);
         }
     }
 

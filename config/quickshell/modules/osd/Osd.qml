@@ -21,13 +21,13 @@ Variants {
         readonly property int panelWidth: contentMargins * 2 + Math.max(barWidth, iconSize)
         readonly property int panelHeight: Math.round(osd.screen.height * Config.osd.heightFraction)
 
-        readonly property bool isActiveScreen: osd.modelData.name === NiriService.focusedOutput
+        readonly property bool isActiveScreen: osd.modelData.name === CompositorService.focusedOutput
 
-        implicitWidth:  panelWidth
+        implicitWidth: panelWidth
         implicitHeight: panelHeight + cornerTop.size + cornerBottom.size
         anchors.right: true
 
-        color: "transparent"
+        color: 'transparent'
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
@@ -80,12 +80,19 @@ Variants {
                                 height: Math.min(parent.height, parent.height * OsdState.level)
                                 anchors.bottom: parent.bottom
                                 radius: parent.radius
-                                color: OsdState.muted
-                                    ? Colorscheme.current.error
-                                    : Colorscheme.current.primary
+                                color: OsdState.muted ? Colorscheme.current.error : Colorscheme.current.primary
 
-                                Behavior on height { NumberAnimation { duration: 200 } }
-                                Behavior on color  { ColorAnimation  { duration: 300 } }
+                                Behavior on height {
+                                    NumberAnimation {
+                                        duration: 200
+                                    }
+                                }
+
+                                Behavior on color {
+                                    ColorAnimation {
+                                        duration: 300
+                                    }
+                                }
                             }
                         }
                     }
@@ -94,11 +101,13 @@ Variants {
                         icon: OsdState.icon
                         size: osd.iconSize
                         Layout.alignment: Qt.AlignHCenter
-                        color: OsdState.muted
-                            ? Colorscheme.current.error
-                            : Colorscheme.current.primary
 
-                        Behavior on color { ColorAnimation { duration: 300 } }
+                        color: OsdState.muted ? Colorscheme.current.error : Colorscheme.current.primary
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 300
+                            }
+                        }
                     }
                 }
             }

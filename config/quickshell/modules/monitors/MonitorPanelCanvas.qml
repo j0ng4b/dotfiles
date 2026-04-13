@@ -16,36 +16,44 @@ Rectangle {
     required property var outputStatus
     required property var logicalSize
 
+    // grid
     Item {
-        anchors.fill: parent; anchors.margins: 1; clip: true
+        anchors.fill: parent
+        anchors.margins: 1
+        clip: true
+
         Repeater {
             model: 20
             Rectangle {
-                required property int index;
+                required property int index
 
                 visible: index
                 y: index * parent.height / 14
-                width: parent.width; height: 1
-                color: Colorscheme.current.outline; opacity: 0.1
+                width: parent.width
+                height: 1
+                color: Colorscheme.current.outline
+                opacity: 0.1
             }
         }
 
         Repeater {
             model: 20
             Rectangle {
-                required property int index;
+                required property int index
 
                 visible: index
                 x: index * parent.width / 14
-                width: 1; height: parent.height
-                color: Colorscheme.current.outline; opacity: 0.1
+                width: 1
+                height: parent.height
+                color: Colorscheme.current.outline
+                opacity: 0.1
             }
         }
     }
 
     // placeholder
     Column {
-        visible: NiriService.outputs.filter(output => !output.disabled).length === 0
+        visible: CompositorService.outputs.filter(output => !output.disabled).length === 0
         anchors.centerIn: parent
         spacing: 8
 
@@ -71,7 +79,7 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 24
 
-        readonly property var active: NiriService.outputs.filter(output => !output.disabled)
+        readonly property var active: CompositorService.outputs.filter(output => !output.disabled)
 
         readonly property real minX: {
             if (active.length === 0)

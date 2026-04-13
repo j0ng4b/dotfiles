@@ -5,7 +5,9 @@ import Quickshell
 import Quickshell.Wayland
 
 ShellRoot {
-    LockContext { id: lockContext }
+    LockContext {
+        id: lockContext
+    }
 
     WlSessionLock {
         id: lock
