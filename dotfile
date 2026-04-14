@@ -1,316 +1,208 @@
 #!/usr/bin/env sh
 
+# flags
+DRY_RUN=0
+VERBOSE=0
+
 # Dotfiles root directory
 dotfiles_root=$(cd "$(dirname "$0")" && pwd)
 
-# Source common functions (error, warn, info, str_contains)
-. "$dotfiles_root/scripts/_common"
+# Log functions
+_error() { printf '\033[31m[ERROR]\033[0m dotfile: %s\n'   "$*" >&2; }
+_warn()  { printf '\033[33m[WARN]\033[0m dotfile: %s\n' "$*" >&2; }
+_info()  { printf '\033[32m[INFO]\033[0m dotfile: %s\n'    "$*" >&2; }
 
 # Target install directories
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
-cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}"
-state_dir="${XDG_STATE_HOME:-$HOME/.local/state}"
 data_dir="${XDG_DATA_HOME:-$HOME/.local/share}"
 home_dir="$HOME"
-bin_dir="$HOME/.local/bin"
 
 # Create target directories if they don't exist
-for target in config cache state data bin; do
-    eval "target_dir=\$${target}_dir"
-    [ -d "$target_dir" ] && continue
-    mkdir -p "$target_dir"
+for target_dir in "$config_dir" "$data_dir"; do
+    [ -d "$target_dir" ] || mkdir -p "$target_dir"
 done
+
+
+##
+## Utilities functions
+##
+
+_collect_dotfiles() {
+    for target in config data home; do
+        base="$dotfiles_root/$target"
+        [ -d "$base" ] || continue
+
+        for path in "$base"/*/; do
+            [ -d "$path" ] || continue
+            name=${path%/}
+            name=${name##*/}
+            printf '%s\n' "$name"
+        done
+    done | sort -u
+}
 
 # Resolve the install directory path for a given target name
 _target_dir() {
     case "$1" in
         config) printf '%s' "$config_dir" ;;
-        cache)  printf '%s' "$cache_dir"  ;;
-        state)  printf '%s' "$state_dir"  ;;
         data)   printf '%s' "$data_dir"   ;;
         home)   printf '%s' "$home_dir"   ;;
-        bin)    printf '%s' "$bin_dir"    ;;
-        *) error "Unknown target: $1"; return 1 ;;
+        *) _error "unknown target: $1"; return 1 ;;
     esac
 }
 
-_get_dotfiles() {
-    dotfiles=""
-    for target in config data home; do
-        [ -d "$dotfiles_root/$target" ] || continue
-        for dotfile_path in "$dotfiles_root/$target"/*/; do
-            [ -d "$dotfile_path" ] || continue
-            dotfile=$(basename "$dotfile_path")
-            [ "$dotfile" = "sources" ] && continue
-            str_contains "$dotfiles" "$dotfile" || dotfiles="$dotfile $dotfiles"
-        done
-    done
-    printf '%s' "$dotfiles"
-}
+# Dispatch install/uninstall
+_do_action() {
+    action="$1"
+    source="$2"
+    target="$3"
 
-_get_binaries() {
-    binaries=""
-    for binary_path in "$dotfiles_root/bin"/*; do
-        [ -e "$binary_path" ] || continue
-        binary=$(basename "$binary_path")
-        [ "$binary" = "sources" ] && continue
-        binaries="$binary $binaries"
-    done
-    printf '%s' "$binaries"
-}
+    if [ "$VERBOSE" -eq 1 ] || [ "$DRY_RUN" -eq 1 ]; then
+        _info "$action: $source -> $target"
+    fi
 
-__install_dotfile() {
-    [ -L "$1" ] && return 1
-    ln -sfT "$2" "$1"
-}
-
-__uninstall_dotfile() {
-    [ ! -L "$1" ] && return 1
-    rm -f "$1"
-}
-
-# Dispatch install/uninstall without eval
-_action() {
-    case "$1" in
-        install)   shift; __install_dotfile "$@" ;;
-        uninstall) shift; __uninstall_dotfile "$@" ;;
-        *) error "Unknown action: $1"; return 1 ;;
+    [ "$DRY_RUN" -eq 1 ] && return 0
+    case "$action" in
+        install)
+            [ -L "$target" ] && return 1
+            ln -sf "$source" "$target"
+            ;;
+        uninstall)
+            [ ! -L "$target" ] && return 1
+            rm -f "$target"
+            ;;
+        *)
+            _error "unknown action: $action"
+            return 1
+            ;;
     esac
 }
 
-_dotfile_action_target_files() {
-    action="$1"
-    target="$2"
-    dotfile="$3"
-    dotfile_dir="$4"
 
-    action_result_error=0
-    for file_path in "$dotfile_dir"/*; do
-        [ -e "$file_path" ] || continue
-        file=$(basename "$file_path")
+##
+## Script commands
+##
 
-        # Files under the `home` target get a leading dot
-        [ "$target" = "home" ] && file=".$file"
+_cmd_action() {
+    action="$1"; shift
 
-        file_target_path="$(_target_dir "$target")/$file"
-
-        _action "$action" "$file_target_path" "$file_path"
-        if [ $? -gt 0 ]; then
-            action_result_error=1
-            warn "\`$file\` of '$dotfile' already ${action}ed!"
-        fi
-    done
-
-    return $action_result_error
-}
-
-_dotfile_action_bin() {
-    action="$1"
-    dotfile="$3"
-    dotfile_path="$4"
-
-    target_path="$(_target_dir bin)/$dotfile"
-
-    _action "$action" "$target_path" "$dotfile_path"
-    if [ $? -gt 0 ]; then
-        warn "'bin/$dotfile' already ${action}ed!"
-        return 1
-    fi
-}
-
-_dotfile_action_target() {
-    action="$1"
-    target="$2"
-    dotfile="$3"
-    dotfile_dir="$4"
-
-    dotfile_path="$(_target_dir "$target")/$dotfile"
-
-    _action "$action" "$dotfile_path" "$dotfile_dir"
-    if [ $? -gt 0 ]; then
-        warn "\`$target\` of '$dotfile' already ${action}ed!"
-        return 1
-    fi
-}
-
-_dotfile_action() {
-    action="$1"
-    shift
-
-    dotfiles="$*"
-    if [ -z "$dotfiles" ]; then
-        warn "Selecting all dotfiles..."
-        dotfiles="$(_get_dotfiles)"
+    if [ $# -eq 0 ]; then
+        _warn "no dotfiles selected, using all..."
+        set -- $(_collect_dotfiles)
     fi
 
-    for dotfile in $dotfiles; do
-        if [ "$action" = "install" ]; then
-            info "Installing $dotfile..."
+    for dotfile; do
+        [ "$VERBOSE" -eq 1 ] && _info "processing: $dotfile"
+        # if [ "$action" = "install" ]; then
+        #     _info "Installing $dotfile..."
 
-            if ! str_contains "$dotfile" "bin/"; then
-                info "Checking dependencies..."
-                _check_dependencies "$dotfile" || continue
-            fi
-        else
-            info "Uninstalling $dotfile..."
-        fi
+        #     if ! str_contains "$dotfile" "bin/"; then
+        #         _info "Checking dependencies..."
+        #         _check_dependencies "$dotfile" || continue
+        #     fi
+        # else
+        #     _info "Uninstalling $dotfile..."
+        # fi
 
-        # Handle bin/ dotfiles separately
-        if str_contains "$dotfile" "bin/"; then
-            if str_contains "$dotfile" "bin/sources"; then
-                warn "The dotfile '$dotfile' is a source file! Skipping."
-            else
-                dotfile_name="${dotfile#bin/}"
-                _dotfile_action_bin \
-                    "$action" bin "$dotfile_name" "$dotfiles_root/bin/$dotfile_name"
-            fi
-            continue
-        fi
-
-        found_dotfile=0
+        found=0
         for target in home config data; do
             dotfile_dir="$dotfiles_root/$target/$dotfile"
             [ -d "$dotfile_dir" ] || continue
 
             case "$target" in
-                home)          _dotfile_action_target_files "$action" "$target" "$dotfile" "$dotfile_dir" ;;
-                config | data) _dotfile_action_target       "$action" "$target" "$dotfile" "$dotfile_dir" ;;
+                home)
+                    target_path="$(_target_dir "$target")"
+                    for file_path in "$dotfile_dir"/*; do
+                        [ -e "$file_path" ] || continue
+                        _do_action "$action" "$file_path" "$target_path/.${file_path##*/}"
+                    done
+                    ;;
+                config | data)
+                    target_path="$(_target_dir "$target")/$dotfile"
+                    _do_action "$action" "$dotfile_dir" "$target_path"
+                    ;;
             esac
 
-            found_dotfile=1
+            found=1
         done
 
-        if [ "$found_dotfile" -eq 0 ]; then
-            warn "The dotfile '$dotfile' doesn't exist! Skipping."
-        # elif [ "$action" = "install" ]; then
-        #     info "Generating colors..."
-        #     sh "$dotfiles_root/scripts/_scripter" color-reloader --generate-only \
-        #         "$dotfile" >/dev/null
-        fi
+        [ "$found" -eq 1 ] || \
+            _warn "'$dotfile' doesn't exist! Skipping."
     done
 
     exit 0
 }
 
-_check_dependencies() {
-    descs=""
-    desc()  { descs="$*"; }
-    desca() { descs="${descs}:$*"; }
-
-    cmd() {
-        if ! command -v "$1" >/dev/null 2>&1; then
-            error "The command '$1' is required by '$dotfile'"
-            printf 'Why:\n'
-            IFS=':'
-            for description in $descs; do
-                printf '  - %s\n' "$description"
-            done
-            unset IFS
-            missing=1
-        fi
+_cmd_check() {
+    _dep_reset() {
+        dep_file=""
+        dep_dotfile="$1"
     }
 
-    opt() {
-        if ! command -v "$1" >/dev/null 2>&1; then
-            warn "You may want to install '$1' for '$dotfile'"
-            printf 'Why:\n'
-            IFS=':'
-            for description in $descs; do
-                printf '  - %s\n' "$description"
-            done
-            unset IFS
-        fi
+    req_cmd() {
+        cmd="$1"
+        msg="$2"
+
+        command -v "$cmd" >/dev/null 2>&1 && return 0
+
+        _error "[$dep_dotfile] missing command: $cmd"
+        [ -n "$msg" ] && printf '  -> %s\n' "$msg" >&2
+
+        return 1
     }
 
-    dotfiles="$*"
-    if [ -z "$dotfiles" ]; then
-        warn "Selecting all dotfiles..."
-        dotfiles="$(_get_dotfiles)"
+    opt_cmd() {
+        req_cmd "$@" || return 0
+    }
+
+    if [ $# -eq 0 ]; then
+        _warn "no dotfiles selected, using all..."
+        set -- $(_collect_dotfiles)
     fi
 
-    for dotfile in $dotfiles; do
-        [ "$dotfile" = "sysconf" ] && continue
-
-        # Reset per-dotfile so a previous failure doesn't bleed into the next
-        missing=0
-
-        if ! str_contains "$dotfile" "script"; then
-            desc "The dotfile requires the command it configures"
-            cmd "$dotfile"
-
-            if [ "$missing" -eq 1 ]; then
-                error "Missing the command that '$dotfile' configures"
-                continue
-            fi
-        elif [ "$dotfile" = "scripts" ]; then
-            for script in "$dotfiles_root/.depends/script"/*; do
-                [ -f "$script" ] || continue
-                info "Checking dependencies for $(basename "$script")..."
-                . "$script"
-            done
-
-            if [ "$missing" -eq 0 ]; then
-                info "All $dotfile dependencies are satisfied."
-            else
-                error "Some dependencies are missing for some script."
-                return 1
-            fi
-
-            continue
-        fi
+    for dotfile; do
+        _dep_reset "$dotfile"
 
         if [ -f "$dotfiles_root/.depends/$dotfile" ]; then
-            . "$dotfiles_root/.depends/$dotfile"
+            dep_file="$dotfiles_root/.depends/$dotfile"
+        elif [ -f "$dotfiles_root/.depends/script/$dotfile" ]; then
+            dep_file="$dotfiles_root/.depends/script/$dotfile"
         fi
 
-        if [ "$missing" -eq 0 ]; then
-            info "All '$dotfile' dependencies are satisfied."
+        if [ -f "$dep_file" ]; then
+            if ! . "$dep_file"; then
+                _error "[$dotfile] dependency check failed"
+            fi
         else
-            error "Some dependencies are missing for '$dotfile'."
-            return 1
+            [ "$VERBOSE" -eq 1 ] && _info "[$dotfile] no dependency file"
         fi
     done
-
-    return 0
 }
 
-_list_dotfiles() {
+_cmd_list() {
     _check_status() {
-        if [ -L "$1" ]; then
-            case "$2" in
+        target="$1"
+        status="$2"
+
+        if [ -L "$target" ]; then
+            case "$status" in
                 uninstalled) printf 'partial installed' ;;
                 none)        printf 'installed' ;;
-                *)           printf '%s' "$2" ;;
+                *)           printf '%s' "$status" ;;
             esac
         else
-            case "$2" in
+            case "$status" in
                 installed) printf 'partial installed' ;;
                 none)      printf 'uninstalled' ;;
-                *)         printf '%s' "$2" ;;
+                *)         printf '%s' "$status" ;;
             esac
         fi
     }
 
-    _show_entries() {
-        IFS=';'
-        for entry in $1; do
-            dotfile=$(printf '%s' "$entry" | cut -d: -f1)
-            status=$(printf '%s' "$entry"  | cut -d: -f2)
-
-            printf '  · %-'"${largest_name}"'s' "$dotfile"
-
-            [ "$status" = "installed" ]         && printf '\033[32m'
-            [ "$status" = "partial installed" ] && printf '\033[33m'
-
-            printf '   %s\033[0m\n' "$status"
-        done
-        unset IFS
-    }
-
-    dotfile_entries=""
     largest_name=0
-    for dotfile in $(_get_dotfiles); do
-        install_level="none"
+    dotfiles=""
+    for dotfile in $(_collect_dotfiles); do
+        status="none"
 
         for target in home config data; do
             dotfile_dir="$dotfiles_root/$target/$dotfile"
@@ -319,60 +211,124 @@ _list_dotfiles() {
             case "$target" in
                 home)
                     for file_path in "$dotfile_dir"/*; do
-                        [ -e "$file_path" ] || continue
+                        file=${file_path##*/}
+                        file=".$file"
 
-                        file=$(basename "$file_path")
-                        [ "$target" = "home" ] && file=".$file"
-
-                        file_target_path="$(_target_dir "$target")/$file"
-                        install_level=$(_check_status "$file_target_path" "$install_level")
+                        target_path="$(_target_dir "$target")/$file"
+                        status="$(_check_status "$target_path" "$status")"
                     done
                     ;;
                 config | data)
                     dotfile_path="$(_target_dir "$target")/$dotfile"
-                    install_level=$(_check_status "$dotfile_path" "$install_level")
+                    status="$(_check_status "$dotfile_path" "$status")"
                     ;;
             esac
         done
 
         [ "${#dotfile}" -gt "$largest_name" ] && largest_name="${#dotfile}"
-        dotfile_entries="${dotfile}:${install_level};${dotfile_entries}"
+        dotfiles="${dotfiles}${dotfile}:${status}
+"
     done
 
-    binary_entries=""
-    largest_name=0
-    for binary in $(_get_binaries); do
-        file_path="$bin_dir/$binary"
-        install_level=$(_check_status "$file_path" "none")
-        [ "${#binary}" -gt "$largest_name" ] && largest_name="${#binary}"
-        binary_entries="${binary}:${install_level};${binary_entries}"
-    done
+    _info "Available dotfiles:"
+    while IFS=: read -r dotfile status; do
+        [ -n "$dotfile" ] || continue
 
-    info "Available dotfiles:"
-    _show_entries "$dotfile_entries"
+        printf '  · %-'"${largest_name}"'s' "$dotfile"
+        case "$status" in
+            installed)           printf '\033[32m' ;;
+            "partial installed") printf '\033[33m' ;;
+        esac
+
+        printf '   %s\033[0m\n' "$status"
+    done <<EOF
+$dotfiles
+EOF
     printf '\n'
-    info "Available binaries:"
-    _show_entries "$binary_entries"
 }
 
-[ $# -eq 0 ] && exit 1
+_cmd_help() {
+    cat << 'EOF'
+USAGE
+    dotfile [options] <command> [ARGS...]
 
+COMMANDS
+    install [DOTFILES...]
+        Install dotfiles to their target directories.
+        If none specified, installs all.
+
+    uninstall [DOTFILES...]
+        Uninstall dotfiles.
+        WARNING: If none specified, removes ALL.
+
+    check [DOTFILES...]
+        Check dependencies for dotfiles or scripts.
+        If none specified, checks all.
+
+    list
+        Show dotfiles and installation status.
+
+    help
+        Show this help message.
+
+OPTIONS
+    -n, --dry-run
+        Show actions without executing
+
+    -v, --verbose
+        Enable verbose output
+
+DESCRIPTION
+    Dotfiles management system that installs configuration files and
+    binaries to their appropriate XDG-compliant directories.
+
+    Supported targets:
+        • config     -> $XDG_CONFIG_HOME (default: $HOME/.config)
+        • data       -> $XDG_DATA_HOME (default: $HOME/.local/share)
+        • home       -> $HOME
+
+EOF
+}
+
+
+##
+## Parse arguments
+##
+
+[ $# -eq 0 ] && _cmd_help && exit 0
+
+# parse options
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --dry-run|-n) DRY_RUN=1 ;;
+        --verbose|-v) VERBOSE=1 ;;
+        *) break ;;
+    esac
+    shift
+done
+
+# parse commands
 while [ $# -gt 0 ]; do
     case "$1" in
         install | uninstall)
-            _dotfile_action "$@"
+            _cmd_action "$@"
             ;;
         check)
             shift
-            _check_dependencies "$@"
+            _cmd_check "$@"
             exit 0
             ;;
         list)
-            _list_dotfiles
+            _cmd_list
+            exit 0
+            ;;
+        help)
+            _cmd_help
             exit 0
             ;;
         *)
-            error "Unknown command: $1"
+            _error "unknown command '$1'!"
+            _cmd_help
             exit 1
             ;;
     esac
