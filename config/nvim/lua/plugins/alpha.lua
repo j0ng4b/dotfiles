@@ -121,7 +121,11 @@ local layout = function()
                 button(" New file", "n", "<Cmd>enew<CR>"),
                 button("󰈞 Open file", "o", "<Cmd>Telescope find_files<CR>"),
                 button("󱋡 Recent files", "r", "<Cmd>Telescope oldfiles<CR>"),
-                button(" Files explorer", "e", "<Cmd>Neotree source=filesystem<CR>"),
+                button(
+                    " Files explorer",
+                    "e",
+                    "<Cmd>Neotree source=filesystem reveal_force_cwd " .. vim.fn.getcwd() .. "<CR>"
+                ),
                 button(" Settings", "s", "<Cmd>Neotree reveal_force_cwd " .. vim.fn.stdpath("config") .. "<CR>"),
                 button("󰩈 Quit", "q", "<Cmd>qall<CR>"),
             },

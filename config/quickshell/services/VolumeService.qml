@@ -15,11 +15,7 @@ Singleton {
 
     Process {
         running: true
-        command: [
-            Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")),
-            "multimedia", "watch"
-        ]
-
+        command: [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "multimedia", "watch"]
         stdout: SplitParser {
             onRead: data => {
                 try {
