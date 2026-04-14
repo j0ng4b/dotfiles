@@ -119,8 +119,34 @@ local layout = function()
 
             val = {
                 button(" New file", "n", "<Cmd>enew<CR>"),
-                button("󰈞 Open file", "o", "<Cmd>Telescope find_files<CR>"),
-                button("󱋡 Recent files", "r", "<Cmd>Telescope oldfiles<CR>"),
+                button("󰈞 Open file", "o", function()
+                    local utils = require("core.utils")
+                    local fzf = utils.safe_require("fzf-lua")
+                    if fzf then
+                        fzf.files()
+                        return
+                    end
+
+                    local telescope = utils.safe_require("telescope.builtin")
+                    if telescope then
+                        telescope.find_files()
+                        return
+                    end
+                end),
+                button("󱋡 Recent files", "r", function()
+                    local utils = require("core.utils")
+                    local fzf = utils.safe_require("fzf-lua")
+                    if fzf then
+                        fzf.oldfiles()
+                        return
+                    end
+
+                    local telescope = utils.safe_require("telescope.builtin")
+                    if telescope then
+                        telescope.oldfiles()
+                        return
+                    end
+                end),
                 button(
                     " Files explorer",
                     "e",
