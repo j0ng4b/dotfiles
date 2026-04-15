@@ -7,7 +7,7 @@ GENERATE_ONLY=0
 theme_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sysconf"
 theme_filename="theme"
 theme_filepath="$theme_dir/$theme_filename"
-[ ! -e "$theme_filepath" ] && echo 'catppuccin' > $theme_filepath
+[ ! -e "$theme_filepath" ] && echo "catppuccin" > "$theme_filepath"
 
 # Enabled re-loaders
 registry_dir="$SCRIPT_CACHE_DIR"
@@ -17,11 +17,54 @@ registry_filepath="$registry_dir/$registry_filename"
 pending_filename="reloaders_pending"
 pending_filepath="$registry_dir/$pending_filename"
 
+mkdir -p "$theme_dir" "$registry_dir"
+
+# States
+RELOADERS=""
+WM_BACKENDS=""
+
+
+##
+## Utility functions
+##
+
+_get_theme_name() {
+    echo "$(tr -d '\n' < "$theme_filepath")"
+}
+
+_register_reloader() {
+    RELOADERS="$RELOADERS $1"
+}
+
+_validate_reloader() {
+    if str_contains "$RELOADERS" "$1"; then
+        return 0
+    fi
+
+    error "color-reloader: unknown reloader '$1'"
+    return 1
+}
+
+_register_wm_backend() {
+    WM_BACKENDS="$WM_BACKENDS $1"
+}
+
+_validate_wm() {
+    if [ -z "$1" ]; then
+        return 1
+    fi
+
+    if str_contains "$WM_BACKENDS" "$1"; then
+        return 0
+    fi
+
+    return 1
+}
 
 __generate_colors_file() {
     template_name="$1"
     output_path="$2"
-    theme_name="$(cat "$theme_filepath")"
+    theme_name="$(_get_theme_name)"
 
     if [ ! -e "$root/color_reloader/template/$template_name" ]; then
         warn "color-reloader: no template found for '$template_name'"
@@ -59,12 +102,13 @@ _foot_broadcast() {
     done
 }
 
+_register_reloader foot
 _foot_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/foot/colors.ini"
     __generate_colors_file foot "$colors_output_path" || return
 
     seqs_file="$SCRIPT_CACHE_DIR/foot_seqs"
-    : > $seqs_file
+    : > "$seqs_file"
 
     sed -nr 's/.*(regular|bright)([0-9])\s*=\s*([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$colors_output_path" |
         while read -r type num color; do
@@ -83,9 +127,10 @@ _foot_reloader() {
 
 
 ##
-## Utilities reloaders
+## Reloaders
 ##
 
+_register_reloader cava
 _cava_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/cava/config"
     __generate_colors_file cava "$colors_output_path" || return
@@ -93,18 +138,21 @@ _cava_reloader() {
     pkill -USR1 cava
 }
 
+_register_reloader btop
 _btop_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/btop/themes/generated.theme"
     __generate_colors_file btop "$colors_output_path" || return
     pkill -USR2 btop
 }
 
+_register_reloader bat
 _bat_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/bat/themes/colors.tmTheme"
     __generate_colors_file bat "$colors_output_path" || return
     bat cache --build >/dev/null
 }
 
+_register_reloader git
 _git_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/git/colors.gitconfig"
     __generate_colors_file git "$colors_output_path" || return
@@ -113,8 +161,9 @@ _git_reloader() {
     _bat_reloader
 }
 
+_register_reloader nvim
 _nvim_reloader() {
-    theme_name=$(cat "$theme_filepath")
+    theme_name="$(_get_theme_name)"
 
     for sock in "${XDG_RUNTIME_DIR}"/nvim.*.0; do
         [ -e "$sock" ] || continue
@@ -127,12 +176,14 @@ _nvim_reloader() {
     done
 }
 
+_register_reloader tmux
 _tmux_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/colors.tmux"
     __generate_colors_file shell "$colors_output_path" || return
     tmux run-shell "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/style.tmux"
 }
 
+_register_reloader starship
 _starship_reloader() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/starship/config.toml"
     __generate_colors_file starship "$colors_output_path" || return
@@ -178,30 +229,21 @@ _detect_wm() {
     echo ""
 }
 
-_validate_wm() {
-    if [ -z "$1" ]; then
-        return 1
-    fi
-
-    if str_contains "$(_available_wm_backends)" "$1"; then
-        return 0
-    fi
-
-    return 1
-}
-
+_register_wm_backend niri
 _wm_backend_niri() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/niri/colors.kdl"
-    __generate_colors_file niri $colors_output_path
+    __generate_colors_file niri "$colors_output_path"
     # automatic reload for niri - no action needed
 }
 
+_register_wm_backend mango
 _wm_backend_mango() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/mango/colors.conf"
     __generate_colors_file mango "$colors_output_path"
     mmsg -d reload_config
 }
 
+_register_reloader wm
 _wm_reloader() {
     wm="$(_detect_wm)"
 
@@ -224,23 +266,6 @@ _wm_reloader() {
 ##
 ## Utility functions
 ##
-
-_available_reloaders() {
-    grep -o "^_[^_].*_reloader" "$root/$script" | sed 's/^_//;s/_reloader$//'
-}
-
-_available_wm_backends() {
-    grep -o "^_wm_backend_[a-z_]*" "$root/$script" | sed 's/^_wm_backend_//;/^$/d'
-}
-
-_validate_reloader() {
-    if str_contains "$(_available_reloaders)" "$1"; then
-        return 0
-    fi
-
-    error "color-reloader: unknown reloader '$1'"
-    return 1
-}
 
 _run_reloader() {
     name="$1"
@@ -306,7 +331,7 @@ _cmd_run() {
 
         elif [ "$changed" = "$registry_filename" ] || [ "$changed" = "$pending_filename" ]; then
             [ ! -f "$pending_filepath" ] && continue
-            pending=$(cat "$pending_filepath")
+            pending="$(cat "$pending_filepath")"
             [ -z "$pending" ] && continue
 
             : > "$pending_filepath"
@@ -346,23 +371,21 @@ _cmd_reload() {
 
 _cmd_list() {
     largest_name=0
-    for reloader in $(_available_reloaders); do
+    for reloader in $RELOADERS; do
         [ "${#reloader}" -gt "$largest_name" ] && largest_name="${#reloader}"
     done
 
     info "Available reloaders:"
-    for reloader in $(_available_reloaders); do
-        [ "$reloader" != "available" ] || break
-        [ "$reloader" != "validate" ] || break
-        [ "$reloader" != "run" ] || break
-
+    for reloader in $RELOADERS; do
         printf '  · %-'"${largest_name}"'s' "$reloader"
+
         if grep -qxF "$reloader" "$registry_filepath" 2>/dev/null; then
             printf '    \033[32mrunning\033[0m'
         else
             printf '    stopped'
         fi
-        [ "$reloader" = "wm" ] && printf ' [%s]' $(_detect_wm)
+
+        [ "$reloader" = "wm" ] && printf ' [%s]' "$(_detect_wm)"
         printf '\n'
     done
 }
