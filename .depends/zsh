@@ -1,11 +1,7 @@
 #!/usr/bin/env sh
 
-desc There are an alias of 'ls' that use 'eza'
-cmd eza
+req_cmd starship "prompt customization" &&
 
-desc There are an alias of 'cat' that use 'bat'
-cmd bat
-
-desc The prompt is managed by 'starship'
-cmd starship
+opt_cmd eza "better ls"
+opt_cmd bat "better cat"
 

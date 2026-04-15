@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 
-desc Used to git diff
-cmd delta
+req_cmd delta "used on diffs"
 

@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
 
-desc JSON parser for some scripts
-cmd jq
+req_cmd jq "JSON parser for some scripts" &&
 
-desc Used to get repository branch
-opt git
+opt_cmd git "used to fetch repository branch"
 

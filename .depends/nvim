@@ -1,25 +1,12 @@
 #!/usr/bin/env sh
 
-desc Plugins fetch
-cmd git
+req_cmd nvim "core editor" &&
+req_cmd git "plugins fetcher" &&
 
+req_cmd make "build treesitter parsers" &&
+req_cmd cc "build treesitter parsers" &&
 
-desc Builds telescope fzf
-desca Builds Treesitter parsers
-cmd make
-cmd gcc
-
-
-desc Used by Mason
-desca Used by CodeCompanion to enable RAG
-opt curl
-
-
-desc Used by GitSigns
-opt git
-
-
-desc Used to run some LSP
-opt node
-opt python
+opt_cmd fzf "used with fzf-lua"
+opt_cmd node "run some lsp servers and tools"
+opt_cmd python "run some lsp servers and tools"
 

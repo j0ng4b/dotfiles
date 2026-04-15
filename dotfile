@@ -3,14 +3,15 @@
 # flags
 DRY_RUN=0
 VERBOSE=0
+SKIP_DEPS=0
 
 # Dotfiles root directory
 dotfiles_root=$(cd "$(dirname "$0")" && pwd)
 
 # Log functions
-_error() { printf '\033[31m[ERROR]\033[0m dotfile: %s\n'   "$*" >&2; }
-_warn()  { printf '\033[33m[WARN]\033[0m dotfile: %s\n' "$*" >&2; }
-_info()  { printf '\033[32m[INFO]\033[0m dotfile: %s\n'    "$*" >&2; }
+_error() {                         printf '\033[31m[ERROR]\033[0m dotfile: %s\n' "$*" >&2; }
+_warn()  { [ "$VERBOSE" -eq 1 ] && printf '\033[33m[WARN]\033[0m dotfile: %s\n'  "$*" >&2; }
+_info()  { [ "$VERBOSE" -eq 1 ] && printf '\033[32m[INFO]\033[0m dotfile: %s\n'  "$*" >&2; }
 
 # Target install directories
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -93,16 +94,11 @@ _cmd_action() {
 
     for dotfile; do
         [ "$VERBOSE" -eq 1 ] && _info "processing: $dotfile"
-        # if [ "$action" = "install" ]; then
-        #     _info "Installing $dotfile..."
-
-        #     if ! str_contains "$dotfile" "bin/"; then
-        #         _info "Checking dependencies..."
-        #         _check_dependencies "$dotfile" || continue
-        #     fi
-        # else
-        #     _info "Uninstalling $dotfile..."
-        # fi
+        if [ "$action" = "install" ] && [ "$SKIP_DEPS" -eq 0 ]; then
+            if ! _cmd_check "$dotfile"; then
+                continue
+            fi
+        fi
 
         found=0
         for target in home config data; do
@@ -160,8 +156,10 @@ _cmd_check() {
         set -- $(_collect_dotfiles)
     fi
 
+    rc=0
     for dotfile; do
         _dep_reset "$dotfile"
+        _info "Checking dependencies for [$dotfile]..."
 
         if [ -f "$dotfiles_root/.depends/$dotfile" ]; then
             dep_file="$dotfiles_root/.depends/$dotfile"
@@ -172,11 +170,16 @@ _cmd_check() {
         if [ -f "$dep_file" ]; then
             if ! . "$dep_file"; then
                 _error "[$dotfile] dependency check failed"
+                rc=1
+            else
+                _info "all [$dotfile] dependencies satisfied"
             fi
         else
-            [ "$VERBOSE" -eq 1 ] && _info "[$dotfile] no dependency file"
+            _info "no [$dotfile] dependency file"
         fi
     done
+
+    return $rc
 }
 
 _cmd_list() {
@@ -275,6 +278,9 @@ OPTIONS
     -n, --dry-run
         Show actions without executing
 
+    -s, --skip-deps
+        Skip dependencies check
+
     -v, --verbose
         Enable verbose output
 
@@ -302,6 +308,7 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --dry-run|-n) DRY_RUN=1 ;;
         --verbose|-v) VERBOSE=1 ;;
+        --skip-deps|-s)  SKIP_DEPS=1 ;;
         *) break ;;
     esac
     shift
