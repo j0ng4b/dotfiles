@@ -29,7 +29,9 @@ WM_BACKENDS=""
 ##
 
 _get_theme_name() {
-    echo "$(tr -d '\n' < "$theme_filepath")"
+    theme="$(cat "$theme_filepath")"
+    mode="${COLOR_MODE:-dark}"
+    echo "$theme/$mode"
 }
 
 _register_reloader() {
@@ -169,10 +171,12 @@ _nvim_reloader() {
         [ -e "$sock" ] || continue
         nvim --clean --headless --server "$sock" \
             --remote-send \
-                "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' |\
-                    let g:_update_colorscheme=1                       |\
-                    silent! colorscheme $theme_name                   |\
-                endif<CR>" +'qa!' 2>/dev/null
+                "<Cmd>lua require('core.theme').apply('$theme_name', true)<CR>" \
+            +'qa!' 2>/dev/null
+                # "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' |\
+                #     let g:_update_colorscheme=1                       |\
+                #     silent! colorscheme $theme_name                   |\
+                # endif<CR>" +'qa!' 2>/dev/null
     done
 }
 
