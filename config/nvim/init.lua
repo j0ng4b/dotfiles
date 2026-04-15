@@ -38,5 +38,4 @@ require("lazy").setup({
 })
 
 -- Colorschemes re-loader must run after colorschemes load
--- require("core.reloader")
 require("core.theme").setup()

@@ -100,6 +100,7 @@ function M.setup()
         M.apply(theme_name, false)
     end
 
+    auto.group("ColorschemeReloader")
     auto.cmd("Colorscheme", "", function()
         vim.schedule(function()
             -- If set from outside do nothing to avoid looping
