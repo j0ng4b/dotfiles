@@ -186,7 +186,7 @@ _nvim_reloader() {
 
 _register_reloader tmux
 _tmux_reloader() {
-    _cmd_generate tmux "$CONFIG_HOME/tmux/colors.tmux" || return
+    _cmd_generate shell "$CONFIG_HOME/tmux/colors.tmux" || return
     tmux run-shell "$CONFIG_HOME/tmux/style.tmux"
 }
 
