@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 
-# Flags
-GENERATE_ONLY=0
+# Constants
+CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
 # Create theme file if not exists
-theme_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sysconf"
+theme_dir="$CONFIG_HOME/sysconf"
 theme_filename="theme"
 theme_filepath="$theme_dir/$theme_filename"
-[ ! -e "$theme_filepath" ] && echo "catppuccin" > "$theme_filepath"
+[ ! -e "$theme_filepath" ] && echo "catppuccin/${COLOR_MODE:-dark}" > "$theme_filepath"
 
 # Enabled re-loaders
 registry_dir="$SCRIPT_CACHE_DIR"
@@ -29,9 +29,7 @@ WM_BACKENDS=""
 ##
 
 _get_theme_name() {
-    theme="$(cat "$theme_filepath")"
-    mode="${COLOR_MODE:-dark}"
-    echo "$theme/$mode"
+    cat "$theme_filepath"
 }
 
 _register_reloader() {
@@ -39,9 +37,13 @@ _register_reloader() {
 }
 
 _validate_reloader() {
-    if str_contains "$RELOADERS" "$1"; then
-        return 0
+    if [ -z "$1" ]; then
+        return 1
     fi
+
+    for reloader in $RELOADERS; do
+        [ "$reloader" = "$1" ] && return 0
+    done
 
     error "color-reloader: unknown reloader '$1'"
     return 1
@@ -56,37 +58,47 @@ _validate_wm() {
         return 1
     fi
 
-    if str_contains "$WM_BACKENDS" "$1"; then
-        return 0
-    fi
+    for wm_backend in $WM_BACKENDS; do
+        [ "$wm_backend" = "$1" ] && return 0
+    done
 
     return 1
 }
 
-__generate_colors_file() {
+_generate_colors_file() {
     template_name="$1"
     output_path="$2"
     theme_name="$(_get_theme_name)"
 
-    if [ ! -e "$root/color_reloader/template/$template_name" ]; then
+    theme="$root/color_reloader/color/$theme_name"
+    if [ ! -f "$theme" ]; then
+        fallback="$root/color_reloader/color/${theme_name%/*}/dark"
+        if [ -f "$fallback" ]; then
+            warn "color-reloader: fallback to dark mode"
+            theme="$fallback"
+        else
+            error "color-reloader: theme not found: '$theme_name'"
+            return 1
+        fi
+    fi
+
+    template="$root/color_reloader/template/$template_name"
+    [ -f "$template" ] || {
         warn "color-reloader: no template found for '$template_name'"
         return 1
-    fi
-
-    if [ ! -e "$root/color_reloader/color/$theme_name" ]; then
-        error "color-reloader: theme not found: '$theme_name'"
-        return 1
-    fi
-
-    . "$root/color_reloader/color/$theme_name"
-    mkdir -p "$(dirname "$output_path")"
+    }
 
     # Generate color file
-    cp --force "$root/color_reloader/template/$template_name" "$output_path"
-    for color in base00 base01 base02 base03 base04 base05 base06 base07 \
-                 base08 base09 base0A base0B base0C base0D base0E base0F; do
-        eval "sed -i \"s/{$color}/\${$color}/g\" \"$output_path\""
-    done
+    mkdir -p "$(dirname "$output_path")"
+    cp --force "$template" "$output_path"
+
+    # build sed args safely
+    set --
+    while read -r color value; do
+        [ -z "$color" ] && continue
+        set -- "$@" -e "s|{$color}|$value|g"
+    done < "$theme"
+    sed -i "$@" "$output_path"
 }
 
 
@@ -106,8 +118,8 @@ _foot_broadcast() {
 
 _register_reloader foot
 _foot_reloader() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/foot/colors.ini"
-    __generate_colors_file foot "$colors_output_path" || return
+    colors_output_path="$CONFIG_HOME/foot/colors.ini"
+    _cmd_generate foot "$colors_output_path" || return
 
     seqs_file="$SCRIPT_CACHE_DIR/foot_seqs"
     : > "$seqs_file"
@@ -134,30 +146,26 @@ _foot_reloader() {
 
 _register_reloader cava
 _cava_reloader() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/cava/config"
-    __generate_colors_file cava "$colors_output_path" || return
+    _cmd_generate cava "$CONFIG_HOME/cava/config" || return
 
     pkill -USR1 cava
 }
 
 _register_reloader btop
 _btop_reloader() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/btop/themes/generated.theme"
-    __generate_colors_file btop "$colors_output_path" || return
+    _cmd_generate btop "$CONFIG_HOME/btop/themes/generated.theme" || return
     pkill -USR2 btop
 }
 
 _register_reloader bat
 _bat_reloader() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/bat/themes/colors.tmTheme"
-    __generate_colors_file bat "$colors_output_path" || return
+    _cmd_generate bat "$CONFIG_HOME/bat/themes/colors.tmTheme" || return
     bat cache --build >/dev/null
 }
 
 _register_reloader git
 _git_reloader() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/git/colors.gitconfig"
-    __generate_colors_file git "$colors_output_path" || return
+    _cmd_generate git "$CONFIG_HOME/git/colors.gitconfig" || return
 
     # Also require bat colors
     _bat_reloader
@@ -172,25 +180,19 @@ _nvim_reloader() {
         nvim --clean --headless --server "$sock" \
             --remote-send \
                 "<Cmd>lua require('core.theme').apply('$theme_name', true)<CR>" \
-            +'qa!' 2>/dev/null
-                # "<Cmd>if get(g:, 'colors_name', '') !=# '$theme_name' |\
-                #     let g:_update_colorscheme=1                       |\
-                #     silent! colorscheme $theme_name                   |\
-                # endif<CR>" +'qa!' 2>/dev/null
+            2>/dev/null
     done
 }
 
 _register_reloader tmux
 _tmux_reloader() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/colors.tmux"
-    __generate_colors_file shell "$colors_output_path" || return
-    tmux run-shell "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/style.tmux"
+    _cmd_generate tmux "$CONFIG_HOME/tmux/colors.tmux" || return
+    tmux run-shell "$CONFIG_HOME/tmux/style.tmux"
 }
 
 _register_reloader starship
 _starship_reloader() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/starship/config.toml"
-    __generate_colors_file starship "$colors_output_path" || return
+    _cmd_generate starship "$CONFIG_HOME/starship/config.toml" || return
 
     pkill -USR1 zsh # reload config
     pkill -WINCH zsh # force redraw
@@ -202,48 +204,30 @@ _starship_reloader() {
 ##
 
 _detect_wm() {
-    xdg="$(printf '%s' "$XDG_CURRENT_DESKTOP" | tr '[:upper:]' '[:lower:]')"
-    session="$(printf '%s' "$XDG_SESSION_DESKTOP" | tr '[:upper:]' '[:lower:]')"
-
-    wm=""
-
-    # try detect using XDG_CURRENT_DESKTOP
-    case "$xdg" in
-        *niri*) wm="niri" ;;
-        *mango*) wm="mango" ;;
-        *)        ;;
-    esac
-    [ -n "$wm" ] && echo "$wm" && return
-
-    # try detect using session
-    case "$session" in
-        niri) wm="niri" ;;
-        mango) wm="mango" ;;
-    esac
-    [ -n "$wm" ] && echo "$wm" && return
-
-    # as fallback try detect using running process
+    xdg="$(printf '%s:%s' "$XDG_CURRENT_DESKTOP" "$XDG_SESSION_DESKTOP" | tr '[:upper:]' '[:lower:]')"
     for wm in niri mango; do
-        if pgrep -x "$wm" >/dev/null; then
+        case "$xdg" in
+            *"$wm"*) echo "$wm"; return ;;
+        esac
+
+        pgrep -x "$wm" >/dev/null && {
             echo "$wm"
             return
-        fi
+        }
     done
 
-    echo ""
+    return 1
 }
 
 _register_wm_backend niri
 _wm_backend_niri() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/niri/colors.kdl"
-    __generate_colors_file niri "$colors_output_path"
+    _cmd_generate niri "$CONFIG_HOME/niri/colors.kdl" || return
     # automatic reload for niri - no action needed
 }
 
 _register_wm_backend mango
 _wm_backend_mango() {
-    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/mango/colors.conf"
-    __generate_colors_file mango "$colors_output_path"
+    _cmd_generate mango "$CONFIG_HOME/mango/config.conf" || return
     mmsg -d reload_config
 }
 
@@ -285,21 +269,6 @@ _run_all() {
     wait
 }
 
-_usage() {
-    echo "Usage: scripter color-reloader [options] <command> [reloaders...]"
-    echo ""
-    echo "Commands:"
-    echo "  run         Run the color reloader daemon with specified reloaders"
-    echo "  register    Register reloaders to be automatically reloaded on theme change"
-    echo "  unregister  Unregister reloaders"
-    echo "  reload      Manually trigger reload for all registered reloaders"
-    echo "  list        List available reloaders"
-    echo "  help        Show this help message"
-    echo ""
-    echo "Options:"
-    echo "  -g, --generate-only  Only generate color files without running the daemon"
-}
-
 
 ##
 ## Script commands
@@ -312,9 +281,7 @@ _cmd_run() {
         grep -qxF "$name" "$registry_filepath" 2>/dev/null \
             || echo "$name" >> "$registry_filepath"
     done
-
     _run_all
-    [ "$GENERATE_ONLY" -eq 1 ] && return 0
 
     command -v inotifywait >/dev/null 2>&1 || {
         error "color-reloader: inotifywait not found"
@@ -372,6 +339,23 @@ _cmd_reload() {
     _run_all
 }
 
+_cmd_generate() {
+    template_name="$1"
+    output_path="$2"
+
+    [ -z "$template_name" ] && {
+        error "color-reloader: template name required"
+        return 1
+    }
+
+    [ -z "$output_path" ] && {
+        error "color-reloader: output path required"
+        return 1
+    }
+
+    _generate_colors_file "$template_name" "$output_path"
+}
+
 _cmd_list() {
     largest_name=0
     for reloader in $RELOADERS; do
@@ -402,6 +386,19 @@ _cmd_list() {
     printf '\n'
 }
 
+_cmd_help() {
+    echo "Usage: scripter color-reloader <command> [reloaders...]"
+    echo ""
+    echo "Commands:"
+    echo "  run         Run the color reloader daemon with specified reloaders"
+    echo "  register    Register reloaders to be automatically reloaded on theme change"
+    echo "  unregister  Unregister reloaders"
+    echo "  reload      Manually trigger reload for all registered reloaders"
+    echo "  generate    Generate color file for a given template and output path"
+    echo "  list        List available reloaders"
+    echo "  help        Show this help message"
+    echo ""
+}
 
 ##
 ## Parse args
@@ -410,22 +407,19 @@ _cmd_list() {
 cmd=""
 while [ $# -gt 0 ]; do
     case "$1" in
-        --generate-only | -g)
-            GENERATE_ONLY=1
-            ;;
-        run | register | unregister | reload | list | help)
+        run | register | unregister | reload | generate | list | help)
             cmd="$1"
             shift
             break
             ;;
         -*)
             error "color-reloader: invalid option '$1'!"
-            _usage
+            _cmd_help
             exit 1
             ;;
         *)
             error "color-reloader: unknown command '$1'!"
-            _usage
+            _cmd_help
             exit 1
             ;;
     esac
@@ -437,12 +431,13 @@ case "$cmd" in
     register)   _cmd_register "$@" ;;
     unregister) _cmd_unregister "$@" ;;
     reload)     _cmd_reload ;;
+    generate)   _cmd_generate "$@" ;;
     list)       _cmd_list ;;
     help)
-        _usage
+        _cmd_help
         ;;
     *)
-        _usage
+        _cmd_help
         exit 1
         ;;
 esac
