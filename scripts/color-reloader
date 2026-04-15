@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+# Flags
+GENERATE_ONLY=0
+
 # Create theme file if not exists
 theme_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sysconf"
 theme_filename="theme"
@@ -151,7 +154,8 @@ _detect_wm() {
 
     # try detect using XDG_CURRENT_DESKTOP
     case "$xdg" in
-        *niri*)   wm="niri" ;;
+        *niri*) wm="niri" ;;
+        *mango*) wm="mango" ;;
         *)        ;;
     esac
     [ -n "$wm" ] && echo "$wm" && return
@@ -159,11 +163,12 @@ _detect_wm() {
     # try detect using session
     case "$session" in
         niri) wm="niri" ;;
+        mango) wm="mango" ;;
     esac
     [ -n "$wm" ] && echo "$wm" && return
 
     # as fallback try detect using running process
-    for wm in niri; do
+    for wm in niri mango; do
         if pgrep -x "$wm" >/dev/null; then
             echo "$wm"
             return
@@ -189,6 +194,12 @@ _wm_backend_niri() {
     colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/niri/colors.kdl"
     __generate_colors_file niri $colors_output_path
     # automatic reload for niri - no action needed
+}
+
+_wm_backend_mango() {
+    colors_output_path="${XDG_CONFIG_HOME:-$HOME/.config}/mango/colors.conf"
+    __generate_colors_file mango "$colors_output_path"
+    mmsg -d reload_config
 }
 
 _wm_reloader() {
@@ -275,7 +286,12 @@ _cmd_run() {
     done
 
     _run_all
-    [ -n "$generate_only" ] && return 0
+    [ "$GENERATE_ONLY" -eq 1 ] && return 0
+
+    command -v inotifywait >/dev/null 2>&1 || {
+        error "color-reloader: inotifywait not found"
+        exit 1
+    }
 
     info "color-reloader: running daemon"
     while true; do
@@ -346,6 +362,7 @@ _cmd_list() {
         else
             printf '    stopped'
         fi
+        [ "$reloader" = "wm" ] && printf ' [%s]' $(_detect_wm)
         printf '\n'
     done
 }
@@ -355,13 +372,11 @@ _cmd_list() {
 ## Parse args
 ##
 
-generate_only=""
 cmd=""
-
 while [ $# -gt 0 ]; do
     case "$1" in
         --generate-only | -g)
-            generate_only=true
+            GENERATE_ONLY=1
             ;;
         run | register | unregister | reload | list | help)
             cmd="$1"

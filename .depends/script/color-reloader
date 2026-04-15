@@ -1,18 +1,10 @@
 #!/usr/bin/env sh
 
-desc Used to get files changes and reload the color scheme
-cmd inotifywait
+req_cmd inotifywait "watch theme changes" &&
 
-desc Used to send notifications
-cmd notify-send
-
-desc Used to reload sway colors
-cmd swaymsg
-
-desc Used to reload dunst colors
-cmd dunstctl
-
-desc Used to reload starship colors
-cmd zsh
-
+opt_cmd bat "reload bat and git colors"
+opt_cmd nvim "reload neovim colros"
+opt_cmd tmux "reload tmux colors"
+opt_cmd mmsg "reload mango colors"
+opt_cmd zsh "reload starship colors"
 
