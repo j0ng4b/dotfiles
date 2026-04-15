@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 
-desc Used to set brightness
-cmd brightnessctl
+opt_cmd brightnessctl "set brightness"
+opt_cmd light "set brightness"
+

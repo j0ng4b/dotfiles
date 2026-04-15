@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-desc Used to show battery status
-cmd notify-send
-
