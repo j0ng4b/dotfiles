@@ -249,7 +249,6 @@ _wm_reloader() {
 
     if [ -z "$wm" ]; then
         warn "color-reloader: no window manager detected"
-        _wm_backend_default
         return
     fi
 
@@ -324,7 +323,7 @@ _cmd_run() {
             --event close_write \
             --event moved_to \
             --format '%f' \
-            "$theme_dir" "$registry_dir" 2>/dev/null)
+            "$theme_dir" "$registry_dir" 2>/dev/null) || { sleep 1; continue; }
 
         if [ "$changed" = "$theme_filename" ]; then
             _run_all
@@ -385,9 +384,18 @@ _cmd_list() {
             printf '    stopped'
         fi
 
-        [ "$reloader" = "wm" ] && printf ' [%s]' "$(_detect_wm)"
         printf '\n'
     done
+    printf '\n'
+
+    info "Available WM backends:"
+    detected_wm="$(_detect_wm)"
+    for backend in $WM_BACKENDS; do
+        printf '  · %s' "$backend"
+        [ "$backend" = "$detected_wm" ] && printf '  \033[32m(active)\033[0m'
+        printf '\n'
+    done
+    printf '\n'
 }
 
 
