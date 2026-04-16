@@ -12,7 +12,7 @@ binds {
     Mod+Return hotkey-overlay-title="Open a Terminal" { spawn "footclient"; }
 
     // app launcher
-    Mod+d hotkey-overlay-title="Open apps launcher" { spawn "qs" "ipc" "call" "launcher" "toggle"; }
+    Mod+Space hotkey-overlay-title="Open apps launcher" { spawn "qs" "ipc" "call" "launcher" "toggle"; }
 
 
     //// Multimedia Keys ///////////////////////////////////////////////////////
@@ -51,8 +51,6 @@ binds {
     Mod+Shift+J    { move-window-down; }
     Mod+Shift+K    { move-window-up; }
     Mod+Shift+L    { move-column-right; }
-
-    Mod+Space    { switch-focus-between-floating-and-tiling; }
 
 
     //// Column and Window Management //////////////////////////////////////////
