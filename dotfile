@@ -79,6 +79,17 @@ _do_action() {
     esac
 }
 
+_post_install_generate_colors() {
+    dotfile="$1"
+    scripter="$dotfiles_root/scripts/_scripter"
+
+    [ -x "$scripter" ] || return 0
+    "$scripter" color-reloader has "$dotfile" >/dev/null 2>&1 || return 0
+
+    _info "generating colors for $dotfile..."
+    "$scripter" color-reloader generate "$dotfile" >/dev/null 2>&1 || true
+}
+
 
 ##
 ## Script commands
@@ -101,6 +112,7 @@ _cmd_action() {
         fi
 
         found=0
+        did_install=0
         for target in home config data; do
             dotfile_dir="$dotfiles_root/$target/$dotfile"
             [ -d "$dotfile_dir" ] || continue
@@ -115,12 +127,18 @@ _cmd_action() {
                     ;;
                 config | data)
                     target_path="$(_target_dir "$target")/$dotfile"
-                    _do_action "$action" "$dotfile_dir" "$target_path"
+                    if _do_action "$action" "$dotfile_dir" "$target_path"; then
+                        [ "$action" = "install" ] && did_install=1
+                    fi
                     ;;
             esac
 
             found=1
         done
+
+        if [ "$did_install" = "1" ] && [ "$DRY_RUN" -eq 0 ]; then
+            _post_install_generate_colors "$dotfile"
+        fi
 
         [ "$found" -eq 1 ] || \
             _warn "'$dotfile' doesn't exist! Skipping."
