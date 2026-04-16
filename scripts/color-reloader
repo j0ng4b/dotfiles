@@ -29,11 +29,12 @@ WM_BACKENDS=""
 ##
 
 _get_theme_name() {
-    cat "$theme_filepath"
+    [ -f "$theme_filepath" ] || return 1
+    head -n1 "$theme_filepath" | tr -d '\r\n'
 }
 
 _register_reloader() {
-    RELOADERS="$RELOADERS $1"
+    RELOADERS="${RELOADERS:+$RELOADERS }$1"
 }
 
 _validate_reloader() {
@@ -50,7 +51,7 @@ _validate_reloader() {
 }
 
 _register_wm_backend() {
-    WM_BACKENDS="$WM_BACKENDS $1"
+    WM_BACKENDS="${WM_BACKENDS:+$WM_BACKENDS }$1"
 }
 
 _validate_wm() {
@@ -98,7 +99,7 @@ _generate_colors_file() {
         [ -z "$color" ] && continue
         set -- "$@" -e "s|{$color}|$value|g"
     done < "$theme"
-    sed -i "$@" "$output_path"
+    sed "$@" "$output_path" > "$output_path.tmp" && mv "$output_path.tmp" "$output_path"
 }
 
 
@@ -119,7 +120,8 @@ _foot_broadcast() {
 _register_reloader foot
 _foot_reloader() {
     colors_output_path="$CONFIG_HOME/foot/colors.ini"
-    _cmd_generate foot "$colors_output_path" || return
+    _cmd_generate --template foot --path "$colors_output_path" || return
+    [ "$GENERATE_ONLY" = "1" ] && return
 
     seqs_file="$SCRIPT_CACHE_DIR/foot_seqs"
     : > "$seqs_file"
@@ -146,33 +148,31 @@ _foot_reloader() {
 
 _register_reloader cava
 _cava_reloader() {
-    _cmd_generate cava "$CONFIG_HOME/cava/config" || return
-
-    pkill -USR1 cava
+    _cmd_generate --template cava --path "$CONFIG_HOME/cava/config" || return
+    [ "$GENERATE_ONLY" = "1" ] || pkill -USR1 cava
 }
 
 _register_reloader btop
 _btop_reloader() {
-    _cmd_generate btop "$CONFIG_HOME/btop/themes/generated.theme" || return
-    pkill -USR2 btop
+    _cmd_generate --template btop --path "$CONFIG_HOME/btop/themes/generated.theme" || return
+    [ "$GENERATE_ONLY" = "1" ] || pkill -USR2 btop
 }
 
 _register_reloader bat
 _bat_reloader() {
-    _cmd_generate bat "$CONFIG_HOME/bat/themes/colors.tmTheme" || return
+    _cmd_generate --template bat --path "$CONFIG_HOME/bat/themes/colors.tmTheme" || return
     bat cache --build >/dev/null
 }
 
 _register_reloader git
 _git_reloader() {
-    _cmd_generate git "$CONFIG_HOME/git/colors.gitconfig" || return
-
-    # Also require bat colors
-    _bat_reloader
+    _cmd_generate --template git --path "$CONFIG_HOME/git/colors.gitconfig" || return
+    # bat reloader is required to run
 }
 
 _register_reloader nvim
 _nvim_reloader() {
+    [ "$GENERATE_ONLY" = "1" ] && return
     theme_name="$(_get_theme_name)"
 
     for sock in "${XDG_RUNTIME_DIR}"/nvim.*.0; do
@@ -186,16 +186,14 @@ _nvim_reloader() {
 
 _register_reloader tmux
 _tmux_reloader() {
-    _cmd_generate shell "$CONFIG_HOME/tmux/colors.tmux" || return
-    tmux run-shell "$CONFIG_HOME/tmux/style.tmux"
+    _cmd_generate --template shell --path "$CONFIG_HOME/tmux/colors.tmux" || return
+    [ "$GENERATE_ONLY" = "1" ] || tmux run-shell "$CONFIG_HOME/tmux/style.tmux"
 }
 
 _register_reloader starship
 _starship_reloader() {
-    _cmd_generate starship "$CONFIG_HOME/starship/config.toml" || return
-
-    pkill -USR1 zsh # reload config
-    pkill -WINCH zsh # force redraw
+    _cmd_generate --template starship --path "$CONFIG_HOME/starship/config.toml" || return
+    [ "$GENERATE_ONLY" = "1" ] || pkill -USR1 zsh
 }
 
 
@@ -221,14 +219,14 @@ _detect_wm() {
 
 _register_wm_backend niri
 _wm_backend_niri() {
-    _cmd_generate niri "$CONFIG_HOME/niri/colors.kdl" || return
+    _cmd_generate --template niri --path "$CONFIG_HOME/niri/colors.kdl" || return
     # automatic reload for niri - no action needed
 }
 
 _register_wm_backend mango
 _wm_backend_mango() {
-    _cmd_generate mango "$CONFIG_HOME/mango/config.conf" || return
-    mmsg -d reload_config
+    _cmd_generate --template mango --path "$CONFIG_HOME/mango/config.conf" || return
+    [ "$GENERATE_ONLY" = "1" ] || mmsg -d reload_config
 }
 
 _register_reloader wm
@@ -251,13 +249,12 @@ _wm_reloader() {
 
 
 ##
-## Utility functions
+## Helpers
 ##
 
 _run_reloader() {
-    name="$1"
-    info "color-reloader: reloading $name"
-    "_${name}_reloader"
+    [ "$GENERATE_ONLY" = "1" ] || info "color-reloader: reloading $1"
+    "_${1}_reloader"
 }
 
 _run_all() {
@@ -330,7 +327,10 @@ _cmd_register() {
 
 _cmd_unregister() {
     for name in "$@"; do
-        sed -i "/^${name}$/d" "$registry_filepath" 2>/dev/null
+        [ -f "$registry_filepath" ] || continue
+
+        tmp="$registry_filepath.tmp"
+        grep -vxF "$name" "$registry_filepath" > "$tmp" 2>/dev/null && mv "$tmp" "$registry_filepath"
         info "color-reloader: '$name' unregistered"
     done
 }
@@ -340,20 +340,80 @@ _cmd_reload() {
 }
 
 _cmd_generate() {
-    template_name="$1"
-    output_path="$2"
+    template=""
+    output=""
+    names=""
 
-    [ -z "$template_name" ] && {
-        error "color-reloader: template name required"
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -t|--template)
+                [ -n "$2" ] || { error "--template requires argument"; return 1; }
+                template="$2"
+                shift 2
+                ;;
+            -p|--path)
+                [ -n "$2" ] || { error "--path requires argument"; return 1; }
+                output="$2"
+                shift 2
+                ;;
+            --)
+                shift
+                names="$*"
+                break
+                ;;
+            -*)
+                error "color-reloader: invalid option '$1'"
+                return 1
+                ;;
+            *)
+                # first positional -> names mode
+                names="$*"
+                break
+                ;;
+        esac
+    done
+
+    ( [ -n "$template" ] || [ -n "$output" ] ) && [ -n "$names" ] && {
+        error "cannot mix template mode with names"
         return 1
     }
 
-    [ -z "$output_path" ] && {
-        error "color-reloader: output path required"
-        return 1
+    ##
+    ## Mode: template
+    ##
+    if [ -n "$template" ] || [ -n "$output" ]; then
+        [ -z "$template" ] && {
+            error "color-reloader: --template required"
+            return 1
+        }
+
+        [ -z "$output" ] && {
+            error "color-reloader: --path required"
+            return 1
+        }
+
+        _generate_colors_file "$template" "$output"
+        return
+    fi
+
+    ##
+    ## Mode: names
+    ##
+    [ -z "$names" ] && {
+        warn "color-reloader: nothing selected fallback to all registered"
+        names="$(cat "$registry_filepath" 2>/dev/null)"
     }
 
-    _generate_colors_file "$template_name" "$output_path"
+    [ -z "$names" ] && {
+        warn "color-reloader: nothing to generate"
+        return 0
+    }
+
+    for name in $names; do
+        _validate_reloader "$name" || continue
+        info "color-reloader: generating $name colors"
+        GENERATE_ONLY=1 _run_reloader "$name"
+    done
 }
 
 _cmd_list() {
@@ -433,13 +493,7 @@ case "$cmd" in
     reload)     _cmd_reload ;;
     generate)   _cmd_generate "$@" ;;
     list)       _cmd_list ;;
-    help)
-        _cmd_help
-        ;;
-    *)
-        _cmd_help
-        exit 1
-        ;;
+    help)       _cmd_help ;;
 esac
 
 # vim: ft=sh
