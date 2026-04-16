@@ -13,6 +13,15 @@ local map = {
         dark = { scheme = "gruvbox", background = "dark" },
         light = { scheme = "gruvbox", background = "light" },
     },
+
+    everforest = {
+        dark = { scheme = "everforest", background = "dark" },
+        light = { scheme = "everforest", background = "light" },
+    },
+
+    nord = {
+        dark = { scheme = "nord", background = "dark" },
+    },
 }
 
 local function current_state()
@@ -116,6 +125,8 @@ function M.setup()
                 ["catppuccin-mocha"] = "catppuccin/dark",
                 ["catppuccin-latte"] = "catppuccin/light",
                 ["gruvbox"] = "gruvbox/" .. bg,
+                ["everforest"] = "everforest/" .. bg,
+                ["nord"] = "nord/dark",
             }
 
             local result = reverse[current]
