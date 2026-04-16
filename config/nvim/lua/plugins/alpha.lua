@@ -20,16 +20,15 @@ local function count_files(dir)
     return count
 end
 
+-- New banners can be generated with: https://github.com/Asthestarsfalll/img2art
 local banner = function()
     math.randomseed(os.time())
 
     local banners_count = count_files(vim.fn.stdpath("config") .. "/lua/plugins/alpha-banners")
-
     local banner = require("plugins.alpha-banners/banner-" .. math.random(banners_count))
 
     -- used to reset highlight when colorscheme changes
     _G.alpha_cur_banner = banner
-
     return banner.header
 end
 
