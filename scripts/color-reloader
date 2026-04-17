@@ -399,8 +399,10 @@ _cmd_generate() {
     ## Mode: names
     ##
     [ -z "$names" ] && {
-        warn "color-reloader: nothing selected fallback to all registered"
+        warn "color-reloader: nothing selected, fallback to all registered"
         names="$(cat "$registry_filepath" 2>/dev/null)"
+        detected_wm="$(_detect_wm)"
+        [ -n "$detected_wm" ] && names="$names $detected_wm"
     }
 
     [ -z "$names" ] && {
