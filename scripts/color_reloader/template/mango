@@ -1,0 +1,16 @@
+##  ╔═╗┌─┐┬  ┌─┐┬─┐┌─┐
+##  ║  │ ││  │ │├┬┘└─┐
+##  ╚═╝└─┘┴─┘└─┘┴└─└─┘
+
+# Background color of the root window
+rootcolor=0x{base00}ff
+
+# Inactive window border
+bordercolor=0x{base03}ff
+
+# Active window border
+focuscolor=0x{base0C}ff
+
+# Urgent window border (alerts)
+urgentcolor=0x{base08}ff
+
