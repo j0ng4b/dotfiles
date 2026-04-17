@@ -8,10 +8,10 @@ import QtQuick
 Singleton {
     id: root
 
-    readonly property string appName: 'ohmyshell'
+    readonly property string shellName: 'shell'
 
-    readonly property string configPath: Paths.config + '/' + appName
-    readonly property string cachePath: Paths.cache + '/' + appName
+    readonly property string configPath: Paths.config + '/' + shellName
+    readonly property string cachePath: Paths.cache + '/' + shellName
 
     readonly property alias general: adapter.general
     readonly property alias colors: adapter.colors

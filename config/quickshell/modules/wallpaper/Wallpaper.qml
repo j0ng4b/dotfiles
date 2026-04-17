@@ -16,7 +16,7 @@ Variants {
         exclusionMode: ExclusionMode.Ignore
 
         WlrLayershell.layer: WlrLayer.Background
-        WlrLayershell.namespace: Config.appName + '-wallpaper'
+        WlrLayershell.namespace: Config.shellName + '-wallpaper'
 
         anchors {
             top: true

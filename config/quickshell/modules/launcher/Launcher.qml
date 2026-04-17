@@ -25,6 +25,7 @@ Variants {
         implicitWidth: 320
         implicitHeight: Math.round(launcher.screen.height * Config.launcher.heightFraction)
 
+        WlrLayershell.namespace: Config.shellName + '-launcher'
         WlrLayershell.keyboardFocus: {
             if (LauncherState.isOpen(launcher.modelData.name))
                 return WlrKeyboardFocus.Exclusive;

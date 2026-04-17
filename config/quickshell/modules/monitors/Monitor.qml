@@ -19,7 +19,7 @@ PanelWindow {
 
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.namespace: Config.appName + '-monitors'
+    WlrLayershell.namespace: Config.shellName + '-monitors'
     WlrLayershell.keyboardFocus: {
         if (MonitorState.open)
             return WlrKeyboardFocus.Exclusive;
