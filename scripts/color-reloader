@@ -489,6 +489,8 @@ _cmd_status() {
 _cmd_has() {
     if _validate_reloader "$1"; then
         return 0
+    elif _validate_wm "$1"; then
+        return 0
     else
         return 1
     fi
