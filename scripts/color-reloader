@@ -46,7 +46,6 @@ _validate_reloader() {
         [ "$reloader" = "$1" ] && return 0
     done
 
-    error "color-reloader: unknown reloader '$1'"
     return 1
 }
 
@@ -410,9 +409,15 @@ _cmd_generate() {
     }
 
     for name in $names; do
-        _validate_reloader "$name" || continue
-        info "color-reloader: generating $name colors"
-        GENERATE_ONLY=1 _run_reloader "$name"
+        if _validate_reloader "$name"; then
+            info "color-reloader: generating $name colors"
+            GENERATE_ONLY=1 _run_reloader "$name"
+        elif _validate_wm "$name"; then
+            info "color-reloader: generating $name colors"
+            GENERATE_ONLY=1 "_wm_backend_${name}"
+        else
+            error "color-reloader: unknown reloader or wm backend '$name'"
+        fi
     done
 }
 
@@ -447,7 +452,7 @@ _cmd_list() {
 }
 
 _cmd_has() {
-    if _validate_reloader "$1" >/dev/null 2>&1; then
+    if _validate_reloader "$1"; then
         return 0
     else
         return 1
