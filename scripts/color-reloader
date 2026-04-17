@@ -224,7 +224,7 @@ _wm_backend_niri() {
 
 _register_wm_backend mango
 _wm_backend_mango() {
-    _cmd_generate --template mango --path "$CONFIG_HOME/mango/config.conf" || return
+    _cmd_generate --template mango --path "$CONFIG_HOME/mango/colors.conf" || return
     [ "$GENERATE_ONLY" = "1" ] || mmsg -d reload_config
 }
 
