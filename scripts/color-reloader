@@ -196,6 +196,12 @@ _starship_reloader() {
     [ "$GENERATE_ONLY" = "1" ] || pkill -USR1 zsh
 }
 
+_register_reloader quickshell
+_quickshell_reloader() {
+    _cmd_generate --template quickshell --path "$CONFIG_HOME/shell/colors.json" || return
+    # nothing to do, quickshell will auto reload colors anyway
+}
+
 
 ##
 ## Window Manager
