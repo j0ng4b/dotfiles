@@ -1,126 +1,63 @@
 #!/usr/bin/env sh
 
-_notify() {
-    # Battery status
-    current_status=$(cat "$status_file")
+_find_battery() {
+    find /sys/class/power_supply/ -name "BAT*" | head -1
+}
 
-    # Low battery levels and timeouts
-    level_low=10
-    level_critical=5
+_cmd_status() {
+    capacity=$(cat "$battery/capacity")
+    status=$(cat "$battery/status" | tr '[:upper:]' '[:lower:]')
+    printf '{"capacity": %s, "status": "%s"}\n' "$capacity" "$status"
+}
 
-    # When the battery goes less than or equal this value send a notification.
-    notify_level="$level_low"
+_cmd_watch() {
+    # Emit initial state
+    _cmd_status "$battery"
 
-    # Don't run notifier if already running
-    pid_file="/tmp/battery_notifier.pid"
-    if [ -e "$pid_file" ] && kill -0 "$(cat "$pid_file")" 2>/dev/null; then
-        warn "battery: notifier already running"
+    last_capacity=$(cat "$battery/capacity")
+    last_status=$(cat "$battery/status")
+
+    while true; do
+        sleep 1.5
+
+        cur_capacity=$(cat "$battery/capacity")
+        cur_status=$(cat "$battery/status")
+
+        if [ "$cur_capacity" != "$last_capacity" ] || [ "$cur_status" != "$last_status" ]; then
+            last_capacity="$cur_capacity"
+            last_status="$cur_status"
+            _cmd_status "$battery"
+        fi
+    done
+}
+
+_cmd_help() {
+    cat <<'EOF'
+Usage: scripter battery <command>
+
+Commands:
+  status   Print current battery status as JSON
+  watch    Emit battery status as JSON on every change
+  help     Show this help message
+EOF
+}
+
+battery=$(_find_battery)
+if [ -z "$battery" ]; then
+    error "battery: no battery found"
+    exit 1
+fi
+
+[ $# -eq 0 ] && _cmd_help && exit 0
+case $1 in
+    status) _cmd_status ;;
+    watch)  _cmd_watch ;;
+    help)   _cmd_help ;;
+    *)
+        error "battery: unknown command '$1'"
+        _cmd_help
         exit 1
-    fi
-
-    _send() {
-        notify-send -a "scripter-battery" -u "$1" "" \
-            "{\"status\": \"$2\", \"capacity\": \"$3\"}"
-    }
-
-    (
-        while true; do
-            # Get new battery status and current capacity
-            new_status=$(cat "$status_file")
-            capacity=$(cat "$capacity_file")
-
-            # Notify low battery
-            if [ "$current_status" = "Discharging" ] && \
-               [ "$capacity" -le "$notify_level" ]; then
-                if [ "$notify_level" -eq "$level_low" ]; then
-                    warn "battery: low battery at ${capacity}%"
-                    _send critical "low" "$capacity"
-                    notify_level="$level_critical"
-                else
-                    warn "battery: critical battery at ${capacity}%"
-                    _send critical "low" "$capacity"
-                fi
-            fi
-
-            if [ "$new_status" = "$current_status" ]; then
-                sleep 1
-                continue
-            fi
-
-            # When the battery get fully charged
-            case "$new_status" in
-                Full | "Not charging")
-                    info "battery: fully charged at ${capacity}%"
-                    _send normal "full" "$capacity"
-                    ;;
-
-                # Notify when charger is connected
-                Charging)
-                    info "battery: charging at ${capacity}%"
-                    _send normal "charging" "$capacity"
-                    ;;
-
-                # Notify when charger is disconnected
-                Discharging)
-                    info "battery: discharging at ${capacity}%"
-                    _send normal "battery" "$capacity"
-
-                    # Reset notification of low battery
-                    [ "$capacity" -ge "$level_low" ] && \
-                        notify_level="$level_low"
-                    ;;
-
-                # Any invalid status is ignored
-                *)
-                    sleep 1
-                    continue
-                    ;;
-            esac
-
-            # Update the current battery status
-            current_status="$new_status"
-            sleep 2
-        done
-    ) &
-
-    echo $! > "$pid_file"
-}
-
-main() {
-    battery=$(find /sys/class/power_supply/ -name "BAT*" | head -1)
-
-    if [ -n "$battery" ]; then
-        capacity_file="$battery/capacity"
-        status_file="$battery/status"
-    fi
-
-    case $1 in
-        status)
-            if [ -z "$battery" ]; then
-                warn "battery: no battery found"
-                exit 1
-            fi
-
-            status=$(cat "$status_file" | tr '[:upper:]' '[:lower:]')
-            capacity=$(cat "$capacity_file")
-            echo "{ \"enable\": \"1\", \"capacity\": \"$capacity\", \"status\": \"$status\" }"
-            ;;
-
-        notify)
-            if [ -z "$battery" ]; then
-                warn "battery: no battery found"
-                exit 1
-            fi
-            _notify
-            ;;
-
-        *)
-            error "battery: unknown command '$1'"
-            exit 1
-            ;;
-    esac
-}
-
-main "$@"
+        ;;
+esac
 
 # vim: ft=sh
