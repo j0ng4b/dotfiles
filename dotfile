@@ -172,7 +172,7 @@ _cmd_check() {
         command -v "$cmd" >/dev/null 2>&1 && return 0
 
         _warn "[$dep_dotfile] suggested command: $cmd"
-        [ -n "$msg" ] && printf '  -> %s\n' "$msg" >&2
+        [ "$VERBOSE" -eq 1 ] && [ -n "$msg" ] && printf '  -> %s\n' "$msg" >&2
 
         return 0
     }
