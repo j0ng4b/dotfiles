@@ -78,10 +78,6 @@ run dunst
 ) &
 
 
-## Start battery status notifier
-sh "$root/_scripter" battery notify
-
-
 ## Start color temperature adjuster
 sh "$root/_scripter" color-temperature run &
 
