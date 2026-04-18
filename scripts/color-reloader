@@ -13,6 +13,7 @@ theme_filepath="$theme_dir/$theme_filename"
 registry_dir="$SCRIPT_CACHE_DIR"
 registry_filename="reloaders"
 registry_filepath="$registry_dir/$registry_filename"
+daemon_pidfile="$registry_dir/daemon.pid"
 
 pending_filename="reloaders_pending"
 pending_filepath="$registry_dir/$pending_filename"
@@ -265,12 +266,24 @@ _run_all() {
     wait
 }
 
+_daemon_running() {
+    [ -f "$daemon_pidfile" ] || return 1
+    pid=$(cat "$daemon_pidfile")
+    [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null
+}
+
 
 ##
 ## Script commands
 ##
 
 _cmd_run() {
+    if _daemon_running; then
+        info "color-reloader: daemon already running, registering reloaders only"
+        _cmd_register "$@"
+        return
+    fi
+
     # Register initial re-loaders set
     for name in "$@"; do
         _validate_reloader "$name" || continue
@@ -284,7 +297,11 @@ _cmd_run() {
         exit 1
     }
 
-    info "color-reloader: running daemon"
+    # Register current process pid
+    echo $$ > "$daemon_pidfile"
+    trap 'rm -f "$daemon_pidfile"' EXIT INT TERM
+
+    info "color-reloader: running daemon (pid $$)"
     while true; do
         changed=$(inotifywait --quiet \
             --event close_write \
@@ -423,34 +440,44 @@ _cmd_generate() {
     done
 }
 
-_cmd_list() {
+_cmd_status() {
+    if _daemon_running; then
+        pid=$(cat "$daemon_pidfile")
+        printf '\033[32m●\033[0m daemon running \033[2m(pid %s)\033[0m\n\n' "$pid"
+    else
+        printf '\033[31m○\033[0m daemon stopped\n\n'
+    fi
+
     largest_name=0
     for reloader in $RELOADERS; do
         [ "${#reloader}" -gt "$largest_name" ] && largest_name="${#reloader}"
     done
 
-    info "Available reloaders:"
+    info "Reloaders:"
     for reloader in $RELOADERS; do
-        printf '  · %-'"${largest_name}"'s' "$reloader"
+        printf '  %-'"${largest_name}"'s  ' "$reloader"
 
         if grep -qxF "$reloader" "$registry_filepath" 2>/dev/null; then
-            printf '    \033[32mrunning\033[0m'
+            printf '\033[33mregistered\033[0m'
         else
-            printf '    stopped'
+            printf '\033[2munregistered\033[0m'
         fi
 
         printf '\n'
     done
     printf '\n'
 
-    info "Available WM backends:"
-    detected_wm="$(_detect_wm)"
+    info "WM backends:"
+    detected_wm="$(_detect_wm 2>/dev/null)"
     for backend in $WM_BACKENDS; do
-        printf '  · %s' "$backend"
+        printf '  %s' "$backend"
         [ "$backend" = "$detected_wm" ] && printf '  \033[32m(active)\033[0m'
         printf '\n'
     done
     printf '\n'
+
+    theme="$(_get_theme_name 2>/dev/null)"
+    [ -n "$theme" ] && info "Current theme: $theme"
 }
 
 _cmd_has() {
@@ -470,7 +497,7 @@ _cmd_help() {
     echo "  unregister  Unregister reloaders"
     echo "  reload      Manually trigger reload for all registered reloaders"
     echo "  generate    Generate color file for a given template and output path"
-    echo "  list        List available reloaders"
+    echo "  status      Show informations about reloaders status"
     echo "  has         Check if some reloader is valid"
     echo "  help        Show this help message"
     echo ""
@@ -483,7 +510,7 @@ _cmd_help() {
 cmd=""
 while [ $# -gt 0 ]; do
     case "$1" in
-        run | register | unregister | reload | generate | list | has | help)
+        run | register | unregister | reload | generate | status | has | help)
             cmd="$1"
             shift
             break
@@ -508,7 +535,7 @@ case "$cmd" in
     unregister) _cmd_unregister "$@" ;;
     reload)     _cmd_reload ;;
     generate)   _cmd_generate "$@" ;;
-    list)       _cmd_list ;;
+    status)     _cmd_status ;;
     has)        _cmd_has "$1" ;;
     help)       _cmd_help ;;
 esac
