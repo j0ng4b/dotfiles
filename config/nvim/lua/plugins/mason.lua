@@ -27,6 +27,9 @@ local config = function()
             "isort",
             "black",
             "stylua",
+
+            -- Others
+            "tree-sitter-cli",
         },
     })
 end
