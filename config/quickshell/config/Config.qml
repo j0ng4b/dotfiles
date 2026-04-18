@@ -117,7 +117,7 @@ Singleton {
                 // Path to wallpapers
                 property string wallpaperDir: {
                     const pictures = StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0];
-                    return pictures + "/wallpapers";
+                    return pictures.toString().slice(7) + "/wallpapers";
                 }
             }
 

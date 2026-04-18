@@ -16,7 +16,7 @@ Singleton {
         let path = Config.launcher.wallpaperDir;
 
         if (path.startsWith("~/"))
-            path = '"$HOME/' + path.slice(2) + '"'
+            path = '"$HOME/' + path.slice(2) + '"';
 
         return path;
     }
