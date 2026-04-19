@@ -3,11 +3,11 @@ import Quickshell.Io
 
 import qs.config
 import qs.modules.bar
-import qs.modules.wallpaper
+import qs.modules.osd
 import qs.modules.launcher
+import qs.modules.wallpaper
 import qs.modules.monitors
 import qs.modules.lockscreen
-import qs.modules.osd
 import qs.services
 
 ShellRoot {
