@@ -14,7 +14,7 @@ setup_desktop() {
     xbps_ensure_pkgs libreoffice-calc libreoffice-impress libreoffice-writer libreoffice-i18n-pt-BR
 
     _info "Installing other useful programs..."
-    xbps_ensure_pkgs obs stremio-shell xwayland-satellite
+    xbps_ensure_pkgs firefox obs stremio-shell xwayland-satellite
 
     _info "Installing desktop portals..."
     xbps_ensure_pkgs xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-wlr
@@ -25,9 +25,6 @@ setup_desktop() {
         _warn "Flatpak not available, skipping applications"
         return 0
     fi
-
-    _run flatpak install -y --noninteractive flathub com.brave.Browser || \
-        _warn "Failed to install Brave"
 
     _run flatpak install -y --noninteractive flathub com.valvesoftware.Steam || \
         _warn "Failed to install Steam"
