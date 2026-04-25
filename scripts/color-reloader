@@ -179,7 +179,7 @@ _nvim_reloader() {
         [ -e "$sock" ] || continue
         nvim --clean --headless --server "$sock" \
             --remote-send \
-                "<Cmd>lua require('core.theme').apply('$theme_name', true)<CR>" \
+                "<Cmd>lua require('theme').apply('$theme_name', true)<CR>" \
             2>/dev/null
     done
 }
