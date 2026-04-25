@@ -470,14 +470,11 @@ Singleton {
                 if (!mango._tagState[output])
                     mango._tagState[output] = {};
 
-                if (clients > 0 || state === 1)
-                    mango._tagState[output][tagNum] = {
-                        clients,
-                        active: state === 1,
-                        urgent: state === 2
-                    };
-                else
-                    delete mango._tagState[output][tagNum];
+                mango._tagState[output][tagNum] = {
+                    clients,
+                    active: state === 1,
+                    urgent: state === 2
+                };
 
                 mango._rebuildWorkspaces();
             }
@@ -494,16 +491,6 @@ Singleton {
                         id: output + ':' + tagNum,
                         index: tagNum,
                         active: tags[tagNum].active,
-                        output
-                    });
-
-                const lastOccupied = sorted.length > 0 ? sorted[sorted.length - 1] : 0;
-                const nextEmpty = lastOccupied + 1;
-                if (nextEmpty <= 9 && (tags[lastOccupied].clients > 0))
-                    workspaces.append({
-                        id: output + ':' + nextEmpty,
-                        index: nextEmpty,
-                        active: false,
                         output
                     });
             }
