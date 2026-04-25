@@ -43,8 +43,11 @@ Variants {
         onShouldShowChanged: if (!shouldShow)
             hideTimer.restart()
 
-        Column {
+        Item {
             id: container
+
+            width: launcher.implicitWidth
+            height: cornerTop.size + panel.height + cornerBottom.size
 
             x: LauncherState.isOpen(launcher.modelData.name) ? 0 : -launcher.implicitWidth
             Behavior on x {
@@ -56,6 +59,7 @@ Variants {
 
             Corner {
                 id: cornerTop
+                anchors.bottom: panel.top
                 side: Corner.Side.BottomLeft
                 color: Colorscheme.current.surface
             }
@@ -65,6 +69,7 @@ Variants {
                 color: Colorscheme.current.surface
                 width: launcher.implicitWidth
                 height: launcher.implicitHeight - cornerTop.size - cornerBottom.size
+                anchors.top: cornerTop.bottom
                 topRightRadius: Config.general.radius
                 bottomRightRadius: Config.general.radius
 
@@ -318,6 +323,7 @@ Variants {
 
             Corner {
                 id: cornerBottom
+                anchors.top: panel.bottom
                 side: Corner.Side.TopLeft
                 color: Colorscheme.current.surface
             }

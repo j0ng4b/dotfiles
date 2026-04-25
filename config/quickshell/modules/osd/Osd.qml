@@ -33,8 +33,11 @@ Variants {
 
         visible: isActiveScreen && (OsdState.visible || container.x < osd.implicitWidth)
 
-        Column {
+        Item {
             id: container
+
+            width: osd.panelWidth
+            height: cornerTop.size + osd.panelHeight + cornerBottom.size
 
             x: OsdState.visible ? 0 : osd.implicitWidth
             Behavior on x {
@@ -47,6 +50,7 @@ Variants {
             Corner {
                 id: cornerTop
                 anchors.right: parent.right
+                anchors.bottom: panel.top
                 side: Corner.Side.BottomRight
                 color: Colorscheme.current.surface
             }
@@ -55,6 +59,8 @@ Variants {
                 id: panel
                 width: osd.panelWidth
                 height: osd.panelHeight
+                anchors.top: cornerTop.bottom
+                anchors.right: parent.right
                 topLeftRadius: Config.general.radius
                 bottomLeftRadius: Config.general.radius
                 color: Colorscheme.current.surface
@@ -115,6 +121,7 @@ Variants {
             Corner {
                 id: cornerBottom
                 anchors.right: parent.right
+                anchors.top: panel.bottom
                 side: Corner.Side.TopRight
                 color: Colorscheme.current.surface
             }
