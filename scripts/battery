@@ -7,7 +7,7 @@ _find_battery() {
 _cmd_status() {
     capacity=$(cat "$battery/capacity")
     status=$(cat "$battery/status" | tr '[:upper:]' '[:lower:]')
-    printf '{"capacity": %s, "status": "%s"}\n' "$capacity" "$status"
+    printf '{"capacity": %s, "state": "%s"}\n' "$capacity" "$status"
 }
 
 _cmd_watch() {

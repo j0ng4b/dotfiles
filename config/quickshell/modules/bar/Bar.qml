@@ -94,23 +94,43 @@ Variants {
                         anchors.centerIn: parent
                     }
 
-                    ColumnLayout {
+                    RowLayout {
                         anchors.right: parent.right
-                        anchors.margins: 5
-                        spacing: 2
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        anchors.rightMargin: 8
+                        spacing: 6
 
-                        Text {
-                            Layout.alignment: Qt.AlignCenter
-                            text: ClockService.time
-                            font.pixelSize: 12
-                            color: Colorscheme.current.on_surface
+                        Battery {
+                            Layout.alignment: Qt.AlignVCenter
                         }
 
-                        Text {
-                            Layout.alignment: Qt.AlignCenter
-                            text: ClockService.date
-                            font.pixelSize: 10
+                        Rectangle {
                             color: Colorscheme.current.on_surface
+                            width: 1
+                            height: 14
+                            opacity: 0.2
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+
+                        ColumnLayout {
+                            spacing: 2
+                            Layout.alignment: Qt.AlignVCenter
+                            Layout.preferredHeight: parent.height
+
+                            Text {
+                                Layout.alignment: Qt.AlignHCenter
+                                text: ClockService.time
+                                font.pixelSize: 11
+                                color: Colorscheme.current.on_surface
+                            }
+
+                            Text {
+                                Layout.alignment: Qt.AlignHCenter
+                                text: ClockService.date
+                                font.pixelSize: 9
+                                color: Colorscheme.current.on_surface
+                            }
                         }
                     }
                 }
