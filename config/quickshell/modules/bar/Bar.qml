@@ -101,7 +101,7 @@ Variants {
                         anchors.rightMargin: 8
                         spacing: 6
 
-                        Battery {
+                        SystemTray {
                             Layout.alignment: Qt.AlignVCenter
                         }
 
