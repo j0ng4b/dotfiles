@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 import qs.config
 import qs.services
 import qs.components
@@ -32,14 +31,15 @@ Item {
 
         Rectangle {
             id: fill
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.margins: 2.5
             radius: 1.5
+            anchors {
+                left: parent.left
+                top: parent.top
+                bottom: parent.bottom
+                margins: 2.5
+            }
 
             width: Math.max(0, (body.width - 5) * (BatteryService.capacity / 100))
-
             color: body.fillColor()
 
             Behavior on width {
@@ -87,9 +87,54 @@ Item {
         height: 8
         radius: 1
         color: body.fillColor()
+    }
 
-        Behavior on color {
-            ColorAnimation { duration: 300 }
+    // Tooltip
+    Item {
+        id: tooltip
+        visible: _hover.containsMouse
+        opacity: visible ? 1 : 0
+
+        z: 100
+        anchors.top: body.bottom
+        anchors.topMargin: 8
+        anchors.horizontalCenter: body.horizontalCenter
+
+        Behavior on opacity { NumberAnimation { duration: 150 } }
+
+        Rectangle {
+            id: triangle
+            width: 8; height: 8
+            color: Colorscheme.current.on_surface
+            rotation: 45
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: -4
         }
+
+        Rectangle {
+            id: labelBox
+            width: _label.implicitWidth + 12
+            height: _label.implicitHeight + 4
+            anchors.top: triangle.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            radius: 4
+            color: Colorscheme.current.on_surface
+
+            Text {
+                id: _label
+                text: BatteryService.capacity + '%'
+                anchors.centerIn: parent
+                font.pixelSize: 10
+                font.bold: true
+                color: Colorscheme.current.surface
+            }
+        }
+    }
+
+    MouseArea {
+        id: _hover
+        anchors.fill: parent
+        hoverEnabled: true
     }
 }

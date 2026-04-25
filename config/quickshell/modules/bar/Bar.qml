@@ -107,9 +107,9 @@ Variants {
 
                         Rectangle {
                             color: Colorscheme.current.on_surface
-                            width: 1
-                            height: 14
                             opacity: 0.2
+                            Layout.preferredWidth: 1
+                            Layout.preferredHeight: 14
                             Layout.alignment: Qt.AlignVCenter
                         }
 
