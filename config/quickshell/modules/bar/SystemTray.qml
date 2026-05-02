@@ -10,7 +10,7 @@ Rectangle {
     implicitHeight: _row.implicitHeight + 8
     implicitWidth: _row.implicitWidth + 16
     radius: 6
-    color: Colorscheme.current.surface_container_high
+    color: Colorscheme.current.surface_container
 
     RowLayout {
         id: _row

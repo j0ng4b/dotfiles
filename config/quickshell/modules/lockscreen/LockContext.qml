@@ -11,7 +11,7 @@ Scope {
     property string currentText: ''
     property string maskedText: '•'.repeat(currentText.length)
 
-    onCurrentTextChanged: showFailure = false
+    onCurrentTextChanged: showFailure = currentText !== '' ? false : showFailure
 
     property bool unlockInProgress: false
     property bool showFailure: false
