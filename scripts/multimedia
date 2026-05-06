@@ -16,6 +16,28 @@ _get_volume_float() {
     _wpctl_volume "$1" | sed -ne 's/.*\([0-9]\.[0-9]\{2\}\).*/\1/p'
 }
 
+_get_sink_name() {
+    name=$(wpctl inspect "$1" 2>/dev/null | sed -n 's/.*node\.nick = "\(.*\)"/\1/p')
+
+    # fallback to node.description
+    if [ -n "$name" ]; then
+        echo "$name"
+    else
+        wpctl inspect "$1" 2>/dev/null \
+            | sed -n 's/.*node\.description = "\(.*\)"/\1/p'
+    fi
+}
+
+_get_sink_type() {
+    name=$(_get_sink_name "$1")
+    case "$name" in
+        *[Hh]eadphone*|*[Hh]eadset*) echo "headphones" ;;
+        *HDMI*|*DisplayPort*)        echo "hdmi"       ;;
+        *[Ss]peaker*|*Built-in*)     echo "speaker"    ;;
+        *)                           echo "unknown"    ;;
+    esac
+}
+
 ##
 ## Status
 ##
@@ -27,6 +49,8 @@ _get_status_with_changed() {
     speaker_mute=0
     _is_muted "@DEFAULT_SINK@" && speaker_mute=1
     speaker_changed='false'
+    speaker_name=$(_get_sink_name "@DEFAULT_SINK@")
+    speaker_type=$(_get_sink_type "@DEFAULT_SINK@")
     [ "$changed" = "speaker" ] && speaker_changed='true'
 
     mic_volume=$(_get_volume_float "@DEFAULT_SOURCE@")
@@ -36,8 +60,8 @@ _get_status_with_changed() {
     [ "$changed" = "mic" ] && mic_changed='true'
 
     printf '{'
-    printf '"speaker": {"volume": %s, "mute": %d, "changed": %s},' \
-        "$speaker_volume" "$speaker_mute" "$speaker_changed"
+    printf '"speaker": {"volume": %s, "mute": %d, "name": "%s", "type": "%s", "changed": %s},' \
+        "$speaker_volume" "$speaker_mute" "$speaker_name" "$speaker_type" "$speaker_changed"
     printf '"microphone": {"volume": %s, "mute": %d, "changed": %s}' \
         "$mic_volume" "$mic_mute" "$mic_changed"
     printf '}\n'
@@ -293,6 +317,8 @@ Commands:
   speaker get                     Show speaker volume and mute state
   speaker set <value>             Set speaker volume [0-100] (e.g. 50, +5, -5)
   speaker mute                    Toggle speaker mute
+  speaker name                    Show name of speaker
+  speaker type                    Show type of speaker
 
   mic get                         Show mic volume and mute state
   mic set <value>                 Set mic volume
@@ -348,6 +374,8 @@ case "$cmd" in
             get)  _volume_get "$target" ;;
             set)  _volume_set "$target" "$3" ;;
             mute) _volume_mute "$target" ;;
+            name) _get_sink_name "$target" ;;
+            type) _get_sink_type "$target" ;;
             *)    error "multimedia: unknown speaker command '$2'"; _usage; exit 1 ;;
         esac
         ;;
