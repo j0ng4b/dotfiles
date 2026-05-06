@@ -10,6 +10,7 @@ Singleton {
 
     property real level: 0.0
     property bool muted: false
+    property string type: "speaker"
 
     signal changed
 
@@ -26,6 +27,15 @@ Singleton {
 
                     root.level = Math.min(parseFloat(speaker.volume), 1.0);
                     root.muted = speaker.mute === 1;
+
+                    switch (speaker.type) {
+                    case "headphones":
+                        root.type = "headphones";
+                        break;
+                    default:
+                        root.type = "speaker";
+                        break;
+                    }
 
                     if (speaker.changed)
                         root.changed();

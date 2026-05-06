@@ -17,12 +17,16 @@ Singleton {
     readonly property string icon: {
         switch (type) {
         case 'volume':
-            if (muted || level === 0)
-                return 'volume_off';
-            if (level < 0.34)
-                return 'volume_down';
+            if (muted)
+                return VolumeService.type == 'speaker' ? 'volume_off' : 'headset_off';
 
-            return 'volume_up';
+            if (level > 0.6)
+                return VolumeService.type == 'speaker' ? 'volume_up' : 'headset_mic';
+
+            if (level > 0.15)
+                return VolumeService.type == 'speaker' ? 'volume_down' : 'headset_mic';
+
+            return VolumeService.type == 'speaker' ? 'volume_mute' : 'headset_mic';
         case 'brightness-screen':
             if (level < 0.34)
                 return 'brightness_low';
