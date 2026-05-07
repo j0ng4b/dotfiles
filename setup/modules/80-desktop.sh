@@ -37,4 +37,7 @@ setup_desktop() {
 
     _run flatpak install -y --noninteractive flathub md.obsidian.Obsidian || \
         _warn "Failed to install Obsidian"
+
+    _run flatpak install -y --noninteractive flathub org.localsend.localsend_app || \
+        _warn "Failed to install LocalSend"
 }
