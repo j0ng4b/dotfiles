@@ -17,6 +17,7 @@ Singleton {
     readonly property alias colors: adapter.colors
     readonly property alias lockscreen: adapter.lockscreen
     readonly property alias launcher: adapter.launcher
+    readonly property alias notifications: adapter.notifications
     readonly property alias osd: adapter.osd
     readonly property alias wallpaper: adapter.wallpaper
     readonly property alias wallpaperGeneratingFg: wallpaperFgGenerator.running
@@ -139,6 +140,29 @@ Singleton {
 
                 // Corner radius of the OSD panel
                 property int radius: 10
+            }
+
+            property JsonObject notifications: JsonObject {
+                // top-left | top-right | bottom-left | bottom-right
+                property string position: 'top-right'
+
+                // How many visible notifications at once
+                property int maxVisible: 3
+
+                // If should ignores app requested expire timeout
+                property bool ignoreAppExpireTimeout: true
+
+                // Default timeout (-1 = never expires, 0 = from app)
+                property int expireTimeout: 3000
+
+                // Margins to screen edges
+                property int margin: 12
+
+                // Gap between notifications
+                property int gap: 8
+
+                // Notification pop-up width
+                property int width: 380
             }
         }
     }

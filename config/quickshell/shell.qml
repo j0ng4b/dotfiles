@@ -5,6 +5,7 @@ import qs.config
 import qs.modules.bar
 import qs.modules.osd
 import qs.modules.launcher
+import qs.modules.notifications
 import qs.modules.wallpaper
 import qs.modules.monitors
 import qs.modules.lockscreen
@@ -14,6 +15,7 @@ ShellRoot {
     Bar {}
     Osd {}
     Launcher {}
+    Notifications {}
     Wallpaper {}
     Monitor {}
     LockScreen {}

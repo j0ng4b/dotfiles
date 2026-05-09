@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 import qs.config
@@ -19,6 +20,10 @@ Variants {
 
         color: 'transparent'
         exclusiveZone: contentHeight
+
+        WlrLayershell.layer: WlrLayer.Top
+        WlrLayershell.namespace: Config.shellName + '-bar'
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
         implicitHeight: container.height
         property int contentHeight: 30
