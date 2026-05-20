@@ -14,9 +14,9 @@ Variants {
         required property var modelData
         screen: modelData
 
+        property int contentHeight: 30
+
         anchors.top: true
-        anchors.left: true
-        anchors.right: true
 
         color: 'transparent'
         exclusiveZone: contentHeight
@@ -25,31 +25,23 @@ Variants {
         WlrLayershell.namespace: Config.shellName + '-bar'
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
-        implicitHeight: container.height
-        property int contentHeight: 30
+        implicitWidth: screen.width
+        implicitHeight: screen.height
 
         mask: Region {
-            Region {
-                item: content
-            }
-
-            Region {
-                item: leftCorner
-            }
-
-            Region {
-                item: rightCorner
-            }
+            item: content
         }
 
-        Column {
+        ColumnLayout {
             id: container
+            spacing: 0
+            anchors.fill: parent
 
             Rectangle {
                 color: Colorscheme.current.surface
 
-                implicitWidth: content.width
-                implicitHeight: content.height
+                Layout.preferredWidth: content.width
+                Layout.preferredHeight: content.height
 
                 Item {
                     id: content
@@ -142,18 +134,36 @@ Variants {
             }
 
             RowLayout {
-                width: content.width
+                Layout.preferredWidth: content.width
 
                 Corner {
-                    id: leftCorner
                     side: Corner.Side.TopLeft
                     color: Colorscheme.current.surface
                     Layout.alignment: Qt.AlignLeft
                 }
 
                 Corner {
-                    id: rightCorner
                     side: Corner.Side.TopRight
+                    color: Colorscheme.current.surface
+                    Layout.alignment: Qt.AlignRight
+                }
+            }
+
+            Item {
+                Layout.fillHeight: true
+            }
+
+            RowLayout {
+                Layout.preferredWidth: content.width
+
+                Corner {
+                    side: Corner.Side.BottomLeft
+                    color: Colorscheme.current.surface
+                    Layout.alignment: Qt.AlignLeft
+                }
+
+                Corner {
+                    side: Corner.Side.BottomRight
                     color: Colorscheme.current.surface
                     Layout.alignment: Qt.AlignRight
                 }
