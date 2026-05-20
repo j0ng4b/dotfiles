@@ -12,6 +12,7 @@ input {
         xkb {
             layout "us,br"
             variant "altgr-intl,"
+            options "grp:lalt_lshift_toggle"
         }
     }
 
