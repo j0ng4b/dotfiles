@@ -1,8 +1,10 @@
+local M = {}
+
 local adapters = {}
+local loaded = {}
 
 local config = function()
     local neotest = require("neotest")
-    local plugins = require("plugins.neotest")
 
     neotest.setup({
         adapters = {},
@@ -26,22 +28,22 @@ local config = function()
 
     -- setup keymaps
     vim.keymap.set({ "n" }, "<Leader>tt", function()
-        plugins.setup_adapter(vim.bo.filetype)
+        M.setup_adapter(vim.bo.filetype)
         neotest.run.run()
     end, { desc = "run nearest test" })
 
     vim.keymap.set({ "n" }, "<Leader>tT", function()
-        plugins.setup_adapter(vim.bo.filetype)
+        M.setup_adapter(vim.bo.filetype)
         neotest.run.run(vim.fn.expand("%"))
     end, { desc = "run tests on current file" })
 
     vim.keymap.set({ "n" }, "<Leader>ts", function()
-        plugins.setup_adapter(vim.bo.filetype)
+        M.setup_adapter(vim.bo.filetype)
         neotest.run.stop()
     end, { desc = "stop running test" })
 
     vim.keymap.set({ "n" }, "<Leader>to", function()
-        plugins.setup_adapter(vim.bo.filetype)
+        M.setup_adapter(vim.bo.filetype)
         neotest.output.open({
             short = true,
             quiet = true,
@@ -50,22 +52,22 @@ local config = function()
     end, { desc = "show test output" })
 
     vim.keymap.set({ "n" }, "<Leader>tv", function()
-        plugins.setup_adapter(vim.bo.filetype)
+        M.setup_adapter(vim.bo.filetype)
         neotest.summary.toggle()
     end, { desc = "toggle test summary window" })
 
     vim.keymap.set({ "n" }, "<Leader>tw", function()
-        plugins.setup_adapter(vim.bo.filetype)
+        M.setup_adapter(vim.bo.filetype)
         neotest.watch.toggle()
     end, { desc = "watch nearest test" })
 
     vim.keymap.set({ "n" }, "<Leader>tW", function()
-        plugins.setup_adapter(vim.bo.filetype)
+        M.setup_adapter(vim.bo.filetype)
         neotest.watch.toggle(vim.fn.expand("%"))
     end, { desc = "watch tests on current file" })
 end
 
-M = {
+M.plugins = {
     {
         "nvim-neotest/neotest",
         dependencies = {
@@ -79,39 +81,46 @@ M = {
     -- Adapters
     {
         "nvim-neotest/neotest-python",
-        dependencies = "nvim-neotest/neotest",
-
+        lazy = true,
         init = function()
-            require("plugins.neotest").add_adapter("python", "neotest-python")
-        end,
-
-        config = function()
-            table.insert(require("neotest.config").adapters, require("neotest-python"))
+            if vim.fn.executable("pytest") == 1 then
+                M.add_adapter("python", "neotest-python")
+            end
         end,
     },
 
     {
         "fredrikaverpil/neotest-golang",
-        dependencies = "nvim-neotest/neotest",
-
+        lazy = true,
         init = function()
-            require("plugins.neotest").add_adapter("go", "neotest-golang")
-        end,
-
-        config = function()
-            table.insert(require("neotest.config").adapters, require("neotest-golang"))
+            if vim.fn.executable("go") == 1 then
+                M.add_adapter("go", "neotest-golang")
+            end
         end,
     },
 }
 
-M.add_adapter = function(filetype, adapter)
-    adapters[filetype] = adapter
+M.add_adapter = function(filetype, module)
+    adapters[filetype] = module
 end
 
 M.setup_adapter = function(filetype)
-    if adapters[filetype] and not package.loaded[adapters[filetype]] then
-        require(adapters[filetype])
+    if loaded[filetype] then
+        return
     end
+
+    local module = adapters[filetype]
+    if not module then
+        return
+    end
+
+    local ok, adapter = pcall(require, module)
+    if not ok then
+        return
+    end
+
+    table.insert(require("neotest.config").adapters, adapter)
+    loaded[filetype] = true
 end
 
-return M
+return M.plugins
