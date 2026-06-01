@@ -24,6 +24,7 @@ Singleton {
 
         onNotification: notif => {
             notif.tracked = true;
+            console.log(JSON.stringify(notif))
             root._pushNotif(notif);
         }
     }

@@ -46,12 +46,15 @@ Item {
         if (root._dismissing)
             return;
 
+        console.log('time after', Date.now() - root._startedAt)
         root._dismissing = true;
         expireTimer.stop();
         dismissAnim.start();
     }
 
     function _startTimer() {
+        console.log('expireTimeout', root._effectiveTimeout)
+        console.log('elapsed', root._elapsed)
         if (root._effectiveTimeout <= 0 || root._dismissing)
             return;
 

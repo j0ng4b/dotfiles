@@ -138,6 +138,13 @@ local server_configs = {
             },
         }
     end,
+
+    qmlls = function()
+        return {
+            filetypes = { "qml", "qmljs" },
+            cmd = { "/usr/lib/qt6/bin/qmlls" },
+        }
+    end,
 }
 
 --------------------
