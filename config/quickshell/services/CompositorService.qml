@@ -412,130 +412,186 @@ Singleton {
 
         function _init() {
             _eventListener.running = true;
-            _outputFetcher.running = true;
         }
 
         // API
         function focusOutput(name) {
-            // Not working:
-            // Quickshell.execDetached(['mmsg', '-s', '-o', name]);
-            Quickshell.execDetached(['mmsg', '-s', 'focusmon,' + name]);
+            Quickshell.execDetached(['mmsg', 'dispatch', 'focusmon,' + name]);
         }
 
         function focusWorkspace(index) {
-            Quickshell.execDetached(['mmsg', '-s', '-t', String(index)]);
+            Quickshell.execDetached(['mmsg', 'dispatch', 'view,' + String(index)]);
         }
 
         function refreshOutputs() {
-            _outputFetcher.running = true;
+            _eventListener.running = false;
+            _eventListener.running = true;
         }
 
-        function applySettings(_) {
-            applyError = 'Output configuration not supported via mmsg. Use wlr-randr.';
+        // Mango does not expose position, scale, or transform settings through
+        // the mmsg IPC. Runtime monitor configuration is handled through
+        // wlr-randr instead.
+        //
+        // See:
+        // https://mangowm.github.io/docs/configuration/monitors
+        //
+        // NOTE: Mode changes (resolution) are not applied here because Mango
+        // does not expose the list of available display modes via IPC. Only the
+        // synthesized current resolution from _parseMonitors is available.
+        // Position, scale, and transform changes are supported normally.
+        function applySettings(outputsSettings) {
+            if (applying)
+                return;
+            applyError = '';
+
+            const cmds = [];
+            for (const name in outputsSettings) {
+                const settings = outputsSettings[name];
+                if (!settings.dirty)
+                    continue;
+
+                const cmd = ['wlr-randr', '--output', name];
+                if (settings.scale)
+                    cmd.push('--scale', String(settings.scale));
+                if (settings.transform)
+                    cmd.push('--transform', settings.transform);
+                cmd.push('--pos', Math.round(settings.x) + ',' + Math.round(settings.y));
+                cmds.push(cmd);
+            }
+
+            if (cmds.length === 0)
+                return;
+
+            applying = true;
+            _queue = cmds;
+            _queueIdx = 0;
+            _runNext();
         }
 
-        // Internal state
-        // _tagState[outputName][tagIndex] = { clients, active, urgent }
-        property var _tagState: ({})
+        // Internals
+        property var _queue: []
+        property int _queueIdx: 0
+
+        function _runNext() {
+            if (_queueIdx >= _queue.length) {
+                applying = false;
+                _queueIdx = 0;
+                _queue = [];
+                mango.refreshOutputs();
+                return;
+            }
+
+            _applyRunner.command = _queue[_queueIdx];
+            _applyRunner.running = true;
+        }
+
+        property Process _applyRunner: Process {
+            running: false
+            stderr: StdioCollector {
+                onStreamFinished: {
+                    const err = this.text.trim();
+                    if (err)
+                        mango.applyError = err;
+                }
+            }
+            onExited: code => {
+                if (code !== 0) {
+                    mango.applying = false;
+                    mango._queueIdx = 0;
+                    mango._queue = [];
+                } else {
+                    mango._queueIdx++;
+                    mango._runNext();
+                }
+            }
+        }
 
         property Process _eventListener: Process {
             running: false
-            command: ['mmsg', '-w', '-o', '-t']
+            command: ['mmsg', 'watch', 'all-monitors']
             stdout: SplitParser {
-                onRead: data => mango._parseLine(data.trim())
+                onRead: data => mango._parseMonitors(data.trim())
             }
         }
 
-        function _parseLine(line) {
-            if (!line)
-                return;
+        function _parseMonitors(json) {
+            try {
+                const raw = JSON.parse(json);
+                const monitors = raw.monitors || [];
+                const outputResult = [];
+                const workspaceResult = [];
 
-            // "<output> selmon <0|1>"
-            const selmon = /^(\S+)\s+selmon\s+([01])$/.exec(line);
-            if (selmon) {
-                if (selmon[2] === '1')
-                    mango.focusedOutput = selmon[1];
-                return;
-            }
+                for (const monitor of monitors) {
+                    if (monitor.active)
+                        mango.focusedOutput = monitor.name;
 
-            // "<output> tag <N> <state> <clients> <focused_client>"
-            //   state: 0=none  1=active  2=urgent
-            const tag = /^(\S+)\s+tag\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/.exec(line);
-            if (tag) {
-                const output = tag[1];
-                const tagNum = parseInt(tag[2]);
-                const state = parseInt(tag[3]);
-                const clients = parseInt(tag[4]);
+                    // Mango does not enumerate display modes via IPC. Instead,
+                    // a single "current mode" is derived from the reported
+                    // resolution using the same format produced by NiriAdapter.
+                    //
+                    // The refresh rate remains unknown (0), as the watch output
+                    // does not report Hz information.
+                    const width = monitor.width ?? 0;
+                    const height = monitor.height ?? 0;
+                    const mode = {
+                        width,
+                        height,
+                        refreshRate: 0,
+                        label: width + 'x' + height + '@0.000',
+                        isPreferred: true
+                    };
 
-                if (!mango._tagState[output])
-                    mango._tagState[output] = {};
-
-                mango._tagState[output][tagNum] = {
-                    clients,
-                    active: state === 1,
-                    urgent: state === 2
-                };
-
-                mango._rebuildWorkspaces();
-            }
-        }
-
-        function _rebuildWorkspaces() {
-            workspaces.clear();
-            for (const output in mango._tagState) {
-                const tags = mango._tagState[output];
-                const sorted = Object.keys(tags).map(Number).sort((a, b) => a - b);
-
-                for (const tagNum of sorted)
-                    workspaces.append({
-                        id: output + ':' + tagNum,
-                        index: tagNum,
-                        active: tags[tagNum].active,
-                        output
+                    outputResult.push({
+                        name: monitor.name,
+                        make: '',
+                        model: '',
+                        serial: '',
+                        focused: monitor.active || false,
+                        x: monitor.x ?? 0,
+                        y: monitor.y ?? 0,
+                        width,
+                        height,
+                        scale: monitor.scale ?? 1.0,
+                        transform: 'normal',
+                        disabled: false,
+                        vrrSupported: false,
+                        vrrEnabled: false,
+                        currentMode: mode,
+                        modes: [mode]
                     });
-            }
 
-            mango.workspacesUpdated();
-        }
+                    for (const tag of (monitor.tags || []))
+                        workspaceResult.push({
+                            id: monitor.name + ':' + tag.index,
+                            index: tag.index,
+                            active: tag.is_active || false,
+                            output: monitor.name
+                        });
+                }
 
-        property Process _outputFetcher: Process {
-            running: false
-            command: ['mmsg', '-O']
-            stdout: StdioCollector {
-                onStreamFinished: mango._parseOutputs(this.text.trim())
-            }
-        }
-
-        function _parseOutputs(text) {
-            const result = [];
-
-            for (const line of text.split('\n')) {
-                const name = line.trim();
-                if (!name)
-                    continue;
-
-                result.push({
-                    name,
-                    make: '',
-                    model: '',
-                    serial: '',
-                    focused: name === mango.focusedOutput,
-                    x: 0,
-                    y: 0,
-                    width: 0,
-                    height: 0,
-                    scale: 1.0,
-                    transform: 'normal',
-                    disabled: false,
-                    vrrSupported: false,
-                    vrrEnabled: false,
-                    currentMode: null,
-                    modes: []
+                outputResult.sort((a, b) => {
+                    if (a.focused !== b.focused)
+                        return a.focused ? -1 : 1;
+                    return a.name.localeCompare(b.name);
                 });
-            }
 
-            mango.outputs = result;
-            mango.outputsUpdated();
+                workspaceResult.sort((a, b) => {
+                    if (a.output !== b.output)
+                        return a.output.localeCompare(b.output);
+                    return parseInt(a.index) - parseInt(b.index);
+                });
+
+                mango.outputs = outputResult;
+                mango.outputsUpdated();
+
+                workspaces.clear();
+                for (const workspace of workspaceResult)
+                    workspaces.append(workspace);
+
+                mango.workspacesUpdated();
+            } catch (e) {
+                console.warn('MangoAdapter: parse monitors failed:', e);
+            }
         }
     }
 }
