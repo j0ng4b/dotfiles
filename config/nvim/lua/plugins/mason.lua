@@ -4,16 +4,30 @@ local config = function()
         ensure_installed = {
             -- Language servers
             "css-lsp",
+            "html-lsp",
             "tailwindcss-language-server",
             "typescript-language-server",
             "vue-language-server",
+            "emmet-language-server",
 
             "clangd",
             "jdtls",
-            "omnisharp",
             "pyright",
-            "qmlls",
             "lua-language-server",
+
+            {
+                "omnisharp",
+                condition = function()
+                    return vim.fn.executable("dotnet") == 1
+                end,
+            },
+
+            {
+                "qmlls",
+                condition = function()
+                    return vim.fn.executable("quickshell") == 1
+                end,
+            },
 
             {
                 "gopls",
