@@ -13,7 +13,10 @@ local get_capabilities = function()
         capabilities = cmp.default_capabilities(capabilities)
     end
 
-    capabilities.textDocument.colorProvider = { dynamicRegistration = true }
+    -- Prevent dynamic documentColor registration.
+    -- Color rendering is handled explicitly in on_attach.
+    capabilities.textDocument.colorProvider = { dynamicRegistration = false }
+
     capabilities.textDocument.foldingRange = {
         dynamicRegistration = false,
         lineFoldingOnly = true,
@@ -22,8 +25,8 @@ local get_capabilities = function()
     return capabilities
 end
 
-local function with_cap(client, cap, fn)
-    if client.server_capabilities[cap] then
+local function with_cap(client, method, fn)
+    if client:supports_method(method) then
         fn()
     end
 end
@@ -52,60 +55,27 @@ end
 --- Server configs
 --------------------
 local server_configs = {
-    omnisharp = function()
-        local omnisharp_root = vim.fn.stdpath("data") .. "/mason/packages/omnisharp/OmniSharp"
-        return {
-            cmd = { omnisharp_root },
-        }
-    end,
-
-    gopls = function()
+    cssls = function(_)
         return {
             settings = {
-                gopls = {
-                    semanticTokens = true,
-                    usePlaceholders = true,
-                    hints = {
-                        constantValues = true,
-                        rangeVariableTypes = true,
-                        assignVariableTypes = true,
-                        compositeLiteralTypes = true,
-                        compositeLiteralFields = true,
-                    },
+                css = {
+                    validate = true,
+                    lint = { unknownAtRules = "ignore" },
                 },
+
+                scss = {
+                    validate = true,
+                    lint = { unknownAtRules = "ignore" },
+                },
+
+                less = { validate = true },
             },
         }
     end,
 
-    lua_ls = function()
-        return {
-            settings = {
-                Lua = {
-                    diagnostics = {
-                        globals = { "vim", "love" },
-                    },
-                    hint = {
-                        enable = true,
-                        setType = true,
-                        arrayIndex = "Disable",
-                    },
-                    semantic = {
-                        enable = true,
-                        keyword = true,
-                    },
-                    workspace = {
-                        useThirdParty = { os.getenv("HOME") .. "/.local/share/LuaAddons" },
-                        checkThirdParty = "Apply",
-                    },
-                    telemetry = {
-                        enable = false,
-                    },
-                },
-            },
-        }
-    end,
-
-    ts_ls = function()
+    ts_ls = function(_)
+        -- Vue.js setup tutorial:
+        -- https://github.com/vuejs/language-tools/discussions/5931#discussion-9320143
         local vue_typescript_plugin = vim.fn.expand(
             vim.fn.stdpath("data") .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
         )
@@ -123,8 +93,8 @@ local server_configs = {
 
             filetypes = {
                 "javascript",
-                "typescript",
                 "javascriptreact",
+                "typescript",
                 "typescriptreact",
                 "vue",
             },
@@ -139,10 +109,86 @@ local server_configs = {
         }
     end,
 
-    qmlls = function()
+    tailwindcss = function(resolved)
+        local filetypes = vim.deepcopy(resolved.filetypes or {})
+        vim.list_extend(filetypes, { "jinja", "jinja2" })
+
         return {
-            filetypes = { "qml", "qmljs" },
-            cmd = { "/usr/lib/qt6/bin/qmlls" },
+            filetypes = filetypes,
+            settings = {
+                tailwindCSS = {
+                    emmetCompletions = true,
+                    classFunctions = { "clsx", "cn", "tw\\.[a-z-]+" },
+                    includeLanguages = {
+                        jinja = "html",
+                        jinja2 = "html",
+                    },
+                },
+            },
+        }
+    end,
+
+    emmet_language_server = function(resolved)
+        local filetypes = vim.deepcopy(resolved.filetypes or {})
+        vim.list_extend(filetypes, { "jinja", "jinja2" })
+        return { filetypes = filetypes }
+    end,
+
+    omnisharp = function(_)
+        local omnisharp_root = vim.fn.stdpath("data") .. "/mason/packages/omnisharp/OmniSharp"
+        return {
+            cmd = { omnisharp_root },
+        }
+    end,
+
+    gopls = function(_)
+        return {
+            settings = {
+                gopls = {
+                    semanticTokens = true,
+                    usePlaceholders = true,
+
+                    hints = {
+                        constantValues = true,
+                        rangeVariableTypes = true,
+                        assignVariableTypes = true,
+                        compositeLiteralTypes = true,
+                        compositeLiteralFields = true,
+                    },
+                },
+            },
+        }
+    end,
+
+    lua_ls = function(_)
+        return {
+            settings = {
+                Lua = {
+                    diagnostics = {
+                        globals = { "vim", "love" },
+                    },
+
+                    hint = {
+                        enable = true,
+                        setType = true,
+                        arrayIndex = "Disable",
+                    },
+
+                    semantic = {
+                        enable = true,
+                        keyword = true,
+                    },
+
+                    workspace = {
+                        useThirdParty = { os.getenv("HOME") .. "/.local/share/LuaAddons" },
+                        checkThirdParty = "Apply",
+                    },
+
+                    telemetry = {
+                        enable = false,
+                    },
+                },
+            },
         }
     end,
 }
@@ -152,10 +198,15 @@ local server_configs = {
 --------------------
 local extensions = {
     function(client, bufnr)
-        with_cap(client, "documentSymbolProvider", function()
+        with_cap(client, "textDocument/documentSymbol", function()
             local navic = utils.safe_require("nvim-navic")
             if navic then
-                navic.attach(client, bufnr)
+                -- Prevents navic to attach to ts_ls and vue_ls at same time.
+                -- Also prefer attach to vue_ls over ts_ls for Vue buffers.
+                local ft = vim.bo[bufnr].filetype
+                if not (ft == "vue" and client.name == "ts_ls") then
+                    navic.attach(client, bufnr)
+                end
             end
         end)
     end,
@@ -214,13 +265,13 @@ local create_attach = function()
     return function(client, bufnr)
         setup_keymaps(bufnr)
 
-        with_cap(client, "documentFormattingProvider", function()
+        with_cap(client, "textDocument/formatting", function()
             vim.keymap.set("n", "gF", function()
                 vim.lsp.buf.format({ async = true })
             end, { buffer = bufnr })
         end)
 
-        with_cap(client, "documentHighlightProvider", function()
+        with_cap(client, "textDocument/documentHighlight", function()
             local group = auto.buf_group("LspDocumentHighlight_", bufnr)
 
             auto.cmd({ "CursorHold", "CursorHoldI" }, nil, vim.lsp.buf.document_highlight, {
@@ -234,7 +285,7 @@ local create_attach = function()
             })
         end)
 
-        with_cap(client, "inlayHintProvider", function()
+        with_cap(client, "textDocument/inlayHint", function()
             vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
             local group = auto.buf_group("LspInlayHints_", bufnr)
 
@@ -247,6 +298,11 @@ local create_attach = function()
             auto.cmd("InsertLeave", nil, function()
                 vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
             end, { group = group, buffer = bufnr })
+        end)
+
+        with_cap(client, "textDocument/documentColor", function()
+            -- nvim-highlight-colors will handle rendering of colors
+            vim.lsp.document_color.enable(false, { bufnr = bufnr })
         end)
 
         for _, ext in ipairs(extensions) do
@@ -275,12 +331,25 @@ return {
 
         -- Configure and enable servers
         for _, server in ipairs(servers) do
+            local resolved = vim.lsp.config[server] or {}
+            local srv_config = server_configs[server] and server_configs[server](resolved) or {}
+
+            -- Chain existing on_attach from lspconfig defaults (e.g. ts_ls registers user commands)
+            local existing_attach = resolved and resolved.on_attach
+
+            local final_attach = existing_attach
+                    and function(client, bufnr)
+                        existing_attach(client, bufnr)
+                        attach(client, bufnr)
+                    end
+                or attach
+
             vim.lsp.config(
                 server,
-                vim.tbl_deep_extend("force", {
+                vim.tbl_deep_extend("force", srv_config, {
                     capabilities = capabilities,
-                    on_attach = attach,
-                }, server_configs[server] and server_configs[server]() or {})
+                    on_attach = final_attach,
+                })
             )
         end
         vim.lsp.enable(servers)
