@@ -1,3 +1,10 @@
+local set_cursor_visible = function(visible)
+    local blend = visible and 0 or 100
+
+    vim.cmd(string.format("highlight! Cursor blend=%d cterm=reverse gui=reverse", blend))
+    vim.cmd(string.format("highlight! SmearCursorHideable blend=%d cterm=reverse gui=reverse", blend))
+end
+
 local config = function()
     local icons = require("core.utils.icons")
     require("neo-tree").setup({
@@ -5,9 +12,9 @@ local config = function()
 
         sources = {
             "filesystem",
-            "buffers",
-            "git_status",
-            "document_symbols",
+            -- "buffers",
+            -- "git_status",
+            -- "document_symbols",
         },
 
         window = {
@@ -113,32 +120,17 @@ local config = function()
 
         event_handlers = {
             {
-                event = "neo_tree_buffer_enter",
+                event = "neo_tree_popup_input_ready",
                 handler = function()
-                    -- Workaround for error when re-enter neotree buffer after a
-                    -- pop-up leave
-                    vim.keymap.set({ "i" }, "<Left>", "<Nop>")
-                    vim.keymap.set({ "i" }, "<Right>", "<Nop>")
+                    -- On NeoTree buffers movement with left and right arrows
+                    -- are needed to move on pop-up.
+                    pcall(vim.keymap.del, { "i" }, "<Left>")
+                    pcall(vim.keymap.del, { "i" }, "<Right>")
 
-                    -- On NeoTree buffers movement with left and right arrows are
-                    -- needed to move on pop-up
-                    vim.keymap.del({ "i" }, "<Left>")
-                    vim.keymap.del({ "i" }, "<Right>")
-
-                    vim.cmd("highlight! Cursor blend=100")
-                    vim.cmd("highlight! SmearCursorHideable blend=100") -- Compatibility with smear-cursor
+                    set_cursor_visible(true)
                 end,
             },
 
-            {
-                event = "neo_tree_buffer_leave",
-                handler = function()
-                    vim.cmd("highlight! Cursor blend=0 cterm=reverse gui=reverse")
-                    vim.cmd("highlight! SmearCursorHideable blend=0 cterm=reverse gui=reverse") -- Compatibility with smear-cursor
-                end,
-            },
-
-            -- Equalize windows sizes when open or close
             {
                 event = "neo_tree_window_after_open",
                 handler = function(args)
@@ -175,6 +167,24 @@ local config = function()
                 ignore_case = true,
             },
         },
+    })
+
+    vim.api.nvim_create_autocmd("BufEnter", {
+        pattern = "*",
+        callback = function()
+            if vim.bo.filetype == "neo-tree" then
+                set_cursor_visible(false)
+            end
+        end,
+    })
+
+    vim.api.nvim_create_autocmd("BufLeave", {
+        pattern = "*",
+        callback = function()
+            if vim.bo.filetype == "neo-tree" then
+                set_cursor_visible(true)
+            end
+        end,
     })
 
     local command = require("neo-tree.command")
