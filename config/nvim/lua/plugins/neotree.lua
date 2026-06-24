@@ -12,9 +12,6 @@ local config = function()
 
         sources = {
             "filesystem",
-            -- "buffers",
-            -- "git_status",
-            -- "document_symbols",
         },
 
         window = {
@@ -23,14 +20,6 @@ local config = function()
             mappings = {
                 ["e"] = function()
                     vim.api.nvim_exec("Neotree focus filesystem left", true)
-                end,
-
-                ["b"] = function()
-                    vim.api.nvim_exec("Neotree focus buffers left", true)
-                end,
-
-                ["g"] = function()
-                    vim.api.nvim_exec("Neotree focus git_status left", true)
                 end,
             },
         },
@@ -99,21 +88,6 @@ local config = function()
                 {
                     source = "filesystem",
                     display_name = "󰉓 Files",
-                },
-
-                {
-                    source = "buffers",
-                    display_name = "󰈚 Buffer",
-                },
-
-                {
-                    source = "git_status",
-                    display_name = "󰊢 Git",
-                },
-
-                {
-                    source = "document_symbols",
-                    display_name = " Symbols",
                 },
             },
         },
