@@ -55,47 +55,42 @@ setopt SH_WORD_SPLIT
 ## Binds
 bindkey -v
 
-# Enable history substring search
-#
-# NOTE: to enable for ↑ and ↓ this must be set after zsh-autocomplete see their
-# post configuration on ./plugins.conf.d/post/zsh-autocomplete.conf.zsh
-
-
 ## Plugins
-plugins="$(ls -d $ZDATADIR/plugins/*)"
-
-for plugin in $plugins; do
-    # Remove trailing slash if any
-    plugin=${plugin%/}
-
-    plugin_name="$(basename $plugin | cut -d'-' -f2-)"
-    plugin_path="$plugin/$plugin_name.plugin.zsh"
-
-    if [ ! -e "$plugin_path" ]; then
-        continue
-    fi
+# The (N-/on) modifier ensures it only matches directories (/),
+# fails silently if empty (N), and explicitly orders by name (on)
+for plugin_dir in $ZDATADIR/plugins/*(N-/on); do
+    dir_name=${plugin_dir:t}
+    plugin_name=${dir_name#*-}
 
     plugin_pre_conf="$ZDOTDIR/plugins.conf.d/pre/$plugin_name.conf.zsh"
     plugin_post_conf="$ZDOTDIR/plugins.conf.d/post/$plugin_name.conf.zsh"
 
-    if [ -f $plugin_path ]; then
-        # load plugin pre configuration
-        if [ -f $plugin_pre_conf ]; then
-            source "$plugin_pre_conf"
-        fi
+    plugin_path=( "$plugin_dir"/($plugin_name.plugin.zsh|init.zsh|$plugin_name.zsh)(N-.) )
+    plugin_path=$plugin_path[1]
 
-        # load plugin
-        source "$plugin_path"
+    if [[ -z "$plugin_path" ]]; then
+        echo "failed to load plugin: no entry file found in '$plugin_dir'"
+        continue
+    fi
 
-        # load plugin post configuration
-        if [ -f $plugin_post_conf ]; then
-            source "$plugin_post_conf"
-        fi
-    else
-        echo "failed to load plugin: can't find '$plugin_path'"
+    # Load plugin pre-configuration
+    if [[ -f "$plugin_pre_conf" ]]; then
+        source "$plugin_pre_conf"
+    fi
+
+    # Automatic zcompile: if the .zwc file is missing or older than the .zsh file, recompile it
+    if [[ ! -f "${plugin_path}.zwc" || "$plugin_path" -nt "${plugin_path}.zwc" ]]; then
+        zcompile "$plugin_path"
+    fi
+
+    # Load the actual plugin
+    source "$plugin_path"
+
+    # Load plugin post-configuration
+    if [[ -f "$plugin_post_conf" ]]; then
+        source "$plugin_post_conf"
     fi
 done
-
 
 # Prompt reload on SIGUSR1
 TRAPUSR1() {
