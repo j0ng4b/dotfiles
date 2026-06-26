@@ -31,22 +31,52 @@ local function with_cap(client, method, fn)
     end
 end
 
-local telescope
-local function get_telescope()
-    if telescope == nil then
-        local ok, tb = pcall(require, "telescope.builtin")
-        telescope = ok and tb or false
+local fzf_aliases = {
+    lsp_type_definitions = "lsp_typedefs",
+}
+
+local lsp_builtins = {
+    lsp_declarations = vim.lsp.buf.declaration,
+    lsp_definitions = vim.lsp.buf.definition,
+    lsp_implementations = vim.lsp.buf.implementation,
+    lsp_type_definitions = vim.lsp.buf.type_definition,
+    lsp_references = vim.lsp.buf.references,
+}
+
+local picker
+local function get_picker()
+    if picker then
+        return picker
     end
-    return telescope
+
+    local ok, mod = pcall(require, "fzf-lua")
+    if ok then
+        picker = { type = "fzf", mod = mod }
+        return picker
+    end
+
+    ok, mod = pcall(require, "telescope.builtin")
+    if ok then
+        picker = { type = "telescope", mod = mod }
+        return picker
+    end
+
+    picker = { type = "builtin" }
+    return picker
 end
 
-local function telescope_or(fallback, picker)
+local function picker_for(method)
     return function()
-        local tb = get_telescope()
-        if tb then
-            tb[picker]({ trim_text = true, reuse_win = true })
+        local p = get_picker()
+        if p.type == "fzf" then
+            p.mod[fzf_aliases[method] or method]()
+        elseif p.type == "telescope" then
+            p.mod[method]({ trim_text = true, reuse_win = true })
         else
-            fallback()
+            local fn = lsp_builtins[method]
+            if fn then
+                fn()
+            end
         end
     end
 end
@@ -74,8 +104,11 @@ local server_configs = {
     end,
 
     ts_ls = function(_)
-        -- Vue.js setup tutorial:
-        -- https://github.com/vuejs/language-tools/discussions/5931#discussion-9320143
+        -- Vue.js setup
+        --
+        -- See:
+        --   https://github.com/vuejs/language-tools/wiki/Neovim
+        --   https://github.com/vuejs/language-tools/discussions/5931#discussion-9320143
         local vue_typescript_plugin = vim.fn.expand(
             vim.fn.stdpath("data") .. "/mason/packages/vue-language-server/node_modules/@vue/language-server"
         )
@@ -219,11 +252,11 @@ local setup_keymaps = function(bufnr)
     local opts = { buffer = bufnr }
 
     vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-    vim.keymap.set("n", "gd", telescope_or(vim.lsp.buf.definition, "lsp_definitions"), opts)
-    vim.keymap.set("n", "gi", telescope_or(vim.lsp.buf.implementation, "lsp_implementations"), opts)
-    vim.keymap.set("n", "gt", telescope_or(vim.lsp.buf.type_definition, "lsp_type_definitions"), opts)
-    vim.keymap.set("n", "gr", telescope_or(vim.lsp.buf.references, "lsp_references"), opts)
+    vim.keymap.set("n", "gD", picker_for("lsp_declarations"), opts)
+    vim.keymap.set("n", "gd", picker_for("lsp_definitions"), opts)
+    vim.keymap.set("n", "gi", picker_for("lsp_implementations"), opts)
+    vim.keymap.set("n", "gt", picker_for("lsp_type_definitions"), opts)
+    vim.keymap.set("n", "gr", picker_for("lsp_references"), opts)
 
     -- Rename
     vim.keymap.set("n", "gR", vim.lsp.buf.rename, opts)
