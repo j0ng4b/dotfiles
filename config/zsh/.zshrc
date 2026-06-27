@@ -79,9 +79,15 @@ for plugin_dir in $ZDATADIR/plugins/*(N-/on); do
         continue
     fi
 
+    SKIP_PLUGIN=0
+
     # Load plugin pre-configuration
     if [[ -f "$plugin_pre_conf" ]]; then
         source "$plugin_pre_conf"
+    fi
+
+    if (( SKIP_PLUGIN )); then
+        continue
     fi
 
     # Automatic zcompile: if the .zwc file is missing or older than the .zsh file, recompile it

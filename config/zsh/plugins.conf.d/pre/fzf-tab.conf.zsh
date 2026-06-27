@@ -1,3 +1,8 @@
+if ! command -v fzf >/dev/null 2>&1; then
+    SKIP_PLUGIN=1
+    return 0
+fi
+
 # Group completion descriptions
 zstyle ':completion:*:descriptions' format '[%d]'
 
