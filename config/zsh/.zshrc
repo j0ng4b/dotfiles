@@ -60,6 +60,12 @@ bindkey -v
 # fails silently if empty (N), and explicitly orders by name (on)
 for plugin_dir in $ZDATADIR/plugins/*(N-/on); do
     dir_name=${plugin_dir:t}
+
+    # Ignore directories starting with '_' (data-only plugins or disabled)
+    if [[ "$dir_name" == _* ]]; then
+        continue
+    fi
+
     plugin_name=${dir_name#*-}
 
     plugin_pre_conf="$ZDOTDIR/plugins.conf.d/pre/$plugin_name.conf.zsh"

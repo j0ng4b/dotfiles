@@ -28,3 +28,12 @@
     url = https://github.com/MichaelAquilina/zsh-you-should-use.git
     shallow = true
 
+[submodule "zsh/fzf-tab"]
+	path = data/zsh/plugins/00-fzf-tab
+	url = https://github.com/Aloxaf/fzf-tab.git
+    shallow = true
+
+[submodule "zsh/_zsh-completions"]
+	path = data/zsh/plugins/_zsh-completions
+	url = https://github.com/zsh-users/zsh-completions.git
+    shallow = true

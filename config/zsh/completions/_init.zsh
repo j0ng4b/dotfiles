@@ -1,6 +1,8 @@
 # Create completion cache directory
 mkdir -p $XDG_CACHE_HOME/zsh/
 
+fpath=("$ZDATADIR/plugins/_zsh-completions/src" $fpath)
+
 _complete_alias() {
     [[ -n $PREFIX  ]] && compadd -- ${(M)${(k)galiases}:#$PREFIX*}
     return 1
