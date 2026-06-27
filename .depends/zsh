@@ -4,4 +4,5 @@ req_cmd starship "prompt customization" &&
 
 opt_cmd eza "better ls"
 opt_cmd bat "better cat"
+opt_cmd fzf "fuzzy finder for better tab, better everything"
 
