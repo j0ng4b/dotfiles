@@ -1,3 +1,10 @@
+// NOTE:
+// To enable proper code completion and diagnostics with qmlls (QML Language Server),
+// create a `.qmlls.ini` file in the root directory of your Quickshell configuration.
+// Quickshell will automatically detect this file and populate it with the required
+// LSP configuration. Since the generated configuration is system-dependent, it
+// should be added to `.gitignore`.
+import QtQml
 import Quickshell
 import Quickshell.Io
 
