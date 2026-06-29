@@ -333,11 +333,6 @@ local create_attach = function()
             end, { group = group, buffer = bufnr })
         end)
 
-        with_cap(client, "textDocument/documentColor", function()
-            -- nvim-highlight-colors will handle rendering of colors
-            vim.lsp.document_color.enable(false, { bufnr = bufnr })
-        end)
-
         for _, ext in ipairs(extensions) do
             ext(client, bufnr)
         end
