@@ -34,20 +34,54 @@ local function invert_hl(hl)
 end
 
 local hl_cache = {}
-local function badge_hl(src_group)
-    local group = "CmpColorBadge_" .. src_group
+local function badge_hl_from_hex(hex)
+    local group = "CmpColorBadge" .. hex:sub(2)
     if hl_cache[group] then
         return hl_cache[group]
     end
 
-    local hl = resolve_hl(src_group)
-    if not hl.fg then
+    local r, g, b = hex_to_rgb(hex)
+    if not r then
         return nil
     end
 
-    vim.api.nvim_set_hl(0, group, invert_hl(hl))
+    local bg = r * 0x10000 + g * 0x100 + b
+    vim.api.nvim_set_hl(0, group, { bg = bg, fg = contrast_fg(bg) })
     hl_cache[group] = group
     return group
+end
+
+local function get_color_hex(entry)
+    local item = entry:get_completion_item()
+
+    -- LSP Color kind (kind = 16)
+    if item.kind == 16 then
+        local doc = item.documentation
+
+        if type(doc) == "table" then
+            doc = doc.value
+        end
+
+        if type(doc) == "string" then
+            local hex = doc:match("#[0-9a-fA-F][0-9a-fA-F]+")
+            if hex then
+                return hex
+            end
+        end
+
+        local detail = item.detail or ""
+        local hex = detail:match("#[0-9a-fA-F][0-9a-fA-F]+")
+        if hex then
+            return hex
+        end
+    end
+
+    local label = item.label or ""
+    if label:match("^#[0-9a-fA-F][0-9a-fA-F]+$") then
+        return label
+    end
+
+    return nil
 end
 
 local function setup_kind_highlights()
@@ -123,7 +157,6 @@ local config = function()
     local utils = require("core.utils")
     local icons = require("core.utils.icons")
     local cmp = require("cmp")
-    local hl_colors = utils.safe_require("nvim-highlight-colors")
 
     cmp.setup({
         snippet = {
@@ -189,6 +222,10 @@ local config = function()
                 col_offset = -3,
                 side_padding = 0,
             },
+
+            documentation = {
+                border = "rounded",
+            },
         },
 
         view = {
@@ -205,12 +242,12 @@ local config = function()
         formatting = {
             fields = { "kind", "abbr", "menu" },
             format = function(entry, item)
-                local color_item = hl_colors and hl_colors.format(entry, { kind = item.kind })
-                if color_item and color_item.abbr_hl_group then
-                    item.kind_hl_group = badge_hl(color_item.abbr_hl_group)
+                local hex = get_color_hex(entry)
+                if hex then
+                    item.kind_hl_group = badge_hl_from_hex(hex)
                 end
 
-                item.menu = " · " .. entry_label(entry)
+                item.menu = "    " .. entry_label(entry)
                 item.kind = " " .. (icons.kinds[item.kind] or "") .. " "
 
                 return item

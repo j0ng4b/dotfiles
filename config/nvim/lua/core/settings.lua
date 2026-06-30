@@ -108,8 +108,8 @@ set.relativenumber = true
 
 -- Pop-up
 set.pumblend = 25
-set.pumheight = 10
-set.pumwidth = 35
+set.pumheight = 20
+set.pumwidth = 60
 cmd.highlight({ "PmenuSel", "blend=0" })
 
 -- Spell
