@@ -1,0 +1,16 @@
+#!/bin/sh
+
+session=$(
+    tmux list-sessions -F '#{?session_attached,●,○} #{session_name}' |
+    fzf --reverse --border --prompt='Session > '
+)
+
+[ -z "$session" ] && exit 0
+
+# Removes status icon
+session=${session#* }
+if tmux has-session -t "$session" 2>/dev/null; then
+    tmux switch-client -t "$session"
+else
+    tmux display-message "Session '$session' does not exist."
+fi

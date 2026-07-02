@@ -1,0 +1,16 @@
+#!/bin/sh
+
+window=$(
+    tmux list-windows -F '#{?window_active,●,○} #{window_index}: #{window_name}' |
+    fzf --reverse --border --prompt='Window > '
+)
+
+[ -z "$window" ] && exit 0
+
+# Remove status icon
+window=${window#* }
+
+# Only window index
+window=${window%%:*}
+
+tmux select-window -t "$window"
