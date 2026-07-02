@@ -144,7 +144,9 @@ local function entry_label(entry)
 end
 
 local function has_words_before()
-    local row, col = table.unpack(vim.api.nvim_win_get_cursor(0))
+    local pos = vim.api.nvim_win_get_cursor(0)
+    local row, col = pos[1], pos[2]
+
     if col == 0 then
         return false
     end
