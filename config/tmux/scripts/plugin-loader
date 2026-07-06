@@ -24,7 +24,11 @@ while IFS= read -r line; do
 
             path="$plugins_dir/$plugin"
 
-            [ -f "$path" ] && tmux run-shell "$path"
+            if [ -x "$path" ]; then
+                "$path"
+            elif [ -f "$path" ]; then
+                sh "$path"
+            fi
             ;;
     esac
 done < "$config"
