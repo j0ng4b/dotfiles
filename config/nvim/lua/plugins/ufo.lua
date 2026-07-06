@@ -78,6 +78,19 @@ local config = function()
             vim.lsp.buf.hover()
         end
     end)
+
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "neo-tree" },
+        callback = function()
+            vim.schedule(function()
+                require("ufo").detach()
+
+                vim.opt_local.foldenable = false
+                vim.opt_local.foldcolumn = "0"
+                vim.opt_local.statuscolumn = ""
+            end)
+        end,
+    })
 end
 
 return {
