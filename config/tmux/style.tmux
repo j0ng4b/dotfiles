@@ -71,7 +71,7 @@ set_option -g status-style "fg=$base07, bg=$base00"
 
 # Left
 set_option -g status-left '' # reset
-set_option -g status-left-length 50
+set_option -g status-left-length 100
 
 
 status "#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]}  $(whoami)@#h #{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}#[fg=$base04 bg=$base03]"
@@ -83,7 +83,7 @@ set_option -g status-left "$STATUS_LEFT"
 
 # Right
 set_option -g status-right ''
-set_option -g status-right-length 50
+set_option -g status-right-length 100
 
 status "#[fg=$base04 bg=$base03]#{?client_prefix,#[fg=$base09 bg=$base04 nobold],#[fg=$base0B bg=$base04 nobold]}#{?client_prefix,#[fg=$base04 bg=$base09 bold],#[fg=$base04 bg=$base0B bold]} %H:%M "
 status " #($config_root/utils/battery.tmux)"
