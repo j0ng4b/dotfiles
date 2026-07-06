@@ -1,93 +1,68 @@
 #!/usr/bin/env sh
 
-# Cache
 cache_dir=$SCRIPT_CACHE_DIR
 
-cache_time=$cache_dir/time
-cache_json=$cache_dir/json
+cache_time="$cache_dir/time"
+cache_json="$cache_dir/json"
 
-if [ -z "$cache_dir" ]; then
-    exit 1
-elif [ ! -d "$cache_dir" ]; then
-    mkdir -p $cache_dir
+[ -n "$cache_dir" ] || exit 1
 
-    # Timestamp of last API call
-    touch $cache_time
-
-    # Last response API json
-    touch $cache_json
-fi
-
-if [ -z "$WEATHER_API_KEY" ]; then
-    error "Please set WEATHER_API_KEY environment variable"
-    exit 1
-fi
+mkdir -p "$cache_dir"
+touch "$cache_time" "$cache_json"
 
 _get() {
-    # NOTE: location script will block until can fetch location data
-    LAT=$(sh $root/_scripter location latitude)
-    LON=$(sh $root/_scripter location longitude)
+    # NOTE: location script will block until it can fetch location data
+    LAT=$(sh "$root/_scripter" location latitude)
+    LON=$(sh "$root/_scripter" location longitude)
 
-    url="https://api.openweathermap.org/data/2.5/weather?lat=$LAT&lon=$LON&appid=$WEATHER_API_KEY&units=metric"
+    url="https://wttr.in/${LAT},${LON}?format=j1"
 
-    json=$(cat $cache_json)
+    json=$(cat "$cache_json")
     if [ -z "$json" ]; then
-        json=$(curl -s $url | tee $cache_json)
-    elif can_call_api $cache_time; then
-        json=$(curl -s $url | tee $cache_json)
+        json=$(curl -fsSL "$url" | tee "$cache_json")
+    elif can_call_api "$cache_time"; then
+        json=$(curl -fsSL "$url" | tee "$cache_json")
     fi
 
-    echo $json
+    printf '%s\n' "$json"
 }
 
-case $1 in
+case "$1" in
     temperature)
-        printf '%.0f\n' $(_get | jq --raw-output '.main.temp')
+        _get | jq -r '.current_condition[0].temp_C'
         ;;
 
     description)
-        printf '%s\n' $(_get | jq --raw-output '.weather[0].main')
+        _get | jq -r '.current_condition[0].weatherDesc[0].value'
         ;;
 
     icon)
-        case $(_get | jq --raw-output '.weather[0].icon') in
-            # Clear sky
-            01d) icon='󰖨' ;;
-            01n) icon='' ;;
+        case "$(_get | jq -r '.current_condition[0].weatherCode')" in
+            113) icon='󰖨' ;;  # Sunny
 
-            # Few clouds
-            02d) icon='' ;;
-            02n) icon='' ;;
+            116) icon='' ;;  # Partly cloudy
+            119|122) icon='' ;;  # Cloudy / Overcast
 
-            # Scattered clouds
-            03d) icon='' ;;
-            03n) icon='' ;;
+            143|248|260) icon='' ;;  # Mist / Fog
 
-            # Broken clouds
-            04d) icon='' ;;
-            04n) icon='' ;;
+            176|263|266|293|296|299|302|305|308|311|314|317|353|356|359)
+                icon=''
+                ;;
 
-            # Shower rain
-            09d) icon='' ;;
-            09n) icon='' ;;
+            179|182|185|227|230|281|284|320|323|326|329|332|335|338|350|362|365|368|371|374|377|392|395)
+                icon=''
+                ;;
 
-            # Rain
-            10d) icon='' ;;
-            10n) icon='' ;;
+            200|386|389)
+                icon=''
+                ;;
 
-            # Thunderstorm
-            11d) icon='' ;;
-            11n) icon='' ;;
-
-            # Snow
-            13d) icon='' ;;
-            13n) icon='' ;;
-
-            # Mist
-            50d) icon='' ;;
-            50n) icon='' ;;
+            *)
+                icon='?'
+                ;;
         esac
 
-        echo $icon
+        printf '%s\n' "$icon"
+        ;;
 esac
 
