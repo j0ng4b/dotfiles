@@ -13,11 +13,11 @@ zstyle ':completion:*' use-cache true
 zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/zcompcache"
 
 # File
-zstyle ':completion:*' file-list true
+zstyle ':completion:*' file-list false
 zstyle ':completion:*' file-sort name
 
 # List files and directories
-zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' list-dirs-first true
 zstyle ':completion:*' list-separator '->'
 
@@ -35,15 +35,22 @@ zstyle ':completion:*' original true
 zstyle ':completion:*' add-space false
 zstyle ':completion:*' assign-list true
 zstyle ':completion:*' completer _complete _complete_alias _expand _match _prefix
-zstyle ':completion:*' format $'\n%d'
+zstyle ':completion:*:descriptions' format $'\e[31m[%d]\e[0m'
 zstyle ':completion:*' expand prefix
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' ignore-parents parent pwd
-zstyle ':completion:*' menu select=1
 zstyle ':completion:*' verbose true
 zstyle ':completion:*' rehash true
+
+# FZF Integrations
+if command -v fzf >/dev/null 2>&1; then
+    zstyle ':completion:*' menu no
+
+    zstyle ':fzf-tab:*' switch-group '<' '>'
+else
+    zstyle ':completion:*' menu select=1
+fi
 
 # Enable completion
 autoload -Uz compinit
 compinit -d $XDG_CACHE_HOME/zsh/zcompdump
-
