@@ -1,0 +1,30 @@
+#!/bin/sh
+
+plugins_dir="${XDG_DATA_HOME:-$HOME/.local/share}/tmux/plugins"
+
+if [ -f "${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf" ]; then
+    config="${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.conf"
+elif [ -f "$HOME/.tmux.conf" ]; then
+    config="$HOME/.tmux.conf"
+else
+    exit 0
+fi
+
+while IFS= read -r line; do
+    line=${line%%#*}
+    line=$(printf '%s' "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+    case "$line" in
+        set\ -g\ @plugin\ *|set-option\ -g\ @plugin\ *)
+            plugin=${line#* @plugin }
+            plugin=${plugin#\"}
+            plugin=${plugin%\"}
+            plugin=${plugin#\'}
+            plugin=${plugin%\'}
+
+            path="$plugins_dir/$plugin"
+
+            [ -f "$path" ] && tmux run-shell "$path"
+            ;;
+    esac
+done < "$config"

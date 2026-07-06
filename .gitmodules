@@ -37,3 +37,13 @@
 	path = data/zsh/plugins/_zsh-completions
 	url = https://github.com/zsh-users/zsh-completions.git
     shallow = true
+
+[submodule "tmux/tmux-resurrect"]
+	path = data/tmux/plugins/tmux-resurrect
+	url = https://github.com/tmux-plugins/tmux-resurrect.git
+    shallow = true
+
+[submodule "tmux/tmux-continuum"]
+	path = data/tmux/plugins/tmux-continuum
+	url = https://github.com/tmux-plugins/tmux-continuum.git
+    shallow = true
