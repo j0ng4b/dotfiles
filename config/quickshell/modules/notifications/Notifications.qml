@@ -75,12 +75,12 @@ PanelWindow {
         Corner {
             id: cornerLeft
             color: Colorscheme.current.surface
-
             anchors.left: parent.left
-            anchors.bottom: {
-                if (notifications._position.isTop)
-                    return notifications._position.isRight ? undefined : parent.bottom;
-                return notifications._position.isRight ? parent.bottom : undefined;
+
+            y: {
+                if (notifications._position.isTop != notifications._position.isRight)
+                    return parent.height - cornerLeft.size;
+                return 0;
             }
 
             side: notifications._cornerSide
@@ -132,12 +132,12 @@ PanelWindow {
         Corner {
             id: cornerRight
             color: Colorscheme.current.surface
-
             anchors.right: parent.right
-            anchors.bottom: {
-                if (notifications._position.isTop)
-                    return notifications._position.isRight ? parent.bottom : undefined;
-                return notifications._position.isRight ? undefined : parent.bottom;
+
+            y: {
+                if (notifications._position.isTop == notifications._position.isRight)
+                    return parent.height - cornerLeft.size;
+                return 0;
             }
 
             side: notifications._cornerSide
