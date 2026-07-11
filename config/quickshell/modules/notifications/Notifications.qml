@@ -10,7 +10,7 @@ PanelWindow {
     id: notifications
 
     color: 'transparent'
-    visible: NotificationsState.visible || container.x < notifications.implicitWidth
+    visible: NotificationsState.visible || container.x !== container._hiddenX
     exclusionMode: ExclusionMode.Normal
 
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
@@ -55,16 +55,17 @@ PanelWindow {
     Item {
         id: container
 
+        property bool _settled: false
+        readonly property int _hiddenX: (notifications._position.isLeft ? -1 : 1) * notifications.implicitWidth
+
+        Component.onCompleted: Qt.callLater(() => container._settled = true)
+
         width: parent.width
         height: parent.height
 
-        x: {
-            if (NotificationsState.visible)
-                return 0;
-            return (notifications._position.isLeft ? -1 : 1) * notifications.implicitWidth;
-        }
-
+        x: NotificationsState.visible ? 0 : container._hiddenX
         Behavior on x {
+            enabled: container._settled
             NumberAnimation {
                 duration: 300
                 easing.type: NotificationsState.visible ? Easing.InCubic : Easing.InCubic
