@@ -1,7 +1,17 @@
 #!/usr/bin/env sh
 
 # Real screenshot path
-screenshot_path="$(xdg-user-dir PICTURES)/$(date +'Screenshot-%d%m%Y-%H%M%S.png')"
+pictures_dir="$(xdg-user-dir PICTURES)"
+
+if [ -z "$pictures_dir" ]; then
+    if [ -d "$HOME/Imagens" ]; then
+        pictures_dir="$HOME/Imagens"
+    else
+        pictures_dir="$HOME/Pictures"
+    fi
+fi
+
+screenshot_path="${pictures_dir}/$(date +'Screenshot-%d%m%Y-%H%M%S.png')"
 
 # Pretty screenshot path used on notification
 pretty_path="$(echo $screenshot_path | sed -e "s|$HOME|~|g")"
