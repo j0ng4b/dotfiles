@@ -1,12 +1,9 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Services.Notifications
 import qs.config
-import qs.services
 import qs.components
 
 PanelWindow {
@@ -15,23 +12,35 @@ PanelWindow {
     color: 'transparent'
     visible: NotificationsState.visible || container.x < notifications.implicitWidth
     exclusionMode: ExclusionMode.Normal
+
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     WlrLayershell.layer: WlrLayer.Top
     WlrLayershell.namespace: Config.shellName + '-notifications'
 
-    readonly property string _position: Config.notifications.position
-    readonly property bool _isTop: _position.startsWith('top')
-    readonly property bool _isBottom: _position.startsWith('bottom')
-    readonly property bool _isLeft: _position.endsWith('left')
-    readonly property bool _isRight: _position.endsWith('right')
+    readonly property var _position: {
+        const position = Config.notifications.position;
+
+        return {
+            isTop: position.startsWith('top-'),
+            isBottom: position.startsWith('bottom-'),
+            isLeft: position.endsWith('-left'),
+            isRight: position.endsWith('-right')
+        };
+    }
+
+    readonly property int _cornerSide: {
+        if (_position.isTop)
+            return _position.isLeft ? Corner.Side.TopLeft : Corner.Side.TopRight;
+        return _position.isLeft ? Corner.Side.BottomLeft : Corner.Side.BottomRight;
+    }
 
     readonly property int _width: Config.notifications.width
     readonly property int _margins: Config.notifications.margin
 
-    anchors.top: notifications._isTop
-    anchors.bottom: notifications._isBottom
-    anchors.left: notifications._isLeft
-    anchors.right: notifications._isRight
+    anchors.top: notifications._position.isTop
+    anchors.bottom: notifications._position.isBottom
+    anchors.left: notifications._position.isLeft
+    anchors.right: notifications._position.isRight
 
     implicitWidth: notifications._width + cornerLeft.size
     implicitHeight: panel.height + cornerRight.size
@@ -49,7 +58,12 @@ PanelWindow {
         width: parent.width
         height: parent.height
 
-        x: NotificationsState.visible ? 0 : (notifications._isLeft ? -1 : 1) * notifications.implicitWidth
+        x: {
+            if (NotificationsState.visible)
+                return 0;
+            return (notifications._position.isLeft ? -1 : 1) * notifications.implicitWidth;
+        }
+
         Behavior on x {
             NumberAnimation {
                 duration: 300
@@ -63,21 +77,12 @@ PanelWindow {
 
             anchors.left: parent.left
             anchors.bottom: {
-                if (notifications._isTop)
-                    return notifications._isRight ? undefined : parent.bottom;
-                return notifications._isRight ? parent.bottom : undefined;
+                if (notifications._position.isTop)
+                    return notifications._position.isRight ? undefined : parent.bottom;
+                return notifications._position.isRight ? parent.bottom : undefined;
             }
 
-            side: {
-                if (notifications._isTop && notifications._isLeft)
-                    return Corner.Side.TopLeft;
-                if (notifications._isTop && notifications._isRight)
-                    return Corner.Side.TopRight;
-                if (notifications._isBottom && notifications._isLeft)
-                    return Corner.Side.BottomLeft;
-                if (notifications._isBottom && notifications._isRight)
-                    return Corner.Side.BottomRight;
-            }
+            side: notifications._cornerSide
         }
 
         Rectangle {
@@ -87,13 +92,28 @@ PanelWindow {
             width: notifications._width
             height: notifList.implicitHeight + notifications._margins * 2
 
-            x: notifications._isRight ? cornerLeft.size : 0
-            y: notifications._isBottom ? cornerRight.size : 0
+            x: notifications._position.isRight ? cornerLeft.size : 0
+            y: notifications._position.isBottom ? cornerRight.size : 0
 
-            topLeftRadius: notifications._isRight && !notifications._isTop ? Config.general.radius : undefined
-            topRightRadius: notifications._isLeft && !notifications._isTop ? Config.general.radius : undefined
-            bottomLeftRadius: notifications._isRight && notifications._isTop ? Config.general.radius : undefined
-            bottomRightRadius: notifications._isLeft && notifications._isTop ? Config.general.radius : undefined
+            topLeftRadius: {
+                if (notifications._position.isRight && !notifications._position.isTop)
+                    return Config.general.radius;
+            }
+
+            topRightRadius: {
+                if (notifications._position.isLeft && !notifications._position.isTop)
+                    return Config.general.radius;
+            }
+
+            bottomLeftRadius: {
+                if (notifications._position.isRight && notifications._position.isTop)
+                    return Config.general.radius;
+            }
+
+            bottomRightRadius: {
+                if (notifications._position.isLeft && notifications._position.isTop)
+                    return Config.general.radius;
+            }
 
             Column {
                 id: notifList
@@ -114,21 +134,12 @@ PanelWindow {
 
             anchors.right: parent.right
             anchors.bottom: {
-                if (notifications._isTop)
-                    return notifications._isRight ? parent.bottom : undefined;
-                return notifications._isRight ? undefined : parent.bottom;
+                if (notifications._position.isTop)
+                    return notifications._position.isRight ? parent.bottom : undefined;
+                return notifications._position.isRight ? undefined : parent.bottom;
             }
 
-            side: {
-                if (notifications._isTop && notifications._isLeft)
-                    return Corner.Side.TopLeft;
-                if (notifications._isTop && notifications._isRight)
-                    return Corner.Side.TopRight;
-                if (notifications._isBottom && notifications._isLeft)
-                    return Corner.Side.BottomLeft;
-                if (notifications._isBottom && notifications._isRight)
-                    return Corner.Side.BottomRight;
-            }
+            side: notifications._cornerSide
         }
     }
 }

@@ -11,7 +11,15 @@ Item {
     id: root
 
     required property int notifId
-    required property Notification notification
+    required property string appName
+    required property string iconSrc
+    required property string summary
+    required property string body
+    required property string bodyImage
+    required property int urgency
+    required property int expireTimeout
+    required property bool hasActionIcons
+    required property var actions
 
     property bool _dismissing: false
     property bool _expanded: false
@@ -19,21 +27,11 @@ Item {
     property real _elapsed: 0
     property real _startedAt: 0
 
-    readonly property bool _isCritical: root.notification?.urgency === 2
-
-    readonly property string _bodyImageSrc: root.notification ? root.notification.image : ''
-    readonly property string _iconSrc: {
-        if (!root.notification || root.notification.appIcon === '')
-            return '';
-        return Quickshell.iconPath(notification?.appIcon) ?? '';
-    }
+    readonly property bool _isCritical: root.urgency === 2
 
     readonly property int _effectiveTimeout: {
-        if (!root.notification)
-            return -1;
-
-        if (!Config.notifications.ignoreAppExpireTimeout && root.notification.expireTimeout >= -1)
-            return root.notification.expireTimeout;
+        if (!Config.notifications.ignoreAppExpireTimeout && root.expireTimeout >= -1)
+            return root.expireTimeout;
 
         return Config.notifications.expireTimeout;
     }
@@ -46,15 +44,12 @@ Item {
         if (root._dismissing)
             return;
 
-        console.log('time after', Date.now() - root._startedAt)
         root._dismissing = true;
         expireTimer.stop();
         dismissAnim.start();
     }
 
     function _startTimer() {
-        console.log('expireTimeout', root._effectiveTimeout)
-        console.log('elapsed', root._elapsed)
         if (root._effectiveTimeout <= 0 || root._dismissing)
             return;
 
@@ -69,6 +64,15 @@ Item {
 
         root._elapsed += Date.now() - root._startedAt;
         expireTimer.stop();
+    }
+
+    // Triggers the dismiss animation if the notification is closed externally
+    Connections {
+        target: NotificationsState
+        function onNotificationClosed(notifId) {
+            if (notifId === root.notifId)
+                root.startDismiss();
+        }
     }
 
     HoverHandler {
@@ -192,10 +196,10 @@ Item {
                 spacing: 8
 
                 Image {
-                    visible: root._iconSrc !== ''
+                    visible: root.iconSrc !== ''
                     Layout.preferredWidth: 16
                     Layout.preferredHeight: 16
-                    source: root._iconSrc
+                    source: root.iconSrc
                     fillMode: Image.PreserveAspectFit
                     sourceSize: Qt.size(16, 16)
                     smooth: true
@@ -204,7 +208,7 @@ Item {
 
                 Text {
                     Layout.fillWidth: true
-                    text: notification ? notification.appName : ''
+                    text: root.appName
                     font.pixelSize: 11
                     elide: Text.ElideRight
                     color: root._isCritical ? Colorscheme.current.on_error_container : Colorscheme.current.on_surface_variant
@@ -243,8 +247,8 @@ Item {
                 spacing: 8
 
                 Rectangle {
-                    visible: root._bodyImageSrc !== '' && bodyImg.status !== Image.Error
-                    Layout.preferredWidth:  48
+                    visible: root.bodyImage !== '' && bodyImg.status !== Image.Error
+                    Layout.preferredWidth: 48
                     Layout.preferredHeight: 48
                     Layout.alignment: Qt.AlignTop
                     radius: 8
@@ -254,7 +258,7 @@ Item {
                     Image {
                         id: bodyImg
                         anchors.fill: parent
-                        source: root._bodyImageSrc
+                        source: root.bodyImage
                         fillMode: Image.PreserveAspectCrop
                         smooth: true
                         asynchronous: true
@@ -268,8 +272,8 @@ Item {
                     // Summary
                     Text {
                         Layout.fillWidth: true
-                        visible: notification && notification.summary !== ''
-                        text: notification ? notification.summary : ''
+                        visible: root.summary !== ''
+                        text: root.summary
                         font.pixelSize: 13
                         font.bold: true
                         wrapMode: Text.WordWrap
@@ -281,13 +285,13 @@ Item {
                     // Body
                     Column {
                         Layout.fillWidth: true
-                        visible: notification && notification.body !== ''
+                        visible: root.body !== ''
                         spacing: 4
 
                         Text {
                             id: bodyText
                             width: parent.width
-                            text: notification ? notification.body.replace(/<[^>]*>/g, '') : ''
+                            text: root.body.replace(/<[^>]*>/g, '')
                             font.pixelSize: 12
                             wrapMode: Text.WordWrap
                             maximumLineCount: root._expanded ? 999 : 3
@@ -322,10 +326,10 @@ Item {
             Flow {
                 Layout.fillWidth: true
                 spacing: 6
-                visible: notification?.actions.length > 0
+                visible: root.actions.length > 0
 
                 Repeater {
-                    model: root.notification ? notification.actions : []
+                    model: root.actions
 
                     delegate: Rectangle {
                         required property var modelData
@@ -347,13 +351,10 @@ Item {
                             spacing: 4
 
                             Icon {
-                                visible: (notification?.hasActionIcons ?? false)
-                                && modelData.identifier !== ''
-                                && modelData.identifier !== 'default'
+                                visible: root.hasActionIcons && modelData.identifier !== '' && modelData.identifier !== 'default'
                                 icon: modelData.identifier
                                 size: 12
-                                color: actMa.containsMouse ? Colorscheme.current.on_primary_container
-                                : Colorscheme.current.on_surface
+                                color: actMa.containsMouse ? Colorscheme.current.on_primary_container : Colorscheme.current.on_surface
                             }
 
                             Text {
@@ -361,8 +362,7 @@ Item {
                                 text: modelData.text
                                 font.pixelSize: 11
                                 elide: Text.ElideRight
-                                color: actMa.containsMouse ? Colorscheme.current.on_primary_container
-                                : Colorscheme.current.on_surface
+                                color: actMa.containsMouse ? Colorscheme.current.on_primary_container : Colorscheme.current.on_surface
                             }
                         }
 
@@ -372,7 +372,7 @@ Item {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                modelData.invoke();
+                                NotificationsState.invokeAction(root.notifId, modelData.identifier);
                                 root.startDismiss();
                             }
                         }
