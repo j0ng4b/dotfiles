@@ -303,19 +303,26 @@ local config = function()
     end)
 
     local cmp_autopairs = utils.safe_require("nvim-autopairs.completion.cmp")
-    cmp.event:on("confirm_done", cmp_autopairs and cmp_autopairs.on_confirm_done())
+    if cmp_autopairs then
+        cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+    end
 
     setup_kind_highlights()
 
-    local auto = require("core.utils.autocmd")
-    auto.cmd("Colorscheme", nil, function()
-        for group in pairs(hl_cache) do
-            pcall(vim.api.nvim_set_hl, 0, group, {})
-        end
+    vim.api.nvim_create_autocmd("ColorScheme", {
+        group = vim.api.nvim_create_augroup("CmpHighlights", {
+            clear = true,
+        }),
+        callback = function()
+            for hl_group in pairs(hl_cache) do
+                pcall(vim.api.nvim_set_hl, 0, hl_group, {})
+            end
 
-        hl_cache = {}
-        setup_kind_highlights()
-    end)
+            hl_cache = {}
+            setup_kind_highlights()
+        end,
+        desc = "Rebuild completion highlight groups after colorscheme changes",
+    })
 end
 
 return {

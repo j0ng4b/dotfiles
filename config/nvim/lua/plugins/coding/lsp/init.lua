@@ -1,4 +1,3 @@
-local auto = require("core.utils.autocmd")
 local utils = require("core.utils")
 local icons = require("core.utils.icons")
 
@@ -291,7 +290,12 @@ local setup_diagnostics = function()
         severity_sort = true,
     })
 
-    auto.cmd("CursorHold", nil, vim.diagnostic.open_float)
+    vim.api.nvim_create_autocmd("CursorHold", {
+        group = vim.api.nvim_create_augroup("DiagnosticFloat", {
+            clear = true,
+        }),
+        callback = vim.diagnostic.open_float,
+    })
 end
 
 local create_attach = function()
@@ -305,32 +309,46 @@ local create_attach = function()
         end)
 
         with_cap(client, "textDocument/documentHighlight", function()
-            local group = auto.buf_group("LspDocumentHighlight_", bufnr)
+            local group = vim.api.nvim_create_augroup("LspDocumentHighlight_" .. bufnr, { clear = true })
 
-            auto.cmd({ "CursorHold", "CursorHoldI" }, nil, vim.lsp.buf.document_highlight, {
+            vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
                 group = group,
                 buffer = bufnr,
+                callback = vim.lsp.buf.document_highlight,
+                desc = "Highlight symbol references",
             })
 
-            auto.cmd("CursorMoved", nil, vim.lsp.buf.clear_references, {
+            vim.api.nvim_create_autocmd({ "CursorMoved", "InsertEnter" }, {
                 group = group,
                 buffer = bufnr,
+                callback = vim.lsp.buf.clear_references,
+                desc = "Clear symbol references",
             })
         end)
 
         with_cap(client, "textDocument/inlayHint", function()
             vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-            local group = auto.buf_group("LspInlayHints_", bufnr)
+            local group = vim.api.nvim_create_augroup("LspInlayHints_" .. bufnr, { clear = true })
 
-            auto.cmd("InsertEnter", nil, function()
-                if vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }) then
-                    vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
-                end
-            end, { group = group, buffer = bufnr })
+            vim.api.nvim_create_autocmd("InsertEnter", {
+                group = group,
+                buffer = bufnr,
+                callback = function()
+                    if vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }) then
+                        vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+                    end
+                end,
+                desc = "Disable LSP inlay hints while inserting",
+            })
 
-            auto.cmd("InsertLeave", nil, function()
-                vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-            end, { group = group, buffer = bufnr })
+            vim.api.nvim_create_autocmd("InsertLeave", {
+                group = group,
+                buffer = bufnr,
+                callback = function()
+                    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+                end,
+                desc = "Enable LSP inlay hints after inserting",
+            })
         end)
 
         for _, ext in ipairs(extensions) do

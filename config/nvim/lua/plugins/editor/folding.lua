@@ -52,49 +52,47 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
     return newVirtText
 end
 
-local config = function()
-    local ufo = require("ufo")
-    ufo.setup({
-        open_fold_hl_timeout = 150,
-
-        close_fold_kinds_for_ft = {
-            default = { "imports", "comment" },
-        },
-
-        enable_get_fold_virt_text = true,
-        fold_virt_text_handler = handler,
-        provider_selector = get_provider,
-    })
-
-    vim.keymap.set({ "n" }, "zr", ufo.openFoldsExceptKinds, { desc = "open folds but keep foldlevel value" })
-    vim.keymap.set({ "n" }, "zm", ufo.closeFoldsWith, { desc = "close folds but keep foldlevel value" })
-
-    vim.keymap.set({ "n" }, "zR", ufo.openAllFolds, { desc = "open all folds but keep foldlevel value" })
-    vim.keymap.set({ "n" }, "zM", ufo.closeAllFolds, { desc = "close all folds but keep foldlevel value" })
-
-    vim.keymap.set({ "n" }, "K", function()
-        local winid = require("ufo").peekFoldedLinesUnderCursor()
-        if not winid then
-            vim.lsp.buf.hover()
-        end
-    end)
-
-    vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "neo-tree" },
-        callback = function()
-            vim.schedule(function()
-                require("ufo").detach()
-
-                vim.opt_local.foldenable = false
-                vim.opt_local.foldcolumn = "0"
-                vim.opt_local.statuscolumn = ""
-            end)
-        end,
-    })
-end
-
 return {
     "kevinhwang91/nvim-ufo",
     dependencies = "kevinhwang91/promise-async",
-    config = config,
+    config = function()
+        local ufo = require("ufo")
+        ufo.setup({
+            open_fold_hl_timeout = 150,
+
+            close_fold_kinds_for_ft = {
+                default = { "imports", "comment" },
+            },
+
+            enable_get_fold_virt_text = true,
+            fold_virt_text_handler = handler,
+            provider_selector = get_provider,
+        })
+
+        vim.keymap.set({ "n" }, "zr", ufo.openFoldsExceptKinds, { desc = "open folds but keep foldlevel value" })
+        vim.keymap.set({ "n" }, "zm", ufo.closeFoldsWith, { desc = "close folds but keep foldlevel value" })
+
+        vim.keymap.set({ "n" }, "zR", ufo.openAllFolds, { desc = "open all folds but keep foldlevel value" })
+        vim.keymap.set({ "n" }, "zM", ufo.closeAllFolds, { desc = "close all folds but keep foldlevel value" })
+
+        vim.keymap.set({ "n" }, "K", function()
+            local winid = require("ufo").peekFoldedLinesUnderCursor()
+            if not winid then
+                vim.lsp.buf.hover()
+            end
+        end)
+
+        vim.api.nvim_create_autocmd("FileType", {
+            pattern = { "neo-tree" },
+            callback = function()
+                vim.schedule(function()
+                    require("ufo").detach()
+
+                    vim.opt_local.foldenable = false
+                    vim.opt_local.foldcolumn = "0"
+                    vim.opt_local.statuscolumn = ""
+                end)
+            end,
+        })
+    end,
 }

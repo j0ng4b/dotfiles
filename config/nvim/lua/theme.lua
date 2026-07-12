@@ -1,4 +1,3 @@
-local auto = require("core.utils.autocmd")
 local file = require("core.utils.file")
 
 local M = {}
@@ -109,32 +108,37 @@ function M.setup()
         M.apply(theme_name, false)
     end
 
-    auto.group("ColorschemeReloader")
-    auto.cmd("Colorscheme", "", function()
-        vim.schedule(function()
-            -- If set from outside do nothing to avoid looping
-            if vim.g._update_colorscheme then
-                vim.g._update_colorscheme = nil
-                return
-            end
+    vim.api.nvim_create_autocmd("ColorScheme", {
+        group = vim.api.nvim_create_augroup("ColorschemeReloader", {
+            clear = true,
+        }),
+        callback = function()
+            vim.schedule(function()
+                -- If set from outside, do nothing to avoid looping.
+                if vim.g._update_colorscheme then
+                    vim.g._update_colorscheme = nil
+                    return
+                end
 
-            local current = vim.g.colors_name
-            local bg = vim.o.background
+                local current = vim.g.colors_name
+                local background = vim.o.background
 
-            local reverse = {
-                ["catppuccin-mocha"] = "catppuccin/dark",
-                ["catppuccin-latte"] = "catppuccin/light",
-                ["gruvbox"] = "gruvbox/" .. bg,
-                ["everforest"] = "everforest/" .. bg,
-                ["nord"] = "nord/dark",
-            }
+                local reverse = {
+                    ["catppuccin-mocha"] = "catppuccin/dark",
+                    ["catppuccin-latte"] = "catppuccin/light",
+                    ["gruvbox"] = "gruvbox/" .. background,
+                    ["everforest"] = "everforest/" .. background,
+                    ["nord"] = "nord/dark",
+                }
 
-            local result = reverse[current]
-            if result then
-                file.write(get_theme_file(), result)
-            end
-        end)
-    end, "ColorschemeReloader")
+                local result = reverse[current]
+                if result then
+                    file.write(get_theme_file(), result)
+                end
+            end)
+        end,
+        desc = "Persist colorscheme changes",
+    })
 end
 
 return M

@@ -1,61 +1,64 @@
-local config = function()
-    local wk = require("which-key")
-    wk.setup({
-        preset = "helix",
-
-        triggers = {
-            { "<auto>", mode = "nixsotc" },
-        },
-
-        filter = function(mapping)
-            return mapping.desc and mapping.desc ~= ""
-        end,
-
-        win = {
-            height = { min = 4, max = 10 },
-
-            title = true,
-            title_pos = "center",
-
-            wo = {
-                winblend = 60,
-            },
-        },
-
-        layout = {
-            align = "center",
-        },
-
-        icons = {
-            group = "",
-            rules = false,
-        },
-
-        plugins = {
-            spelling = {
-                suggestions = 10,
-            },
-        },
-
-        show_keys = false,
-    })
-
-    wk.add({
-        { "<Leader>h", group = "󰊢 Git" },
-        { "<leader>e", group = "󰉓 Explorer" },
-        { "<leader>f", group = "󰈙 File search" },
-        { "<leader>d", group = "󰓙 Diagnostics" },
-        { "<Leader>t", group = "󰙨 Test" },
-        { "<Leader>b", group = "󰕷 Debug" },
-        { "<leader>q", group = "󰦛 Session" },
-    })
-
-    vim.keymap.set({ "n" }, "<leader>?", function()
-        wk.show({ global = false })
-    end, { desc = "Buffer local keymaps" })
-end
-
 return {
     "folke/which-key.nvim",
-    config = config,
+    config = function()
+        local wk = require("which-key")
+        wk.setup({
+            preset = "helix",
+
+            triggers = {
+                { "<auto>", mode = "nixsotc" },
+            },
+
+            filter = function(mapping)
+                return mapping.desc and mapping.desc ~= ""
+            end,
+
+            win = {
+                height = { min = 4, max = 10 },
+
+                title = true,
+                title_pos = "center",
+
+                wo = {
+                    winblend = 60,
+                },
+            },
+
+            layout = {
+                align = "center",
+            },
+
+            icons = {
+                group = "",
+                rules = false,
+            },
+
+            plugins = {
+                spelling = {
+                    suggestions = 10,
+                },
+            },
+
+            show_keys = false,
+        })
+
+        wk.add({
+            { "<Leader>h", group = "󰊢 Git" },
+            { "<leader>e", group = "󰉓 Explorer" },
+            { "<leader>f", group = "󰈙 File search" },
+            { "<leader>d", group = "󰓙 Diagnostics" },
+            { "<Leader>t", group = "󰙨 Test" },
+            { "<Leader>b", group = "󰕷 Debug" },
+            { "<leader>q", group = "󰦛 Session" },
+            { "[", group = "prev" },
+            { "]", group = "next" },
+            { "g", group = "goto" },
+            { "gs", group = "surround" },
+            { "z", group = "fold" },
+        })
+
+        vim.keymap.set({ "n" }, "<leader>?", function()
+            wk.show({ global = false })
+        end, { desc = "Buffer local keymaps" })
+    end,
 }

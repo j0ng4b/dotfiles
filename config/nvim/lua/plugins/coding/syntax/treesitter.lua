@@ -46,6 +46,9 @@ return {
             "go",
             "java",
 
+            "razor",
+            "c_sharp",
+
             "jinja",
             "python",
 
@@ -60,18 +63,21 @@ return {
             "vimdoc",
         })
 
-        local auto = require("core.utils.autocmd")
-        auto.cmd(
-            "FileType",
-            vim.iter(get_installed_parsers()):map(vim.treesitter.language.get_filetypes):flatten():totable(),
-            function(args)
-                -- enable highlight
+        vim.api.nvim_create_autocmd("FileType", {
+            group = vim.api.nvim_create_augroup("TreesitterSetup", {
+                clear = true,
+            }),
+            pattern = vim.iter(get_installed_parsers()):map(vim.treesitter.language.get_filetypes):flatten():totable(),
+            callback = function(args)
                 local lang = vim.treesitter.language.get_lang(args.match)
-                vim.treesitter.start(args.buf, lang)
+                if not lang then
+                    return
+                end
 
-                -- enable indentation
-                vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-            end
-        )
+                vim.treesitter.start(args.buf, lang)
+                vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+            end,
+            desc = "Enable Tree-sitter highlighting and indentation",
+        })
     end,
 }

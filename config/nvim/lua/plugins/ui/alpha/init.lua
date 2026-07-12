@@ -21,15 +21,21 @@ local function count_files(dir)
 end
 
 -- New banners can be generated with: https://github.com/Asthestarsfalll/img2art
-local banner = function()
-    math.randomseed(os.time())
+local banners_dir = vim.fn.stdpath("config") .. "/lua/plugins/ui/alpha/banners"
+local current_banner
 
-    local banners_count = count_files(vim.fn.stdpath("config") .. "/lua/plugins/ui/alpha/banners")
-    local banner = require("plugins.ui.alpha.banners/banner-" .. math.random(banners_count))
+local get_banner = function()
+    if current_banner then
+        return current_banner
+    end
 
-    -- used to reset highlight when colorscheme changes
-    _G.alpha_cur_banner = banner
-    return banner.header
+    local banners_count = count_files(banners_dir)
+    if banners_count == 0 then
+        error("No Alpha banners found in: " .. banners_dir)
+    end
+
+    current_banner = require("plugins.ui.alpha.banners.banner-" .. math.random(banners_count))
+    return current_banner
 end
 
 local button = function(text, shortcut, action)
@@ -106,7 +112,7 @@ local layout = function()
     end
 
     local layout = {
-        banner(),
+        get_banner().header,
 
         {
             type = "padding",
@@ -164,60 +170,81 @@ local layout = function()
     return centralize(layout)
 end
 
-local config = function()
-    local alpha = require("alpha")
-
-    alpha.setup({
-        layout = layout(),
-
-        opts = {
-            noautocmd = true,
-
-            setup = function()
-                local auto = require("core.utils.autocmd")
-
-                auto.cmd("User", "AlphaReady", function()
-                    if vim.g.alpha_closed then
-                        return
-                    end
-
-                    _G.alpha_win_num = vim.api.nvim_get_current_win()
-
-                    vim.opt.laststatus = 0
-                    vim.opt.showtabline = 0
-                end)
-
-                auto.cmd("BufUnload", nil, function()
-                    vim.opt.laststatus = 3
-                    vim.opt.showtabline = 2
-
-                    vim.g.alpha_closed = true
-                end, {
-                    buffer = 0,
-                })
-
-                auto.cmd("VimResized", nil, function()
-                    if vim.api.nvim_get_current_win() == _G.alpha_win_num then
-                        package.loaded.alpha.default_config.layout = layout()
-                        alpha.redraw()
-                    end
-                end, {
-                    buffer = 0,
-                })
-
-                -- Due the reloader thats changes colorscheme the highlight are
-                -- lost so we need to set them again
-                _G.alpha_cur_banner.set_highlights()
-                auto.cmd("Colorscheme", "", function()
-                    _G.alpha_cur_banner.set_highlights()
-                end, { buffer = 0 })
-            end,
-        },
-    })
-end
-
 return {
     "goolord/alpha-nvim",
     dependencies = "nvim-tree/nvim-web-devicons",
-    config = config,
+    config = function()
+        math.randomseed(vim.uv.hrtime())
+
+        local alpha = require("alpha")
+        alpha.setup({
+            layout = layout(),
+
+            opts = {
+                noautocmd = true,
+
+                setup = function()
+                    local group = vim.api.nvim_create_augroup("AlphaDashboard", {
+                        clear = true,
+                    })
+
+                    vim.api.nvim_create_autocmd("User", {
+                        group = group,
+                        pattern = "AlphaReady",
+                        callback = function()
+                            if vim.g.alpha_closed then
+                                return
+                            end
+
+                            _G.alpha_win_num = vim.api.nvim_get_current_win()
+
+                            vim.opt.laststatus = 0
+                            vim.opt.showtabline = 0
+                        end,
+                        desc = "Hide global UI while Alpha is open",
+                    })
+
+                    vim.api.nvim_create_autocmd("BufUnload", {
+                        group = group,
+                        buffer = 0,
+                        callback = function()
+                            vim.opt.laststatus = 3
+                            vim.opt.showtabline = 2
+
+                            vim.g.alpha_closed = true
+                        end,
+                        desc = "Restore global UI after closing Alpha",
+                    })
+
+                    vim.api.nvim_create_autocmd("VimResized", {
+                        group = group,
+                        callback = function()
+                            if
+                                _G.alpha_win_num
+                                and vim.api.nvim_win_is_valid(_G.alpha_win_num)
+                                and vim.api.nvim_get_current_win() == _G.alpha_win_num
+                            then
+                                package.loaded["alpha"].default_config.layout = layout()
+                                alpha.redraw()
+                            end
+                        end,
+                        desc = "Recenter Alpha dashboard after resizing",
+                    })
+
+                    -- Due the reloader thats changes colorscheme the highlight are
+                    -- lost so we need to set them again
+                    local selected_banner = get_banner()
+                    selected_banner.set_highlights()
+
+                    vim.api.nvim_create_autocmd("ColorScheme", {
+                        group = group,
+                        callback = function()
+                            selected_banner.set_highlights()
+                        end,
+                        desc = "Restore Alpha banner highlights after changing colorscheme",
+                    })
+                end,
+            },
+        })
+    end,
 }
