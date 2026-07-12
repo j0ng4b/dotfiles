@@ -41,35 +41,13 @@ local config = function()
     })
 
     wk.add({
-        {
-            "<Leader>h",
-            group = "󰊢 Git",
-        },
-
-        {
-            "<leader>e",
-            group = "󰉓 Explorer",
-        },
-
-        {
-            "<leader>f",
-            group = "󰈙 File search",
-        },
-
-        {
-            "<leader>d",
-            group = "󰓙 Diagnostics",
-        },
-
-        {
-            "<Leader>t",
-            group = "󰙨 Test",
-        },
-
-        {
-            "<Leader>b",
-            group = "󰕷 Debug",
-        },
+        { "<Leader>h", group = "󰊢 Git" },
+        { "<leader>e", group = "󰉓 Explorer" },
+        { "<leader>f", group = "󰈙 File search" },
+        { "<leader>d", group = "󰓙 Diagnostics" },
+        { "<Leader>t", group = "󰙨 Test" },
+        { "<Leader>b", group = "󰕷 Debug" },
+        { "<leader>q", group = "󰦛 Session" },
     })
 
     vim.keymap.set({ "n" }, "<leader>?", function()
