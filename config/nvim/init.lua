@@ -28,6 +28,8 @@ vim.opt.runtimepath:prepend(lazypath)
 require("lazy").setup({
     spec = {
         { import = "plugins" },
+        { import = "plugins.ui" },
+        { import = "plugins.ui.animations" },
         { import = "colorschemes" },
     },
 
