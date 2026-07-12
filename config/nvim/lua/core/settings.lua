@@ -94,7 +94,7 @@ set.smartcase = true
 -- Status line & Tab line
 set.laststatus = 3
 set.ruler = false
-set.showtabline = 2
+set.showtabline = 0
 set.tabpagemax = 10
 
 -- Mouse
