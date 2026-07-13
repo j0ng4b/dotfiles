@@ -31,7 +31,6 @@ return {
 
                     " ",
                     { filename, gui = modified and "bold,italic" or "" },
-                    " ",
                     modified and icons.file.modified .. " " or "",
                     readonly and icons.file.readonly .. " " or "",
                 }
