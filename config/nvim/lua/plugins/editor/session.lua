@@ -2,6 +2,8 @@ return {
     "folke/persistence.nvim",
     event = "VimEnter",
     config = function()
+        local autosave_enabled = true
+
         local persistence = require("persistence")
         persistence.setup()
 
@@ -22,19 +24,29 @@ return {
             "winpos",
         }
 
+        vim.keymap.set("n", "<leader>qw", function()
+            persistence.save()
+        end, {
+            desc = "save current session",
+        })
+
         vim.keymap.set("n", "<leader>qs", function()
+            autosave_enabled = true
             persistence.load()
         end, { desc = "load session for current directory" })
 
         vim.keymap.set("n", "<leader>qS", function()
+            autosave_enabled = true
             persistence.select()
         end, { desc = "select a session to load" })
 
         vim.keymap.set("n", "<leader>ql", function()
+            autosave_enabled = true
             persistence.load({ last = true })
         end, { desc = "load the last session" })
 
         vim.keymap.set("n", "<leader>qd", function()
+            autosave_enabled = false
             persistence.stop()
         end, { desc = "stop session saving" })
 
@@ -48,12 +60,21 @@ return {
 
             "FocusLost",
         }, {
-            desc = "save Neovim session state",
+            group = vim.api.nvim_create_augroup("PersistenceAutosave", {
+                clear = true,
+            }),
             callback = function()
+                if not autosave_enabled then
+                    return
+                end
+
                 vim.schedule(function()
-                    persistence.save()
+                    if autosave_enabled then
+                        persistence.save()
+                    end
                 end)
             end,
+            desc = "save Neovim session state",
         })
     end,
 }

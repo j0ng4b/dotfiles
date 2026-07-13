@@ -3,7 +3,9 @@ return {
     dependencies = "nvim-tree/nvim-web-devicons",
     config = function()
         local fzf = require("fzf-lua")
+
         fzf.setup()
+        fzf.register_ui_select()
 
         vim.keymap.set({ "n" }, "<leader>ff", fzf.files, {
             desc = "find file",
