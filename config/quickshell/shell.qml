@@ -10,7 +10,6 @@ import Quickshell.Io
 
 import qs.config
 import qs.modules
-import qs.modules.osd
 import qs.modules.launcher
 import qs.modules.notifications
 import qs.modules.wallpaper
@@ -24,7 +23,6 @@ ShellRoot {
 
     Launcher {}
 
-    Osd {}
     Notifications {}
 
     Monitor {}

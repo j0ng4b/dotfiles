@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import QtQuick
 import qs.config
 import qs.modules.bar
+import qs.modules.osd
 
 Variants {
     model: Quickshell.screens
@@ -28,10 +29,15 @@ Variants {
         }
 
         mask: Region {
-            regions: [bar.mask]
+            regions: [osd.mask, bar.mask]
         }
 
         // Declaration order == paint order, from bottom (first) to top (last)
+        Osd {
+            id: osd
+            screen: shell.screen
+        }
+
         Bar {
             id: bar
             screen: shell.screen
