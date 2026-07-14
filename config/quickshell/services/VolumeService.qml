@@ -15,12 +15,17 @@ Singleton {
     signal changed
 
     function setVolume(value) {
-        _setProcess.command = [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "multimedia", "speaker", "set", String(Math.round(value * 100))];
-        _setProcess.running = true;
+        _commandRunner.command = [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "multimedia", "speaker", "set", String(Math.round(value * 100))];
+        _commandRunner.running = true;
+    }
+
+    function toggleMute() {
+        _commandRunner.command = [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "multimedia", "speaker", "mute"];
+        _commandRunner.running = true;
     }
 
     Process {
-        id: _setProcess
+        id: _commandRunner
         running: false
     }
 
