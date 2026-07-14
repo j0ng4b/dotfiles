@@ -1,0 +1,337 @@
+#!/usr/bin/env sh
+
+# Cache
+cache_dir="$SCRIPT_CACHE_DIR"
+cache_bt_power="$cache_dir/power"
+
+if [ -z "$cache_dir" ]; then
+    exit 1
+fi
+
+mkdir -p "$cache_dir"
+touch "$cache_bt_power"
+
+##
+## Helpers
+##
+
+_bt_cmd() {
+    bluetoothctl -- "$@" 2>/dev/null
+}
+
+_bt_powered() {
+    _bt_cmd show | grep -c "Powered: yes"
+}
+
+_mac_to_json_key() {
+    echo "$1" | tr '[:upper:]' '[:lower:]' | tr ':' '_'
+}
+
+_device_name() {
+    mac="$1"
+    name=$(_bt_cmd info "$mac" | sed -n 's/.*Name: \(.*\)/\1/p' | head -1)
+    [ -z "$name" ] && name="$mac"
+    echo "$name"
+}
+
+_device_to_json() {
+    mac="$1"
+    info=$(_bt_cmd info "$mac")
+
+    name=$(echo "$info"    | sed -n 's/.*Name: \(.*\)/\1/p'      | head -1)
+    alias=$(echo "$info"   | sed -n 's/.*Alias: \(.*\)/\1/p'     | head -1)
+    paired=$(echo "$info"  | grep -c "Paired: yes")
+    trusted=$(echo "$info" | grep -c "Trusted: yes")
+    connected=$(echo "$info" | grep -c "Connected: yes")
+    batt=$(echo "$info"    | sed -n 's/.*Battery Percentage:.*(\([0-9]*\))/\1/p' | head -1)
+
+    [ -z "$name" ]  && name="$mac"
+    [ -z "$alias" ] && alias="$name"
+    [ -z "$batt" ]  && batt="null" || batt="$batt"
+
+    printf '{"mac":"%s","name":"%s","alias":"%s","paired":%s,"trusted":%s,"connected":%s,"battery":%s}' \
+        "$mac" "$name" "$alias" \
+        "$([ "$paired"    -gt 0 ] && echo true || echo false)" \
+        "$([ "$trusted"   -gt 0 ] && echo true || echo false)" \
+        "$([ "$connected" -gt 0 ] && echo true || echo false)" \
+        "$batt"
+}
+
+##
+## Status
+##
+
+_bt_status() {
+    powered=$(_bt_powered)
+
+    if [ "$powered" -eq 0 ]; then
+        echo '{"enabled":false,"scanning":false,"connected":false}'
+        return
+    fi
+
+    scanning=$(_bt_cmd show | grep -c "Discovering: yes")
+    discoverable=$(_bt_cmd show | grep -c "Discoverable: yes")
+
+    # First connected device if any
+    connected_mac=$(_bt_cmd devices Connected \
+        | sed -n 's/Device \([^ ]*\) .*/\1/p' | head -1)
+
+    if [ -n "$connected_mac" ]; then
+        connected_name=$(_device_name "$connected_mac")
+        printf '{"enabled":true,"scanning":%s,"discoverable":%s,"connected":true,"device_mac":"%s","device_name":"%s"}\n' \
+            "$([ "$scanning"     -gt 0 ] && echo true || echo false)" \
+            "$([ "$discoverable" -gt 0 ] && echo true || echo false)" \
+            "$connected_mac" "$connected_name"
+    else
+        printf '{"enabled":true,"scanning":%s,"discoverable":%s,"connected":false}\n' \
+            "$([ "$scanning"     -gt 0 ] && echo true || echo false)" \
+            "$([ "$discoverable" -gt 0 ] && echo true || echo false)"
+    fi
+}
+
+##
+## List
+##
+
+_bt_list() {
+    filter="$1"  # "paired" | "connected" | "discovered" | "" (all paired)
+
+    case "$filter" in
+        connected)  macs=$(_bt_cmd devices Connected | sed -n 's/Device \([^ ]*\) .*/\1/p') ;;
+        discovered) macs=$(_bt_cmd devices           | sed -n 's/Device \([^ ]*\) .*/\1/p') ;;
+        *)          macs=$(_bt_cmd devices Paired    | sed -n 's/Device \([^ ]*\) .*/\1/p') ;;
+    esac
+
+    comma=false
+    printf '['
+    for mac in $macs; do
+        [ -z "$mac" ] && continue
+        [ "$comma" = "true" ] && printf ','
+        _device_to_json "$mac"
+        comma=true
+    done
+    printf ']\n'
+}
+
+##
+## Scan
+##
+
+_bt_scan() {
+    duration="${1:-10}"
+
+    case "$duration" in
+        '' | *[!0-9]*)
+            error "bluetooth: invalid scan duration '$duration'"
+            return 1
+            ;;
+    esac
+
+    if [ "$(_bt_powered)" -eq 0 ]; then
+        error "bluetooth: adapter is off"
+        return 1
+    fi
+
+    bluetoothctl --timeout "$duration" scan on >/dev/null 2>&1
+    _bt_list discovered
+}
+
+##
+## Connect / Disconnect
+##
+
+_bt_connect() {
+    mac="$1"
+    [ -z "$mac" ] && error "bluetooth: no MAC address provided" && exit 1
+
+    # Tenta trust antes para evitar prompt em dispositivos já pareados
+    _bt_cmd trust "$mac" >/dev/null 2>&1
+
+    result=$(_bt_cmd connect "$mac" 2>&1)
+    if echo "$result" | grep -q "Connected: yes\|successful"; then
+        info "bluetooth: connected to $mac"
+    else
+        error "bluetooth: failed to connect to $mac"
+        exit 1
+    fi
+}
+
+_bt_disconnect() {
+    mac="$1"
+    [ -z "$mac" ] && error "bluetooth: no MAC address provided" && exit 1
+
+    _bt_cmd disconnect "$mac" >/dev/null
+    info "bluetooth: disconnected from $mac"
+}
+
+##
+## Pair / Unpair
+##
+
+_bt_pair() {
+    mac="$1"
+    [ -z "$mac" ] && error "bluetooth: no MAC address provided" && exit 1
+
+    if [ "$(_bt_powered)" -eq 0 ]; then
+        error "bluetooth: adapter is off"
+        exit 1
+    fi
+
+    result=$(_bt_cmd pair "$mac" 2>&1)
+    if echo "$result" | grep -q "Paired: yes\|successful"; then
+        _bt_cmd trust "$mac" >/dev/null
+        info "bluetooth: paired with $mac"
+    else
+        error "bluetooth: failed to pair with $mac"
+        exit 1
+    fi
+}
+
+_bt_forget() {
+    mac="$1"
+    [ -z "$mac" ] && error "bluetooth: no MAC address provided" && exit 1
+
+    _bt_cmd remove "$mac" >/dev/null
+    info "bluetooth: removed $mac"
+}
+
+##
+## Trust / Untrust
+##
+
+_bt_trust() {
+    mac="$1"
+    [ -z "$mac" ] && error "bluetooth: no MAC address provided" && exit 1
+    _bt_cmd trust "$mac" >/dev/null
+    info "bluetooth: trusted $mac"
+}
+
+_bt_untrust() {
+    mac="$1"
+    [ -z "$mac" ] && error "bluetooth: no MAC address provided" && exit 1
+    _bt_cmd untrust "$mac" >/dev/null
+    info "bluetooth: untrusted $mac"
+}
+
+##
+## Power
+##
+
+_bt_power() {
+    cmd="$1"
+    _bt_cmd power "$cmd" >/dev/null
+    echo "$cmd" > "$cache_bt_power"
+    info "bluetooth: powered $cmd"
+}
+
+_bt_toggle() {
+    if [ "$(_bt_powered)" -gt 0 ]; then
+        _bt_power off
+    else
+        _bt_power on
+    fi
+}
+
+##
+## Discoverable
+##
+
+_bt_discoverable() {
+    cmd="${1:-on}"
+    _bt_cmd discoverable "$cmd" >/dev/null
+    info "bluetooth: discoverable $cmd"
+}
+
+##
+## Usage
+##
+
+_usage() {
+    cat <<EOF
+Usage: scripter bluetooth <command> [options]
+
+Commands:
+  status                        Show adapter and connection status
+  list [paired|connected|discovered]
+                                List devices (default: paired)
+  scan [seconds]                Scan for nearby devices (default: 10s)
+
+  connect <mac>                 Connect to a device
+  disconnect <mac>              Disconnect from a device
+  pair <mac>                    Pair with a device
+  forget <mac>                  Remove a paired device
+
+  trust <mac>                   Trust a device
+  untrust <mac>                 Untrust a device
+
+  on | off                      Power adapter on/off
+  toggle                        Toggle adapter power
+  discoverable [on|off]         Set discoverability (default: on)
+EOF
+}
+
+##
+## Entry point
+##
+
+case $1 in
+    help | --help | -h)
+        _usage
+        ;;
+
+    status)
+        _bt_status
+        ;;
+
+    list)
+        _bt_list "$2"
+        ;;
+
+    scan)
+        _bt_scan "$2"
+        ;;
+
+    connect)
+        _bt_connect "$2"
+        ;;
+
+    disconnect)
+        _bt_disconnect "$2"
+        ;;
+
+    pair)
+        _bt_pair "$2"
+        ;;
+
+    forget)
+        _bt_forget "$2"
+        ;;
+
+    trust)
+        _bt_trust "$2"
+        ;;
+
+    untrust)
+        _bt_untrust "$2"
+        ;;
+
+    on | off)
+        _bt_power "$1"
+        ;;
+
+    toggle)
+        _bt_toggle
+        ;;
+
+    discoverable)
+        _bt_discoverable "$2"
+        ;;
+
+    *)
+        error "bluetooth: unknown command '$1'"
+        _usage
+        exit 1
+        ;;
+esac
+
+# vim: ft=sh

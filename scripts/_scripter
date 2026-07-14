@@ -14,10 +14,22 @@ cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/scripter"
 mkdir -p "$cache_dir"
 
 _run_script() {
+    if [ "$#" -eq 0 ]; then
+        error "No script specified!"
+        exit 1
+    fi
+
     script="$1"
     shift
 
-    if [ ! -e "$root/$script" ]; then
+    case "$script" in
+        "" | */* | "." | "..")
+            error "Invalid script name '$script'!"
+            exit 1
+            ;;
+    esac
+
+    if [ ! -f "$root/$script" ]; then
         error "Can't find script '$script' to run!"
         exit 1
     fi
