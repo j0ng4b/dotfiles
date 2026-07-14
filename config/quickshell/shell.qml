@@ -9,7 +9,7 @@ import Quickshell
 import Quickshell.Io
 
 import qs.config
-import qs.modules.bar
+import qs.modules
 import qs.modules.osd
 import qs.modules.launcher
 import qs.modules.notifications
@@ -19,21 +19,16 @@ import qs.modules.lockscreen
 import qs.services
 
 ShellRoot {
-    Bar {}
-    Osd {}
-    Launcher {}
-    Notifications {}
     Wallpaper {}
-    Monitor {}
     LockScreen {}
 
-    IpcHandler {
-        target: 'wallpaper'
+    Launcher {}
 
-        function set(path: string) {
-            Config.wallpaper.source = Qt.resolvedUrl(path);
-        }
-    }
+    Osd {}
+    Notifications {}
+
+    Monitor {}
+    UiShell {}
 
     IpcHandler {
         target: 'launcher'
@@ -46,6 +41,14 @@ ShellRoot {
         target: 'monitors'
         function toggle() {
             MonitorState.toggle();
+        }
+    }
+
+    IpcHandler {
+        target: 'wallpaper'
+
+        function set(path: string) {
+            Config.wallpaper.source = Qt.resolvedUrl(path);
         }
     }
 

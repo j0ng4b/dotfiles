@@ -1,172 +1,159 @@
-import Quickshell
-import Quickshell.Wayland
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import qs.config
 import qs.components
 import qs.services
 import qs.modules.launcher
 
-Variants {
-    model: Quickshell.screens
-    delegate: PanelWindow {
-        id: bar
-        required property var modelData
-        screen: modelData
+Item {
+    id: bar
 
-        property int contentHeight: Config.general.barHeight
+    required property var screen
+    property int contentHeight: Config.general.barHeight
 
-        anchors.top: true
+    readonly property var mask: Region {
+        item: content
+    }
 
-        color: 'transparent'
-        exclusiveZone: contentHeight
+    anchors.fill: parent
 
-        WlrLayershell.layer: WlrLayer.Top
-        WlrLayershell.namespace: Config.shellName + '-bar'
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+    ColumnLayout {
+        id: container
+        spacing: 0
+        anchors.fill: parent
 
-        implicitWidth: screen.width
-        implicitHeight: screen.height
+        Rectangle {
+            color: Colorscheme.current.surface
 
-        mask: Region {
-            item: content
-        }
+            Layout.preferredWidth: content.width
+            Layout.preferredHeight: content.height
 
-        ColumnLayout {
-            id: container
-            spacing: 0
-            anchors.fill: parent
+            Item {
+                id: content
+                implicitWidth: bar.width
+                implicitHeight: bar.contentHeight
 
-            Rectangle {
-                color: Colorscheme.current.surface
+                Rectangle {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.leftMargin: 7
 
-                Layout.preferredWidth: content.width
-                Layout.preferredHeight: content.height
+                    width: 26
+                    height: 26
+                    radius: 6
 
-                Item {
-                    id: content
-                    implicitWidth: bar.width
-                    implicitHeight: bar.contentHeight
+                    color: launcherBtn.containsMouse ? Colorscheme.current.surface_container_high : 'transparent'
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 150
+                        }
+                    }
 
-                    Rectangle {
-                        anchors.left: parent.left
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.leftMargin: 7
+                    Icon {
+                        icon: 'grid_view'
+                        fill: launcherBtn.containsMouse
+                        anchors.centerIn: parent
+                        color: launcherBtn.containsMouse ? Colorscheme.current.primary : Colorscheme.current.on_surface
 
-                        width: 26
-                        height: 26
-                        radius: 6
-
-                        color: launcherBtn.containsMouse ? Colorscheme.current.surface_container_high : 'transparent'
                         Behavior on color {
                             ColorAnimation {
                                 duration: 150
                             }
                         }
-
-                        Icon {
-                            icon: 'grid_view'
-                            fill: launcherBtn.containsMouse
-                            anchors.centerIn: parent
-                            color: launcherBtn.containsMouse ? Colorscheme.current.primary : Colorscheme.current.on_surface
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 150
-                                }
-                            }
-                        }
-
-                        MouseArea {
-                            id: launcherBtn
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: LauncherState.toggle(bar.modelData.name)
-                        }
                     }
 
-                    Workspaces {
-                        output: bar.screen
-                        anchors.centerIn: parent
+                    MouseArea {
+                        id: launcherBtn
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: LauncherState.toggle(bar.screen.name)
+                    }
+                }
+
+                Workspaces {
+                    output: bar.screen
+                    anchors.centerIn: parent
+                }
+
+                RowLayout {
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.rightMargin: 8
+                    spacing: 6
+
+                    SystemTray {
+                        Layout.alignment: Qt.AlignVCenter
                     }
 
-                    RowLayout {
-                        anchors.right: parent.right
-                        anchors.top: parent.top
-                        anchors.bottom: parent.bottom
-                        anchors.rightMargin: 8
-                        spacing: 6
+                    Rectangle {
+                        color: Colorscheme.current.on_surface
+                        opacity: 0.2
+                        Layout.preferredWidth: 1
+                        Layout.preferredHeight: 14
+                        Layout.alignment: Qt.AlignVCenter
+                    }
 
-                        SystemTray {
-                            Layout.alignment: Qt.AlignVCenter
-                        }
+                    ColumnLayout {
+                        spacing: 2
+                        Layout.alignment: Qt.AlignVCenter
+                        Layout.preferredHeight: parent.height
 
-                        Rectangle {
+                        Text {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: ClockService.time
+                            font.pixelSize: 11
                             color: Colorscheme.current.on_surface
-                            opacity: 0.2
-                            Layout.preferredWidth: 1
-                            Layout.preferredHeight: 14
-                            Layout.alignment: Qt.AlignVCenter
                         }
 
-                        ColumnLayout {
-                            spacing: 2
-                            Layout.alignment: Qt.AlignVCenter
-                            Layout.preferredHeight: parent.height
-
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: ClockService.time
-                                font.pixelSize: 11
-                                color: Colorscheme.current.on_surface
-                            }
-
-                            Text {
-                                Layout.alignment: Qt.AlignHCenter
-                                text: ClockService.date
-                                font.pixelSize: 9
-                                color: Colorscheme.current.on_surface
-                            }
+                        Text {
+                            Layout.alignment: Qt.AlignHCenter
+                            text: ClockService.date
+                            font.pixelSize: 9
+                            color: Colorscheme.current.on_surface
                         }
                     }
                 }
             }
+        }
 
-            RowLayout {
-                Layout.preferredWidth: content.width
+        RowLayout {
+            Layout.preferredWidth: content.width
 
-                Corner {
-                    side: Corner.Side.TopLeft
-                    color: Colorscheme.current.surface
-                    Layout.alignment: Qt.AlignLeft
-                }
-
-                Corner {
-                    side: Corner.Side.TopRight
-                    color: Colorscheme.current.surface
-                    Layout.alignment: Qt.AlignRight
-                }
+            Corner {
+                side: Corner.Side.TopLeft
+                color: Colorscheme.current.surface
+                Layout.alignment: Qt.AlignLeft
             }
 
-            Item {
-                Layout.fillHeight: true
+            Corner {
+                side: Corner.Side.TopRight
+                color: Colorscheme.current.surface
+                Layout.alignment: Qt.AlignRight
+            }
+        }
+
+        Item {
+            Layout.fillHeight: true
+        }
+
+        RowLayout {
+            Layout.preferredWidth: content.width
+
+            Corner {
+                side: Corner.Side.BottomLeft
+                color: Colorscheme.current.surface
+                Layout.alignment: Qt.AlignLeft
             }
 
-            RowLayout {
-                Layout.preferredWidth: content.width
-
-                Corner {
-                    side: Corner.Side.BottomLeft
-                    color: Colorscheme.current.surface
-                    Layout.alignment: Qt.AlignLeft
-                }
-
-                Corner {
-                    side: Corner.Side.BottomRight
-                    color: Colorscheme.current.surface
-                    Layout.alignment: Qt.AlignRight
-                }
+            Corner {
+                side: Corner.Side.BottomRight
+                color: Colorscheme.current.surface
+                Layout.alignment: Qt.AlignRight
             }
         }
     }
