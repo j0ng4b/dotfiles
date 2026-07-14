@@ -39,6 +39,7 @@ Singleton {
 
             property JsonObject general: JsonObject {
                 property int radius: 10
+                property int barHeight: 30
             }
 
             property JsonObject colors: JsonObject {

@@ -14,7 +14,7 @@ Variants {
         required property var modelData
         screen: modelData
 
-        property int contentHeight: 30
+        property int contentHeight: Config.general.barHeight
 
         anchors.top: true
 
