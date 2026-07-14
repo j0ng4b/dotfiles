@@ -1,8 +1,8 @@
 pragma Singleton
 
+import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick
 import qs.config
 
 Singleton {
@@ -13,12 +13,19 @@ Singleton {
 
     signal changed(source: string)
 
+    function setScreen(value) {
+        _setProcess.command = [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "brightness", "screen", "set", Math.round(value * 100) + "%"];
+        _setProcess.running = true;
+    }
+
+    Process {
+        id: _setProcess
+        running: false
+    }
+
     Process {
         running: true
-        command: [
-            Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")),
-            "brightness", "watch"
-        ]
+        command: [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "brightness", "watch"]
 
         stdout: SplitParser {
             onRead: data => {

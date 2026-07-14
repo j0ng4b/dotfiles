@@ -1,8 +1,8 @@
 pragma Singleton
 
+import QtQuick
 import Quickshell
 import Quickshell.Io
-import QtQuick
 import qs.config
 
 Singleton {
@@ -13,6 +13,16 @@ Singleton {
     property string type: "speaker"
 
     signal changed
+
+    function setVolume(value) {
+        _setProcess.command = [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "multimedia", "speaker", "set", String(Math.round(value * 100))];
+        _setProcess.running = true;
+    }
+
+    Process {
+        id: _setProcess
+        running: false
+    }
 
     Process {
         running: true
