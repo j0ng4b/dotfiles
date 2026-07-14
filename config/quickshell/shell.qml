@@ -10,30 +10,19 @@ import Quickshell.Io
 
 import qs.config
 import qs.modules
-import qs.modules.launcher
 import qs.modules.notifications
 import qs.modules.wallpaper
 import qs.modules.monitors
 import qs.modules.lockscreen
-import qs.services
 
 ShellRoot {
     Wallpaper {}
     LockScreen {}
 
-    Launcher {}
-
     Notifications {}
 
     Monitor {}
     UiShell {}
-
-    IpcHandler {
-        target: 'launcher'
-        function toggle() {
-            LauncherState.toggle(CompositorService.focusedOutput);
-        }
-    }
 
     IpcHandler {
         target: 'monitors'

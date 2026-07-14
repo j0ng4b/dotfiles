@@ -1,6 +1,8 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Io
+import qs.services
 
 Singleton {
     id: root
@@ -39,5 +41,13 @@ Singleton {
 
     function switchTab(tab) {
         activeTab = tab;
+    }
+
+    IpcHandler {
+        target: "launcher"
+
+        function toggle() {
+            root.toggle(CompositorService.focusedOutput);
+        }
     }
 }
