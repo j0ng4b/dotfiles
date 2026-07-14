@@ -72,7 +72,7 @@ _get_status() {
 }
 
 ##
-## Volume — get
+## Volume - get
 ##
 
 _volume_get() {
@@ -83,17 +83,16 @@ _volume_get() {
 }
 
 ##
-## Volume — set
+## Volume - set
 ##
 
 _volume_set() {
     target="$1"
     input="$2"
 
-    # If muted, skip set and warn
+    # Set volume value when muted will unmute
     if _is_muted "$target"; then
-        warn "multimedia: target is muted, unmute first"
-        return 1
+        _volume_mute "$target"
     fi
 
     # For wpctl all signals should be at end of value but on this
@@ -123,7 +122,7 @@ _volume_set() {
 }
 
 ##
-## Volume — mute
+## Volume - mute
 ##
 
 _volume_mute() {
@@ -132,7 +131,7 @@ _volume_mute() {
 }
 
 ##
-## Volume — watch
+## Volume - watch
 ##
 
 _watch() {
@@ -195,7 +194,7 @@ _watch() {
 }
 
 ##
-## Player — MPRIS via playerctl
+## Player - MPRIS via playerctl
 ##
 
 _require_playerctl() {
@@ -292,7 +291,7 @@ _player_volume_set() {
 }
 
 _player_watch() {
-    # Emit initial state — nothing changed yet
+    # Emit initial state - nothing changed yet
     _player_list_json "none"
 
     # playerctl --follow outputs the player name that changed on each line
