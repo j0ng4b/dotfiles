@@ -10,14 +10,30 @@ cache_wifi_signal_level="$cache_dir_wifi/signal_level"
 
 if [ -z "$cache_dir" ]; then
     exit 1
-elif [ ! -d "$cache_dir" ]; then
-    mkdir -p "$cache_dir_wifi"
+fi
 
-    # WiFi
-    touch "$cache_wifi_signal_level"
-    touch "$cache_wifi_power"
-    interface=$(find /sys/class/net \( -name "wlan*" -o -name "wl*" \) -exec basename {} \; | head -1)
-    [ -n "$interface" ] && echo "$interface" > "$cache_wifi_interface"
+## WiFi
+mkdir -p "$cache_dir_wifi"
+
+# Initial interface name
+if [ ! -s "$cache_wifi_interface" ]; then
+    interface=$(find /sys/class/net \( -name "wlan*" -o -name "wl*" \) -exec basename {} \; | head -n 1)
+
+    if [ -n "$interface" ]; then
+        printf '%s\n' "$interface" > "$cache_wifi_interface"
+    else
+        : > "$cache_wifi_interface"
+    fi
+fi
+
+# Initial power state
+if [ ! -s "$cache_wifi_power" ]; then
+    printf '%s\n' "on" > "$cache_wifi_power"
+fi
+
+# Initial signal level
+if [ ! -s "$cache_wifi_signal_level" ]; then
+    : > "$cache_wifi_signal_level"
 
     for i in $(seq 1 5); do
         echo -50 >> "$cache_wifi_signal_level"
