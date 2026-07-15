@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import qs.modules.notifications
 import qs.config
 import qs.components
 import qs.services
@@ -97,6 +98,27 @@ Item {
                         label: BluetoothService.enabled ? (BluetoothService.connected ? BluetoothService.deviceName : 'On') : 'Off'
                         active: BluetoothService.enabled
                         onClicked: BluetoothService.toggle()
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: 10
+
+                    QuickToggle {
+                        Layout.fillWidth: true
+                        icon: ColorTemperatureService.isNight ? 'dark_mode' : 'light_mode'
+                        label: ColorTemperatureService.isNight ? 'Night' : 'Day'
+                        active: ColorTemperatureService.isNight
+                        onClicked: ColorTemperatureService.toggle()
+                    }
+
+                    QuickToggle {
+                        Layout.fillWidth: true
+                        icon: NotificationsState.dnd ? 'notifications_off' : 'notifications'
+                        label: NotificationsState.dnd ? 'DND On' : 'DND Off'
+                        active: NotificationsState.dnd
+                        onClicked: NotificationsState.toggleDnd()
                     }
                 }
 
