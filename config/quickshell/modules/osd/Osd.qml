@@ -12,7 +12,7 @@ Item {
 
     required property var screen
 
-    readonly property bool isActiveScreen: screen.name === CompositorService.focusedOutput
+    readonly property bool active: screen.name === CompositorService.focusedOutput
 
     readonly property int contentMargins: Config.osd.contentMargins
     readonly property int barWidth: Config.osd.barWidth
@@ -24,6 +24,7 @@ Item {
         item: container
     }
 
+    enabled: osd.active
     anchors.fill: parent
 
     Item {
@@ -34,7 +35,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
 
-        x: (osd.isActiveScreen && OsdState.visible) ? osd.width - width : osd.width
+        x: (osd.active && OsdState.visible) ? osd.width - width : osd.width
         Behavior on x {
             NumberAnimation {
                 duration: 300

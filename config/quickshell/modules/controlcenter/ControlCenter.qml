@@ -22,6 +22,8 @@ Item {
         height: controlCenter.active ? controlCenter.screen.height : 0
     }
 
+    enabled: controlCenter.active
+
     MouseArea {
         anchors.fill: parent
         enabled: controlCenter.active

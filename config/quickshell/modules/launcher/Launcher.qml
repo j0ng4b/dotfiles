@@ -35,6 +35,7 @@ Item {
         }
     }
 
+    enabled: launcher.active
     anchors.fill: parent
 
     onActiveChanged: {

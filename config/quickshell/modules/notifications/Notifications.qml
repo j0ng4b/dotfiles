@@ -39,6 +39,7 @@ Item {
         height: panel.height
     }
 
+    enabled: notifications.active
     anchors.fill: parent
 
     Item {
