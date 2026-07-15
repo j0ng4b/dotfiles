@@ -158,10 +158,10 @@ _watch() {
 
         changed="none"
 
-        if [ "$cur_speaker_vol" != "$last_speaker_vol" ] || \
+        if [ "$cur_speaker_vol" != "$last_speaker_vol" ] ||
            [ "$cur_speaker_mute" != "$last_speaker_mute" ]; then
             changed="speaker"
-        elif [ "$cur_mic_vol" != "$last_mic_vol" ] || \
+        elif [ "$cur_mic_vol" != "$last_mic_vol" ] ||
              [ "$cur_mic_mute" != "$last_mic_mute" ]; then
             changed="mic"
         fi
