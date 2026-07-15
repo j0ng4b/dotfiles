@@ -1,166 +1,448 @@
 #!/usr/bin/env sh
 
-# Cache
-cache_dir=$SCRIPT_CACHE_DIR
-cache_mode=$cache_dir/mode
+##
+## Cache
+##
 
-if [ ! -d "$cache_dir" ]; then
-    mkdir -p "$cache_dir"
-    echo "auto" > $cache_mode
+cache_dir="$SCRIPT_CACHE_DIR"
+cache_mode="$cache_dir/mode"
+cache_pid="$cache_dir/pid"
+
+if [ -z "$cache_dir" ]; then
+    error "color-temperature: SCRIPT_CACHE_DIR is not defined"
+    exit 1
 fi
 
+mkdir -p "$cache_dir" || exit 1
 
-_get_status() {
-    enable=0
-    if [ -n "$(pgrep wlsunset)" ]; then
-        enable=1
-    fi
+if [ ! -s "$cache_mode" ]; then
+    printf '%s\n' "auto" > "$cache_mode"
+fi
 
-    mode=$(cat $cache_mode)
-    printf '{'
-    printf '"enable": %s,' $enable
-    printf '"mode": "%s"' $mode
-    printf '}\n'
+##
+## Helpers
+##
+
+_is_running() {
+    pgrep -x wlsunset >/dev/null 2>&1
 }
 
-_start_color_adjust() {
-    wlsunset -l $1 -L $2 &
+_get_mode() {
+    mode=$(cat "$cache_mode" 2>/dev/null)
 
-    # Set the previous mode
-    mode=$(cat $cache_mode)
-    if [ "$mode" = "auto" ]; then
-        # does nothing
-        :
-    elif [ "$mode" = "high" ]; then
-        pkill -USR1 wlsunset
-    else
-        # Go to high
-        pkill -USR1 wlsunset
-
-        # Finally go to low
-        pkill -USR1 wlsunset
-    fi
-}
-
-_update_mode_to() {
-    target="$1"
-    mode=$(cat "$cache_mode")
-
-    [ "$mode" = "$target" ] && return 0
-
-    case "$mode:$target" in
-        auto:high | high:low | low:auto)
-            count=1
-            ;;
-        auto:low | low:high | high:auto)
-            count=2
+    case "$mode" in
+        auto | high | low)
+            printf '%s\n' "$mode"
             ;;
         *)
-            error "Invalid mode transition: $mode → $target"
+            printf '%s\n' "auto"
+            ;;
+    esac
+}
+
+_set_cached_mode() {
+    printf '%s\n' "$1" > "$cache_mode"
+}
+
+_normalize_mode() {
+    case "$1" in
+        auto | automatic)
+            printf '%s\n' "auto"
+            ;;
+
+        high | day | cool)
+            printf '%s\n' "high"
+            ;;
+
+        low | night | warm)
+            printf '%s\n' "low"
+            ;;
+
+        *)
             return 1
             ;;
     esac
-
-    i=1
-    while [ $i -le $count ]; do
-        pkill -USR1 wlsunset
-        i=$((i + 1))
-    done
-
-    echo "$target" > "$cache_mode"
 }
 
+_get_location() {
+    latitude=$("$root/_scripter" location latitude)
+    longitude=$("$root/_scripter" location longitude)
 
-cmd=$1
-case $cmd in
+    if [ -z "$latitude" ] || [ -z "$longitude" ]; then
+        error "color-temperature: failed to determine location"
+        return 1
+    fi
+}
+
+##
+## Status
+##
+
+_get_status() {
+    enabled='false'
+    _is_running && enabled='true'
+
+    mode=$(_get_mode)
+
+    printf '{"enabled": %s, "mode": "%s"}\n' \
+        "$enabled" "$mode"
+}
+
+##
+## Watch
+##
+
+_watch() {
+    _get_status
+
+    last_enabled=$(_is_running && printf true || printf false)
+    last_mode=$(_get_mode)
+
+    while true; do
+        enabled=$(_is_running && printf true || printf false)
+        mode=$(_get_mode)
+
+        if [ "$enabled" != "$last_enabled" ] || [ "$mode" != "$last_mode" ]; then
+            _get_status
+
+            last_enabled="$enabled"
+            last_mode="$mode"
+        fi
+
+        sleep 0.5
+    done
+}
+
+##
+## Mode handling
+##
+
+_apply_mode() {
+    target="$1"
+
+    current=$(cat "$cache_mode")
+    if [ "$target" = "$current" ]; then
+        return
+    fi
+
+    _set_cached_mode "$target"
+
+    if [ ! -s "$cache_pid" ]; then
+        return
+    fi
+
+    pid=$(cat "$cache_pid" 2>/dev/null)
+    case "$pid" in
+        '' | *[!0-9]*)
+            rm -f "$cache_pid"
+            return
+            ;;
+    esac
+
+    # wlsunset always starts in automatic mode. Terminating the current
+    # process forces the supervisor to recreate it from this known state.
+    if kill -0 "$pid" 2>/dev/null; then
+        kill "$pid" >/dev/null 2>&1 || {
+            error "color-temperature: failed to restart wlsunset"
+            return 1
+        }
+    else
+        rm -f "$cache_pid"
+    fi
+}
+
+_cycle_mode() {
+    current=$(_get_mode)
+
+    case "$current" in
+        auto) target="high" ;;
+        high) target="low" ;;
+        low) target="auto" ;;
+        *)
+            warn "color-temperature: invalid cached mode '$current', using auto"
+            target="auto"
+            ;;
+    esac
+
+    _apply_mode "$target"
+}
+
+##
+## Process management
+##
+
+_apply_cached_mode_to_process() {
+    pid="$1"
+    mode=$(_get_mode)
+
+    case "$mode" in
+        auto)
+            # wlsunset starts in automatic mode.
+            ;;
+
+        high)
+            kill -USR1 "$pid" 2>/dev/null || {
+                error "color-temperature: failed to apply high mode"
+                return 1
+            }
+            ;;
+
+        low)
+            kill -USR1 "$pid" 2>/dev/null || {
+                error "color-temperature: failed to apply low mode"
+                return 1
+            }
+
+            # Standard signals are not queued. Wait until wlsunset handles
+            # the first transition before sending the second one.
+            sleep 0.1
+
+            kill -USR1 "$pid" 2>/dev/null || {
+                error "color-temperature: failed to apply low mode"
+                return 1
+            }
+            ;;
+
+        *)
+            warn "color-temperature: invalid cached mode '$mode', using auto"
+            _set_cached_mode "auto"
+            ;;
+    esac
+}
+
+_start_wlsunset() {
+    latitude="$1"
+    longitude="$2"
+
+    wlsunset -l "$latitude" -L "$longitude" &
+    wlsunset_pid=$!
+
+    printf '%s\n' "$wlsunset_pid" > "$cache_pid"
+
+    # Wait until the process has initialized and installed its signal
+    # handlers before sending SIGUSR1.
+    sleep 0.1
+
+    if ! kill -0 "$wlsunset_pid" 2>/dev/null; then
+        wait "$wlsunset_pid" 2>/dev/null
+        rm -f "$cache_pid"
+
+        error "color-temperature: wlsunset failed to start"
+        return 1
+    fi
+
+    _apply_cached_mode_to_process "$wlsunset_pid"
+}
+
+_stop_wlsunset() {
+    if [ -z "${wlsunset_pid:-}" ]; then
+        return
+    fi
+
+    if kill -0 "$wlsunset_pid" 2>/dev/null; then
+        kill "$wlsunset_pid" 2>/dev/null
+    fi
+
+    wait "$wlsunset_pid" 2>/dev/null
+    rm -f "$cache_pid"
+
+    wlsunset_pid=''
+}
+
+_cleanup() {
+    trap - INT TERM EXIT
+    _stop_wlsunset
+}
+
+_run() {
+    if _is_running; then
+        warn "color-temperature: existing wlsunset process found, restarting under script supervision"
+
+        if ! pkill -x wlsunset >/dev/null 2>&1; then
+            error "color-temperature: failed to stop existing wlsunset process"
+            return 1
+        fi
+
+        i=0
+        while _is_running; do
+            i=$((i + 1))
+
+            if [ "$i" -ge 20 ]; then
+                error "color-temperature: existing wlsunset process did not stop"
+                return 1
+            fi
+
+            sleep 0.1
+        done
+    fi
+
+    _get_location || return 1
+
+    _start_wlsunset "$latitude" "$longitude" || return 1
+
+    trap '_cleanup; exit 0' INT TERM
+    trap '_cleanup' EXIT
+
+    location_elapsed=0
+
+    while true; do
+        sleep 1
+        location_elapsed=$((location_elapsed + 1))
+
+        # The set and cycle commands terminate wlsunset. Restarting it makes
+        # the requested mode deterministic because every process begins in
+        # automatic mode.
+        if ! kill -0 "$wlsunset_pid" 2>/dev/null; then
+            wait "$wlsunset_pid" 2>/dev/null
+
+            warn "color-temperature: wlsunset stopped, restarting"
+
+            _get_location || {
+                sleep 1
+                continue
+            }
+
+            _start_wlsunset "$latitude" "$longitude" || {
+                sleep 1
+                continue
+            }
+
+            location_elapsed=0
+            continue
+        fi
+
+        # Location does not need to be checked every second.
+        if [ "$location_elapsed" -lt 30 ]; then
+            continue
+        fi
+
+        location_elapsed=0
+
+        current_latitude=$("$root/_scripter" location latitude)
+        current_longitude=$("$root/_scripter" location longitude)
+
+        if [ -z "$current_latitude" ] || [ -z "$current_longitude" ]; then
+            warn "color-temperature: failed to refresh location"
+            continue
+        fi
+
+        if [ "$current_latitude" != "$latitude" ] ||
+            [ "$current_longitude" != "$longitude" ]; then
+            latitude="$current_latitude"
+            longitude="$current_longitude"
+
+            _stop_wlsunset
+
+            _start_wlsunset "$latitude" "$longitude" || {
+                sleep 1
+                continue
+            }
+        fi
+    done
+}
+
+##
+## Usage
+##
+
+_usage() {
+    cat <<EOF
+Usage: scripter color-temperature <command> [options]
+
+Commands:
+  status                    Show current wlsunset status and mode
+  watch                     Emit status whenever state or mode changes
+  run                       Start and supervise wlsunset
+
+  set <mode>                Restart wlsunset using the selected mode
+  cycle                     Cycle between auto, high and low
+
+Modes:
+  auto | automatic
+      Automatic color temperature based on time and location
+
+  high | day | cool
+      High color temperature, cooler daytime appearance
+
+  low | night | warm
+      Low color temperature, warmer nighttime appearance
+
+Mode cycle:
+  auto → high → low → auto
+EOF
+}
+
+##
+## Entry point
+##
+
+if ! command -v wlsunset >/dev/null 2>&1; then
+    error "color-temperature: wlsunset is not installed"
+    exit 1
+fi
+
+cmd="$1"
+
+case "$cmd" in
     status)
+        if [ "$#" -ne 1 ]; then
+            error "color-temperature: status takes no arguments"
+            exit 1
+        fi
+
         _get_status
         ;;
 
-    run)
-        if [ $# -gt 1 ]; then
-            error "Too many arguments!"
+    watch)
+        if [ "$#" -ne 1 ]; then
+            error "color-temperature: watch takes no arguments"
             exit 1
         fi
 
-        if [ -z "$(pgrep wlsunset)" ]; then
-            lat=$(sh $root/_scripter location latitude)
-            lon=$(sh $root/_scripter location longitude)
+        _watch
+        ;;
 
-            trap "pkill wlsunset; exit" $SIGINT $SIGTERM
-
-            _start_color_adjust $lat $lon
-            while true; do
-                # Restart wlsunset if stopped
-                if [ -z "$(pgrep wlsunset)" ]; then
-                    lat=$(sh $root/_scripter location latitude)
-                    lon=$(sh $root/_scripter location longitude)
-
-                    _start_color_adjust $lat $lon
-                fi
-
-                sleep 30
-
-                # Check for location changes
-                cur_lat=$(sh $root/_scripter location latitude)
-                cur_lon=$(sh $root/_scripter location longitude)
-                if [ "$cur_lat" != "$lat" -o "$cur_lon" != "$lon" ]; then
-                    lat=$cur_lat
-                    lon=$cur_lon
-
-                    # Restart wlsunset with new location coordinates
-                    pkill wlsunset
-                    _start_color_adjust $lat $lon
-                fi
-            done
+    run)
+        if [ "$#" -ne 1 ]; then
+            error "color-temperature: run takes no arguments"
+            exit 1
         fi
+
+        _run
         ;;
 
     set)
-        if [ $# -eq 1 ]; then
-            error "Expected <mode> given 0 arguments!"
+        if [ "$#" -ne 2 ]; then
+            error "color-temperature: expected exactly one mode"
             exit 1
         fi
 
-        subcmd=$2
-        case $subcmd in
-            auto | high | low)
-                if [ $# -gt 2 ]; then
-                    error "Too many arguments!"
-                    exit 1
-                fi
+        target=$(_normalize_mode "$2") || {
+            error "color-temperature: unknown mode '$2'"
+            exit 1
+        }
 
-                _update_mode_to $subcmd
-                ;;
-
-            *)
-                error "Unknown mode '$subcmd'!"
-                exit 1
-                ;;
-        esac
+        _apply_mode "$target"
         ;;
 
     cycle)
-        if [ $# -gt 1 ]; then
-            error "Too many arguments!"
+        if [ "$#" -ne 1 ]; then
+            error "color-temperature: cycle takes no arguments"
             exit 1
         fi
 
-        pkill -USR1 wlsunset
+        _cycle_mode
+        ;;
 
-        mode=$(cat $cache_mode)
-        if [ "$mode" = "auto" ]; then
-            echo "high" > $cache_mode
-        elif [ "$mode" = "high" ]; then
-            echo "low" > $cache_mode
-        else
-            echo "auto" > $cache_mode
-        fi
+    help | --help | -h)
+        _usage
         ;;
 
     *)
-        error "Unknown command '$cmd'!"
+        error "color-temperature: unknown command '$cmd'"
+        _usage
         exit 1
         ;;
 esac
 
+# vim: ft=sh
