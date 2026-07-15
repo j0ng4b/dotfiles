@@ -4,6 +4,8 @@ import qs.config
 Item {
     id: root
 
+    signal clicked
+
     property string tooltipText: ""
     property alias content: _contentSlot.data
 
@@ -66,6 +68,8 @@ Item {
     MouseArea {
         id: _hover
         anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
+        onClicked: root.clicked()
     }
 }

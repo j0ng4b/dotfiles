@@ -7,6 +7,8 @@ import qs.components
 Rectangle {
     id: root
 
+    signal indicatorClicked
+
     implicitHeight: _row.implicitHeight + 8
     implicitWidth: _row.implicitWidth + 16
     radius: 6
@@ -19,6 +21,8 @@ Rectangle {
 
         // Network
         BarIndicator {
+            onClicked: root.indicatorClicked()
+
             tooltipText: {
                 if (NetworkService.ethernetEnabled)
                     return NetworkService.ethernetInterface;
@@ -64,6 +68,8 @@ Rectangle {
 
         // Volume
         BarIndicator {
+            onClicked: root.indicatorClicked()
+
             tooltipText: VolumeService.muted ? "muted" : Math.round(VolumeService.level * 100) + "%"
 
             content: Icon {
@@ -87,6 +93,8 @@ Rectangle {
 
         // Battery
         BarIndicator {
+            onClicked: root.indicatorClicked()
+
             tooltipText: BatteryService.capacity + "%"
 
             content: Item {
