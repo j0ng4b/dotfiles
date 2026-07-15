@@ -93,6 +93,8 @@ _get_status() {
 ##
 
 _watch() {
+    trap 'exit 0' INT TERM HUP
+
     _get_status
 
     last_enabled=$(_is_running && printf true || printf false)
