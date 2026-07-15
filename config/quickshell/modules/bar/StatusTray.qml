@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import qs.modules.notifications
 import qs.config
 import qs.services
 import qs.components
@@ -18,6 +19,34 @@ Rectangle {
         id: _row
         anchors.centerIn: parent
         spacing: 10
+
+        // Notifications DND enabled
+        BarIndicator {
+            visible: NotificationsState.dnd
+            tooltipText: 'Do Not Disturb'
+            onClicked: root.indicatorClicked()
+
+            content: Icon {
+                icon: 'notifications_off'
+                fill: true
+                size: 14
+                color: Colorscheme.current.error
+            }
+        }
+
+        // Notifications
+        BarIndicator {
+            visible: NotificationsState.historyCount > 0
+            tooltipText: NotificationsState.historyCount + ' notification' + (NotificationsState.historyCount === 1 ? '' : 's')
+            onClicked: root.indicatorClicked()
+
+            content: Icon {
+                icon: 'notifications'
+                fill: true
+                size: 14
+                color: Colorscheme.current.on_surface
+            }
+        }
 
         // Network
         BarIndicator {
