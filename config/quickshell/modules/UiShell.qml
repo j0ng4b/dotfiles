@@ -7,6 +7,7 @@ import qs.config
 import qs.modules.bar
 import qs.modules.controlcenter
 import qs.modules.launcher
+import qs.modules.notifications
 import qs.modules.osd
 
 Variants {
@@ -33,13 +34,19 @@ Variants {
         }
 
         mask: Region {
-            regions: [osd.mask, launcher.mask, controlCenter.mask, bar.mask]
+            regions: [osd.mask, notifications.mask, launcher.mask, controlCenter.mask, bar.mask]
         }
 
         // Declaration order == paint order, from bottom (first) to top (last)
         Osd {
             id: osd
             screen: shell.screen
+        }
+
+        Notifications {
+            id: notifications
+            screen: shell.screen
+            anchors.fill: parent
         }
 
         Launcher {

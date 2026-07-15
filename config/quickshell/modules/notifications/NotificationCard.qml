@@ -2,8 +2,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Services.Notifications
 import qs.config
 import qs.components
 
@@ -69,6 +67,7 @@ Item {
     // Triggers the dismiss animation if the notification is closed externally
     Connections {
         target: NotificationsState
+
         function onNotificationClosed(notifId) {
             if (notifId === root.notifId)
                 root.startDismiss();
@@ -218,6 +217,7 @@ Item {
                     Layout.preferredWidth: 20
                     Layout.preferredHeight: 20
                     radius: 10
+
                     color: xMa.containsMouse ? Colorscheme.current.surface_container : 'transparent'
                     Behavior on color {
                         ColorAnimation {

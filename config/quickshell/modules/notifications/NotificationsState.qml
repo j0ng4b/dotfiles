@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
 import qs.config
+import qs.services
 
 Singleton {
     id: root
@@ -34,6 +35,7 @@ Singleton {
         }
     }
 
+    property string activeScreen: ''
     readonly property bool visible: root.visibleNotifs.count > 0
 
     property ListModel visibleNotifs: ListModel {}
@@ -45,11 +47,17 @@ Singleton {
     // Store notifications that the sender app itself has already closed
     property var _droppedIds: ({})
 
+    function isActiveOn(screenName) {
+        if (root.visible && (root.activeScreen == screenName || root.activeScreen == ''))
+            return true;
+        return false;
+    }
+
     function _snapshot(notif) {
         const actions = (notif.actions ?? []).map(a => ({
-            identifier: a.identifier,
-            text: a.text
-        }));
+                    identifier: a.identifier,
+                    text: a.text
+                }));
 
         return {
             notifId: notif.id,
@@ -66,6 +74,9 @@ Singleton {
     }
 
     function _pushNotif(data) {
+        if (root.visibleNotifs.count === 0 && root._queuedNotifs.length === 0)
+            root.activeScreen = CompositorService.focusedOutput;
+
         if (root.visibleNotifs.count < Config.notifications.maxVisible)
             root._showNotif(data);
         else
@@ -144,5 +155,8 @@ Singleton {
         notif?.Retainable.unlock();
         delete root._liveNotifs[notifId];
         delete root._droppedIds[notifId];
+
+        if (root.visibleNotifs.count === 0 && root._queuedNotifs.length === 0)
+            root.activeScreen = '';
     }
 }

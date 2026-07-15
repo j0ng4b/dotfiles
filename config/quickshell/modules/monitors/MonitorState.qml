@@ -1,8 +1,8 @@
 pragma Singleton
 
-import Quickshell
 import QtQuick
-
+import Quickshell
+import Quickshell.Io
 import qs.services
 
 Singleton {
@@ -157,6 +157,14 @@ Singleton {
 
             if (changed)
                 root._settings = settings;
+        }
+    }
+
+    IpcHandler {
+        target: 'monitors'
+
+        function toggle() {
+            MonitorState.toggle();
         }
     }
 }

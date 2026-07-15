@@ -10,7 +10,6 @@ import Quickshell.Io
 
 import qs.config
 import qs.modules
-import qs.modules.notifications
 import qs.modules.wallpaper
 import qs.modules.monitors
 import qs.modules.lockscreen
@@ -18,18 +17,8 @@ import qs.modules.lockscreen
 ShellRoot {
     Wallpaper {}
     LockScreen {}
-
-    Notifications {}
-
     Monitor {}
     UiShell {}
-
-    IpcHandler {
-        target: 'monitors'
-        function toggle() {
-            MonitorState.toggle();
-        }
-    }
 
     IpcHandler {
         target: 'wallpaper'

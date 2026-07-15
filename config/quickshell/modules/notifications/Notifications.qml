@@ -2,20 +2,15 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import Quickshell
-import Quickshell.Wayland
 import qs.config
 import qs.components
 
-PanelWindow {
+Item {
     id: notifications
 
-    color: 'transparent'
-    visible: NotificationsState.visible || container.x !== container._hiddenX
-    exclusionMode: ExclusionMode.Normal
+    required property var screen
 
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-    WlrLayershell.layer: WlrLayer.Top
-    WlrLayershell.namespace: Config.shellName + '-notifications'
+    readonly property bool active: NotificationsState.isActiveOn(notifications.screen.name)
 
     readonly property var _position: {
         const position = Config.notifications.position;
@@ -37,38 +32,33 @@ PanelWindow {
     readonly property int _width: Config.notifications.width
     readonly property int _margins: Config.notifications.margin
 
-    anchors.top: notifications._position.isTop
-    anchors.bottom: notifications._position.isBottom
-    anchors.left: notifications._position.isLeft
-    anchors.right: notifications._position.isRight
-
-    implicitWidth: notifications._width + cornerLeft.size
-    implicitHeight: panel.height + cornerRight.size
-
-    mask: Region {
-        x: panel.x
-        y: panel.y
+    readonly property var mask: Region {
+        x: container.x + panel.x
+        y: container.y + panel.y
         width: panel.width
         height: panel.height
     }
 
+    anchors.fill: parent
+
     Item {
         id: container
 
-        property bool _settled: false
-        readonly property int _hiddenX: (notifications._position.isLeft ? -1 : 1) * notifications.implicitWidth
+        readonly property int _shownX: notifications._position.isLeft ? 0 : parent.width - container.width
+        readonly property int _hiddenX: notifications._position.isLeft ? -container.width : parent.width
 
-        Component.onCompleted: Qt.callLater(() => container._settled = true)
+        width: notifications._width + cornerLeft.size
+        height: panel.height + cornerRight.size
 
-        width: parent.width
-        height: parent.height
+        anchors.top: notifications._position.isTop ? parent.top : undefined
+        anchors.bottom: notifications._position.isBottom ? parent.bottom : undefined
+        anchors.topMargin: notifications._position.isTop ? Config.general.barHeight : 0
 
-        x: NotificationsState.visible ? 0 : container._hiddenX
+        x: notifications.active ? container._shownX : container._hiddenX
         Behavior on x {
-            enabled: container._settled
             NumberAnimation {
                 duration: 300
-                easing.type: NotificationsState.visible ? Easing.InCubic : Easing.InCubic
+                easing.type: Easing.InCubic
             }
         }
 
@@ -123,7 +113,7 @@ PanelWindow {
                 anchors.margins: notifications._margins
 
                 Repeater {
-                    model: NotificationsState.visibleNotifs
+                    model: notifications.active ? NotificationsState.visibleNotifs : null
                     delegate: NotificationCard {}
                 }
             }
