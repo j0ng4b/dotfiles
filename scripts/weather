@@ -64,5 +64,17 @@ case "$1" in
 
         printf '%s\n' "$icon"
         ;;
+
+    status)
+        json=$(_get)
+        temp=$(echo "$json" | jq -r '.current_condition[0].temp_C')
+        feels=$(echo "$json" | jq -r '.current_condition[0].FeelsLikeC')
+        desc=$(echo "$json" | jq -r '.current_condition[0].weatherDesc[0].value')
+        code=$(echo "$json" | jq -r '.current_condition[0].weatherCode')
+        city=$(echo "$json" | jq -r '.nearest_area[0].areaName[0].value // ""')
+
+        printf '{"temp_c": %s, "feels_like_c": %s, "description": "%s", "code": %s, "city": "%s"}\n' \
+            "$temp" "$feels" "$desc" "$code" "$city"
+        ;;
 esac
 
