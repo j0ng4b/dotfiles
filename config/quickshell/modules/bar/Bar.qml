@@ -7,6 +7,7 @@ import qs.config
 import qs.components
 import qs.services
 import qs.modules.launcher
+import qs.modules.controlcenter
 
 Item {
     id: bar
@@ -88,6 +89,7 @@ Item {
 
                     SystemTray {
                         Layout.alignment: Qt.AlignVCenter
+                        onIndicatorClicked: ControlCenterState.toggle(bar.screen.name)
                     }
 
                     Rectangle {

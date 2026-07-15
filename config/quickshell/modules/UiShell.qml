@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import QtQuick
 import qs.config
 import qs.modules.bar
+import qs.modules.controlcenter
 import qs.modules.launcher
 import qs.modules.osd
 
@@ -26,13 +27,13 @@ Variants {
         WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.namespace: Config.shellName + '-ui'
         WlrLayershell.keyboardFocus: {
-            if (launcher.active)
+            if (launcher.active || controlCenter.active)
                 return WlrKeyboardFocus.Exclusive;
             return WlrKeyboardFocus.None;
         }
 
         mask: Region {
-            regions: [osd.mask, launcher.mask, bar.mask]
+            regions: [osd.mask, launcher.mask, controlCenter.mask, bar.mask]
         }
 
         // Declaration order == paint order, from bottom (first) to top (last)
@@ -44,6 +45,12 @@ Variants {
         Launcher {
             id: launcher
             screen: shell.screen
+        }
+
+        ControlCenter {
+            id: controlCenter
+            screen: shell.screen
+            anchors.fill: parent
         }
 
         Bar {
