@@ -81,6 +81,15 @@ Singleton {
         root.history = [];
     }
 
+    function removeHistoryAt(index) {
+        if (index < 0 || index >= root.history.length)
+            return;
+
+        const next = root.history.slice();
+        next.splice(index, 1);
+        root.history = next;
+    }
+
     function isActiveOn(screenName) {
         if (root.visible && (root.activeScreen == screenName || root.activeScreen == ''))
             return true;
@@ -163,7 +172,13 @@ Singleton {
                 continue;
 
             handled = true;
-            dismissedData = root.visibleNotifs.get(i);
+            const row = root.visibleNotifs.get(i);
+            dismissedData = {
+                notifId: row.notifId,
+                appName: row.appName,
+                iconSrc: row.iconSrc,
+                summary: row.summary
+            };
             root.visibleNotifs.remove(i);
 
             if (root._queuedNotifs.length > 0) {

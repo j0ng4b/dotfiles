@@ -15,6 +15,9 @@ Item {
     readonly property int panelWidth: 340
     readonly property int edgeMargin: 12
 
+    property bool historyExpanded: false
+    property real _historyNow: Date.now()
+
     readonly property bool active: ControlCenterState.isOpen(controlCenter.screen.name)
 
     readonly property var mask: Region {
@@ -230,6 +233,155 @@ Item {
                             }
                         }
                     }
+                }
+
+                // Notification history
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: {
+                        let h = historyHeaderRow.implicitHeight + 20;
+                        if (controlCenter.historyExpanded && NotificationsState.historyCount > 0)
+                            h += historyList.height + 10;
+                        return h;
+                    }
+                    radius: Config.general.radius
+                    color: Colorscheme.current.surface_container
+
+                    RowLayout {
+                        id: historyHeaderRow
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                        anchors.margins: 12
+                        spacing: 8
+
+                        Icon {
+                            icon: 'notifications'
+                            fill: true
+                            size: 16
+                            color: Colorscheme.current.on_surface
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+                            text: NotificationsState.historyCount > 0 ? 'Notifications (' + NotificationsState.historyCount + ')' : 'No notifications'
+                            font.pixelSize: 12
+                            font.bold: true
+                            color: Colorscheme.current.on_surface
+                        }
+
+                        Rectangle {
+                            visible: NotificationsState.historyCount > 0 && controlCenter.historyExpanded
+                            Layout.preferredWidth: 24
+                            Layout.preferredHeight: 24
+                            radius: 12
+                            color: clearMa.containsMouse ? Colorscheme.current.error_container : 'transparent'
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+                            }
+
+                            Icon {
+                                icon: 'delete'
+                                size: 15
+                                fill: true
+                                anchors.centerIn: parent
+                                color: clearMa.containsMouse ? Colorscheme.current.on_error_container : Colorscheme.current.on_surface_variant
+                            }
+
+                            MouseArea {
+                                id: clearMa
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: {
+                                    NotificationsState.clearHistory();
+                                    controlCenter.historyExpanded = false;
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            visible: NotificationsState.historyCount > 0
+                            Layout.preferredWidth: 24
+                            Layout.preferredHeight: 24
+                            radius: 12
+                            color: chevronMa.containsMouse ? Colorscheme.current.surface_container_high : 'transparent'
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 150
+                                }
+                            }
+
+                            Icon {
+                                icon: 'expand_more'
+                                size: 16
+                                anchors.centerIn: parent
+                                rotation: controlCenter.historyExpanded ? 180 : 0
+                                color: Colorscheme.current.on_surface
+
+                                Behavior on rotation {
+                                    NumberAnimation {
+                                        duration: 200
+                                    }
+                                }
+                            }
+
+                            MouseArea {
+                                id: chevronMa
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: controlCenter.historyExpanded = !controlCenter.historyExpanded
+                            }
+                        }
+                    }
+
+                    readonly property int _entryHeight: 48
+                    readonly property int _entrySpacing: 4
+                    readonly property int _maxVisibleEntries: 6
+
+                    ListView {
+                        id: historyList
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: historyHeaderRow.bottom
+                        anchors.topMargin: 10
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        visible: controlCenter.historyExpanded && NotificationsState.historyCount > 0
+                        clip: true
+                        spacing: parent._entrySpacing
+                        boundsBehavior: Flickable.StopAtBounds
+
+                        height: Math.min(NotificationsState.historyCount * (parent._entryHeight + parent._entrySpacing) - parent._entrySpacing, parent._maxVisibleEntries * (parent._entryHeight + parent._entrySpacing) - parent._entrySpacing)
+
+                        model: NotificationsState.history
+                        delegate: NotificationHistoryEntry {
+                            required property var modelData
+                            required property int index
+
+                            width: historyList.width
+                            entry: modelData
+                            now: controlCenter._historyNow
+                            onRemoveRequested: NotificationsState.removeHistoryAt(index)
+                        }
+                    }
+
+                    Behavior on Layout.preferredHeight {
+                        NumberAnimation {
+                            duration: 200
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+                }
+
+                Timer {
+                    interval: 30000
+                    running: controlCenter.active
+                    repeat: true
+                    onTriggered: controlCenter._historyNow = Date.now()
                 }
             }
         }
