@@ -8,30 +8,35 @@ import qs.config
 Singleton {
     id: root
 
+    signal changed
+
+    readonly property string scriptPath: Paths.url2Path(Qt.resolvedUrl("../scripts/scripter"))
+
     property real level: 0.0
     property bool muted: false
     property string type: "speaker"
 
-    signal changed
-
     function setVolume(value) {
-        _commandRunner.command = [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "multimedia", "speaker", "set", String(Math.round(value * 100))];
-        _commandRunner.running = true;
+        _action.command = [root.scriptPath, "multimedia", "speaker", "set", String(Math.round(value * 100))];
+        _action.running = true;
     }
 
     function toggleMute() {
-        _commandRunner.command = [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "multimedia", "speaker", "mute"];
-        _commandRunner.running = true;
+        _action.command = [root.scriptPath, "multimedia", "speaker", "mute"];
+        _action.running = true;
     }
 
     Process {
-        id: _commandRunner
+        id: _action
         running: false
     }
 
     Process {
+        id: _watcher
+
         running: true
-        command: [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "multimedia", "watch"]
+        command: [root.scriptPath, "multimedia", "watch"]
+
         stdout: SplitParser {
             onRead: data => {
                 try {
@@ -55,9 +60,14 @@ Singleton {
                     if (speaker.changed)
                         root.changed();
                 } catch (e) {
-                    console.warn("Volume: parse error:", e);
+                    console.warn("VolumeService: parse error:", e);
                 }
             }
         }
+    }
+
+    Component.onDestruction: {
+        _watcher.running = false;
+        _action.running = false;
     }
 }
