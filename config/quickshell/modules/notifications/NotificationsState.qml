@@ -28,7 +28,13 @@ Singleton {
 
             if (root.dnd) {
                 notif.Retainable.lock();
-                notif.Retainable.dropped.connect(() => notif.Retainable.unlock());
+
+                const snapshot = root._snapshot(notif);
+                notif.Retainable.dropped.connect(() => {
+                    notif.Retainable.unlock();
+                    root._pushHistory(snapshot);
+                });
+
                 return;
             }
 
@@ -54,6 +60,26 @@ Singleton {
 
     // Store notifications that the sender app itself has already closed
     property var _droppedIds: ({})
+
+    property var history: []
+    readonly property int historyCount: root.history.length
+
+    function _pushHistory(data) {
+        const entry = {
+            notifId: data.notifId,
+            appName: data.appName,
+            iconSrc: data.iconSrc,
+            summary: data.summary,
+            timestamp: Date.now()
+        };
+
+        const next = [entry, ...root.history];
+        root.history = next.slice(0, 30);
+    }
+
+    function clearHistory() {
+        root.history = [];
+    }
 
     function isActiveOn(screenName) {
         if (root.visible && (root.activeScreen == screenName || root.activeScreen == ''))
@@ -129,6 +155,7 @@ Singleton {
 
     function dismiss(notifId: int) {
         let handled = false;
+        let dismissedData = null;
 
         // check if the notification is visible
         for (let i = 0; i < root.visibleNotifs.count; i++) {
@@ -136,6 +163,7 @@ Singleton {
                 continue;
 
             handled = true;
+            dismissedData = root.visibleNotifs.get(i);
             root.visibleNotifs.remove(i);
 
             if (root._queuedNotifs.length > 0) {
@@ -150,6 +178,7 @@ Singleton {
         if (!handled) {
             const notifIndex = root._queuedNotifs.findIndex(d => d.notifId == notifId);
             if (notifIndex >= 0) {
+                dismissedData = root._queuedNotifs[notifIndex];
                 root._queuedNotifs = root._queuedNotifs.filter((_, i) => i != notifIndex);
                 handled = true;
             }
@@ -157,6 +186,9 @@ Singleton {
 
         if (!handled)
             return;
+
+        if (dismissedData)
+            root._pushHistory(dismissedData);
 
         const notif = root._liveNotifs[notifId];
         const wasDroppedByApp = root._droppedIds[notifId] === true;
