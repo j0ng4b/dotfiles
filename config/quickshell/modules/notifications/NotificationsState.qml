@@ -26,6 +26,12 @@ Singleton {
         onNotification: notif => {
             notif.tracked = true;
 
+            if (root.dnd) {
+                notif.Retainable.lock();
+                notif.Retainable.dropped.connect(() => notif.Retainable.unlock());
+                return;
+            }
+
             // Keeps the object alive for actions that actually need it
             notif.Retainable.lock();
             notif.Retainable.dropped.connect(() => root._handleDropped(notif.id));
@@ -34,6 +40,8 @@ Singleton {
             root._pushNotif(root._snapshot(notif));
         }
     }
+
+    property bool dnd: false
 
     property string activeScreen: ''
     readonly property bool visible: root.visibleNotifs.count > 0
@@ -51,6 +59,10 @@ Singleton {
         if (root.visible && (root.activeScreen == screenName || root.activeScreen == ''))
             return true;
         return false;
+    }
+
+    function toggleDnd() {
+        root.dnd = !root.dnd;
     }
 
     function _snapshot(notif) {
