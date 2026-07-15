@@ -121,6 +121,7 @@ Singleton {
         onExited: (exitCode, exitStatus) => {
             _pollWifi.running = true;
             _pollEthernet.running = true;
+            _pollList.running = true;
         }
     }
 }
