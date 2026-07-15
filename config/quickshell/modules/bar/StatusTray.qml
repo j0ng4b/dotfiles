@@ -66,6 +66,20 @@ Rectangle {
             }
         }
 
+        // Bluetooth
+        BarIndicator {
+            visible: BluetoothService.enabled
+            tooltipText: BluetoothService.connected ? BluetoothService.deviceName : 'On'
+            onClicked: root.indicatorClicked()
+
+            content: Icon {
+                icon: BluetoothService.connected ? 'bluetooth_connected' : 'bluetooth'
+                fill: true
+                size: 14
+                color: BluetoothService.connected ? Colorscheme.current.primary : Colorscheme.current.on_surface
+            }
+        }
+
         // Volume
         BarIndicator {
             onClicked: root.indicatorClicked()
