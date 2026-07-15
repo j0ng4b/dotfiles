@@ -87,7 +87,7 @@ Item {
                     anchors.rightMargin: 8
                     spacing: 6
 
-                    SystemTray {
+                    StatusTray {
                         Layout.alignment: Qt.AlignVCenter
                         onIndicatorClicked: ControlCenterState.toggle(bar.screen.name)
                     }
