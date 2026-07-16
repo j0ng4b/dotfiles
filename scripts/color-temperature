@@ -27,6 +27,20 @@ _is_running() {
     pgrep -x wlsunset >/dev/null 2>&1
 }
 
+_is_wlsunset_pid() {
+    pid="$1"
+
+    case "$pid" in
+        '' | *[!0-9]*) return 1 ;;
+    esac
+
+    [ "$pid" -gt 0 ] 2>/dev/null || return 1
+    [ -r "/proc/$pid/comm" ] || return 1
+
+    process_name=$(cat "/proc/$pid/comm" 2>/dev/null)
+    [ "$process_name" = "wlsunset" ]
+}
+
 _get_mode() {
     mode=$(cat "$cache_mode" 2>/dev/null)
 
@@ -38,6 +52,11 @@ _get_mode() {
             printf '%s\n' "auto"
             ;;
     esac
+}
+
+_get_pid() {
+    pid=$(cat "$cache_pid" 2>/dev/null)
+    printf '%s\n' "$pid"
 }
 
 _set_cached_mode() {
@@ -119,38 +138,77 @@ _watch() {
 ## Mode handling
 ##
 
-_apply_mode() {
-    target="$1"
+_send_mode_steps() {
+    pid="$1"
+    steps="$2"
 
-    current=$(cat "$cache_mode")
+    step=0
+    while [ "$step" -lt "$steps" ]; do
+        kill -USR1 "$pid" 2>/dev/null || {
+            error "color-temperature: failed to change wlsunset mode"
+            return 1
+        }
+
+        step=$((step + 1))
+
+        # Standard signals are not queued. Allow wlsunset to process the
+        # current transition before sending another signal.
+        if [ "$step" -lt "$steps" ]; then
+            sleep 0.1
+        fi
+    done
+}
+
+_apply_mode() {
+    pid="$1"
+    current="$2"
+    target="$3"
+
+    case "$current" in
+        auto | high | low) ;;
+        *)
+            error "color-temperature: invalid current mode '$current'"
+            return 1
+            ;;
+    esac
+
+    case "$target" in
+        auto | high | low) ;;
+        *)
+            error "color-temperature: invalid target mode '$target'"
+            return 1
+            ;;
+    esac
+
+    # If no supervised process is available, persist the requested mode.
+    # It will be restored when wlsunset starts.
+    if ! _is_wlsunset_pid "$pid"; then
+        rm -f "$cache_pid"
+        _set_cached_mode "$target"
+        return
+    fi
+
     if [ "$target" = "$current" ]; then
         return
     fi
 
-    _set_cached_mode "$target"
+    case "$current:$target" in
+        auto:high | high:low | low:auto)
+            steps=1
+            ;;
 
-    if [ ! -s "$cache_pid" ]; then
-        return
-    fi
+        auto:low | high:auto | low:high)
+            steps=2
+            ;;
 
-    pid=$(cat "$cache_pid" 2>/dev/null)
-    case "$pid" in
-        '' | *[!0-9]*)
-            rm -f "$cache_pid"
-            return
+        *)
+            error "color-temperature: invalid mode transition '$current' → '$target'"
+            return 1
             ;;
     esac
 
-    # wlsunset always starts in automatic mode. Terminating the current
-    # process forces the supervisor to recreate it from this known state.
-    if kill -0 "$pid" 2>/dev/null; then
-        kill "$pid" >/dev/null 2>&1 || {
-            error "color-temperature: failed to restart wlsunset"
-            return 1
-        }
-    else
-        rm -f "$cache_pid"
-    fi
+    _send_mode_steps "$pid" "$steps" || return 1
+    _set_cached_mode "$target"
 }
 
 _cycle_mode() {
@@ -160,57 +218,14 @@ _cycle_mode() {
         auto) target="high" ;;
         high) target="low" ;;
         low) target="auto" ;;
-        *)
-            warn "color-temperature: invalid cached mode '$current', using auto"
-            target="auto"
-            ;;
     esac
 
-    _apply_mode "$target"
+    _apply_mode "$(_get_pid)" "$current" "$target"
 }
 
 ##
 ## Process management
 ##
-
-_apply_cached_mode_to_process() {
-    pid="$1"
-    mode=$(_get_mode)
-
-    case "$mode" in
-        auto)
-            # wlsunset starts in automatic mode.
-            ;;
-
-        high)
-            kill -USR1 "$pid" 2>/dev/null || {
-                error "color-temperature: failed to apply high mode"
-                return 1
-            }
-            ;;
-
-        low)
-            kill -USR1 "$pid" 2>/dev/null || {
-                error "color-temperature: failed to apply low mode"
-                return 1
-            }
-
-            # Standard signals are not queued. Wait until wlsunset handles
-            # the first transition before sending the second one.
-            sleep 0.1
-
-            kill -USR1 "$pid" 2>/dev/null || {
-                error "color-temperature: failed to apply low mode"
-                return 1
-            }
-            ;;
-
-        *)
-            warn "color-temperature: invalid cached mode '$mode', using auto"
-            _set_cached_mode "auto"
-            ;;
-    esac
-}
 
 _start_wlsunset() {
     latitude="$1"
@@ -233,7 +248,18 @@ _start_wlsunset() {
         return 1
     fi
 
-    _apply_cached_mode_to_process "$wlsunset_pid"
+    # Restore cached mode.
+    if ! _apply_mode "$wlsunset_pid" "auto" "$(_get_mode)" ||
+        ! _is_wlsunset_pid "$wlsunset_pid"; then
+        kill "$wlsunset_pid" 2>/dev/null
+        wait "$wlsunset_pid" 2>/dev/null
+        rm -f "$cache_pid"
+
+        wlsunset_pid=''
+
+        error "color-temperature: failed to restore cached mode"
+        return 1
+    fi
 }
 
 _stop_wlsunset() {
@@ -241,7 +267,7 @@ _stop_wlsunset() {
         return
     fi
 
-    if kill -0 "$wlsunset_pid" 2>/dev/null; then
+    if ! _is_wlsunset_pid "$wlsunset_pid"; then
         kill "$wlsunset_pid" 2>/dev/null
     fi
 
@@ -291,10 +317,8 @@ _run() {
         sleep 1
         location_elapsed=$((location_elapsed + 1))
 
-        # The set and cycle commands terminate wlsunset. Restarting it makes
-        # the requested mode deterministic because every process begins in
-        # automatic mode.
-        if ! kill -0 "$wlsunset_pid" 2>/dev/null; then
+        # Restart wlsunset if it exits unexpectedly and restore the cached mode.
+        if ! _is_wlsunset_pid "$wlsunset_pid"; then
             wait "$wlsunset_pid" 2>/dev/null
 
             warn "color-temperature: wlsunset stopped, restarting"
@@ -356,7 +380,7 @@ Commands:
   watch                     Emit status whenever state or mode changes
   run                       Start and supervise wlsunset
 
-  set <mode>                Restart wlsunset using the selected mode
+  set <mode>                Set the selected wlsunset mode
   cycle                     Cycle between auto, high and low
 
 Modes:
@@ -424,7 +448,7 @@ case "$cmd" in
             exit 1
         }
 
-        _apply_mode "$target"
+        _apply_mode "$(_get_pid)" "$(_get_mode)" "$target"
         ;;
 
     cycle)
