@@ -80,6 +80,37 @@ local function picker_for(method)
     end
 end
 
+local function format_buffer(bufnr)
+    bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+    local conform = utils.safe_require("conform")
+    if conform then
+        conform.format({
+            bufnr = bufnr,
+            async = true,
+            lsp_format = "fallback",
+        })
+
+        return
+    end
+
+    local clients = vim.lsp.get_clients({
+        bufnr = bufnr,
+        method = "textDocument/formatting",
+    })
+
+    if #clients > 0 then
+        vim.lsp.buf.format({
+            bufnr = bufnr,
+            async = true,
+        })
+
+        return
+    end
+
+    vim.notify("No formatter available for this buffer", vim.log.levels.WARN)
+end
+
 --------------------
 --- Server configs
 --------------------
@@ -274,6 +305,11 @@ local setup_keymaps = function(bufnr)
     vim.keymap.set("n", "gt", picker_for("lsp_type_definitions"), opts)
     vim.keymap.set("n", "gr", picker_for("lsp_references"), opts)
 
+    -- Format
+    vim.keymap.set("n", "gF", function()
+        format_buffer(bufnr)
+    end, opts)
+
     -- Rename
     vim.keymap.set("n", "gR", vim.lsp.buf.rename, opts)
     vim.keymap.set({ "n", "i" }, "<F2>", vim.lsp.buf.rename, opts)
@@ -318,12 +354,6 @@ end
 local create_attach = function()
     return function(client, bufnr)
         setup_keymaps(bufnr)
-
-        with_cap(client, "textDocument/formatting", function()
-            vim.keymap.set("n", "gF", function()
-                vim.lsp.buf.format({ async = true })
-            end, { buffer = bufnr })
-        end)
 
         with_cap(client, "textDocument/documentHighlight", function()
             local group = vim.api.nvim_create_augroup("LspDocumentHighlight_" .. bufnr, { clear = true })
