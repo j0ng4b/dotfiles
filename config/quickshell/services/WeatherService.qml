@@ -8,6 +8,8 @@ import qs.config
 Singleton {
     id: root
 
+    readonly property string scriptPath: Paths.url2Path(Qt.resolvedUrl("../scripts/scripter"))
+
     property bool loading: false
     property bool hasData: false
 
@@ -88,7 +90,8 @@ Singleton {
     }
 
     Timer {
-        interval: 10 * 60 * 1000
+        // Run every 10 minutes
+        interval: 10 * (60 * 1000)
         running: true
         repeat: true
         triggeredOnStart: true
@@ -98,7 +101,7 @@ Singleton {
     Process {
         id: _fetcher
         running: false
-        command: [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "weather", "status"]
+        command: [root.scriptPath, "weather", "status"]
 
         stdout: StdioCollector {
             onStreamFinished: {

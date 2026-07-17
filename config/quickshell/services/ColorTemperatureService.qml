@@ -10,12 +10,12 @@ Singleton {
 
     readonly property string scriptPath: Paths.url2Path(Qt.resolvedUrl("../scripts/scripter"))
 
-    property string mode: "auto"  // "auto" | "high" | "low"
-    property bool enabled: false
-
     readonly property bool isAuto: root.mode === "auto"
     readonly property bool isDay: root.mode === "high"
     readonly property bool isNight: root.mode === "low"
+
+    property string mode: "auto"  // "auto" | "high" | "low"
+    property bool enabled: false
 
     function setMode(mode) {
         _action.command = [root.scriptPath, "color-temperature", "set", mode];

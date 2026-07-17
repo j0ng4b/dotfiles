@@ -14,6 +14,8 @@ Singleton {
     property int wifiSignalLevel: -100
     property string wifiName: ""
 
+    readonly property bool scanningNetworks: _pollList.running
+
     // Ethernet
     property bool ethernetEnabled: false
     property string ethernetState: "unknown"
