@@ -9,7 +9,7 @@ end
 
 return {
     "shellRaining/hlchunk.nvim",
-    event = { "BufReadPre", "BufNewFile" },
+    event = { "SessionLoadPost", "BufReadPre", "BufNewFile" },
     config = function()
         local exclude_filetypes = {
             "alpha",

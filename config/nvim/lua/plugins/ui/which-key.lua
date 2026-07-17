@@ -50,6 +50,7 @@ return {
             { "<Leader>t", group = "󰙨 Test" },
             { "<Leader>b", group = "󰕷 Debug" },
             { "<leader>q", group = "󰦛 Session" },
+            { "<leader>r", group = "󰖟 HTTP requests" },
             { "[", group = "prev" },
             { "]", group = "next" },
             { "g", group = "goto" },

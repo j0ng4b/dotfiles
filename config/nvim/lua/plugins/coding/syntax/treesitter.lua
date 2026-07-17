@@ -35,6 +35,7 @@ return {
             "zsh",
             "bash",
 
+            "http",
             "html",
             "tsx",
             "jsx",

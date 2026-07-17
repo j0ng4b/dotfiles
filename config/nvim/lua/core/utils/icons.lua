@@ -30,6 +30,13 @@ return {
         error = "",
     },
 
+    http = {
+        request = "󰖟",
+        loading = "󰔟",
+        done = "󰄬",
+        error = "󰅖",
+    },
+
     debug = {
         rejectedpoint = "",
         breakpoint = "",
