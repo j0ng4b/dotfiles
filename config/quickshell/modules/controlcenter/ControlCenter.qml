@@ -3,7 +3,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.modules.notifications
+import qs.modules.controlcenter.components.wifi
+import qs.modules.controlcenter.components.main
 import qs.config
 import qs.components
 import qs.services
@@ -12,10 +13,22 @@ Item {
     id: controlCenter
 
     required property var screen
+
     readonly property int panelWidth: 340
     readonly property int edgeMargin: 12
 
     readonly property bool active: ControlCenterState.isOpen(controlCenter.screen.name)
+
+    // 0 = main controls
+    // 1 = wifi network list
+    property int page: 0
+
+    onActiveChanged: {
+        if (active)
+            _resetTimer.stop();
+        else
+            _resetTimer.restart();
+    }
 
     readonly property var mask: Region {
         width: controlCenter.active ? controlCenter.screen.width : 0
@@ -27,6 +40,7 @@ Item {
     MouseArea {
         anchors.fill: parent
         enabled: controlCenter.active
+        hoverEnabled: true
         onClicked: ControlCenterState.close()
     }
 
@@ -63,172 +77,73 @@ Item {
             id: panel
 
             Layout.preferredWidth: controlCenter.panelWidth
-            Layout.preferredHeight: panelColumn.implicitHeight + 32
+            Layout.preferredHeight: {
+                switch (controlCenter.page) {
+                case 1:
+                    return wifiPage.implicitHeight;
+                default:
+                    return mainPage.implicitHeight;
+                }
+            }
+
+            Behavior on Layout.preferredHeight {
+                NumberAnimation {
+                    duration: 220
+                    easing.type: Easing.OutCubic
+                }
+            }
 
             color: Colorscheme.current.surface
             bottomLeftRadius: Config.general.radius
             bottomRightRadius: Config.general.radius
+            clip: true
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: {}
             }
 
-            ColumnLayout {
-                id: panelColumn
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: 16
-                spacing: 14
+            Item {
+                width: controlCenter.panelWidth * 2
+                height: parent.height
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 10
-
-                    QuickToggle {
-                        Layout.fillWidth: true
-                        icon: NetworkService.wifiEnabled ? 'wifi' : 'wifi_off'
-                        label: NetworkService.wifiEnabled ? (NetworkService.wifiName !== '' ? NetworkService.wifiName : 'On') : 'Off'
-                        active: NetworkService.wifiEnabled
-                        onClicked: NetworkService.wifiToggle()
-                    }
-
-                    QuickToggle {
-                        Layout.fillWidth: true
-                        icon: BluetoothService.enabled ? 'bluetooth' : 'bluetooth_disabled'
-                        label: BluetoothService.enabled ? (BluetoothService.connected ? BluetoothService.deviceName : 'On') : 'Off'
-                        active: BluetoothService.enabled
-                        onClicked: BluetoothService.toggle()
+                x: controlCenter.page === 0 ? 0 : -controlCenter.panelWidth
+                Behavior on x {
+                    NumberAnimation {
+                        duration: 260
+                        easing.type: Easing.OutCubic
                     }
                 }
 
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: 10
+                // Main controls
+                Item {
+                    x: 0
+                    width: controlCenter.panelWidth
+                    height: parent.height
 
-                    QuickToggle {
-                        Layout.fillWidth: true
-                        icon: ColorTemperatureService.isNight ? 'dark_mode' : 'light_mode'
-                        label: ColorTemperatureService.isNight ? 'Night' : 'Day'
-                        active: ColorTemperatureService.isNight
-                        onClicked: ColorTemperatureService.toggle()
-                    }
-
-                    QuickToggle {
-                        Layout.fillWidth: true
-                        icon: NotificationsState.dnd ? 'notifications_off' : 'notifications'
-                        label: NotificationsState.dnd ? 'DND On' : 'DND Off'
-                        active: NotificationsState.dnd
-                        onClicked: NotificationsState.toggleDnd()
-                    }
-                }
-
-                Slider {
-                    Layout.fillWidth: true
-                    icon: {
-                        if (VolumeService.muted)
-                            return 'volume_off';
-                        if (VolumeService.level > 0.6)
-                            return 'volume_up';
-                        if (VolumeService.level > 0.15)
-                            return 'volume_down';
-                        return 'volume_mute';
-                    }
-                    value: VolumeService.level
-                    onMoved: value => {
-                        _volumeDebounce.pendingValue = value;
-                        _volumeDebounce.restart();
-                    }
-                    onIconClicked: VolumeService.toggleMute()
-                }
-
-                Slider {
-                    Layout.fillWidth: true
-                    icon: {
-                        if (BrightnessService.screen < 0.34)
-                            return 'brightness_low';
-                        if (BrightnessService.screen < 0.67)
-                            return 'brightness_medium';
-
-                        return 'brightness_high';
-                    }
-                    value: Math.max(0, BrightnessService.screen)
-                    onMoved: value => {
-                        _brightnessDebounce.pendingValue = value;
-                        _brightnessDebounce.restart();
-                    }
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: weatherRow.implicitHeight + 20
-                    radius: Config.general.radius
-                    color: Colorscheme.current.surface_container
-
-                    MouseArea {
+                    MainPage {
+                        id: mainPage
                         anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: WeatherService.refresh()
+
+                        onWifiPageRequested: {
+                            controlCenter.page = 1;
+                            NetworkService.refreshNetworks();
+                        }
                     }
+                }
 
-                    RowLayout {
-                        id: weatherRow
-                        anchors.left: parent.left
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.margins: 12
-                        spacing: 10
+                // Wifi network list
+                Item {
+                    x: controlCenter.panelWidth
+                    width: controlCenter.panelWidth
+                    height: parent.height
 
-                        Icon {
-                            id: weatherIcon
-                            icon: WeatherService.loading ? 'refresh' : WeatherService.icon
-                            fill: true
-                            size: 22
-                            color: Colorscheme.current.primary
+                    WifiPage {
+                        id: wifiPage
+                        anchors.fill: parent
 
-                            Connections {
-                                target: WeatherService
-
-                                function onLoadingChanged() {
-                                    if (!WeatherService.loading)
-                                        weatherIcon.rotation = 0;
-                                }
-                            }
-
-                            RotationAnimator on rotation {
-                                running: WeatherService.loading
-                                from: 0
-                                to: 360
-                                duration: 1200
-                                loops: Animation.Infinite
-                            }
-                        }
-
-                        ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 1
-
-                            Text {
-                                text: {
-                                    if (!WeatherService.hasData)
-                                        return 'Weather unavailable';
-                                    return Math.round(WeatherService.tempC) + '°C · ' + WeatherService.description;
-                                }
-                                font.pixelSize: 12
-                                font.bold: true
-                                elide: Text.ElideRight
-                                color: Colorscheme.current.on_surface
-                            }
-
-                            Text {
-                                visible: WeatherService.hasData && WeatherService.city !== ''
-                                text: WeatherService.city + ' · feels like ' + Math.round(WeatherService.feelsLikeC) + '°C'
-                                font.pixelSize: 10
-                                elide: Text.ElideRight
-                                color: Colorscheme.current.on_surface_variant
-                            }
-                        }
+                        active: controlCenter.active && controlCenter.page === 1
+                        onBackRequested: controlCenter.page = 0
                     }
                 }
             }
@@ -241,17 +156,14 @@ Item {
         }
     }
 
+    // Resets to the main page after the close animation finishes, so
+    // reopening the panel doesn't land on the wifi list unexpectedly.
     Timer {
-        id: _volumeDebounce
-        property real pendingValue: 0
-        interval: 60
-        onTriggered: VolumeService.setVolume(pendingValue)
-    }
+        id: _resetTimer
 
-    Timer {
-        id: _brightnessDebounce
-        property real pendingValue: 0
-        interval: 60
-        onTriggered: BrightnessService.setScreen(pendingValue)
+        interval: 320
+        repeat: false
+
+        onTriggered: controlCenter.page = 0
     }
 }
