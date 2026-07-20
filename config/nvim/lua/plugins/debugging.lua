@@ -231,6 +231,46 @@ local function with_adapter(callback)
     end
 end
 
+local function focus_dapui_element(element_name)
+    return function()
+        local ui = require("dapui")
+        local element = ui.elements[element_name]
+
+        if not element then
+            vim.notify(("dap: unknown DAP UI element '%s'"):format(element_name), vim.log.levels.ERROR)
+            return
+        end
+
+        local function jump_to_element()
+            local buffer = element.buffer()
+
+            if not vim.api.nvim_buf_is_valid(buffer) then
+                return false
+            end
+
+            local window = vim.fn.bufwinid(buffer)
+            if window == -1 then
+                return false
+            end
+
+            vim.api.nvim_set_current_win(window)
+            return true
+        end
+
+        if jump_to_element() then
+            return
+        end
+
+        ui.open()
+
+        vim.schedule(function()
+            if not jump_to_element() then
+                vim.notify(("dap: DAP UI element '%s' is not visible"):format(element_name), vim.log.levels.WARN)
+            end
+        end)
+    end
+end
+
 return {
     "mfussenegger/nvim-dap",
     dependencies = {
@@ -257,11 +297,43 @@ return {
         },
 
         {
+            "<F6>",
+            function()
+                require("dap").pause()
+            end,
+            desc = "pause debugging",
+        },
+
+        {
+            "<F7>",
+            function()
+                require("dap").restart()
+            end,
+            desc = "restart debugging",
+        },
+
+        {
+            "<F8>",
+            function()
+                require("dap").run_to_cursor()
+            end,
+            desc = "run to cursor",
+        },
+
+        {
             "<F10>",
             function()
                 require("dap").step_over()
             end,
-            desc = "step over the current function",
+            desc = "step over",
+        },
+
+        {
+            "<S-F10>",
+            function()
+                require("dap").step_back()
+            end,
+            desc = "step back",
         },
 
         {
@@ -269,15 +341,31 @@ return {
             function()
                 require("dap").step_into()
             end,
-            desc = "step into the current function",
+            desc = "step into",
+        },
+
+        {
+            "<S-F11>",
+            function()
+                require("dap").step_out()
+            end,
+            desc = "step out",
         },
 
         {
             "<F12>",
             function()
-                require("dap").step_out()
+                require("dap").restart_frame()
             end,
-            desc = "step out of the current function",
+            desc = "restart current frame",
+        },
+
+        {
+            "<S-F12>",
+            function()
+                require("dap").reverse_continue()
+            end,
+            desc = "reverse continue",
         },
 
         {
@@ -287,28 +375,53 @@ return {
             end,
             desc = "toggle breakpoint",
         },
+
         {
             "<Leader>bl",
             function()
-                require("dap").set_breakpoint(nil, nil, vim.fn.input("Log point message: "))
-            end,
-            desc = "set log point breakpoint with message",
-        },
+                local message = vim.fn.input("Log point message: ")
 
-        {
-            "<Leader>br",
-            function()
-                require("dap").repl.toggle()
+                if message ~= "" then
+                    require("dap").set_breakpoint(nil, nil, message)
+                end
             end,
-            desc = "toggle debug REPL",
+            desc = "set log point breakpoint",
         },
 
         {
             "<Leader>bc",
             function()
-                require("dap").set_breakpoint(vim.fn.input("Breakpoint condition: "))
+                local condition = vim.fn.input("Breakpoint condition: ")
+
+                if condition ~= "" then
+                    require("dap").set_breakpoint(condition)
+                end
             end,
             desc = "set conditional breakpoint",
+        },
+
+        {
+            "<Leader>br",
+            focus_dapui_element("repl"),
+            desc = "focus debug REPL",
+        },
+
+        {
+            "<Leader>bs",
+            focus_dapui_element("scopes"),
+            desc = "focus debug scopes",
+        },
+
+        {
+            "<Leader>bw",
+            focus_dapui_element("watches"),
+            desc = "focus debug watches",
+        },
+
+        {
+            "<Leader>bk",
+            focus_dapui_element("stacks"),
+            desc = "focus debug stacks",
         },
     },
 
