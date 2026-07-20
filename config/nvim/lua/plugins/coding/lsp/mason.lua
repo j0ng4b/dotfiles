@@ -5,6 +5,8 @@ return {
     config = function()
         require("mason").setup()
         require("mason-tool-installer").setup({
+            auto_update = true,
+
             ensure_installed = {
                 -- Language servers
                 "css-lsp",
@@ -83,6 +85,11 @@ return {
                         return vim.fn.executable("go") == 1
                     end,
                 },
+
+                -- Linters
+                "eslint_d",
+                "ruff",
+                "stylelint",
 
                 -- Others
                 "tree-sitter-cli",
