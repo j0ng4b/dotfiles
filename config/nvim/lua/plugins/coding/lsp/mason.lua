@@ -67,6 +67,23 @@ return {
                 "black",
                 "stylua",
 
+                -- Debug
+                "debugpy",
+
+                {
+                    "netcoredbg",
+                    condition = function()
+                        return vim.fn.executable("dotnet") == 1
+                    end,
+                },
+
+                {
+                    "delve",
+                    condition = function()
+                        return vim.fn.executable("go") == 1
+                    end,
+                },
+
                 -- Others
                 "tree-sitter-cli",
             },
