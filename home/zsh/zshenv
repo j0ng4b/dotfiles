@@ -1,36 +1,35 @@
-## XDG Base directories
-export XDG_CONFIG_HOME="$HOME/.config"
-export XDG_CACHE_HOME="$HOME/.cache"
-export XDG_STATE_HOME="$HOME/.local/state"
-export XDG_DATA_HOME="$HOME/.local/share"
-export XDG_DATA_DIRS="/usr/local/share:/usr/share:/var/lib/flatpak/exports/share:/home/$USER/.local/share/flatpak/exports/share"
+#
+# XDG Base Directories
+#
 
-export PATH="$HOME/.local/bin:$PATH"
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+
+export XDG_DATA_DIRS="${XDG_DATA_DIRS:-$HOME/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share}"
 
 
-## XDG Runtime directory
-if [ -z "$XDG_RUNTIME_DIR" ]; then
-    # Check if running inside Termux, if so, use the Termux prefix
-    if [ -n "$(printenv | grep -i "termux")" ]; then
-        export XDG_RUNTIME_DIR="$PREFIX/tmp/$USER-runtime"
+#
+# XDG Runtime Directory
+#
+
+if [[ -z "$XDG_RUNTIME_DIR" ]]; then
+    if [[ -n "$TERMUX_VERSION" && -n "$PREFIX" ]]; then
+        export XDG_RUNTIME_DIR="$PREFIX/tmp/runtime-$UID"
     else
-        export XDG_RUNTIME_DIR="/tmp/$USER-runtime"
+        export XDG_RUNTIME_DIR="/tmp/runtime-$UID"
     fi
 
-    if [ ! -d "$XDG_RUNTIME_DIR" ]; then
-        mkdir -pm 0700 "$XDG_RUNTIME_DIR"
+    if [[ ! -d "$XDG_RUNTIME_DIR" ]]; then
+        mkdir -m 0700 -p "$XDG_RUNTIME_DIR"
     fi
 fi
 
 
-## DBUS session address
-if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
-    export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
-fi
-
-
-## Zsh environment variables
-export ZPROMPT_POS=UP
+#
+# Zsh
+#
 
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export ZDATADIR="$XDG_DATA_HOME/zsh"
@@ -39,45 +38,75 @@ export HISTFILE="$ZDATADIR/zhistory"
 export HISTSIZE=10000
 export SAVEHIST=10000
 
-export ZLE_RPROMPT_INDENT="0"
+export ZPROMPT_POS="UP"
+export ZLE_RPROMPT_INDENT=0
 
 
-## Starship config path
+#
+# Applications
+#
+
+export EDITOR="nvim"
+export VISUAL="$EDITOR"
+
 export STARSHIP_CONFIG="$XDG_CONFIG_HOME/starship/config.toml"
 
-## Common variables
-export EDITOR=nvim
-export VISUAL=nvim
 
-
+#
 # .NET
-export DOTNET_ROOT=$HOME/.dotnet
-export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+#
+
+export DOTNET_ROOT="$HOME/.dotnet"
+export DOTNET_CLI_TELEMETRY_OPTOUT=true
 
 
+#
 # Go
-[ -z "$GOPATH" ] && export GOPATH="${HOME}/go"
-[ -z "$GOBIN" ] && export GOBIN="${GOPATH}/bin"
-export PATH=$PATH:$GOROOT/bin:$GOBIN
+#
+
+export GOPATH="${GOPATH:-$HOME/go}"
+export GOBIN="${GOBIN:-$GOPATH/bin}"
 
 
-# Ollama setup
+#
+# Android
+#
+
+export ANDROID_HOME="$XDG_DATA_HOME/android/sdk"
+export ANDROID_USER_HOME="$XDG_CONFIG_HOME/android"
+export ANDROID_AVD_HOME="$XDG_DATA_HOME/android/avd"
+
+
+#
+# Ollama
+#
+
 export OLLAMA_KEEP_ALIVE=-1
-export OLLAMA_KV_CACHE_TYPE=q8_0
+export OLLAMA_KV_CACHE_TYPE="q8_0"
 export OLLAMA_FLASH_ATTENTION=1
 export OLLAMA_MAX_LOADED_MODELS=1
 export OLLAMA_NUM_PARALLEL=1
 
 
-# Android
-export ANDROID_HOME=$HOME/Development/android_sdk
-export ANDROID_AVD_HOME=$XDG_CONFIG_HOME/.android/avd
+#
+# PATH
+#
 
-export PATH=$PATH:$ANDROID_HOME/platform-tools
-export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
-export PATH=$PATH:$ANDROID_HOME/emulator
+typeset -U path PATH
 
+path=(
+    "$HOME/.local/bin"
 
-# Flutter
-export PATH=$PATH:$HOME/Development/flutter/bin
+    "$DOTNET_ROOT"
+    "$DOTNET_ROOT/tools"
 
+    "$GOBIN"
+
+    "$ANDROID_HOME/cmdline-tools/latest/bin"
+    "$ANDROID_HOME/platform-tools"
+    "$ANDROID_HOME/emulator"
+
+    $path
+)
+
+export PATH
