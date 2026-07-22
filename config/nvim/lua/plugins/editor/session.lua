@@ -1,21 +1,52 @@
 return {
-    "folke/persistence.nvim",
-    event = "VimEnter",
+    "rmagatti/auto-session",
+    lazy = false,
+
+    keys = {
+        {
+            "<Leader>qs",
+            "<Cmd>AutoSession save<CR>",
+            desc = "save current session",
+        },
+
+        {
+            "<Leader>qr",
+            "<Cmd>AutoSession restore<CR>",
+            desc = "restore session for current directory",
+        },
+
+        {
+            "<Leader>qR",
+            "<Cmd>AutoSession search<CR>",
+            desc = "search sessions",
+        },
+
+        {
+            "<Leader>qt",
+            "<Cmd>AutoSession toggle<CR>",
+            desc = "toggle session autosave",
+        },
+
+        {
+            "<Leader>qd",
+            "<Cmd>AutoSession delete<CR>",
+            desc = "delete current session",
+        },
+
+        {
+            "<Leader>qD",
+            "<Cmd>AutoSession deletePicker<CR>",
+            desc = "select session to delete",
+        },
+    },
+
     config = function()
-        local autosave_enabled = true
-
-        local persistence = require("persistence")
-        persistence.setup()
-
-        -- Auto load session on startup
-        if vim.fn.argc() == 0 then
-            persistence.load()
-        end
-
         vim.opt.sessionoptions = {
+            "blank",
             "buffers",
             "curdir",
             "folds",
+            "help",
             "localoptions",
             "skiprtp",
             "tabpages",
@@ -24,57 +55,82 @@ return {
             "winpos",
         }
 
-        vim.keymap.set("n", "<leader>qw", function()
-            persistence.save()
-        end, {
-            desc = "save current session",
-        })
+        require("auto-session").setup({
+            show_auto_restore_notif = true,
 
-        vim.keymap.set("n", "<leader>qs", function()
-            autosave_enabled = true
-            persistence.load()
-        end, { desc = "load session for current directory" })
+            suppressed_dirs = { "~/", "~/Downloads", "/" },
+            bypass_save_filetypes = { "alpha" },
 
-        vim.keymap.set("n", "<leader>qS", function()
-            autosave_enabled = true
-            persistence.select()
-        end, { desc = "select a session to load" })
+            git_use_branch_name = true,
+            git_auto_restore_on_branch_change = false,
 
-        vim.keymap.set("n", "<leader>ql", function()
-            autosave_enabled = true
-            persistence.load({ last = true })
-        end, { desc = "load the last session" })
+            legacy_cmds = false,
 
-        vim.keymap.set("n", "<leader>qd", function()
-            autosave_enabled = false
-            persistence.stop()
-        end, { desc = "stop session saving" })
-
-        -- Setup auto save
-        vim.api.nvim_create_autocmd({
-            "BufReadPost",
-            "BufDelete",
-
-            "WinNew",
-            "WinClosed",
-
-            "FocusLost",
-        }, {
-            group = vim.api.nvim_create_augroup("PersistenceAutosave", {
-                clear = true,
-            }),
-            callback = function()
-                if not autosave_enabled then
+            save_extra_data = function(_)
+                local breakpoints = package.loaded["dap.breakpoints"]
+                if not breakpoints then
                     return
                 end
 
-                vim.schedule(function()
-                    if autosave_enabled then
-                        persistence.save()
+                local bps = {}
+                for buf, buf_bps in pairs(breakpoints.get()) do
+                    local filename = vim.api.nvim_buf_get_name(buf)
+                    if filename ~= "" then
+                        bps[filename] = buf_bps
                     end
-                end)
+                end
+
+                if vim.tbl_isempty(bps) then
+                    return
+                end
+
+                return vim.json.encode({ breakpoints = bps })
             end,
-            desc = "save Neovim session state",
+
+            restore_extra_data = function(_, extra_data)
+                local json = vim.json.decode(extra_data)
+                if not json.breakpoints then
+                    return
+                end
+
+                local ok, breakpoints = pcall(require, "dap.breakpoints")
+                if not ok or not breakpoints then
+                    return
+                end
+
+                for buf_name, buf_bps in pairs(json.breakpoints) do
+                    for _, bp in ipairs(buf_bps) do
+                        local bufnr = vim.fn.bufnr(buf_name, true)
+                        if vim.fn.bufloaded(bufnr) == 0 then
+                            vim.api.nvim_buf_call(bufnr, vim.cmd.edit)
+                        end
+
+                        breakpoints.set({
+                            condition = bp.condition,
+                            log_message = bp.logMessage,
+                            hit_condition = bp.hitCondition,
+                        }, bufnr, bp.line)
+                    end
+                end
+            end,
+
+            pre_restore_cmds = {
+                function()
+                    local breakpoints = package.loaded["dap.breakpoints"]
+                    if breakpoints then
+                        breakpoints.clear()
+                    end
+                end,
+            },
         })
+
+        local timer = vim.uv.new_timer()
+        timer:start(
+            30000,
+            90000,
+            vim.schedule_wrap(function()
+                require("auto-session").auto_save_session()
+            end)
+        )
     end,
 }
