@@ -4,23 +4,66 @@ local ESLINT_CONFIGS = {
     ".eslintrc.json",
     ".eslintrc.yaml",
     ".eslintrc.yml",
+
     "eslint.config.js",
     "eslint.config.mjs",
     "eslint.config.cjs",
 }
 
 local STYLELINT_CONFIGS = {
-    "fstylelintrc",
+    ".stylelintrc",
     ".stylelintrc.json",
     ".stylelintrc.js",
     ".stylelintrc.cjs",
 }
 
-local function linter_if_configured(linter, config_names)
-    return function()
-        local found = vim.fs.find(config_names, { upward = true, path = vim.fn.expand("%:p:h") })[1]
-        return found and { linter } or {}
+local LINTERS = {
+    python = {
+        names = { "ruff" },
+    },
+
+    javascript = {
+        names = { "eslint_d" },
+        configs = ESLINT_CONFIGS,
+    },
+
+    javascriptreact = {
+        names = { "eslint_d" },
+        configs = ESLINT_CONFIGS,
+    },
+
+    typescript = {
+        names = { "eslint_d" },
+        configs = ESLINT_CONFIGS,
+    },
+
+    typescriptreact = {
+        names = { "eslint_d" },
+        configs = ESLINT_CONFIGS,
+    },
+
+    vue = {
+        names = { "eslint_d" },
+        configs = ESLINT_CONFIGS,
+    },
+
+    css = {
+        names = { "stylelint" },
+        configs = STYLELINT_CONFIGS,
+    },
+}
+
+local function has_config(bufnr, config_names)
+    local filename = vim.api.nvim_buf_get_name(bufnr)
+    if filename == "" then
+        return false
     end
+
+    return vim.fs.find(config_names, {
+        path = vim.fs.dirname(filename),
+        upward = true,
+        type = "file",
+    })[1] ~= nil
 end
 
 return {
@@ -29,24 +72,23 @@ return {
     config = function()
         local lint = require("lint")
 
-        lint.linters_by_ft = {
-            python = { "ruff" },
-
-            javascript = linter_if_configured("eslint_d", ESLINT_CONFIGS),
-            javascriptreact = linter_if_configured("eslint_d", ESLINT_CONFIGS),
-            typescript = linter_if_configured("eslint_d", ESLINT_CONFIGS),
-            typescriptreact = linter_if_configured("eslint_d", ESLINT_CONFIGS),
-            vue = linter_if_configured("eslint_d", ESLINT_CONFIGS),
-
-            css = linter_if_configured("stylelint", STYLELINT_CONFIGS),
-        }
-
         vim.api.nvim_create_autocmd("BufWritePost", {
             group = vim.api.nvim_create_augroup("NvimLint", { clear = true }),
-            callback = function()
-                lint.try_lint()
+            callback = function(args)
+                local filetype = vim.bo[args.buf].filetype
+
+                local entry = LINTERS[filetype]
+                if not entry then
+                    return
+                end
+
+                if entry.configs and not has_config(args.buf, entry.configs) then
+                    return
+                end
+
+                lint.try_lint(entry.names)
             end,
-            desc = "Run linter for the current filetype",
+            desc = "Run configured linters for the current file",
         })
     end,
 }
