@@ -123,14 +123,5 @@ return {
                 end,
             },
         })
-
-        local timer = vim.uv.new_timer()
-        timer:start(
-            30000,
-            90000,
-            vim.schedule_wrap(function()
-                require("auto-session").auto_save_session()
-            end)
-        )
     end,
 }
