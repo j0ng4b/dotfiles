@@ -57,6 +57,5 @@ function y() {
         builtin cd -- "$cwd"
     fi
 
-    rm -f -- "$tmp"
+    command rm -f -- "$tmp"
 }
-
