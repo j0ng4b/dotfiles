@@ -75,6 +75,15 @@ export GOBIN="${GOBIN:-$GOPATH/bin}"
 export ANDROID_HOME="$XDG_DATA_HOME/android/sdk"
 export ANDROID_USER_HOME="$XDG_CONFIG_HOME/android"
 export ANDROID_AVD_HOME="$XDG_DATA_HOME/android/avd"
+export ANDROID_EMULATOR_HOME="$XDG_CONFIG_HOME/android"
+
+
+#
+# Flutter and Dart
+#
+
+export FLUTTER_ROOT="$XDG_DATA_HOME/flutter"
+export PUB_CACHE="$XDG_DATA_HOME/dart/pub-cache"
 
 
 #
@@ -101,6 +110,9 @@ path=(
     "$DOTNET_ROOT/tools"
 
     "$GOBIN"
+
+    "$FLUTTER_ROOT/bin"
+    "$PUB_CACHE/bin"
 
     "$ANDROID_HOME/cmdline-tools/latest/bin"
     "$ANDROID_HOME/platform-tools"
