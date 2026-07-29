@@ -296,31 +296,37 @@ local extensions = {
 --- Setup functions
 --------------------
 local setup_keymaps = function(bufnr)
-    local opts = { buffer = bufnr }
+    local map = function(mode, lhs, rhs, desc)
+        vim.keymap.set(mode, lhs, rhs, {
+            buffer = bufnr,
+            desc = desc,
+        })
+    end
 
-    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-    vim.keymap.set("n", "gD", picker_for("lsp_declarations"), opts)
-    vim.keymap.set("n", "gd", picker_for("lsp_definitions"), opts)
-    vim.keymap.set("n", "gi", picker_for("lsp_implementations"), opts)
-    vim.keymap.set("n", "gt", picker_for("lsp_type_definitions"), opts)
-    vim.keymap.set("n", "gr", picker_for("lsp_references"), opts)
+    map("n", "K", vim.lsp.buf.hover, "show symbol documentation")
+
+    map("n", "gD", picker_for("lsp_declarations"), "go to declaration")
+    map("n", "gd", picker_for("lsp_definitions"), "go to definition")
+    map("n", "gi", picker_for("lsp_implementations"), "go to implementation")
+    map("n", "gt", picker_for("lsp_type_definitions"), "go to type definition")
+    map("n", "gr", picker_for("lsp_references"), "find references")
 
     -- Format
-    vim.keymap.set("n", "gF", function()
+    map("n", "gF", function()
         format_buffer(bufnr)
-    end, opts)
+    end, "format current buffer")
 
     -- Rename
-    vim.keymap.set("n", "gR", vim.lsp.buf.rename, opts)
-    vim.keymap.set({ "n", "i" }, "<F2>", vim.lsp.buf.rename, opts)
+    map("n", "gR", vim.lsp.buf.rename, "rename symbol")
+    map({ "n", "i" }, "<F2>", vim.lsp.buf.rename, "rename symbol")
 
     -- Signature help
-    vim.keymap.set("n", "gk", vim.lsp.buf.signature_help, opts)
-    vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, opts)
+    map("n", "gk", vim.lsp.buf.signature_help, "show signature help")
+    map("i", "<C-k>", vim.lsp.buf.signature_help, "show signature help")
 
     -- Code actions
-    vim.keymap.set("n", "gf", vim.lsp.buf.code_action, opts)
-    vim.keymap.set({ "n", "i" }, "<F3>", vim.lsp.buf.code_action, opts)
+    map("n", "ga", vim.lsp.buf.code_action, "show code actions")
+    map({ "n", "i" }, "<F3>", vim.lsp.buf.code_action, "show code actions")
 end
 
 local setup_diagnostics = function()
