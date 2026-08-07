@@ -43,10 +43,6 @@ run --match "dbus-daemon --session" dbus-daemon --session --address="$DBUS_SESSI
 run pipewire
 
 
-## Start notification server
-run dunst
-
-
 ## Start foot server and always restart if closed
 (
     if pgrep -f "foot --server" >/dev/null 2>&1; then
