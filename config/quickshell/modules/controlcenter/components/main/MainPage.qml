@@ -9,6 +9,7 @@ Item {
     id: root
 
     signal wifiPageRequested
+    signal bluetoothPageRequested
 
     implicitHeight: content.implicitHeight + 32
 
@@ -54,7 +55,9 @@ Item {
 
                 icon: BluetoothService.enabled ? "bluetooth" : "bluetooth_disabled"
                 active: BluetoothService.enabled
+                showChevron: true
                 onClicked: BluetoothService.toggle()
+                onChevronClicked: root.bluetoothPageRequested()
             }
         }
 

@@ -3,8 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.modules.controlcenter.components.wifi
 import qs.modules.controlcenter.components.main
+import qs.modules.controlcenter.components.wifi
+import qs.modules.controlcenter.components.bluetooth
 import qs.config
 import qs.components
 import qs.services
@@ -21,6 +22,7 @@ Item {
 
     // 0 = main controls
     // 1 = wifi network list
+    // 2 = bluetooth devices list
     property int page: 0
 
     onActiveChanged: {
@@ -47,7 +49,10 @@ Item {
     RowLayout {
         id: container
 
-        readonly property int _hiddenY: -height
+        property real _maxHeight: height
+        readonly property int _hiddenY: -_maxHeight
+
+        onHeightChanged: _maxHeight = Math.max(_maxHeight, height)
 
         spacing: 0
         width: implicitWidth
@@ -81,6 +86,8 @@ Item {
                 switch (controlCenter.page) {
                 case 1:
                     return wifiPage.implicitHeight;
+                case 2:
+                    return bluetoothPage.implicitHeight;
                 default:
                     return mainPage.implicitHeight;
                 }
@@ -104,10 +111,10 @@ Item {
             }
 
             Item {
-                width: controlCenter.panelWidth * 2
+                width: controlCenter.panelWidth * 3
                 height: parent.height
 
-                x: controlCenter.page === 0 ? 0 : -controlCenter.panelWidth
+                x: -controlCenter.page * controlCenter.panelWidth
                 Behavior on x {
                     NumberAnimation {
                         duration: 260
@@ -129,6 +136,11 @@ Item {
                             controlCenter.page = 1;
                             NetworkService.refreshNetworks();
                         }
+
+                        onBluetoothPageRequested: {
+                            controlCenter.page = 2;
+                            BluetoothService.refreshDevices();
+                        }
                     }
                 }
 
@@ -143,6 +155,21 @@ Item {
                         anchors.fill: parent
 
                         active: controlCenter.active && controlCenter.page === 1
+                        onBackRequested: controlCenter.page = 0
+                    }
+                }
+
+                // Bluetooth device list
+                Item {
+                    x: controlCenter.panelWidth * 2
+                    width: controlCenter.panelWidth
+                    height: parent.height
+
+                    BluetoothPage {
+                        id: bluetoothPage
+                        anchors.fill: parent
+
+                        active: controlCenter.active && controlCenter.page === 2
                         onBackRequested: controlCenter.page = 0
                     }
                 }
