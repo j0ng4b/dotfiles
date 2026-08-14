@@ -42,6 +42,7 @@ Item {
         if (active) {
             searchBar.clear();
             launcher.filter();
+            Qt.callLater(searchBar.activate);
         } else {
             hideTimer.restart();
         }
