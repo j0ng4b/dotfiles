@@ -28,6 +28,14 @@ fi
 
 
 #
+# DBUS session address
+#
+if [ -z "$DBUS_SESSION_BUS_ADDRESS" ]; then
+    export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+fi
+
+
+#
 # Zsh
 #
 
