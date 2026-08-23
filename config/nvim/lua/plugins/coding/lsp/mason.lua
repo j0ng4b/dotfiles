@@ -84,6 +84,13 @@ local TOOL_GROUPS = {
     },
 
     {
+        name = "Docker",
+        tools = {
+            "docker-language-server",
+        },
+    },
+
+    {
         name = "General",
         tools = {
             "tree-sitter-cli",
