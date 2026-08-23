@@ -271,16 +271,6 @@ local server_configs = {
             },
         }
     end,
-
-    docker_ls = function(_)
-        return {
-            init_options = {
-                telemetry = {
-                    enabled = false,
-                },
-            },
-        }
-    end,
 }
 
 --------------------

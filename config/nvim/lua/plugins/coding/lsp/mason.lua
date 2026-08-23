@@ -86,7 +86,8 @@ local TOOL_GROUPS = {
     {
         name = "Docker",
         tools = {
-            "docker-language-server",
+            "dockerfile-language-server",
+            "docker-compose-language-service",
         },
     },
 

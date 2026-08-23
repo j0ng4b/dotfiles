@@ -28,3 +28,22 @@ vim.api.nvim_create_autocmd("ModeChanged", {
     end,
     desc = "Adjust mapping timeout according to mode",
 })
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+    group = vim.api.nvim_create_augroup("DockerComposeFiletype", { clear = true }),
+    pattern = {
+        "docker-compose.yml",
+        "docker-compose.yaml",
+        "docker-compose.*.yml",
+        "docker-compose.*.yaml",
+        "compose.yml",
+        "compose.yaml",
+        "compose.*.yml",
+        "compose.*.yaml",
+    },
+    callback = function()
+        vim.bo.filetype = "yaml.docker-compose"
+        vim.wo.spell = false
+    end,
+    desc = "Set filetype yaml.docker-compose",
+})
