@@ -1,3 +1,26 @@
+local alpha_ui_state = nil
+
+local function hide_ui()
+    alpha_ui_state = {
+        laststatus = vim.opt.laststatus,
+        showtabline = vim.opt.showtabline,
+    }
+
+    vim.opt.laststatus = 0
+    vim.opt.showtabline = 0
+end
+
+local function restore_ui()
+    if not alpha_ui_state then
+        return
+    end
+
+    vim.opt.laststatus = alpha_ui_state.laststatus
+    vim.opt.showtabline = alpha_ui_state.showtabline
+
+    alpha_ui_state = nil
+end
+
 local function count_files(dir)
     local uv = vim.loop
     local count = 0
@@ -198,8 +221,7 @@ return {
 
                             _G.alpha_win_num = vim.api.nvim_get_current_win()
 
-                            vim.opt.laststatus = 0
-                            vim.opt.showtabline = 0
+                            hide_ui()
                         end,
                         desc = "Hide global UI while Alpha is open",
                     })
@@ -208,8 +230,7 @@ return {
                         group = group,
                         buffer = 0,
                         callback = function()
-                            vim.opt.laststatus = 3
-                            vim.opt.showtabline = 2
+                            restore_ui()
 
                             vim.g.alpha_closed = true
                         end,
