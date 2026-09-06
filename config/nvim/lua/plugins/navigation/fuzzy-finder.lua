@@ -1,3 +1,23 @@
+local function get_buffers()
+    local items = {}
+
+    for _, b in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_valid(b) and vim.bo[b].buflisted then
+            local path = vim.api.nvim_buf_get_name(b)
+
+            if path ~= "" then
+                items[#items + 1] = {
+                    bufnr = b,
+                    path = path,
+                    changed = vim.bo[b].modified,
+                }
+            end
+        end
+    end
+
+    return items
+end
+
 local function smart_labels(paths)
     local parts = {}
     for i, path in ipairs(paths) do
@@ -43,83 +63,91 @@ end
 
 local function smart_buffers()
     local fzf = require("fzf-lua")
+    local utils = require("fzf-lua.utils")
     local devicons = require("nvim-web-devicons")
 
-    local bufs = vim.api.nvim_list_bufs()
-    local items, paths = {}, {}
-
-    for _, b in ipairs(bufs) do
-        if vim.api.nvim_buf_is_valid(b) and vim.bo[b].buflisted then
-            local name = vim.api.nvim_buf_get_name(b)
-            if name ~= "" then
-                paths[#paths + 1] = name
-                items[#items + 1] = { bufnr = b, path = name, changed = vim.bo[b].modified }
-            end
-        end
-    end
-
-    if #items == 0 then
-        vim.notify("No buffers found", vim.log.levels.INFO)
-        return
-    end
-
-    local labels = smart_labels(paths)
-
-    local max_bufnr_w = 1
-    for _, it in ipairs(items) do
-        max_bufnr_w = math.max(max_bufnr_w, #tostring(it.bufnr))
-    end
-
     local WIN_W = 0.80
-    local content_max_w = math.floor(vim.o.columns * WIN_W) - 5
+    local items = {}
+
+    local function path_from(s)
+        return s:match("^([^\t]+)")
+    end
 
     fzf.fzf_exec(function(cb)
+        items = get_buffers()
+        if #items == 0 then
+            cb()
+            return
+        end
+
+        local paths = vim.tbl_map(function(it)
+            return it.path
+        end, items)
+
+        local labels = smart_labels(paths)
+        local content_w = math.floor(vim.o.columns * WIN_W) - 5
+
+        local max_w = 1
+        for _, it in ipairs(items) do
+            max_w = math.max(max_w, #tostring(it.bufnr))
+        end
+
         for i, item in ipairs(items) do
             local ext = vim.fn.fnamemodify(item.path, ":e")
             local icon, hl = devicons.get_icon(item.path, ext, { default = true })
-            local icon_colored = hl and fzf.utils.ansi_from_hl(hl, icon) or icon
+            local icon_col = hl and utils.ansi_from_hl(hl, icon) or icon
 
             local mod = item.changed and " ●" or ""
 
-            local bufnr_str = "[" .. string.format("%" .. max_bufnr_w .. "d", item.bufnr) .. "]"
-            local bufnr_colored = fzf.utils.ansi_codes.magenta(bufnr_str)
+            local bufnr_str = string.format("[%" .. max_w .. "d]", item.bufnr)
+            local bufnr_col = utils.ansi_codes.magenta(bufnr_str)
 
             local left_w = vim.fn.strdisplaywidth(icon .. " " .. labels[i] .. mod)
-            local right_w = #bufnr_str
+            local pad = math.max(1, content_w - left_w - #bufnr_str)
 
-            local pad = math.max(1, content_max_w - left_w - right_w)
-            local pad_str = string.rep(" ", pad)
-
-            local display = icon_colored .. " " .. labels[i] .. mod .. pad_str .. bufnr_colored
-            cb(item.path .. "\t" .. display)
+            cb(item.path .. "\t" .. icon_col .. " " .. labels[i] .. mod .. string.rep(" ", pad) .. bufnr_col)
         end
+
         cb()
     end, {
         winopts = {
             width = WIN_W,
+            height = 0.4,
+            preview = { hidden = true },
         },
 
         fzf_opts = {
             ["--delimiter"] = "\t",
             ["--with-nth"] = "2..",
-            ["--nth"] = "1",
         },
 
         actions = {
             ["default"] = function(selected)
-                local s = selected and selected[1]
-                if not s then
-                    return
-                end
-
-                local fpath = s:match("^(.-)\t")
-                for _, item in ipairs(items) do
-                    if item.path == fpath then
-                        vim.api.nvim_set_current_buf(item.bufnr)
+                local fpath = path_from(selected[1])
+                for _, it in ipairs(items) do
+                    if it.path == fpath then
+                        vim.api.nvim_set_current_buf(it.bufnr)
                         return
                     end
                 end
             end,
+
+            ["ctrl-x"] = {
+                reload = true,
+                fn = function(selected)
+                    local fpath = path_from(selected[1])
+                    for _, it in ipairs(items) do
+                        if it.path == fpath then
+                            if it.changed then
+                                vim.notify(("buffer %d has unsaved changes!"):format(it.bufnr), vim.log.levels.WARN)
+                            else
+                                vim.api.nvim_buf_delete(it.bufnr, {})
+                            end
+                            return
+                        end
+                    end
+                end,
+            },
         },
     })
 end
