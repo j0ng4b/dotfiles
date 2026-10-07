@@ -14,7 +14,7 @@ setup_desktop() {
     xbps_ensure_pkgs libreoffice-calc libreoffice-impress libreoffice-writer libreoffice-i18n-pt-BR
 
     _info "Installing other useful programs..."
-    xbps_ensure_pkgs firefox obs stremio-shell xwayland-satellite
+    xbps_ensure_pkgs firefox obs stremio-shell xwayland-satellite udiskie
 
     _info "Installing desktop portals..."
     xbps_ensure_pkgs xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-wlr

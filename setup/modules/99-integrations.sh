@@ -9,6 +9,25 @@ setup_integrations() {
     _info "Finalizing user group memberships..."
     user_add_groups "$username" docker _seatd bluetooth
 
+    _info "Configuring udisks2 permissions..."
+    _run write_file_root /etc/polkit-1/rules.d/50-storage.rules 0644 root:root <<'EOF'
+polkit.addRule(function(action, subject) {
+    if (!subject.isInGroup("storage")) {
+        return;
+    }
+
+    var permissions = {
+        "org.freedesktop.udisks2.filesystem-mount": polkit.Result.YES,
+        "org.freedesktop.udisks2.filesystem-unmount-others": polkit.Result.YES,
+        "org.freedesktop.udisks2.encrypted-unlock": polkit.Result.YES,
+        "org.freedesktop.udisks2.eject-media": polkit.Result.YES,
+        "org.freedesktop.udisks2.power-off-drive": polkit.Result.YES
+    };
+
+    return permissions[action.id];
+});
+EOF
+
     _info "Setting up udev rules for backlight and LEDs..."
     _run write_file_root /etc/udev/rules.d/99-backlight-leds.rules 0644 root:root <<'EOF'
 ACTION=="add", SUBSYSTEM=="backlight", RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness"
