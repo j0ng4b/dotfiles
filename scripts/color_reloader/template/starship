@@ -7,13 +7,11 @@ palette = 'base16'
 
 ## Prompts format
 format = """
-$username$hostname$directory($git_branch)$custom
+$username$hostname$directory($git_branch)${custom.end_prompt}
 $character
 """
 
-right_format = """
-
-"""
+right_format = '$cmd_duration$nodejs$python'
 
 
 [character]
@@ -49,34 +47,52 @@ truncation_symbol = './'
 style = 'bg:base02 fg:base05'
 format = '[$path ]($style)'
 
-[directory.substitutions]
-'/' = '  '
+substitutions = [
+    {from = '^/$', to = '󰋊', regex = true},
+    {from = '^/',  to = '󰋊/', regex = true},
+    {from = '/', to = '  '},
 
-'Documents' = '󱔗'
-'Documentos' = '󱔗'
+    {from = 'Documents', to = '󱔗'},
+    {from = 'Documentos', to = '󱔗'},
 
-'Downloads' = ''
+    {from = 'Downloads', to = ''},
 
-'Music' = ''
-'Músicas' = ''
+    {from = 'Music', to = ''},
+    {from = 'Músicas', to = ''},
 
-'Pictures' = ''
-'Imagens' = ''
+    {from = 'Pictures', to = ''},
+    {from = 'Imagens', to = ''},
+
+    {from = 'Movies', to = ''},
+    {from = 'Vídeos', to = ''},
+]
 
 
 [git_branch]
-symbol = '🌱 '
+symbol = ""
 
 style = 'bg:base03 fg:base05'
-format = '[ ](bg:base03 fg:base02)[on $symbol]($style)[$branch(:$remote_branch) ](bg:base03 fg:base11 bold)'
+format = '[ ](bg:base03 fg:base02)[on $symbol ]($style)[$branch(:$remote_branch) ](bg:base03 fg:base11 bold)'
 
-truncation_length = 6
+truncation_length = 26
 truncation_symbol = '…'
 
 
 [cmd_duration]
-min_time = 0
-format = '[](fg:base10)[ took $duration ](bg:base10 fg:base00)[](fg:base10)'
+min_time = 1000
+format = "[](fg:base10)[ took $duration ](bg:base10 fg:base00)"
+
+[nodejs]
+symbol = ""
+version_format = '${major}.${minor}'
+style = 'bold fg:base11 bg:base02'
+format = "[](fg:base02 bg:prev_bg)[ $symbol $version ]($style)"
+
+[python]
+symbol = ""
+version_format = '${major}.${minor}'
+style = 'bold fg:base10 bg:base02'
+format = "[](fg:base02 bg:prev_bg)[ $symbol $version(\\($virtualenv\\)) ]($style)"
 
 
 [custom.end_prompt]
