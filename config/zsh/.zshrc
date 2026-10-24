@@ -114,3 +114,8 @@ TRAPUSR1() {
         echo ""
     fi
 }
+
+# fnm
+if [ -d "$FNM_PATH" ]; then
+  eval "$(fnm env --shell zsh --use-on-cd)"
+fi
