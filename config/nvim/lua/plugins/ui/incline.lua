@@ -1,6 +1,5 @@
 return {
     "b0o/incline.nvim",
-    enabled = false,
     dependencies = "nvim-tree/nvim-web-devicons",
     config = function()
         require("incline").setup({
