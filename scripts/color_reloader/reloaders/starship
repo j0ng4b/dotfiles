@@ -1,0 +1,3 @@
+output="$CONFIG_HOME/starship/config.toml"
+# Requires a TRAPUSR1 in your zshrc, otherwise SIGUSR1 kills the shell.
+reload() { pkill -USR1 -x zsh; }

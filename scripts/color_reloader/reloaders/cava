@@ -1,0 +1,2 @@
+output="$CONFIG_HOME/cava/config"
+reload() { pkill -USR1 -x cava; }

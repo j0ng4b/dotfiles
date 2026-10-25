@@ -1,0 +1,2 @@
+output="$CONFIG_HOME/bat/themes/colors.tmTheme"
+reload() { bat cache --build; }

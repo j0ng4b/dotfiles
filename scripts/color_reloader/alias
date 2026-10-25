@@ -1,0 +1,21 @@
+# <alias> <palette key>
+# Semantic names usable in templates ({bg}, {fg:#}, {accent:rgb}...).
+# A provider (e.g. matugen) may define any of these directly; keys defined by
+# the palette itself always win over the alias.
+bg         base00
+bg_alt     base01
+bg_sel     base02
+comment    base03
+fg_dim     base04
+fg         base05
+fg_alt     base06
+fg_bright  base07
+red      base08
+orange   base09
+yellow   base0A
+green    base0B
+cyan     base0C
+blue     base0D
+magenta  base0E
+brown    base0F
+accent     base0D

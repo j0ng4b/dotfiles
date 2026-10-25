@@ -1,143 +1,94 @@
-local file = require("core.utils.file")
+-- Applies the theme managed by `scripter color-reloader`.
+-- Native colorschemes are preferred when available; otherwise, use mini.base16.
 
 local M = {}
 
-local map = {
+local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
+local palette_file = vim.fs.joinpath(config_home, "nvim", "lua", "colors.lua")
+local theme_file = vim.fs.joinpath(config_home, "sysconf", "theme")
+
+-- Native colorscheme overrides by scheme and mode.
+M.native = {
     catppuccin = {
         dark = "catppuccin-mocha",
         light = "catppuccin-latte",
     },
 
     gruvbox = {
-        dark = { scheme = "gruvbox", background = "dark" },
-        light = { scheme = "gruvbox", background = "light" },
+        dark = { name = "gruvbox", background = "dark" },
+        light = { name = "gruvbox", background = "light" },
     },
 
     everforest = {
-        dark = { scheme = "everforest", background = "dark" },
-        light = { scheme = "everforest", background = "light" },
+        dark = { name = "everforest", background = "dark" },
+        light = { name = "everforest", background = "light" },
     },
 
     nord = {
-        dark = { scheme = "nord", background = "dark" },
+        dark = "nord",
     },
 }
 
-local function current_state()
-    return {
-        scheme = vim.g.colors_name,
-        background = vim.o.background,
-    }
-end
-
-local function get_theme_file()
-    local config_home = os.getenv("XDG_CONFIG_HOME")
-    if config_home == nil then
-        config_home = os.getenv("HOME") .. "/.config"
+local function read_theme()
+    local file = io.open(theme_file, "r")
+    if not file then
+        return nil, "dark"
     end
 
-    return vim.fs.joinpath(config_home, "sysconf", "theme")
+    local theme = file:read("*l") or ""
+    file:close()
+
+    local scheme, mode = theme:match("^([^/]+)/(.+)$")
+    return scheme or theme, mode or "dark"
 end
 
-local function parse(input)
-    local theme, mode = input:match("^([^/]+)/(.+)$")
-    if not theme then
-        return input, "dark"
-    end
-    return theme, mode
-end
-
-local function normalize(resolved)
-    if type(resolved) == "string" then
-        return {
-            scheme = resolved,
-            background = nil,
-        }
-    end
-
-    return {
-        scheme = resolved.scheme,
-        background = resolved.background,
-    }
-end
-
-local function is_same(current, target)
-    if current.scheme ~= target.scheme then
+local function apply_native(scheme, mode)
+    local entry = M.native[scheme] and M.native[scheme][mode]
+    if not entry then
         return false
     end
 
-    if target.background and current.background ~= target.background then
+    local name = type(entry) == "table" and entry.name or entry
+    local background = type(entry) == "table" and entry.background
+
+    if background then
+        vim.o.background = background
+    end
+
+    local ok = pcall(vim.cmd.colorscheme, name)
+    return ok
+end
+
+local function apply_palette(mode)
+    local ok, palette = pcall(dofile, palette_file)
+    if not ok or type(palette) ~= "table" then
         return false
     end
 
+    vim.o.background = mode == "light" and "light" or "dark"
+    require("mini.base16").setup({ palette = palette })
     return true
 end
 
-function M.apply(input, from_shell)
-    local theme, mode = parse(input)
-    local entry = map[theme]
+function M.reload()
+    local scheme, mode = read_theme()
 
-    if not entry then
+    if scheme and apply_native(scheme, mode) then
         return
     end
 
-    local resolved = entry[mode] or entry.dark
-    local target = normalize(resolved)
-    local current = current_state()
-
-    if is_same(current, target) then
-        return
-    end
-
-    if from_shell then
-        vim.g._update_colorscheme = 1
-    end
-
-    if target.background then
-        vim.o.background = target.background
-    end
-
-    if target.scheme then
-        vim.cmd.colorscheme(target.scheme)
-    end
+    apply_palette(mode)
 end
 
 function M.setup()
-    local theme_name = file.read(get_theme_file())
-    if theme_name then
-        M.apply(theme_name, false)
-    end
+    M.reload()
 
-    vim.api.nvim_create_autocmd("ColorScheme", {
-        group = vim.api.nvim_create_augroup("ColorschemeReloader", {
-            clear = true,
-        }),
-        callback = function()
-            vim.schedule(function()
-                -- If set from outside, do nothing to avoid looping.
-                if vim.g._update_colorscheme then
-                    vim.g._update_colorscheme = nil
-                    return
-                end
-
-                local current = vim.g.colors_name
-                local background = vim.o.background
-
-                local reverse = {
-                    ["catppuccin-mocha"] = "catppuccin/dark",
-                    ["catppuccin-latte"] = "catppuccin/light",
-                    ["gruvbox"] = "gruvbox/" .. background,
-                    ["everforest"] = "everforest/" .. background,
-                    ["nord"] = "nord/dark",
-                }
-
-                local result = reverse[current]
-                if result then
-                    file.write(get_theme_file(), result)
-                end
-            end)
-        end,
-        desc = "Persist colorscheme changes",
+    -- :Theme gruvbox/dark | :Theme light | :Theme toggle
+    vim.api.nvim_create_user_command("Theme", function(opts)
+        vim.system({ "scripter", "color-reloader", "set", opts.args })
+    end, {
+        nargs = 1,
+        desc = "Change the system theme",
     })
 end
 

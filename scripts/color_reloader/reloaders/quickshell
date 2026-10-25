@@ -1,0 +1,3 @@
+output="$CONFIG_HOME/shell/colors.json"
+detect() { command -v quickshell || command -v qs; } >/dev/null 2>&1
+# quickshell watches the file by itself, nothing to reload.

@@ -1,144 +1,112 @@
 #!/usr/bin/env sh
+#
+# color-reloader
+#
+# Single source of truth for colors.
+#
+#   $XDG_CONFIG_HOME/sysconf/theme        "<scheme>/<mode>", e.g. "gruvbox/dark"
+#                 v
+#   palette  <- provider/<scheme>        (dynamic: matugen, ...)   or
+#            <- color/<scheme>/<mode>    (static base16 file)
+#            +   alias                   (semantic names: bg, fg, accent...)
+#                 v
+#   $SCRIPT_CACHE_DIR/palette
+#                 v
+#   every *installed* tool in reloaders/ :  generate (template -> config file)
+#                                           reload   (hook, run in parallel)
+#
 
-# Constants
-CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
+export CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
-# Create theme file if not exists
+base_dir="$root/color_reloader"
 theme_dir="$CONFIG_HOME/sysconf"
-theme_filename="theme"
-theme_filepath="$theme_dir/$theme_filename"
-[ ! -e "$theme_filepath" ] && echo "catppuccin/${COLOR_MODE:-dark}" > "$theme_filepath"
+theme_file="$theme_dir/theme"
+disabled_file="$theme_dir/color-reloader.disabled"
+palette_file="$SCRIPT_CACHE_DIR/palette"
+pidfile="$SCRIPT_CACHE_DIR/watcher.pid"
 
-# Enabled re-loaders
-registry_dir="$SCRIPT_CACHE_DIR"
-registry_filename="reloaders"
-registry_filepath="$registry_dir/$registry_filename"
-daemon_pidfile="$registry_dir/daemon.pid"
-
-pending_filename="reloaders_pending"
-pending_filepath="$registry_dir/$pending_filename"
-
-mkdir -p "$theme_dir" "$registry_dir"
-
-# States
-RELOADERS=""
-WM_BACKENDS=""
+mkdir -p "$theme_dir" "$SCRIPT_CACHE_DIR"
+if [ ! -e "$theme_file" ]; then
+    echo "gruvbox/${COLOR_MODE:-dark}" > "$theme_file"
+fi
 
 
 ##
-## Utility functions
+## Theme / palette
 ##
 
-_get_theme_name() {
-    [ -f "$theme_filepath" ] || return 1
-    head -n1 "$theme_filepath" | tr -d '\r\n'
+_theme() {
+    head -n1 "$theme_file" 2>/dev/null | tr -d '\n'
 }
 
-_register_reloader() {
-    RELOADERS="${RELOADERS:+$RELOADERS }$1"
+# Sets $theme, $scheme and $mode from the theme file.
+_parse_theme() {
+    theme="$(_theme)"
+    scheme="${theme%%/*}"
+
+    case "$theme" in
+        */*) mode="${theme#*/}" ;;
+        *)   mode="${COLOR_MODE:-dark}" ;;
+    esac
 }
 
-_validate_reloader() {
-    if [ -z "$1" ]; then
-        return 1
-    fi
-
-    for reloader in $RELOADERS; do
-        [ "$reloader" = "$1" ] && return 0
-    done
-
-    return 1
+_scheme_exists() {
+    [ -d "$base_dir/color/$1" ] || [ -f "$base_dir/provider/$1" ]
 }
 
-_register_wm_backend() {
-    WM_BACKENDS="${WM_BACKENDS:+$WM_BACKENDS }$1"
-}
+# Resolves the current theme into $palette_file (one "key hex" pair per line).
+_build_palette() {
+    _parse_theme
+    raw="$SCRIPT_CACHE_DIR/palette.raw"
 
-_validate_wm() {
-    if [ -z "$1" ]; then
-        return 1
-    fi
-
-    for wm_backend in $WM_BACKENDS; do
-        [ "$wm_backend" = "$1" ] && return 0
-    done
-
-    return 1
-}
-
-_generate_colors_file() {
-    template_name="$1"
-    output_path="$2"
-    theme_name="$(_get_theme_name)"
-
-    theme="$root/color_reloader/color/$theme_name"
-    if [ ! -f "$theme" ]; then
-        fallback="$root/color_reloader/color/${theme_name%/*}/dark"
-        if [ -f "$fallback" ]; then
-            warn "color-reloader: fallback to dark mode"
-            theme="$fallback"
-        else
-            error "color-reloader: theme not found: '$theme_name'"
+    if [ -f "$base_dir/provider/$scheme" ]; then
+        sh "$base_dir/provider/$scheme" "$mode" > "$raw" || {
+            error "color-reloader: provider '$scheme' failed"
             return 1
-        fi
+        }
+    elif [ -f "$base_dir/color/$scheme/$mode" ]; then
+        cp "$base_dir/color/$scheme/$mode" "$raw"
+    elif [ -f "$base_dir/color/$scheme/dark" ]; then
+        warn "color-reloader: '$scheme' has no '$mode' variant, falling back to dark"
+        mode=dark
+        cp "$base_dir/color/$scheme/$mode" "$raw"
+    else
+        error "color-reloader: theme not found: '$theme'"
+        return 1
     fi
 
-    template="$root/color_reloader/template/$template_name"
-    [ -f "$template" ] || {
-        warn "color-reloader: no template found for '$template_name'"
+    aliases="$base_dir/alias"
+    [ -f "$aliases" ] || aliases=/dev/null
+
+    awk -f "$base_dir/lib/palette.awk" "$raw" "$aliases" > "$palette_file.tmp" || {
+        rm -f "$palette_file.tmp"
+        error "color-reloader: invalid palette for '$theme'"
+        return 1
+    }
+    mv "$palette_file.tmp" "$palette_file"
+}
+
+# color <name> prints the hex (without '#') correspondent of color name in the
+# palette.
+color() {
+    awk -v name="$1" '$1 == name { print $2 }' "$palette_file"
+}
+
+# render <template> <output>: fills a template with the current palette.
+#   {base00} -> 1d2021
+#   {base00:#} -> #1d2021
+#   {base00:rgb} -> 29,32,33
+render() {
+    template_path="$base_dir/template/$1"
+    output_path="$2"
+    [ -f "$template_path" ] || {
+        warn "color-reloader: template '$1' not found"
         return 1
     }
 
-    # Generate color file
     mkdir -p "$(dirname "$output_path")"
-    cp --force "$template" "$output_path"
-
-    # build sed args safely
-    set --
-    while read -r color value; do
-        [ -z "$color" ] && continue
-        set -- "$@" -e "s|{$color}|$value|g"
-    done < "$theme"
-    sed "$@" "$output_path" > "$output_path.tmp" && mv "$output_path.tmp" "$output_path"
-}
-
-
-##
-## Foot terminal
-##
-
-# Reload colors for all foot terminals
-_foot_broadcast() {
-    seqs_file="$1"
-
-    for pts in /dev/pts/*; do
-        [ -w "$pts" ] || continue
-        cat "$seqs_file" > "$pts" 2>/dev/null
-    done
-}
-
-_register_reloader foot
-_foot_reloader() {
-    colors_output_path="$CONFIG_HOME/foot/colors.ini"
-    _cmd_generate --template foot --path "$colors_output_path" || return
-    [ "$GENERATE_ONLY" = "1" ] && return
-
-    seqs_file="$SCRIPT_CACHE_DIR/foot_seqs"
-    : > "$seqs_file"
-
-    sed -nr 's/.*(regular|bright)([0-9])\s*=\s*([a-zA-Z0-9]{6}).*/\1 \2 \3/p' "$colors_output_path" |
-        while read -r type num color; do
-            [ "$type" = "bright" ] && num=$(( num + 8 ))
-            printf '\033]4;%d;#%s\a' "$num" "$color"
-        done >> "$seqs_file"
-
-    fg=$(sed -nr 's/.*foreground\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$colors_output_path")
-    [ -n "$fg" ] && printf '\033]10;#%s\a' "$fg" >> "$seqs_file"
-
-    bg=$(sed -nr 's/.*background\s*=\s*([a-zA-Z0-9]{6}).*/\1/p' "$colors_output_path")
-    [ -n "$bg" ] && printf '\033]11;#%s\a' "$bg" >> "$seqs_file"
-
-    _foot_broadcast "$seqs_file"
+    awk -v palette_file="$palette_file" -f "$base_dir/lib/render.awk" "$template_path" > "$output_path.tmp" \
+        && mv "$output_path.tmp" "$output_path"
 }
 
 
@@ -146,406 +114,313 @@ _foot_reloader() {
 ## Reloaders
 ##
 
-_register_reloader cava
-_cava_reloader() {
-    _cmd_generate --template cava --path "$CONFIG_HOME/cava/config" || return
-    [ "$GENERATE_ONLY" = "1" ] || pkill -USR1 cava
+# Loads a reloader definition into the current shell.
+#
+# A definition may set:
+#     bin, template, output
+#
+# and override:
+#     detect(), generate(), reload()
+_load_reloader() {
+    name="$1"
+    bin="$1"
+    template="$1"
+    output=""
+
+    detect()   { command -v "$bin" >/dev/null 2>&1; }
+    generate() { [ -z "$output" ] || render "$template" "$output"; }
+    reload()   { :; }
+
+    . "$base_dir/reloaders/$name"
 }
 
-_register_reloader btop
-_btop_reloader() {
-    _cmd_generate --template btop --path "$CONFIG_HOME/btop/themes/generated.theme" || return
-    [ "$GENERATE_ONLY" = "1" ] || pkill -USR2 btop
+_is_disabled() {
+    grep -qxF "$1" "$disabled_file" 2>/dev/null
 }
 
-_register_reloader bat
-_bat_reloader() {
-    _cmd_generate --template bat --path "$CONFIG_HOME/bat/themes/colors.tmTheme" || return
-    bat cache --build >/dev/null
-}
+# Prints the reloaders to work on: the explicit names given, or every enabled
+# reloader whose tool is installed.
+_targets() {
+    if [ $# -gt 0 ]; then
+        for reloader in "$@"; do
+            if [ -f "$base_dir/reloaders/$reloader" ]; then
+                echo "$reloader"
+            else
+                warn "color-reloader: unknown reloader '$n'"
+            fi
+        done
+        return 0
+    fi
 
-_register_reloader git
-_git_reloader() {
-    _cmd_generate --template git --path "$CONFIG_HOME/git/colors.gitconfig" || return
-    # bat reloader is required to run
-}
+    for reloader_path in "$base_dir"/reloaders/*; do
+        [ -f "$reloader_path" ] || continue
+        reloader="${reloader_path##*/}"
 
-_register_reloader nvim
-_nvim_reloader() {
-    [ "$GENERATE_ONLY" = "1" ] && return
-    theme_name="$(_get_theme_name)"
-
-    for sock in "${XDG_RUNTIME_DIR}"/nvim.*.0; do
-        [ -e "$sock" ] || continue
-        nvim --clean --headless --server "$sock" \
-            --remote-send \
-                "<Cmd>lua require('theme').apply('$theme_name', true)<CR>" \
-            2>/dev/null
+        _is_disabled "$reloader" && continue
+        ( _load_reloader "$reloader"; detect ) && echo "$reloader"
     done
 }
 
-_register_reloader tmux
-_tmux_reloader() {
-    _cmd_generate --template shell --path "$CONFIG_HOME/tmux/colors.tmux" || return
-    [ "$GENERATE_ONLY" = "1" ] || tmux run-shell "$CONFIG_HOME/tmux/style.tmux"
-}
-
-_register_reloader starship
-_starship_reloader() {
-    _cmd_generate --template starship --path "$CONFIG_HOME/starship/config.toml" || return
-    [ "$GENERATE_ONLY" = "1" ] || pkill -USR1 zsh
-}
-
-_register_reloader quickshell
-_quickshell_reloader() {
-    _cmd_generate --template quickshell --path "$CONFIG_HOME/shell/colors.json" || return
-    # nothing to do, quickshell will auto reload colors anyway
-}
-
-
-##
-## Window Manager
-##
-
-_detect_wm() {
-    xdg="$(printf '%s:%s' "$XDG_CURRENT_DESKTOP" "$XDG_SESSION_DESKTOP" | tr '[:upper:]' '[:lower:]')"
-    for wm in niri mango; do
-        case "$xdg" in
-            *"$wm"*) echo "$wm"; return ;;
-        esac
-
-        pgrep -x "$wm" >/dev/null && {
-            echo "$wm"
-            return
+_generate() {
+    for generator in $1; do
+        info "color-reloader: generating $generator"
+        ( _load_reloader "$generator"; generate ) || {
+            warn "color-reloader: '$generator' generate failed"
         }
     done
-
-    return 1
 }
 
-_register_wm_backend niri
-_wm_backend_niri() {
-    _cmd_generate --template niri --path "$CONFIG_HOME/niri/colors.kdl" || return
-    # automatic reload for niri - no action needed
-}
-
-_register_wm_backend mango
-_wm_backend_mango() {
-    _cmd_generate --template mango --path "$CONFIG_HOME/mango/colors.conf" || return
-    [ "$GENERATE_ONLY" = "1" ] || mmsg -d reload_config
-}
-
-_register_reloader wm
-_wm_reloader() {
-    wm="$(_detect_wm)"
-
-    if [ -z "$wm" ]; then
-        warn "color-reloader: no window manager detected"
-        return
-    fi
-
-    info "color-reloader: detected WM = $wm"
-
-    if _validate_wm "$wm"; then
-        "_wm_backend_${wm}" 2>/dev/null
-    else
-        warn "color-reloader: no backend for WM '$wm', using default"
-    fi
-}
-
-
-##
-## Helpers
-##
-
-_run_reloader() {
-    [ "$GENERATE_ONLY" = "1" ] || info "color-reloader: reloading $1"
-    "_${1}_reloader"
-}
-
-_run_all() {
-    [ ! -f "$registry_filepath" ] && return
-    while IFS= read -r name; do
-        [ -z "$name" ] && continue
-        _run_reloader "$name" &
-    done < "$registry_filepath"
+_reload() {
+    for reloader in $1; do
+        (
+            info "color-reloader: reloading $reloader"
+            _load_reloader "$reloader"
+            reload >/dev/null 2>&1
+            true
+        ) &
+    done
     wait
 }
 
+
+##
+## Commands
+##
+
+# Rebuild palette, regenerate every config and reload every tool.
+_cmd_apply() {
+    _build_palette || return 1
+    targets="$(_targets "$@")"
+    _generate "$targets"
+    _reload "$targets"
+}
+
+# Same as apply, but doesn't touch running programs (useful at boot).
+_cmd_generate() {
+    _build_palette || return 1
+    _generate "$(_targets "$@")"
+}
+
+_cmd_set() {
+    [ $# -eq 1 ] || {
+        error "usage: color-reloader set <scheme>[/<mode>] | dark | light | toggle"
+        return 1
+    }
+    _parse_theme
+
+    case "$1" in
+        dark|light) new="$scheme/$1" ;;
+        toggle)
+            if [ "$mode" = light ]; then new="$scheme/dark"; else new="$scheme/light"; fi
+            ;;
+        */*) new="$1" ;;
+        *)   new="$1/$mode" ;;
+    esac
+
+    _scheme_exists "${new%%/*}" || {
+        error "color-reloader: unknown scheme '${new%%/*}'"
+        return 1
+    }
+
+    printf '%s\n' "$new" > "$theme_file.tmp" && mv "$theme_file.tmp" "$theme_file"
+
+    # When the watcher is running it reacts to the file change by itself.
+    _daemon_running || _cmd_apply
+}
+
 _daemon_running() {
-    [ -f "$daemon_pidfile" ] || return 1
-    pid=$(cat "$daemon_pidfile")
+    [ -f "$pidfile" ] || return 1
+    pid="$(cat "$pidfile")"
     [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null
 }
 
-
-##
-## Script commands
-##
-
-_cmd_run() {
-    if _daemon_running; then
-        info "color-reloader: daemon already running, registering reloaders only"
-        _cmd_register "$@"
-        return
-    fi
-
-    # Register initial re-loaders set
-    for name in "$@"; do
-        _validate_reloader "$name" || continue
-        grep -qxF "$name" "$registry_filepath" 2>/dev/null \
-            || echo "$name" >> "$registry_filepath"
-    done
-    _run_all
-
+# Optional: re-applies whenever the theme file changes. Not needed if always
+# change themes with `set`.
+_cmd_watch() {
     command -v inotifywait >/dev/null 2>&1 || {
         error "color-reloader: inotifywait not found"
-        exit 1
-    }
-
-    # Register current process pid
-    echo $$ > "$daemon_pidfile"
-    trap 'rm -f "$daemon_pidfile"' EXIT INT TERM
-
-    info "color-reloader: running daemon (pid $$)"
-    while true; do
-        changed=$(inotifywait --quiet \
-            --event close_write \
-            --event moved_to \
-            --format '%f' \
-            "$theme_dir" "$registry_dir" 2>/dev/null) || { sleep 1; continue; }
-
-        if [ "$changed" = "$theme_filename" ]; then
-            _run_all
-
-        elif [ "$changed" = "$registry_filename" ] || [ "$changed" = "$pending_filename" ]; then
-            [ ! -f "$pending_filepath" ] && continue
-            pending="$(cat "$pending_filepath")"
-            [ -z "$pending" ] && continue
-
-            : > "$pending_filepath"
-
-            printf '%s\n' "$pending" | while IFS= read -r name; do
-                [ -z "$name" ] && continue
-                _run_reloader "$name" &
-            done
-            wait
-        fi
-    done
-}
-
-_cmd_register() {
-    for name in "$@"; do
-        _validate_reloader "$name" || continue
-        if grep -qxF "$name" "$registry_filepath" 2>/dev/null; then
-            warn "color-reloader: '$name' already registered"
-        else
-            echo "$name" >> "$registry_filepath"
-            echo "$name" >> "$pending_filepath"
-            info "color-reloader: '$name' registered"
-        fi
-    done
-}
-
-_cmd_unregister() {
-    for name in "$@"; do
-        [ -f "$registry_filepath" ] || continue
-
-        tmp="$registry_filepath.tmp"
-        grep -vxF "$name" "$registry_filepath" > "$tmp" 2>/dev/null && mv "$tmp" "$registry_filepath"
-        info "color-reloader: '$name' unregistered"
-    done
-}
-
-_cmd_reload() {
-    _run_all
-}
-
-_cmd_generate() {
-    template=""
-    output=""
-    names=""
-
-    while [ $# -gt 0 ]; do
-        case "$1" in
-            -t|--template)
-                [ -n "$2" ] || { error "--template requires argument"; return 1; }
-                template="$2"
-                shift 2
-                ;;
-            -p|--path)
-                [ -n "$2" ] || { error "--path requires argument"; return 1; }
-                output="$2"
-                shift 2
-                ;;
-            --)
-                shift
-                names="$*"
-                break
-                ;;
-            -*)
-                error "color-reloader: invalid option '$1'"
-                return 1
-                ;;
-            *)
-                # first positional -> names mode
-                names="$*"
-                break
-                ;;
-        esac
-    done
-
-    ( [ -n "$template" ] || [ -n "$output" ] ) && [ -n "$names" ] && {
-        error "cannot mix template mode with names"
         return 1
     }
 
-    ##
-    ## Mode: template
-    ##
-    if [ -n "$template" ] || [ -n "$output" ]; then
-        [ -z "$template" ] && {
-            error "color-reloader: --template required"
-            return 1
-        }
-
-        [ -z "$output" ] && {
-            error "color-reloader: --path required"
-            return 1
-        }
-
-        _generate_colors_file "$template" "$output"
-        return
+    if _daemon_running; then
+        info "color-reloader: watcher already running"
+        return 0
     fi
 
-    ##
-    ## Mode: names
-    ##
-    [ -z "$names" ] && {
-        warn "color-reloader: nothing selected, fallback to all registered"
-        names="$(cat "$registry_filepath" 2>/dev/null)"
-        detected_wm="$(_detect_wm)"
-        [ -n "$detected_wm" ] && names="$names $detected_wm"
-    }
+    echo "$$" > "$pidfile"
+    inotify_pid=""
+    trap 'rm -f "$pidfile"' EXIT
+    trap '[ -n "$inotify_pid" ] && kill "$inotify_pid" 2>/dev/null; exit 0' INT TERM
 
-    [ -z "$names" ] && {
-        warn "color-reloader: nothing to generate"
-        return 0
-    }
-
-    for name in $names; do
-        if _validate_reloader "$name"; then
-            info "color-reloader: generating $name colors"
-            GENERATE_ONLY=1 _run_reloader "$name"
-        elif _validate_wm "$name"; then
-            info "color-reloader: generating $name colors"
-            GENERATE_ONLY=1 "_wm_backend_${name}"
-        else
-            error "color-reloader: unknown reloader or wm backend '$name'"
+    info "color-reloader: watching $theme_file (pid $$)"
+    last=""
+    while :; do
+        current="$(_theme)"
+        if [ "$current" != "$last" ]; then
+            last="$current"
+            _cmd_apply
+            continue
         fi
+
+        # Any event in the dir only wakes us up; the content comparison above
+        # decides whether something really changed. The timeout is a safety net
+        # for events that happen between the check and the next wait.
+        inotifywait --quiet --timeout 300 \
+            --event close_write --event moved_to "$theme_dir" >/dev/null 2>&1 &
+        inotify_pid=$!
+        wait "$inotify_pid" || sleep 1
+        inotify_pid=""
     done
+}
+
+_cmd_stop() {
+    if _daemon_running; then
+        kill "$(cat "$pidfile")" && info "color-reloader: watcher stopped"
+    else
+        info "color-reloader: watcher not running"
+    fi
 }
 
 _cmd_status() {
+    _parse_theme
+
     if _daemon_running; then
-        pid=$(cat "$daemon_pidfile")
-        printf '\033[32m●\033[0m daemon running \033[2m(pid %s)\033[0m\n\n' "$pid"
+        printf '\033[32m●\033[0m watcher running \033[2m(pid %s)\033[0m\n' "$(cat "$pidfile")"
     else
-        printf '\033[31m○\033[0m daemon stopped\n\n'
+        printf '\033[31m○\033[0m watcher stopped\n'
     fi
 
-    largest_name=0
-    for reloader in $RELOADERS; do
-        [ "${#reloader}" -gt "$largest_name" ] && largest_name="${#reloader}"
-    done
-
+    info "Theme: $scheme/$mode"
     info "Reloaders:"
-    for reloader in $RELOADERS; do
-        printf '  %-'"${largest_name}"'s  ' "$reloader"
+    for reloader_path in "$base_dir"/reloaders/*; do
+        [ -f "$reloader_path" ] || continue
+        reloader="${reloader_path##*/}"
 
-        if grep -qxF "$reloader" "$registry_filepath" 2>/dev/null; then
-            printf '\033[33mregistered\033[0m'
+        if _is_disabled "$reloader"; then
+            state='\033[2mdisabled\033[0m'
+        elif ( _load_reloader "$reloader"; detect ); then
+            state='\033[32mactive\033[0m'
         else
-            printf '\033[2munregistered\033[0m'
+            state='\033[2mnot installed\033[0m'
         fi
 
-        printf '\n'
+        printf '  %-12s %b\n' "$reloader" "$state"
     done
-    printf '\n'
-
-    info "WM backends:"
-    detected_wm="$(_detect_wm 2>/dev/null)"
-    for backend in $WM_BACKENDS; do
-        printf '  %s' "$backend"
-        [ "$backend" = "$detected_wm" ] && printf '  \033[32m(active)\033[0m'
-        printf '\n'
-    done
-    printf '\n'
-
-    theme="$(_get_theme_name 2>/dev/null)"
-    [ -n "$theme" ] && info "Current theme: $theme"
 }
 
+_cmd_themes() {
+    for colorscheme_path in "$base_dir"/color/*/; do
+        [ -d "$colorscheme_path" ] || continue
+        colorscheme="${colorscheme_path%/}"
+        colorscheme="${colorscheme##*/}"
+
+        modes=""
+        for mode in "$colorscheme_path"*; do
+            [ -f "$mode" ] && modes="$modes ${mode##*/}"
+        done
+        printf '%-16s%s\n' "$colorscheme" "$modes"
+    done
+
+    for provider in "$base_dir"/provider/*; do
+        [ -f "$provider" ] && printf '%-16s%s\n' "${provider##*/}" " dark light (dynamic)"
+    done
+}
+
+# has <name>: succeeds if the reloader exists and its tool is installed.
 _cmd_has() {
-    if _validate_reloader "$1"; then
-        return 0
-    elif _validate_wm "$1"; then
-        return 0
-    else
+    [ -f "$base_dir/reloaders/$1" ] && ( _load_reloader "$1"; detect )
+}
+
+_cmd_disable() {
+    for reloader in "$@"; do
+        [ -f "$base_dir/reloaders/$reloader" ] || {
+            warn "color-reloader: unknown reloader '$reloader'"
+            continue
+        }
+
+        _is_disabled "$reloader" || echo "$reloader" >> "$disabled_file"
+        info "color-reloader: '$reloader' disabled"
+    done
+}
+
+_cmd_enable() {
+    for reloader in "$@"; do
+        [ -f "$disabled_file" ] || break
+        grep -vxF "$reloader" "$disabled_file" > "$disabled_file.tmp"
+        mv "$disabled_file.tmp" "$disabled_file"
+        info "color-reloader: '$reloader' enabled"
+    done
+}
+
+# import <base16.yaml> <scheme>/<mode>: converts a tinted-theming scheme.
+_cmd_import() {
+    case "$2" in
+        */*) ;;
+        *) error "usage: color-reloader import <file.yaml> <scheme>/<mode>"; return 1 ;;
+    esac
+
+    dest="$base_dir/color/$2"
+    mkdir -p "$(dirname "$dest")"
+    sed -nE 's/^[[:space:]]*(base[0-9A-Fa-f]{2}):[[:space:]]*"?#?([0-9A-Fa-f]{6}).*/\1 \2/p' \
+        "$1" > "$dest"
+
+    if [ "$(wc -l < "$dest")" -lt 16 ]; then
+        rm -f "$dest"
+        error "color-reloader: '$1' doesn't look like a base16 scheme"
         return 1
     fi
+
+    info "color-reloader: imported to color/$2"
 }
 
 _cmd_help() {
-    echo "Usage: scripter color-reloader <command> [reloaders...]"
+    echo "Usage: scripter color-reloader <command> [args...]"
     echo ""
     echo "Commands:"
-    echo "  run         Run the color reloader daemon with specified reloaders"
-    echo "  register    Register reloaders to be automatically reloaded on theme change"
-    echo "  unregister  Unregister reloaders"
-    echo "  reload      Manually trigger reload for all registered reloaders"
-    echo "  generate    Generate color file for a given template and output path"
-    echo "  status      Show informations about reloaders status"
-    echo "  has         Check if some reloader is valid"
-    echo "  help        Show this help message"
+    echo "  apply [names]         Rebuild palette, regenerate configs and reload tools (alias: reload)"
+    echo "  generate [names]      Same, but without reloading running programs"
+    echo "  set <theme>           Change theme: <scheme>[/<mode>] | dark | light | toggle"
+    echo "  toggle                Toggle between dark and light"
+    echo "  watch                 Re-apply when the theme file changes (alias: run)"
+    echo "  stop                  Stop the watcher"
+    echo "  status                Show theme and which reloaders are active"
+    echo "  themes                List available schemes"
+    echo "  has <name>            Succeeds if the reloader exists and its tool is installed"
+    echo "  enable|disable        Opt reloaders in/out of the automatic detection"
+    echo "  import <from> <to>    Import a base16 yaml scheme as <scheme>/<mode>"
+    echo "  help                  Show this help message"
     echo ""
 }
 
 ##
-## Parse args
+## Dispatch
 ##
 
-cmd=""
-while [ $# -gt 0 ]; do
-    case "$1" in
-        run | register | unregister | reload | generate | status | has | help)
-            cmd="$1"
-            shift
-            break
-            ;;
-        -*)
-            error "color-reloader: invalid option '$1'!"
-            _cmd_help
-            exit 1
-            ;;
-        *)
-            error "color-reloader: unknown command '$1'!"
-            _cmd_help
-            exit 1
-            ;;
-    esac
+cmd="help"
+if [ $# -gt 0 ]; then
+    cmd="$1"
     shift
-done
+fi
 
 case "$cmd" in
-    run)        _cmd_run "$@" ;;
-    register)   _cmd_register "$@" ;;
-    unregister) _cmd_unregister "$@" ;;
-    reload)     _cmd_reload ;;
-    generate)   _cmd_generate "$@" ;;
-    status)     _cmd_status ;;
-    has)        _cmd_has "$1" ;;
-    help)       _cmd_help ;;
+    apply | reload)   _cmd_apply "$@" ;;
+    generate)         _cmd_generate "$@" ;;
+    set)              _cmd_set "$@" ;;
+    toggle)           _cmd_set toggle ;;
+    watch | run)      _cmd_watch ;;
+    stop)             _cmd_stop ;;
+    status)           _cmd_status ;;
+    themes)           _cmd_themes ;;
+    has)              _cmd_has "$1" ;;
+    enable)           _cmd_enable "$@" ;;
+    disable)          _cmd_disable "$@" ;;
+    import)           _cmd_import "$@" ;;
+    help | -h | --help) _cmd_help ;;
+    *)
+        error "color-reloader: unknown command '$cmd'!"
+        _cmd_help
+        exit 1
+        ;;
 esac
 
 # vim: ft=sh

@@ -1,0 +1,17 @@
+output="$CONFIG_HOME/foot/colors.ini"
+
+# Foot only reads colors.ini at startup, so push the new colors to the open
+# terminals with OSC escape sequences, derived from the generated file itself.
+reload() {
+    seqs="$(awk -F= '
+        /^regular[0-7]=/ { printf "\033]4;%d;#%s\a", substr($1, 8), $2 }
+        /^bright[0-7]=/  { printf "\033]4;%d;#%s\a", substr($1, 7) + 8, $2 }
+        $1 == "foreground" { printf "\033]10;#%s\a", $2 }
+        $1 == "background" { printf "\033]11;#%s\a", $2 }
+    ' "$output")"
+
+    for pts in /dev/pts/*; do
+        case "${pts##*/}" in *[!0-9]*) continue ;; esac
+        [ -w "$pts" ] && printf '%s' "$seqs" > "$pts" 2>/dev/null
+    done
+}

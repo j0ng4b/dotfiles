@@ -1,0 +1,2 @@
+output="$CONFIG_HOME/niri/colors.kdl"
+# niri reloads its config automatically.

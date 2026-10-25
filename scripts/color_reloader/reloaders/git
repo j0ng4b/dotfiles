@@ -1,0 +1,3 @@
+# The bat cache is rebuilt by the bat reloader; since every config is generated
+# before any reload hook runs, no ordering between them is needed anymore.
+output="$CONFIG_HOME/git/colors.gitconfig"

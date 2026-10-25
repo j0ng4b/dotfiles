@@ -1,0 +1,2 @@
+output="$CONFIG_HOME/mango/colors.conf"
+reload() { pgrep -x mango >/dev/null && mmsg -d reload_config; }

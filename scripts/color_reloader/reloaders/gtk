@@ -1,0 +1,4 @@
+# Hook-only reloader (no template): tells GTK/libadwaita/portal apps (browsers,
+# etc.) whether the system is dark or light.
+bin=gsettings
+reload() { gsettings set org.gnome.desktop.interface color-scheme "prefer-$mode"; }
