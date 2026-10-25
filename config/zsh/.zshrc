@@ -106,12 +106,11 @@ done
 
 # Prompt reload on SIGUSR1
 TRAPUSR1() {
-    if [[ -n $ZLE ]]; then
-        # If in zle (line editor), reset the prompt
+    # Bare `zle` only succeeds while the line editor is active.
+    # When a command is running in the foreground there is no prompt to
+    # redraw, so do nothing (the next prompt picks up the new colors anyway).
+    if zle; then
         zle .reset-prompt
-    else
-        # If not in an interactive editing session, just output a newline
-        echo ""
     fi
 }
 
