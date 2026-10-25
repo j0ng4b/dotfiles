@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+# Resolve symlinks first: when installed globally $0 is the link, not the file
+# inside the dotfiles repository.
+self="$(realpath "$0" 2>/dev/null)" || self="$(readlink -f "$0")"
+
+# Dotfiles root: $DOTFILES_ROOT, or the closest parent of the real file that
+# contains the `dotfile` executable.
+test_dir="${DOTFILES_ROOT:-$(dirname "$self")}"
+while [ "$test_dir" != "/" ]; do
+    [ -x "$test_dir/dotfile" ] && break
+    test_dir="$(dirname "$test_dir")"
+done
+
+if [ ! -x "$test_dir/dotfile" ]; then
+    printf '\033[31m[Error]\033[0m Can'\''t find dotfiles root!\n' >&2
+    exit 1
+fi
+
+exec sh "$test_dir/scripts/_scripter" "$@"
+
+# vim: ft=sh

@@ -17,9 +17,10 @@ _info()  { [ "$VERBOSE" -eq 1 ] && printf '\033[32m[INFO]\033[0m dotfile: %s\n' 
 config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
 data_dir="${XDG_DATA_HOME:-$HOME/.local/share}"
 home_dir="$HOME"
+bin_dir="${XDG_BIN_HOME:-$HOME/.local/bin}"
 
 # Create target directories if they don't exist
-for target_dir in "$config_dir" "$data_dir"; do
+for target_dir in "$config_dir" "$data_dir" "$bin_dir"; do
     [ -d "$target_dir" ] || mkdir -p "$target_dir"
 done
 
@@ -29,7 +30,7 @@ done
 ##
 
 _collect_dotfiles() {
-    for target in config data home; do
+    for target in config data home bin; do
         base="$dotfiles_root/$target"
         [ -d "$base" ] || continue
 
@@ -48,6 +49,7 @@ _target_dir() {
         config) printf '%s' "$config_dir" ;;
         data)   printf '%s' "$data_dir"   ;;
         home)   printf '%s' "$home_dir"   ;;
+        bin)    printf '%s' "$bin_dir"    ;;
         *) _error "unknown target: $1"; return 1 ;;
     esac
 }
@@ -113,16 +115,19 @@ _cmd_action() {
 
         found=0
         did_install=0
-        for target in home config data; do
+        for target in home bin config data; do
             dotfile_dir="$dotfiles_root/$target/$dotfile"
             [ -d "$dotfile_dir" ] || continue
 
             case "$target" in
-                home)
+                home | bin)
+                    prefix=""
+                    [ "$target" = "home" ] && prefix="."
+
                     target_path="$(_target_dir "$target")"
                     for file_path in "$dotfile_dir"/*; do
                         [ -e "$file_path" ] || continue
-                        _do_action "$action" "$file_path" "$target_path/.${file_path##*/}"
+                        _do_action "$action" "$file_path" "$target_path/$prefix${file_path##*/}"
                     done
                     ;;
                 config | data)
@@ -233,15 +238,17 @@ _cmd_list() {
     for dotfile in $(_collect_dotfiles); do
         status="none"
 
-        for target in home config data; do
+        for target in home bin config data; do
             dotfile_dir="$dotfiles_root/$target/$dotfile"
             [ -d "$dotfile_dir" ] || continue
 
             case "$target" in
-                home)
+                home | bin)
+                    prefix=""
+                    [ "$target" = "home" ] && prefix="."
+
                     for file_path in "$dotfile_dir"/*; do
-                        file=${file_path##*/}
-                        file=".$file"
+                        file="$prefix${file_path##*/}"
 
                         target_path="$(_target_dir "$target")/$file"
                         status="$(_check_status "$target_path" "$status")"
