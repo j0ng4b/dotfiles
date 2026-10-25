@@ -89,7 +89,7 @@ environment {
 ////////////////////////////////////////////////////////////////////////////////
 
 // start some processes
-spawn-at-startup "~/.config/niri/scripter" "autostart"
+spawn-at-startup "scripter" "autostart"
 
 
 include "output.kdl"

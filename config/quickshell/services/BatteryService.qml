@@ -20,7 +20,7 @@ Singleton {
 
     Process {
         running: true
-        command: [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "battery", "watch"]
+        command: ["scripter", "battery", "watch"]
         stdout: SplitParser {
             onRead: data => {
                 try {

@@ -16,7 +16,7 @@ Singleton {
     property var devices: []
     readonly property bool scanning: _scanner.running
 
-    readonly property string _scripter: Paths.url2Path(Qt.resolvedUrl('../scripts/scripter'))
+    readonly property string _scripter: "scripter"
     property string _pendingConnectMac: ''
 
     function toggle() {

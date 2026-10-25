@@ -8,7 +8,7 @@ import qs.config
 Singleton {
     id: root
 
-    readonly property string scriptPath: Paths.url2Path(Qt.resolvedUrl("../scripts/scripter"))
+    readonly property string scriptPath: "scripter"
 
     property bool loading: false
     property bool hasData: false

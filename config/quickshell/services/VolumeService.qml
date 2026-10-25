@@ -10,7 +10,7 @@ Singleton {
 
     signal changed
 
-    readonly property string scriptPath: Paths.url2Path(Qt.resolvedUrl("../scripts/scripter"))
+    readonly property string scriptPath: "scripter"
 
     property real level: 0.0
     property bool muted: false

@@ -14,7 +14,7 @@ Singleton {
     signal changed(source: string)
 
     function setScreen(value) {
-        _setProcess.command = [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "brightness", "screen", "set", Math.round(value * 100) + "%"];
+        _setProcess.command = ["scripter", "brightness", "screen", "set", Math.round(value * 100) + "%"];
         _setProcess.running = true;
     }
 
@@ -25,7 +25,7 @@ Singleton {
 
     Process {
         running: true
-        command: [Paths.url2Path(Qt.resolvedUrl("../scripts/scripter")), "brightness", "watch"]
+        command: ["scripter", "brightness", "watch"]
 
         stdout: SplitParser {
             onRead: data => {

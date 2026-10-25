@@ -23,7 +23,7 @@ Singleton {
 
     property var networks: []
 
-    readonly property string _scripter: Paths.url2Path(Qt.resolvedUrl("../scripts/scripter"))
+    readonly property string _scripter: "scripter"
 
     // WiFi actions
     function wifiToggle() {
