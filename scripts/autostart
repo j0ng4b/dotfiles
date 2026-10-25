@@ -83,15 +83,6 @@ sh "$root/_scripter" color-temperature run &
 
 
 ## Start color re-loader
-sh "$root/_scripter" color-reloader run \
-    foot \
-    nvim \
-    tmux \
-    starship \
-    btop \
-    cava \
-    bat \
-    git \
-    wm &
+sh "$root/_scripter" color-reloader run &
 
 # vim: ft=sh

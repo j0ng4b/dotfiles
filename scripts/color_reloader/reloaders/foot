@@ -1,17 +1,27 @@
 output="$CONFIG_HOME/foot/colors.ini"
 
-# Foot only reads colors.ini at startup, so push the new colors to the open
-# terminals with OSC escape sequences, derived from the generated file itself.
-reload() {
-    seqs="$(awk -F= '
+# Escape sequences (OSC 4/10/11) for the current colors, derived from the
+# generated ini. The file is persisted on purpose: `foot --server` keeps the
+# config it read at startup, so new windows start with stale colors unless the
+# shell replays this file (e.g. `cat ~/.cache/scripter/color-reloader/foot_seqs`
+# in the zshrc), and `generate` must refresh it too, not only `reload`.
+seqs_file="$SCRIPT_CACHE_DIR/foot_seqs"
+
+generate() {
+    render foot "$output" || return
+
+    awk -F= '
         /^regular[0-7]=/ { printf "\033]4;%d;#%s\a", substr($1, 8), $2 }
         /^bright[0-7]=/  { printf "\033]4;%d;#%s\a", substr($1, 7) + 8, $2 }
         $1 == "foreground" { printf "\033]10;#%s\a", $2 }
         $1 == "background" { printf "\033]11;#%s\a", $2 }
-    ' "$output")"
+    ' "$output" > "$seqs_file.tmp" && mv "$seqs_file.tmp" "$seqs_file"
+}
 
+# Repaint the terminals that are already open.
+reload() {
     for pts in /dev/pts/*; do
         case "${pts##*/}" in *[!0-9]*) continue ;; esac
-        [ -w "$pts" ] && printf '%s' "$seqs" > "$pts" 2>/dev/null
+        [ -w "$pts" ] && cat "$seqs_file" > "$pts" 2>/dev/null
     done
 }
