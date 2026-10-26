@@ -51,7 +51,7 @@ _install_nerd_font() {
         return 1
     }
 
-    _run unzip -q "$temp_zip" -d "$font_dir" || {
+    _run 7z x -y -bso0 -bsp0 "$temp_zip" -o"$font_dir" || {
         _error "Failed to extract $font_name"
         rm -f "$temp_zip"
         return 1

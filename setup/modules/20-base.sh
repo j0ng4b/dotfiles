@@ -11,5 +11,6 @@ setup_base() {
         tmux \
         btop \
         fzf \
-        unzip
+        7zip \
+        yazi
 }
