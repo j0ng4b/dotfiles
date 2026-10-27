@@ -11,3 +11,18 @@ run = [ 'shell -- for path in %s; do echo "file://$path"; done | wl-copy -t text
 [[mgr.prepend_keymap]]
 on = [ "g", "r" ]
 run = 'shell -- ya emit cd "$(git rev-parse --show-toplevel)"'
+
+[[mgr.prepend_keymap]]
+on = [ "t", "p" ]
+run = "tab_switch -1 --relative"
+desc = "Switch to previous tab"
+
+[[mgr.prepend_keymap]]
+on = [ "t", "n" ]
+run = "tab_switch 1 --relative"
+desc = "Switch to next tab"
+
+[[mgr.prepend_keymap]]
+on = [ "t", "c" ]
+run = "close"
+desc = "Close current tab"
