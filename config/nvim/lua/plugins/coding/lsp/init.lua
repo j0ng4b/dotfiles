@@ -271,6 +271,41 @@ local server_configs = {
             },
         }
     end,
+
+    jsonls = function(_)
+        local schemastore = utils.safe_require("schemastore")
+        if not schemastore then
+            return {}
+        end
+
+        return {
+            settings = {
+                json = {
+                    schemas = schemastore.json.schemas(),
+                    validate = { enable = true },
+                },
+            },
+        }
+    end,
+
+    yamlls = function(_)
+        local schemastore = utils.safe_require("schemastore")
+        if not schemastore then
+            return {}
+        end
+
+        return {
+            settings = {
+                yaml = {
+                    schemas = schemastore.yaml.schemas(),
+                    schemaStore = {
+                        enable = false,
+                        url = "",
+                    },
+                },
+            },
+        }
+    end,
 }
 
 --------------------

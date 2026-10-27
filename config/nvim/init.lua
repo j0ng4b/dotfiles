@@ -43,6 +43,8 @@ require("lazy").setup({
         { import = "plugins.ui.alpha" },
         { import = "plugins.ui.animations" },
 
+        { import = "plugins.miscellaneous" },
+
         { import = "colorschemes" },
     },
 

@@ -92,6 +92,14 @@ local TOOL_GROUPS = {
     },
 
     {
+        name = "JSON and YAML",
+        tools = {
+            "json-lsp",
+            "yaml-language-server",
+        },
+    },
+
+    {
         name = "General",
         tools = {
             "tree-sitter-cli",
