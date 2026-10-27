@@ -315,13 +315,70 @@ local extensions = {
     function(client, bufnr)
         with_cap(client, "textDocument/documentSymbol", function()
             local navic = utils.safe_require("nvim-navic")
-            if navic then
-                -- Prevents navic to attach to ts_ls and vue_ls at same time.
-                -- Also prefer attach to vue_ls over ts_ls for Vue buffers.
-                local ft = vim.bo[bufnr].filetype
-                if not (ft == "vue" and client.name == "ts_ls") then
+            if not navic then
+                return
+            end
+
+            -- Navic already attached to other language server on this buffer
+            if navic.is_available(bufnr) then
+                return
+            end
+
+            -- Used to prevent navic to attach to more than one server per file
+            local navic_conflicts = {
+                {
+                    filetypes = { "vue" },
+                    priority = {
+                        "vue_ls",
+                        "ts_ls",
+                    },
+                },
+
+                {
+                    filetypes = { "yaml.docker-compose" },
+                    priority = {
+                        "docker_compose_language_service",
+                        "docker_language_server",
+                        "yamlls",
+                    },
+                },
+            }
+
+            local ft = vim.bo[bufnr].filetype
+            local clients = vim.lsp.get_clients({ bufnr = bufnr })
+
+            local matched_rule = nil
+            for _, rule in ipairs(navic_conflicts) do
+                if vim.tbl_contains(rule.filetypes, ft) then
+                    matched_rule = rule
+                    break
+                end
+            end
+
+            if matched_rule then
+                -- Try attach to server by priority
+                local selected_client = nil
+
+                for _, priority_name in ipairs(matched_rule.priority) do
+                    for _, c in ipairs(clients) do
+                        if c.name == priority_name then
+                            selected_client = c
+                            break
+                        end
+                    end
+
+                    if selected_client then
+                        break
+                    end
+                end
+
+                -- Attach to highest priority server active on this buffer
+                if selected_client and selected_client.id == client.id then
                     navic.attach(client, bufnr)
                 end
+            else
+                -- No rule found = normal attach
+                navic.attach(client, bufnr)
             end
         end)
     end,
