@@ -1,83 +1,75 @@
 -- Applies the theme managed by `scripter color-reloader`.
--- Native colorschemes are preferred when available; otherwise, use mini.base16.
+--
+-- Resolution:
+--   1. Native colorscheme, when has an entry for the scheme and mode.
+--   2. Otherwise `:colorscheme theme-reloader`.
 
 local M = {}
 
-local config_home = os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")
-local palette_file = vim.fs.joinpath(config_home, "nvim", "lua", "colors.lua")
+local file = require("core.utils.file")
+
+local config_home = vim.env.XDG_CONFIG_HOME or vim.fs.joinpath(vim.env.HOME, ".config")
 local theme_file = vim.fs.joinpath(config_home, "sysconf", "theme")
 
--- Native colorscheme overrides by scheme and mode.
+-- Native colorscheme overrides by scheme.
+-- A string is the colorscheme name for any mode; a table maps mode to name,
+-- and a missing mode falls back to the base16 palette.
 M.native = {
     catppuccin = {
         dark = "catppuccin-mocha",
         light = "catppuccin-latte",
     },
 
-    gruvbox = {
-        dark = { name = "gruvbox", background = "dark" },
-        light = { name = "gruvbox", background = "light" },
-    },
-
-    everforest = {
-        dark = { name = "everforest", background = "dark" },
-        light = { name = "everforest", background = "light" },
-    },
-
-    nord = {
-        dark = "nord",
-    },
+    nord = "nord",
+    gruvbox = "gruvbox",
+    everforest = "everforest",
 }
 
+---@return string scheme, string mode  Defaults to `"", "dark"` when the file is missing.
 local function read_theme()
-    local file = io.open(theme_file, "r")
-    if not file then
-        return nil, "dark"
-    end
-
-    local theme = file:read("*l") or ""
-    file:close()
-
+    local theme = vim.trim(file.read(theme_file) or "")
     local scheme, mode = theme:match("^([^/]+)/(.+)$")
-    return scheme or theme, mode or "dark"
+    return scheme or theme, mode == "light" and "light" or "dark"
 end
 
+---@return boolean applied
 local function apply_native(scheme, mode)
-    local entry = M.native[scheme] and M.native[scheme][mode]
+    local entry = M.native[scheme]
     if not entry then
         return false
     end
 
-    local name = type(entry) == "table" and entry.name or entry
-    local background = type(entry) == "table" and entry.background
-
-    if background then
-        vim.o.background = background
-    end
-
-    local ok = pcall(vim.cmd.colorscheme, name)
-    return ok
-end
-
-local function apply_palette(mode)
-    local ok, palette = pcall(dofile, palette_file)
-    if not ok or type(palette) ~= "table" then
+    local name = type(entry) == "table" and entry[mode] or entry
+    if type(name) ~= "string" then
         return false
     end
 
-    vim.o.background = mode == "light" and "light" or "dark"
-    require("mini.base16").setup({ palette = palette })
-    return true
+    return pcall(vim.cmd.colorscheme, name)
+end
+
+---Applies the base16 palette through colors/theme-reloader.lua.
+local function apply_palette()
+    local ok, err = pcall(vim.cmd.colorscheme, "theme-reloader")
+    if not ok then
+        vim.notify("[theme] " .. err, vim.log.levels.WARN)
+    end
 end
 
 function M.reload()
     local scheme, mode = read_theme()
 
-    if scheme and apply_native(scheme, mode) then
-        return
+    -- Drop highlights from the previous theme so they don't leak into the new
+    -- one.
+    vim.cmd("highlight clear")
+    if vim.fn.exists("syntax_on") == 1 then
+        vim.cmd("syntax reset")
     end
+    vim.g.colors_name = nil
 
-    apply_palette(mode)
+    vim.o.background = mode
+    if not apply_native(scheme, mode) then
+        apply_palette()
+    end
 end
 
 function M.setup()
