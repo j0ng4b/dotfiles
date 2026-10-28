@@ -20,7 +20,16 @@
             ],
             "embedded": { "package.json": "\"prettier\": {" }
         },
-        "oxfmt": { "files": [".oxfmtrc.json", ".oxfmtrc.jsonc"] },
+
+        "oxfmt": {
+            "files": [
+                ".oxfmtrc.json",
+                ".oxfmtrc.jsonc",
+                "oxfmt.config.ts",
+                "oxfmt.config.mts"
+            ]
+        },
+
         "eslint": {
             "files": [
                 ".eslintrc",
@@ -38,9 +47,16 @@
             ],
             "embedded": { "package.json": "\"eslintConfig\"" }
         },
+
         "oxlint": {
-            "files": [".oxlintrc.json", "oxlint.config.ts", "oxlint.config.mts"]
+            "files": [
+                ".oxlintrc.json",
+                ".oxlintrc.jsonc",
+                "oxlint.config.ts",
+                "oxlint.config.mts"
+            ]
         },
+
         "stylelint": {
             "files": [
                 ".stylelintrc",
@@ -55,12 +71,15 @@
                 "stylelint.config.mjs"
             ]
         },
+
         "ruff": {
             "files": ["ruff.toml", ".ruff.toml"],
             "embedded": { "pyproject.toml": "[tool.ruff" }
         },
+
         "ruff_format": { "like": "ruff" },
         "ruff_organize_imports": { "like": "ruff" },
+
         "isort": {
             "files": [".isort.cfg"],
             "embedded": {
@@ -68,16 +87,21 @@
                 "setup.cfg": "[isort]"
             }
         },
+
         "black": { "embedded": { "pyproject.toml": "[tool.black" } },
+
         "flake8": {
             "files": [".flake8"],
             "embedded": { "setup.cfg": "[flake8]", "tox.ini": "[flake8]" }
         },
+
         "djlint": {
             "files": [".djlintrc"],
             "embedded": { "pyproject.toml": "[tool.djlint" }
         },
+
         "stylua": { "files": ["stylua.toml", ".stylua.toml"] },
+
         "csharpier": {
             "files": [
                 ".csharpierrc",
@@ -86,6 +110,7 @@
                 ".csharpierrc.yml"
             ]
         },
+
         "goimports": {},
         "gofumpt": {}
     },
