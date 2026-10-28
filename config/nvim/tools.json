@@ -1,0 +1,124 @@
+{
+    "tools": {
+        "prettier": {
+            "files": [
+                ".prettierrc",
+                ".prettierrc.json",
+                ".prettierrc.yaml",
+                ".prettierrc.yml",
+                ".prettierrc.json5",
+                ".prettierrc.js",
+                ".prettierrc.cjs",
+                ".prettierrc.mjs",
+                ".prettierrc.toml",
+                "prettier.config.js",
+                "prettier.config.cjs",
+                "prettier.config.mjs",
+                "prettier.config.ts",
+                "prettier.config.mts",
+                "prettier.config.cts"
+            ],
+            "embedded": { "package.json": "\"prettier\": {" }
+        },
+        "oxfmt": { "files": [".oxfmtrc.json", ".oxfmtrc.jsonc"] },
+        "eslint": {
+            "files": [
+                ".eslintrc",
+                ".eslintrc.js",
+                ".eslintrc.cjs",
+                ".eslintrc.json",
+                ".eslintrc.yaml",
+                ".eslintrc.yml",
+                "eslint.config.js",
+                "eslint.config.mjs",
+                "eslint.config.cjs",
+                "eslint.config.ts",
+                "eslint.config.mts",
+                "eslint.config.cts"
+            ],
+            "embedded": { "package.json": "\"eslintConfig\"" }
+        },
+        "oxlint": {
+            "files": [".oxlintrc.json", "oxlint.config.ts", "oxlint.config.mts"]
+        },
+        "stylelint": {
+            "files": [
+                ".stylelintrc",
+                ".stylelintrc.json",
+                ".stylelintrc.yaml",
+                ".stylelintrc.yml",
+                ".stylelintrc.js",
+                ".stylelintrc.cjs",
+                ".stylelintrc.mjs",
+                "stylelint.config.js",
+                "stylelint.config.cjs",
+                "stylelint.config.mjs"
+            ]
+        },
+        "ruff": {
+            "files": ["ruff.toml", ".ruff.toml"],
+            "embedded": { "pyproject.toml": "[tool.ruff" }
+        },
+        "ruff_format": { "like": "ruff" },
+        "ruff_organize_imports": { "like": "ruff" },
+        "isort": {
+            "files": [".isort.cfg"],
+            "embedded": {
+                "pyproject.toml": "[tool.isort",
+                "setup.cfg": "[isort]"
+            }
+        },
+        "black": { "embedded": { "pyproject.toml": "[tool.black" } },
+        "flake8": {
+            "files": [".flake8"],
+            "embedded": { "setup.cfg": "[flake8]", "tox.ini": "[flake8]" }
+        },
+        "djlint": {
+            "files": [".djlintrc"],
+            "embedded": { "pyproject.toml": "[tool.djlint" }
+        },
+        "stylua": { "files": ["stylua.toml", ".stylua.toml"] },
+        "csharpier": {
+            "files": [
+                ".csharpierrc",
+                ".csharpierrc.json",
+                ".csharpierrc.yaml",
+                ".csharpierrc.yml"
+            ]
+        },
+        "goimports": {},
+        "gofumpt": {}
+    },
+
+    "filetypes": {
+        "html,css,scss,less,javascript,javascriptreact,typescript,typescriptreact,vue,json,jsonc,yaml,markdown": {
+            "format": [["prettier", "oxfmt"]]
+        },
+
+        "javascript,javascriptreact,typescript,typescriptreact,vue": {
+            "lint": ["eslint", "oxlint"]
+        },
+
+        "css,scss": {
+            "lint": ["stylelint"]
+        },
+
+        "htmldjango,jinja": {
+            "format": ["djlint"],
+            "lint": ["djlint"]
+        },
+
+        "python": {
+            "format": [
+                ["ruff_organize_imports", "isort"],
+                ["ruff_format", "black"]
+            ],
+
+            "lint": [["ruff", "flake8"]]
+        },
+
+        "lua": { "format": ["stylua"] },
+        "cs": { "format": ["csharpier"] },
+        "go": { "format": ["goimports", "gofumpt"] }
+    }
+}
