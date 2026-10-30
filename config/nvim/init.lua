@@ -31,7 +31,6 @@ require("lazy").setup({
 
         { import = "plugins.coding" },
         { import = "plugins.coding.editing" },
-        { import = "plugins.coding.lsp" },
         { import = "plugins.coding.syntax" },
 
         { import = "plugins.editor" },
