@@ -1,337 +1,265 @@
-local function hex_to_rgb(hex)
-    return tonumber(hex:sub(2, 3), 16), tonumber(hex:sub(4, 5), 16), tonumber(hex:sub(6, 7), 16)
-end
+local hl_cache = {}
 
-local function contrast_fg(bg_int)
-    if not bg_int then
-        return 0xFFFFFF
-    end
+-- Readable foreground (black/white) for a 0xRRGGBB background.
+---@param bg integer
+---@return integer
+local function contrast_fg(bg)
+    local r = math.floor(bg / 0x10000)
+    local g = math.floor(bg / 0x100) % 0x100
+    local b = bg % 0x100
 
-    local r, g, b = hex_to_rgb(string.format("#%06x", bg_int))
     return (0.299 * r + 0.587 * g + 0.114 * b) > 186 and 0x000000 or 0xFFFFFF
 end
 
-local function resolve_hl(name, seen)
-    seen = seen or {}
-    if seen[name] then
-        return {}
-    end
-    seen[name] = true
-
-    local hl = vim.api.nvim_get_hl(0, { name = name })
-    if vim.tbl_isempty(hl) then
-        return {}
+-- Creates the badge group once per colorscheme and returns its name.
+---@param group string
+---@param bg integer
+---@return string
+local function badge(group, bg)
+    if not hl_cache[group] then
+        vim.api.nvim_set_hl(0, group, { bg = bg, fg = contrast_fg(bg) })
+        hl_cache[group] = true
     end
 
-    return hl.link and resolve_hl(hl.link, seen) or hl
-end
-
-local function invert_hl(hl)
-    return vim.tbl_extend("force", hl, {
-        bg = hl.fg,
-        fg = contrast_fg(hl.fg),
-    })
-end
-
-local hl_cache = {}
-local function badge_hl_from_hex(hex)
-    local group = "CmpColorBadge" .. hex:sub(2)
-    if hl_cache[group] then
-        return hl_cache[group]
-    end
-
-    local r, g, b = hex_to_rgb(hex)
-    if not r then
-        return nil
-    end
-
-    local bg = r * 0x10000 + g * 0x100 + b
-    vim.api.nvim_set_hl(0, group, { bg = bg, fg = contrast_fg(bg) })
-    hl_cache[group] = group
     return group
 end
 
-local function get_color_hex(entry)
+-- Inverted version of cmp's own CmpItemKind<kind> (icon on a colored block).
+---@param kind string
+---@return string|nil
+local function kind_badge(kind)
+    local fg = vim.api.nvim_get_hl(0, { name = "CmpItemKind" .. kind, link = false }).fg
+    return fg and badge("CmpKindBadge" .. kind, fg) or nil
+end
+
+-- Parses "#rgb", "#rrggbb" or "#rrggbbaa" into 0xRRGGBB. Anything else is nil.
+---@param text? string
+---@return integer|nil
+local function hex_to_int(text)
+    local digits = text and text:match("#(%x+)")
+    if not digits then
+        return nil
+    end
+
+    if #digits == 3 then
+        digits = digits:gsub(".", "%0%0")
+    end
+
+    if #digits ~= 6 and #digits ~= 8 then
+        return nil
+    end
+
+    return tonumber(digits:sub(1, 6), 16)
+end
+
+-- Color of a completion entry: LSP Color items (tailwind, css-lsp) or a
+-- label that is itself a hex color.
+---@return integer|nil
+local function entry_color(entry)
     local item = entry:get_completion_item()
 
-    -- LSP Color kind (kind = 16)
-    if item.kind == 16 then
+    if item.kind == vim.lsp.protocol.CompletionItemKind.Color then
         local doc = item.documentation
-
         if type(doc) == "table" then
             doc = doc.value
         end
-
-        if type(doc) == "string" then
-            local hex = doc:match("#[0-9a-fA-F][0-9a-fA-F]+")
-            if hex then
-                return hex
-            end
-        end
-
-        local detail = item.detail or ""
-        local hex = detail:match("#[0-9a-fA-F][0-9a-fA-F]+")
-        if hex then
-            return hex
-        end
+        return hex_to_int(doc) or hex_to_int(item.detail)
     end
 
     local label = item.label or ""
-    if label:match("^#[0-9a-fA-F][0-9a-fA-F]+$") then
-        return label
-    end
-
-    return nil
+    return label:match("^#%x+$") and hex_to_int(label) or nil
 end
 
-local function setup_kind_highlights()
-    local groups = {
-        "CmpItemKindField",
-        "CmpItemKindProperty",
-        "CmpItemKindEvent",
-        "CmpItemKindText",
-        "CmpItemKindEnum",
-        "CmpItemKindKeyword",
-        "CmpItemKindConstant",
-        "CmpItemKindConstructor",
-        "CmpItemKindReference",
-        "CmpItemKindFunction",
-        "CmpItemKindStruct",
-        "CmpItemKindClass",
-        "CmpItemKindModule",
-        "CmpItemKindOperator",
-        "CmpItemKindVariable",
-        "CmpItemKindFile",
-        "CmpItemKindUnit",
-        "CmpItemKindSnippet",
-        "CmpItemKindFolder",
-        "CmpItemKindMethod",
-        "CmpItemKindValue",
-        "CmpItemKindEnumMember",
-        "CmpItemKindInterface",
-        "CmpItemKindColor",
-        "CmpItemKindTypeParameter",
-    }
-
-    for _, name in ipairs(groups) do
-        local hl = resolve_hl(name)
-        if hl.fg then
-            vim.api.nvim_set_hl(0, name, invert_hl(hl))
-        end
-    end
-end
-
-local static_source_labels = {
+local SOURCE_LABELS = {
     buffer = "[Buffer]",
+    async_path = "[Path]",
     cmdline = "[CMD]",
     cmdline_history = "[CMD]",
-    async_path = "[Path]",
     codecompanion_tools = "[CC]",
     codecompanion_variables = "[CC]",
     codecompanion_slash_commands = "[CC]",
 }
 
+---@return string
 local function entry_label(entry)
     local src = entry.source.name
 
-    if src == "nvim_lsp" or src == "nvim_lsp_signature_help" then
-        local client_name = vim.tbl_get(entry, "source", "source", "client", "name")
-        local suffix = src == "nvim_lsp_signature_help" and "·sig" or ""
-        return "[" .. (client_name or "Lsp") .. suffix .. "]"
+    if src:find("^nvim_lsp") then
+        local client = vim.tbl_get(entry, "source", "source", "client", "name") or "Lsp"
+        return ("[%s%s]"):format(client, src == "nvim_lsp_signature_help" and "·sig" or "")
     end
 
-    return static_source_labels[src] or src
+    return SOURCE_LABELS[src] or ("[" .. src .. "]")
 end
 
+---@return boolean
 local function has_words_before()
-    local pos = vim.api.nvim_win_get_cursor(0)
-    local row, col = pos[1], pos[2]
-
-    if col == 0 then
-        return false
-    end
-
-    return vim.api.nvim_buf_get_lines(0, row - 1, row, true)[1]:sub(col, col):match("%s") == nil
-end
-
--- Main config -----------------------------------------------------------------
-local config = function()
-    local utils = require("core.utils")
-    local icons = require("core.utils.icons")
-    local cmp = require("cmp")
-
-    cmp.setup({
-        snippet = {
-            expand = function(args)
-                vim.snippet.expand(args.body)
-            end,
-        },
-
-        mapping = {
-            ["<C-d>"] = cmp.mapping.scroll_docs(-5),
-            ["<C-f>"] = cmp.mapping.scroll_docs(5),
-            ["<C-Space>"] = cmp.mapping.complete(),
-
-            ["<CR>"] = cmp.mapping({
-                i = function(fallback)
-                    if cmp.visible() and cmp.get_selected_entry() then
-                        cmp.confirm({
-                            behavior = cmp.ConfirmBehavior.Replace,
-                            select = false,
-                        })
-                    else
-                        fallback()
-                    end
-                end,
-                s = cmp.mapping.confirm({ select = true }),
-            }),
-
-            ["<Tab>"] = cmp.mapping(function(fallback)
-                if cmp.visible() and cmp.get_selected_entry() then
-                    cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-                elseif vim.snippet.active({ direction = 1 }) then
-                    cmp.close()
-                    vim.snippet.jump(1)
-                elseif cmp.visible() then
-                    cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-                elseif has_words_before() then
-                    cmp.complete()
-                else
-                    fallback()
-                end
-            end, { "i", "s" }),
-
-            ["<S-Tab>"] = cmp.mapping(function(fallback)
-                if cmp.visible() and cmp.get_selected_entry() then
-                    cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
-                elseif vim.snippet.active({ direction = -1 }) then
-                    cmp.close()
-                    vim.snippet.jump(-1)
-                elseif cmp.visible() then
-                    cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
-                else
-                    fallback()
-                end
-            end, { "i", "s" }),
-        },
-
-        completion = {
-            keyword_length = 1,
-        },
-
-        window = {
-            completion = {
-                col_offset = -3,
-                side_padding = 0,
-            },
-
-            documentation = {
-                border = "rounded",
-            },
-        },
-
-        view = {
-            entries = {
-                name = "custom",
-                selection_order = "near_cursor",
-            },
-        },
-
-        experimental = {
-            ghost_text = true,
-        },
-
-        formatting = {
-            fields = { "kind", "abbr", "menu" },
-            format = function(entry, item)
-                local hex = get_color_hex(entry)
-                if hex then
-                    item.kind_hl_group = badge_hl_from_hex(hex)
-                end
-
-                item.menu = "    " .. entry_label(entry)
-                item.kind = " " .. (icons.kinds[item.kind] or "") .. " "
-
-                return item
-            end,
-        },
-
-        sources = cmp.config.sources({
-            { name = "nvim_lsp" },
-            { name = "nvim_lsp_signature_help" },
-            { name = "buffer" },
-            { name = "async_path" },
-        }),
-    })
-
-    cmp.setup.cmdline({ "/", "?" }, {
-        mapping = cmp.mapping.preset.cmdline(),
-
-        sources = {
-            { name = "buffer" },
-            { name = "cmdline_history" },
-        },
-
-        experimental = {
-            ghost_text = true,
-        },
-    })
-
-    cmp.setup.cmdline(":", {
-        mapping = cmp.mapping.preset.cmdline(),
-
-        sources = cmp.config.sources({
-            { name = "async_path" },
-            { name = "cmdline" },
-            { name = "cmdline_history" },
-        }),
-
-        matching = {
-            disallow_symbol_nonprefix_matching = false,
-        },
-
-        experimental = {
-            ghost_text = true,
-        },
-    })
-
-    cmp.event:on("menu_opened", function()
-        vim.b.copilot_suggestion_hidden = true
-    end)
-    cmp.event:on("menu_closed", function()
-        vim.b.copilot_suggestion_hidden = false
-    end)
-
-    local cmp_autopairs = utils.safe_require("nvim-autopairs.completion.cmp")
-    if cmp_autopairs then
-        cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
-    end
-
-    setup_kind_highlights()
-
-    vim.api.nvim_create_autocmd("ColorScheme", {
-        group = vim.api.nvim_create_augroup("CmpHighlights", {
-            clear = true,
-        }),
-        callback = function()
-            for hl_group in pairs(hl_cache) do
-                pcall(vim.api.nvim_set_hl, 0, hl_group, {})
-            end
-
-            hl_cache = {}
-            setup_kind_highlights()
-        end,
-        desc = "Rebuild completion highlight groups after colorscheme changes",
-    })
+    local col = vim.api.nvim_win_get_cursor(0)[2]
+    return col > 0 and vim.api.nvim_get_current_line():sub(col, col):match("%s") == nil
 end
 
 return {
     "hrsh7th/nvim-cmp",
+    event = { "InsertEnter", "CmdlineEnter" },
     dependencies = {
         "hrsh7th/cmp-nvim-lsp",
         "hrsh7th/cmp-buffer",
         "hrsh7th/cmp-cmdline",
         "https://codeberg.org/FelipeLema/cmp-async-path",
     },
-    config = config,
+    config = function()
+        local utils = require("core.utils")
+        local icons = require("core.utils.icons")
+        local cmp = require("cmp")
+
+        -- Tab / S-Tab. With a selected entry, navigate the menu; otherwise prefer
+        -- jumping snippet placeholders over navigating an unselected menu.
+        ---@param dir 1|-1
+        local function navigate(dir)
+            return cmp.mapping(function(fallback)
+                local select = dir == 1 and cmp.select_next_item or cmp.select_prev_item
+                local snippet = vim.snippet.active({ direction = dir })
+
+                if cmp.visible() and (cmp.get_selected_entry() or not snippet) then
+                    select({ behavior = cmp.SelectBehavior.Select })
+                elseif snippet then
+                    cmp.close()
+                    vim.snippet.jump(dir)
+                elseif dir == 1 and has_words_before() then
+                    cmp.complete()
+                else
+                    fallback()
+                end
+            end, { "i", "s" })
+        end
+
+        cmp.setup({
+            snippet = {
+                expand = function(args)
+                    vim.snippet.expand(args.body)
+                end,
+            },
+
+            mapping = {
+                ["<C-d>"] = cmp.mapping.scroll_docs(-5),
+                ["<C-f>"] = cmp.mapping.scroll_docs(5),
+                ["<C-k>"] = cmp.mapping(function()
+                    if cmp.visible_docs() then
+                        cmp.close_docs()
+                    else
+                        cmp.open_docs()
+                    end
+                end, { "i", "s" }),
+
+                ["<C-Space>"] = cmp.mapping.complete(),
+
+                -- Only confirms an explicitly selected entry; otherwise a normal <CR>.
+                ["<CR>"] = cmp.mapping({
+                    i = function(fallback)
+                        if cmp.visible() and cmp.get_selected_entry() then
+                            cmp.confirm({
+                                behavior = cmp.ConfirmBehavior.Replace,
+                                select = false,
+                            })
+                        else
+                            fallback()
+                        end
+                    end,
+                    s = cmp.mapping.confirm({ select = true }),
+                }),
+
+                ["<Tab>"] = navigate(1),
+                ["<S-Tab>"] = navigate(-1),
+            },
+
+            window = {
+                documentation = { border = "rounded" },
+                completion = {
+                    col_offset = -3,
+                    side_padding = 0,
+                },
+            },
+
+            view = {
+                docs = { auto_open = false },
+                entries = {
+                    name = "custom",
+                    selection_order = "near_cursor",
+                },
+            },
+
+            experimental = {
+                ghost_text = true,
+            },
+
+            formatting = {
+                fields = { "kind", "abbr", "menu" },
+                format = function(entry, item)
+                    local color = entry_color(entry)
+
+                    item.kind_hl_group = color and badge(("CmpColorBadge%06x"):format(color), color)
+                        or kind_badge(item.kind)
+
+                    item.kind = " " .. (icons.kinds[item.kind] or "") .. " "
+                    item.menu = "    " .. entry_label(entry)
+
+                    return item
+                end,
+            },
+
+            sources = {
+                { name = "nvim_lsp" },
+                { name = "nvim_lsp_signature_help" },
+                { name = "buffer" },
+                { name = "async_path" },
+            },
+        })
+
+        ---@param types string|string[]
+        ---@param sources table
+        ---@param extra? table
+        local function cmdline(types, sources, extra)
+            cmp.setup.cmdline(
+                types,
+                vim.tbl_extend("force", {
+                    mapping = cmp.mapping.preset.cmdline(),
+                    sources = sources,
+                    experimental = { ghost_text = true },
+                }, extra or {})
+            )
+        end
+
+        cmdline({ "/", "?" }, {
+            { name = "buffer" },
+            { name = "cmdline_history" },
+        })
+
+        cmdline(":", {
+            { name = "async_path" },
+            { name = "cmdline" },
+            { name = "cmdline_history" },
+        }, { matching = { disallow_symbol_nonprefix_matching = false } })
+
+        -- Hide copilot's ghost text while the cmp menu is open.
+        cmp.event:on("menu_opened", function()
+            vim.b.copilot_suggestion_hidden = true
+        end)
+        cmp.event:on("menu_closed", function()
+            vim.b.copilot_suggestion_hidden = false
+        end)
+
+        local autopairs = utils.safe_require("nvim-autopairs.completion.cmp")
+        if autopairs then
+            cmp.event:on("confirm_done", autopairs.on_confirm_done())
+        end
+
+        -- :colorscheme clears every group; badges are recreated lazily on next use.
+        vim.api.nvim_create_autocmd("ColorScheme", {
+            group = vim.api.nvim_create_augroup("CmpHighlights", { clear = true }),
+            callback = function()
+                hl_cache = {}
+            end,
+            desc = "Reset completion badge cache after colorscheme changes",
+        })
+    end,
 }
