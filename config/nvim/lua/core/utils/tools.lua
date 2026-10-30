@@ -7,12 +7,16 @@ local M = {}
 
 local data, by_ft
 
+--- Loads and caches the contents of the tools.json configuration file.
+---@return table
 local function load()
     data = data or json.read(PATH) or {}
     return data
 end
 
--- Expands "a,b,c" keys into one entry per filetype, merging format/lint lists.
+--- Expands comma-separated filetype keys (e.g., "html,css") into individual entries,
+--- merging their respective format and lint lists into a normalized index.
+---@return table<string, table>
 local function index()
     if by_ft then
         return by_ft
@@ -97,6 +101,9 @@ function M.resolve(kind, bufnr, available)
     local entries = (index()[vim.bo[bufnr].filetype] or {})[kind] or {}
     local result = {}
 
+    --- Validates whether a tool is configured for the project and available.
+    ---@param name string
+    ---@return boolean
     local function usable(name)
         return M.has(name, bufnr) and (not available or available(name))
     end

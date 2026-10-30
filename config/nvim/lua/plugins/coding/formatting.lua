@@ -3,7 +3,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
         local conform = require("conform")
-        local tools = require("plugins.utils.tools")
+        local tools = require("core.utils.tools")
 
         -- Formatters are resolved per buffer from tools.json.
         local formatters_by_ft = {}

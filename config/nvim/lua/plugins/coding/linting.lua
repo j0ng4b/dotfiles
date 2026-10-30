@@ -21,7 +21,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
         local lint = require("lint")
-        local tools = require("plugins.utils.tools")
+        local tools = require("core.utils.tools")
 
         vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
             group = vim.api.nvim_create_augroup("NvimLint", { clear = true }),
