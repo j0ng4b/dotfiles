@@ -1,169 +1,140 @@
-local ADAPTERS = {
-    cs = { modules = { "neotest-dotnet" }, executable = "dotnet" },
-    go = { modules = { "neotest-golang" }, executable = "go" },
-
-    python = { modules = { "neotest-python" }, executable = "pytest" },
-
-    vue = { modules = { "neotest-vitest", "neotest-jest" } },
-    javascript = { modules = { "neotest-vitest", "neotest-jest" } },
-    javascriptreact = { modules = { "neotest-vitest", "neotest-jest" } },
-    typescript = { modules = { "neotest-vitest", "neotest-jest" } },
-    typescriptreact = { modules = { "neotest-vitest", "neotest-jest" } },
-}
-
-local loaded = {}
-
-local config = function()
-    local neotest = require("neotest")
-
-    neotest.setup({
-        adapters = {},
-
-        summary = {
-            mappings = {
-                jumpto = "<CR>",
-                expand = { "<space>", "<right>", "<left>", "<2-LeftMouse>" },
-            },
-        },
-    })
-
-    vim.diagnostic.config({
-        signs = false,
-        virtual_text = {
-            format = function(diagnostic)
-                return diagnostic.message:gsub("\n", " "):gsub("\t", " "):gsub("%s+", " "):gsub("^%s+", "")
-            end,
-        },
-    }, vim.api.nvim_create_namespace("neotest"))
+local function nt()
+    return require("neotest")
 end
 
---------------------------------------------------------------------
--- Load and register adapters for the current filetype only once
---------------------------------------------------------------------
-local M = {}
-
-local function load_module(module_name)
-    if loaded[module_name] then
-        return true
-    end
-
-    local ok, adapter = pcall(require, module_name)
-    if not ok then
-        vim.notify(("neotest: failed to load adapter '%s': %s"):format(module_name, adapter), vim.log.levels.ERROR)
-        return false
-    end
-
-    table.insert(require("neotest.config").adapters, adapter)
-    loaded[module_name] = true
-    return true
-end
-
-local function with_adapter(callback)
-    return function()
-        if M.setup_adapters(vim.bo.filetype) then
-            callback()
-        end
-    end
-end
-
-M.setup_adapters = function(filetype)
-    local entry = ADAPTERS[filetype]
-    if not entry then
-        vim.notify(("neotest: no adapter configured for filetype '%s'"):format(filetype), vim.log.levels.INFO)
-        return false
-    end
-
-    if entry.executable and vim.fn.executable(entry.executable) == 0 then
-        vim.notify(
-            ("neotest: '%s' not found on PATH; tests for %s cannot run"):format(entry.executable, filetype),
-            vim.log.levels.WARN
-        )
-        return false
-    end
-
-    local any_loaded = false
-    for _, module_name in ipairs(entry.modules) do
-        if load_module(module_name) then
-            any_loaded = true
-        end
-    end
-
-    return any_loaded
+-- All adapters are registered up front: each one only claims the projects it
+-- recognizes (go.mod, pyproject.toml, *.csproj, package.json...).
+local function adapters()
+    return {
+        require("neotest-python"),
+        require("neotest-golang"),
+        -- Name of the adapter registered in the DAP config (core of
+        -- debugging/adapters/cs.lua).
+        require("neotest-dotnet")({ dap = { adapter_name = "coreclr" } }),
+        require("neotest-vitest"),
+        require("neotest-jest"),
+    }
 end
 
 return {
-    {
-        "nvim-neotest/neotest",
-        dependencies = {
-            "nvim-neotest/nvim-nio",
-            "nvim-lua/plenary.nvim",
-            "nvim-treesitter/nvim-treesitter",
-        },
+    "nvim-neotest/neotest",
 
-        keys = {
-            {
-                "<Leader>tt",
-                with_adapter(function()
-                    require("neotest").run.run()
-                end),
-                desc = "run nearest test",
-            },
+    dependencies = {
+        "nvim-neotest/nvim-nio",
+        "nvim-lua/plenary.nvim",
+        "nvim-treesitter/nvim-treesitter",
 
-            {
-                "<Leader>tT",
-                with_adapter(function()
-                    require("neotest").run.run(vim.fn.expand("%"))
-                end),
-                desc = "run tests on current file",
-            },
-
-            {
-                "<Leader>tw",
-                with_adapter(function()
-                    require("neotest").watch.toggle()
-                end),
-                desc = "watch nearest test",
-            },
-
-            {
-                "<Leader>tW",
-                with_adapter(function()
-                    require("neotest").watch.toggle(vim.fn.expand("%"))
-                end),
-                desc = "watch tests on current file",
-            },
-
-            {
-                "<Leader>ts",
-                function()
-                    require("neotest").run.stop()
-                end,
-                desc = "stop running test",
-            },
-
-            {
-                "<Leader>to",
-                function()
-                    require("neotest").output.open({ short = true, quiet = true, auto_close = true })
-                end,
-                desc = "show test output",
-            },
-
-            {
-                "<Leader>tv",
-                function()
-                    require("neotest").summary.toggle()
-                end,
-                desc = "toggle test summary window",
-            },
-        },
-
-        config = config,
+        -- Adapters
+        "nvim-neotest/neotest-python",
+        "fredrikaverpil/neotest-golang",
+        "Issafalcon/neotest-dotnet",
+        "marilari88/neotest-vitest",
+        "nvim-neotest/neotest-jest",
     },
 
-    { "nvim-neotest/neotest-python", lazy = true },
-    { "fredrikaverpil/neotest-golang", lazy = true },
-    { "nvim-neotest/neotest-jest", lazy = true },
-    { "marilari88/neotest-vitest", lazy = true },
-    { "Issafalcon/neotest-dotnet", lazy = true },
+    keys = {
+        {
+            "<Leader>tt",
+            function()
+                nt().run.run()
+            end,
+            desc = "run nearest test",
+        },
+
+        {
+            "<Leader>tT",
+            function()
+                nt().run.run(vim.fn.expand("%"))
+            end,
+            desc = "run tests on current file",
+        },
+
+        {
+            "<Leader>tl",
+            function()
+                nt().run.run_last()
+            end,
+            desc = "run last test",
+        },
+
+        {
+            "<Leader>td",
+            function()
+                nt().run.run({ strategy = "dap" })
+            end,
+            desc = "debug nearest test",
+        },
+
+        {
+            "<Leader>tw",
+            function()
+                nt().watch.toggle()
+            end,
+            desc = "watch nearest test",
+        },
+
+        {
+            "<Leader>tW",
+            function()
+                nt().watch.toggle(vim.fn.expand("%"))
+            end,
+            desc = "watch tests on current file",
+        },
+
+        {
+            "<Leader>ts",
+            function()
+                nt().run.stop()
+            end,
+            desc = "stop running test",
+        },
+
+        {
+            "<Leader>to",
+            function()
+                nt().output.open({ short = true, quiet = true, auto_close = true })
+            end,
+            desc = "show test output",
+        },
+
+        {
+            "<Leader>tO",
+            function()
+                nt().output_panel.toggle()
+            end,
+            desc = "toggle test output panel",
+        },
+
+        {
+            "<Leader>tv",
+            function()
+                nt().summary.toggle()
+            end,
+            desc = "toggle test summary window",
+        },
+    },
+
+    config = function()
+        nt().setup({
+            adapters = adapters(),
+
+            summary = {
+                mappings = {
+                    jumpto = "<CR>",
+                    expand = {
+                        "<space>", "<right>", "<left>", "<2-LeftMouse>" },
+                },
+            },
+        })
+
+        -- Single-line test failure messages as virtual text.
+        vim.diagnostic.config({
+            signs = false,
+            virtual_text = {
+                format = function(diagnostic)
+                    return vim.trim((diagnostic.message:gsub("%s+", " ")))
+                end,
+            },
+        }, vim.api.nvim_create_namespace("neotest"))
+    end,
 }
