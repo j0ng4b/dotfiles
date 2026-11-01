@@ -15,7 +15,10 @@ local ignored_filetypes = {
     mason = true,
 }
 
----@param bufnr integer? Buffer number; defaults to the current buffer.
+--- Check if the buffer or file type should be ignored.
+---
+---@param bufnr integer? Buffer number (defaults to current buffer).
+---
 ---@return boolean ignored Whether the buffer should be ignored.
 local function is_ignored(bufnr)
     local bt = vim.bo[bufnr or 0].buftype
@@ -23,10 +26,12 @@ local function is_ignored(bufnr)
     return ignored_buftypes[bt] or ignored_filetypes[ft]
 end
 
----A buffer that can take over a window when another one is closed.
----@param bufnr integer
----@param target integer Buffer being closed.
----@return boolean
+--- A buffer that can take over a window when another one is closed.
+---
+---@param bufnr integer Candidate buffer
+---@param target integer Buffer being closed
+---
+---@return boolean Whether the buffer can take over the window.
 local function is_candidate(bufnr, target)
     return bufnr ~= target
         and bufnr > 0
@@ -35,11 +40,16 @@ local function is_candidate(bufnr, target)
         and not is_ignored(bufnr)
 end
 
----Picks the buffer that should replace `target` in `win`.
----Preference: alternate buffer > listed buffer not shown anywhere > any listed
----buffer.
+--- Picks the buffer that should replace `target` in `win`.
+---
+--- Preference:
+---  - alternate buffer
+---  - listed buffer not shown anywhere
+---  - any listed buffer
+---
 ---@param target integer
 ---@param win integer
+---
 ---@return integer? bufnr nil when there is nothing suitable.
 local function find_replacement(target, win)
     local alternate = vim.api.nvim_win_call(win, function()
@@ -67,15 +77,17 @@ end
 ---@param bufnr integer
 ---@param force boolean?
 local function delete_buffer(bufnr, force)
-    pcall(vim.cmd, string.format("bdelete%s %d", force and "!" or "", bufnr))
+    vim.cmd(string.format("bdelete%s %d", force and "!" or "", bufnr))
 end
 
----Closes a buffer while preserving the current window layout.
----Windows displaying the target buffer are switched to another listed buffer
----(or a throwaway empty one) before the target is deleted.
----Refuses to close a modified buffer. Special buffers are simply deleted.
----@param bufnr integer? Buffer number to close; defaults to the current buffer.
----@return nil
+--- Closes a buffer while preserving the current window layout.
+---
+--- Windows displaying the target buffer are switched to another listed buffer
+--- before the target is deleted.
+---
+--- Refuses to close a modified buffer. Special buffers are simply deleted.
+---
+---@param bufnr integer? Buffer number to close (defaults to current buffer).
 function M.close(bufnr)
     if not bufnr or bufnr == 0 then
         bufnr = vim.api.nvim_get_current_buf()
@@ -85,8 +97,7 @@ function M.close(bufnr)
         return
     end
 
-    -- Special buffers (terminal, help, qf, neo-tree...) bypass the layout
-    -- logic.
+    -- Special buffers bypass the layout logic.
     --
     -- Checked before `modified` because terminals are always flagged as
     -- modified.
@@ -100,12 +111,12 @@ function M.close(bufnr)
         return
     end
 
-    -- Swap the buffer in every window showing it, without moving focus.
+    -- Swap the buffer in every window showing it.
     for _, win in ipairs(vim.fn.win_findbuf(bufnr)) do
         local replacement = find_replacement(bufnr, win)
 
+        -- When no suitable replacement was found an empty buffer is used.
         if not replacement then
-            -- Empty buffer that disappears as soon as it is replaced.
             replacement = vim.api.nvim_create_buf(true, false)
             vim.bo[replacement].bufhidden = "wipe"
         end
@@ -116,11 +127,12 @@ function M.close(bufnr)
     delete_buffer(bufnr)
 end
 
----Navigates to the next or previous non-ignored buffer.
----Uses bufferline commands when available, falling back to native commands.
----Does nothing when the current buffer is ignored.
+--- Navigates to the next or previous non-ignored buffer.
+---
+--- Uses `bufferline` commands when available, falling back to native commands.
+--- Does nothing when the current buffer is ignored.
+---
 ---@param direction "next"|"prev"
----@return nil
 function M.go(direction)
     if direction ~= "next" and direction ~= "prev" then
         error(("Invalid buffer direction: %s"):format(tostring(direction)))
@@ -130,19 +142,19 @@ function M.go(direction)
         return
     end
 
-    local next_dir = direction == "next"
+    -- Prefer bufferline to respect the visual tab order, without force-loading
+    -- it.
     local cmd
-
-    -- Prefer bufferline to respect the visual tab order, without force-loading it.
     if vim.fn.exists(":BufferLineCycleNext") == 2 then
-        cmd = next_dir and "BufferLineCycleNext" or "BufferLineCyclePrev"
+        cmd = direction == "next" and "BufferLineCycleNext" or "BufferLineCyclePrev"
     else
-        cmd = next_dir and "bnext" or "bprevious"
+        cmd = direction == "next" and "bnext" or "bprevious"
     end
 
-    local start_buf = vim.api.nvim_get_current_buf()
-    -- Upper bound guarantees termination even if the cycle never returns to start_buf.
+    -- Upper bound guarantees termination even if the cycle never returns to
+    -- start_buf.
     local max_attempts = #vim.api.nvim_list_bufs()
+    local start_buf = vim.api.nvim_get_current_buf()
 
     for _ = 1, max_attempts do
         vim.cmd(cmd)

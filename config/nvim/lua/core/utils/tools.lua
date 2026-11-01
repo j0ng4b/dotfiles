@@ -8,14 +8,16 @@ local M = {}
 local data, by_ft
 
 --- Loads and caches the contents of the tools.json configuration file.
+---
 ---@return table
 local function load()
     data = data or json.read(PATH) or {}
     return data
 end
 
---- Expands comma-separated filetype keys (e.g., "html,css") into individual entries,
---- merging their respective format and lint lists into a normalized index.
+--- Expands comma-separated filetype keys into individual entries, merging their
+--- respective format and lint lists into a normalized index.
+---
 ---@return table<string, table>
 local function index()
     if by_ft then
@@ -41,7 +43,9 @@ local function index()
 end
 
 --- Filetypes that declare at least one tool of `kind` ("format" | "lint").
+---
 ---@param kind string
+---
 ---@return string[]
 function M.filetypes(kind)
     local list = {}
@@ -56,9 +60,12 @@ function M.filetypes(kind)
 end
 
 --- True if the buffer's project configures `tool`.
+---
 --- Tools without `files`/`embedded` have no requirement.
+---
 ---@param tool string
 ---@param bufnr integer
+---
 ---@return boolean
 function M.has(tool, bufnr)
     local tools = load().tools or {}
@@ -91,18 +98,24 @@ function M.has(tool, bufnr)
     end) ~= nil
 end
 
---- Tools to run for the buffer: strings run if configured,
---- nested lists run only the first configured one.
+--- Tools to run for the buffer:
+---
+---  - strings run if configured,
+---  - nested lists run only the first configured one.
+---
 ---@param kind string
 ---@param bufnr integer
 ---@param available? fun(name: string): boolean
+---
 ---@return string[]
 function M.resolve(kind, bufnr, available)
     local entries = (index()[vim.bo[bufnr].filetype] or {})[kind] or {}
     local result = {}
 
     --- Validates whether a tool is configured for the project and available.
+    ---
     ---@param name string
+    ---
     ---@return boolean
     local function usable(name)
         return M.has(name, bufnr) and (not available or available(name))
