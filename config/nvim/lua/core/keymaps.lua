@@ -1,103 +1,111 @@
---  ╦╔═┌─┐┬ ┬┌┬┐┌─┐┌─┐┌─┐
---  ╠╩╗├┤ └┬┘│││├─┤├─┘└─┐
---  ╩ ╩└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
+--   ╦╔═┌─┐┬ ┬┌┬┐┌─┐┌─┐┌─┐
+--   ╠╩╗├┤ └┬┘│││├─┤├─┘└─┐
+--   ╩ ╩└─┘ ┴ ┴ ┴┴ ┴┴  └─┘
 
 local map = vim.keymap.set
-
--- Sane mode switcher from insert/visual/select to normal mode
-map({ "i", "v" }, "jk", "<Esc>")
-
---------------------
--- Disable arrow keys
---------------------
-map({ "i", "" }, "<Up>", "<Nop>")
-map({ "i", "" }, "<Left>", "<Nop>")
-map({ "i", "" }, "<Right>", "<Nop>")
-map({ "i", "" }, "<Down>", "<Nop>")
-
---------------------
--- Save
---------------------
-map({ "i", "n" }, "<C-s>", "<Cmd>w<CR>")
-map({ "i", "n" }, "<C-S-s>", "<Cmd>wall<CR>")
-
---------------------
--- Quit
---------------------
-map({ "n" }, "<C-q>", "<Cmd>qall<CR>")
-map({ "n" }, "<C-S-q>", "<Cmd>qall!<CR>")
-
---------------------
--- Buffer
---------------------
 local buffer = require("core.utils.buffer")
 
-map({ "n" }, "bo", "<Cmd>enew<CR>")
+-- Mode switch
+map({ "i", "v" }, "jk", "<Esc>", { desc = "Move back to normal mode" })
+map({ "t" }, "<Esc><Esc>", "<C-\\><C-n>", { desc = "Leave terminal mode" })
+
+
+-- Disable arrow keys.
+for _, key in ipairs({ "<Up>", "<Down>", "<Left>", "<Right>" }) do
+    map({ "", "i" }, key, "<Nop>", { desc = "Disable arrow keys" })
+end
+
+
+-- Move by screen line on wrapped lines.
+-- With a count use real lines.
+map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "Down (screen line)" })
+map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "Up (screen line)" })
+
+
+-- Save
+map({ "n", "i", "x" }, "<C-s>", "<Cmd>update<CR>", { desc = "Save (if modified)" })
+map({ "n", "i", "x" }, "<C-S-s>", "<Cmd>wall<CR>", { desc = "Save all" })
+
+
+-- Quit
+map({ "n" }, "<C-q>", "<Cmd>qall<CR>", { desc = "Quit all (asks to save)" })
+map({ "n" }, "<C-S-q>", "<Cmd>qall!<CR>", { desc = "Quit all, discarding changes" })
+
+
+-- Buffers
+map({ "n" }, "bo", "<Cmd>enew<CR>", { desc = "New buffer" })
+
 map({ "n" }, "bd", function()
     buffer.close()
-end)
+end, { desc = "Close buffer" })
 
 map({ "n" }, "bn", function()
     buffer.go("next")
-end)
+end, { desc = "Next buffer" })
 
 map({ "n" }, "bp", function()
     buffer.go("prev")
-end)
+end, { desc = "Previous buffer" })
 
---------------------
+
 -- Window management
---------------------
-map({ "n" }, "wo", "<Cmd>wincmd n<CR>") -- new
-map({ "n" }, "wc", "<Cmd>wincmd c<CR>") -- close
+map({ "n" }, "wo", "<Cmd>wincmd n<CR>", { desc = "New window" })
+map({ "n" }, "wc", "<Cmd>wincmd c<CR>", { desc = "Close window" })
 
-map({ "n" }, "we", "<Cmd>wincmd =<CR>") -- equalize windows size
-map({ "n" }, "ws", "<Cmd>wincmd s<CR>") -- split horizontal
-map({ "n" }, "wv", "<Cmd>wincmd v<CR>") -- split vertical
+map({ "n" }, "we", "<Cmd>wincmd =<CR>", { desc = "Equalize window sizes" })
+map({ "n" }, "ws", "<Cmd>wincmd s<CR>", { desc = "Split horizontal" })
+map({ "n" }, "wv", "<Cmd>wincmd v<CR>", { desc = "Split vertical" })
 
-map({ "n" }, "<C-h>", "<Cmd>wincmd h<CR>") -- left
-map({ "n" }, "<C-j>", "<Cmd>wincmd j<CR>") -- bottom
-map({ "n" }, "<C-k>", "<Cmd>wincmd k<CR>") -- top
-map({ "n" }, "<C-l>", "<Cmd>wincmd l<CR>") -- right
+map({ "n" }, "<C-h>", "<Cmd>wincmd h<CR>", { desc = "Go to left window" })
+map({ "n" }, "<C-j>", "<Cmd>wincmd j<CR>", { desc = "Go to bottom window" })
+map({ "n" }, "<C-k>", "<Cmd>wincmd k<CR>", { desc = "Go to top window" })
+map({ "n" }, "<C-l>", "<Cmd>wincmd l<CR>", { desc = "Go to right window" })
 
---------------------
+
 -- Tab management
---------------------
-map({ "n" }, "to", "<Cmd>tabnew<CR>") -- new
-map({ "n" }, "tc", "<Cmd>tabclose<CR>") -- close
+map({ "n" }, "to", "<Cmd>tabnew<CR>", { desc = "New tab" })
+map({ "n" }, "tc", "<Cmd>tabclose<CR>", { desc = "Close tab" })
 
-map({ "n" }, "tn", "<Cmd>tabnext<CR>") -- previous
-map({ "n" }, "tp", "<Cmd>tabprevious<CR>") -- next
+map({ "n" }, "tn", "<Cmd>tabnext<CR>", { desc = "Next tab" })
+map({ "n" }, "tp", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
 
---------------------
--- Move line
---------------------
 
--- Single line
-map({ "n" }, "<A-k>", "<Cmd>move .-2<CR>==") -- move up
-map({ "n" }, "<A-j>", "<Cmd>move .+1<CR>==") -- move down
+-- Move single line
+map({ "n" }, "<A-k>", "<Cmd>move .-2<CR>==", { desc = "Move line up" })
+map({ "n" }, "<A-j>", "<Cmd>move .+1<CR>==", { desc = "Move line down" })
 
--- Multi line
-map({ "v" }, "<A-k>", "<Cmd>move '>+1<CR>gv=gv") -- move up
-map({ "v" }, "<A-j>", "<Cmd>move '<-2<CR>gv=gv") -- move down
 
---------------------
+-- Move multi line
+--
+-- Must be ":" and not <Cmd> because ":" leaves visual mode, which updates the
+-- '< and '> marks (and prefills the range).
+map({ "x" }, "<A-k>", ":move '<-2<CR>gv=gv", {
+    silent = true,
+    desc = "Move selection up",
+})
+
+map({ "x" }, "<A-j>", ":move '>+1<CR>gv=gv", {
+    silent = true,
+    desc = "Move selection down",
+})
+
+
 -- Editing
---------------------
-map({ "x" }, "p", '"_dP') -- paste without losing register
+map({ "x" }, "p", '"_dP', { desc = "Paste without loses clipboard content" })
 
---------------------
+
 -- Indentation
---------------------
-map({ "v" }, "<Tab>", ">gv")
-map({ "n" }, "<Tab>", ">>")
+map({ "x" }, "<Tab>", ">gv", { desc = "Indent and keep selection" })
+map({ "x" }, "<S-Tab>", "<gv", { desc = "Dedent and keep selection" })
 
-map({ "v" }, "<S-Tab>", "<gv")
-map({ "n" }, "<S-Tab>", "<<")
 
---------------------
 -- Diagnostics
---------------------
-map({ "n" }, "<Leader>dv", vim.diagnostic.open_float, { desc = "show diagnostic float window" })
-map({ "n" }, "<Leader>dp", vim.diagnostic.goto_prev, { desc = "go to previous diagnostic" })
-map({ "n" }, "<Leader>dn", vim.diagnostic.goto_next, { desc = "go to next diagnostic" })
+map({ "n" }, "<Leader>dv", vim.diagnostic.open_float, { desc = "Show diagnostic float" })
+
+map({ "n" }, "<Leader>dp", function()
+    vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = "Previous diagnostic" })
+
+map({ "n" }, "<Leader>dn", function()
+    vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = "Next diagnostic" })
