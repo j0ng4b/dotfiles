@@ -1,68 +1,19 @@
-local codecompanion = function()
-    local M = require("lualine.component"):extend()
-
-    M.processing = false
-    M.spinner_index = 1
-
-    local spinner_symbols = {
-        "⠋",
-        "⠙",
-        "⠹",
-        "⠸",
-        "⠼",
-        "⠴",
-        "⠦",
-        "⠧",
-        "⠇",
-        "⠏",
-    }
-    local spinner_symbols_len = #spinner_symbols
-
-    function M:init(options)
-        M.super.init(self, options)
-
-        vim.api.nvim_create_autocmd("User", {
-            group = vim.api.nvim_create_augroup("CodeCompanionHooks", {
-                clear = true,
-            }),
-            pattern = "CodeCompanionRequest*",
-            callback = function(args)
-                if args.match == "CodeCompanionRequestStarted" then
-                    self.processing = true
-                elseif args.match == "CodeCompanionRequestFinished" then
-                    self.processing = false
-                end
-            end,
-            desc = "Update CodeCompanion processing state",
-        })
-    end
-
-    function M:update_status()
-        if self.processing then
-            self.spinner_index = (self.spinner_index % spinner_symbols_len) + 1
-            return "Generating response " .. spinner_symbols[self.spinner_index]
-        else
-            return nil
-        end
-    end
-
-    return M
-end
-
 return {
     "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
     dependencies = "nvim-tree/nvim-web-devicons",
     config = function()
         local icons = require("core.utils.icons")
-        local codecompanion_component = codecompanion()
 
         require("lualine").setup({
             options = {
-                icons_enabled = true,
                 theme = "auto",
-                component_separators = { left = "", right = "" },
-                section_separators = { left = "", right = "" },
+                globalstatus = true,
+                icons_enabled = true,
                 always_divide_middle = true,
+
+                section_separators = { left = "", right = "" },
+                component_separators = { left = "", right = "" },
             },
 
             sections = {
@@ -112,10 +63,7 @@ return {
                     },
                     {
                         "encoding",
-                        padding = {
-                            left = -1,
-                            right = 1,
-                        },
+                        padding = { left = 0, right = 1 },
                     },
                 },
                 lualine_y = {
@@ -132,22 +80,6 @@ return {
                 "neo-tree",
                 "quickfix",
                 "toggleterm",
-
-                {
-                    sections = {
-                        lualine_a = {
-                            function()
-                                return " CodeCompanion"
-                            end,
-                        },
-
-                        lualine_z = {
-                            codecompanion_component,
-                        },
-                    },
-
-                    filetypes = { "codecompanion" },
-                },
             },
         })
     end,

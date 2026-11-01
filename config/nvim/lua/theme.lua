@@ -25,7 +25,8 @@ M.native = {
     everforest = "everforest",
 }
 
----@return string scheme, string mode  Defaults to `"", "dark"` when the file is missing.
+---@return string scheme, string mode  Defaults to `"", "dark"` when the file is
+---   missing.
 local function read_theme()
     local theme = vim.trim(file.read(theme_file) or "")
     local scheme, mode = theme:match("^([^/]+)/(.+)$")
@@ -47,7 +48,7 @@ local function apply_native(scheme, mode)
     return pcall(vim.cmd.colorscheme, name)
 end
 
----Applies the base16 palette through colors/theme-reloader.lua.
+--- Applies the base16 palette through colors/theme-reloader.lua.
 local function apply_palette()
     local ok, err = pcall(vim.cmd.colorscheme, "theme-reloader")
     if not ok then
