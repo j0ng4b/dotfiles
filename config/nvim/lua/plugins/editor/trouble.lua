@@ -15,41 +15,48 @@ return {
             "<Cmd>Trouble diagnostics toggle<CR>",
             desc = "toggle diagnostics list (workspace)",
         },
+
+        {
+            "<Leader>dq",
+            "<Cmd>Trouble qflist toggle<CR>",
+            desc = "toggle quickfix list",
+        },
+
+        {
+            "<Leader>dl",
+            "<Cmd>Trouble loclist toggle<CR>",
+            desc = "toggle location list",
+        },
     },
 
-    config = function()
-        require("trouble").setup({
-            auto_close = false,
-            focus = true,
+    opts = {
+        focus = true,
+        warn_no_results = false,
 
-            warn_no_results = false,
-            open_no_results = false,
+        preview = {
+            type = "float",
+            relative = "editor",
+            border = "rounded",
+            title = "Preview",
+            title_pos = "center",
+            position = { 0, -2 },
+            size = { width = 0.6, height = 0.6 },
+            zindex = 200,
 
-            preview = {
-                type = "float",
-                relative = "editor",
-                border = "rounded",
-                title = "Preview",
-                title_pos = "center",
-                position = { 0, -2 },
-                size = { width = 0.6, height = 0.6 },
-                zindex = 200,
+            wo = {
+                foldcolumn = "0",
+                signcolumn = "no",
+                statuscolumn = "",
 
-                wo = {
-                    foldcolumn = "0",
-                    signcolumn = "no",
-                    statuscolumn = "",
+                number = false,
+                relativenumber = false,
 
-                    number = false,
-                    relativenumber = false,
+                cursorline = false,
+                cursorcolumn = false,
 
-                    cursorline = false,
-                    cursorcolumn = false,
-
-                    list = false,
-                    winbar = "",
-                },
+                list = false,
+                winbar = "",
             },
-        })
-    end,
+        },
+    },
 }

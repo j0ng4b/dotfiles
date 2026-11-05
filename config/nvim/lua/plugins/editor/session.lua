@@ -1,3 +1,52 @@
+local function save_breakpoints()
+    -- Don't load nvim-dap just to save a session.
+    local breakpoints = package.loaded["dap.breakpoints"]
+    if not breakpoints then
+        return
+    end
+
+    local by_file = {}
+    for buf, list in pairs(breakpoints.get()) do
+        local name = vim.api.nvim_buf_get_name(buf)
+        if name ~= "" then
+            by_file[name] = list
+        end
+    end
+
+    if next(by_file) == nil then
+        return
+    end
+
+    return vim.json.encode({ breakpoints = by_file })
+end
+
+local function restore_breakpoints(_, extra_data)
+    local ok, data = pcall(vim.json.decode, extra_data)
+    if not ok or type(data) ~= "table" or not data.breakpoints then
+        return
+    end
+
+    local has_dap, breakpoints = pcall(require, "dap.breakpoints")
+    if not has_dap then
+        return
+    end
+
+    for name, list in pairs(data.breakpoints) do
+        local bufnr = vim.fn.bufnr(name, true)
+        if vim.fn.bufloaded(bufnr) == 0 then
+            vim.api.nvim_buf_call(bufnr, vim.cmd.edit)
+        end
+
+        for _, bp in ipairs(list) do
+            breakpoints.set({
+                condition = bp.condition,
+                log_message = bp.logMessage,
+                hit_condition = bp.hitCondition,
+            }, bufnr, bp.line)
+        end
+    end
+end
+
 return {
     "rmagatti/auto-session",
     lazy = false,
@@ -53,10 +102,11 @@ return {
             "terminal",
             "winsize",
             "winpos",
+            "globals",
         }
 
         require("auto-session").setup({
-            show_auto_restore_notif = true,
+            show_auto_restore_notif = false,
 
             suppressed_dirs = { "~/", "~/Downloads", "/" },
             bypass_save_filetypes = { "alpha" },
@@ -66,53 +116,8 @@ return {
 
             legacy_cmds = false,
 
-            save_extra_data = function(_)
-                local breakpoints = package.loaded["dap.breakpoints"]
-                if not breakpoints then
-                    return
-                end
-
-                local bps = {}
-                for buf, buf_bps in pairs(breakpoints.get()) do
-                    local filename = vim.api.nvim_buf_get_name(buf)
-                    if filename ~= "" then
-                        bps[filename] = buf_bps
-                    end
-                end
-
-                if vim.tbl_isempty(bps) then
-                    return
-                end
-
-                return vim.json.encode({ breakpoints = bps })
-            end,
-
-            restore_extra_data = function(_, extra_data)
-                local json = vim.json.decode(extra_data)
-                if not json.breakpoints then
-                    return
-                end
-
-                local ok, breakpoints = pcall(require, "dap.breakpoints")
-                if not ok or not breakpoints then
-                    return
-                end
-
-                for buf_name, buf_bps in pairs(json.breakpoints) do
-                    for _, bp in ipairs(buf_bps) do
-                        local bufnr = vim.fn.bufnr(buf_name, true)
-                        if vim.fn.bufloaded(bufnr) == 0 then
-                            vim.api.nvim_buf_call(bufnr, vim.cmd.edit)
-                        end
-
-                        breakpoints.set({
-                            condition = bp.condition,
-                            log_message = bp.logMessage,
-                            hit_condition = bp.hitCondition,
-                        }, bufnr, bp.line)
-                    end
-                end
-            end,
+            save_extra_data = save_breakpoints,
+            restore_extra_data = restore_breakpoints,
 
             pre_restore_cmds = {
                 function()

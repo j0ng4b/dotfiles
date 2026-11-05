@@ -1,10 +1,12 @@
 -- Filetypes where ufo is disabled entirely.
 local IGNORE_FT = { "git", "neo-tree" }
 
--- Fold chain: LSP -> treesitter -> indent. Each step runs when the previous one
--- raises UfoFallbackException (no LSP client, no parser, ...).
+--- Fold chain: LSP -> treesitter -> indent. Each step runs when the previous one
+--- raises UfoFallbackException (no LSP client, no parser, ...).
+---
 ---@param bufnr integer
 ---@param provider string
+---
 ---@return fun(err: any): any
 local function fallback_to(bufnr, provider)
     return function(err)
@@ -18,6 +20,7 @@ end
 
 ---@param bufnr integer
 ---@param filetype string
+---
 ---@return string|table|fun(): any
 local function provider_selector(bufnr, filetype)
     if vim.tbl_contains(IGNORE_FT, filetype) then
@@ -25,19 +28,22 @@ local function provider_selector(bufnr, filetype)
     end
 
     return function()
-        return require("ufo").getFolds(bufnr, "lsp")
+        return require("ufo")
+            .getFolds(bufnr, "lsp")
             :catch(fallback_to(bufnr, "treesitter"))
             :catch(fallback_to(bufnr, "indent"))
     end
 end
 
--- Appends " 󰁂 N " (hidden line count) to the folded line, truncating the text
--- to fit.
+--- Appends " 󰁂 N " (hidden line count) to the folded line, truncating the text
+--- to fit.
+---
 ---@param virt_text table[]
 ---@param lnum integer
 ---@param end_lnum integer
 ---@param width integer
 ---@param truncate fun(str: string, width: integer): string
+---
 ---@return table[]
 local function fold_text(virt_text, lnum, end_lnum, width, truncate)
     local suffix = (" 󰁂 %d "):format(end_lnum - lnum)

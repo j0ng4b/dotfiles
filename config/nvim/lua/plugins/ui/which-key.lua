@@ -1,65 +1,75 @@
 return {
     "folke/which-key.nvim",
-    config = function()
-        local wk = require("which-key")
-        wk.setup({
-            preset = "helix",
+    event = "VeryLazy",
 
-            triggers = {
-                { "<auto>", mode = "nixsotc" },
-            },
-
-            filter = function(mapping)
-                return mapping.desc and mapping.desc ~= ""
+    keys = {
+        {
+            "<leader>?",
+            function()
+                require("which-key").show({ global = false })
             end,
+            desc = "buffer local keymaps",
+        },
+    },
 
-            win = {
-                height = { min = 4, max = 10 },
+    opts = {
+        preset = "modern",
 
-                title = true,
-                title_pos = "center",
+        -- The popup only shows up when hesitate; marks, registers and
+        -- spelling suggestions stay instant.
+        delay = function(ctx)
+            return ctx.plugin and 0 or 500
+        end,
 
-                wo = {
-                    winblend = 60,
-                },
+        triggers = {
+            { "<auto>", mode = "nxso" },
+        },
+
+        -- Hide mappings that have no description.
+        filter = function(mapping)
+            return mapping.desc ~= nil and mapping.desc ~= ""
+        end,
+
+        win = {
+            title = true,
+            title_pos = "center",
+
+            wo = { winblend = 30 },
+            height = { min = 4, max = 10 },
+        },
+
+        layout = { align = "center" },
+
+        icons = {
+            group = "",
+            rules = false,
+        },
+
+        plugins = {
+            spelling = {
+                enabled = true,
+                suggestions = 10,
             },
+        },
 
-            layout = {
-                align = "center",
-            },
+        show_keys = false,
 
-            icons = {
-                group = "",
-                rules = false,
-            },
-
-            plugins = {
-                spelling = {
-                    suggestions = 10,
-                },
-            },
-
-            show_keys = false,
-        })
-
-        wk.add({
+        spec = {
             { "<Leader>h", group = "󰊢 Git" },
-            { "<leader>e", group = "󰉓 Explorer" },
-            { "<leader>f", group = "󰈙 File search" },
-            { "<leader>d", group = "󰓙 Diagnostics" },
+            { "<Leader>c", group = " Code" },
+            { "<Leader>e", group = "󰉓 Explorer" },
+            { "<Leader>f", group = "󰈙 File/find" },
+            { "<Leader>d", group = "󰓙 Diagnostics" },
             { "<Leader>t", group = "󰙨 Test" },
             { "<Leader>b", group = "󰕷 Debug" },
-            { "<leader>q", group = "󰦛 Session" },
-            { "<leader>r", group = "󰖟 HTTP requests" },
-            { "[", group = "prev" },
+            { "<Leader>q", group = "󰦛 Session" },
+            { "<Leader>r", group = "󰖟 HTTP requests" },
+
             { "]", group = "next" },
+            { "[", group = "prev" },
             { "g", group = "goto" },
             { "gs", group = "surround" },
             { "z", group = "fold" },
-        })
-
-        vim.keymap.set({ "n" }, "<leader>?", function()
-            wk.show({ global = false })
-        end, { desc = "Buffer local keymaps" })
-    end,
+        },
+    },
 }

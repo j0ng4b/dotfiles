@@ -1,8 +1,17 @@
-local set_cursor_visible = function(visible)
-    local blend = visible and 0 or 100
+--- Hides the real cursor inside neo-tree (the current line is already highlighted).
+---
+---@param visible boolean
+local function set_cursor_visible(visible)
+    for _, group in ipairs({ "Cursor", "SmearCursorHideable" }) do
+        vim.cmd(("highlight! %s blend=%d cterm=reverse gui=reverse"):format(group, visible and 0 or 100))
+    end
+end
 
-    vim.cmd(string.format("highlight! Cursor blend=%d cterm=reverse gui=reverse", blend))
-    vim.cmd(string.format("highlight! SmearCursorHideable blend=%d cterm=reverse gui=reverse", blend))
+--- Re-equalizes the splits when the tree opens or closes on a side.
+local function equalize_windows(args)
+    if args.position == "left" or args.position == "right" then
+        vim.cmd("wincmd =")
+    end
 end
 
 return {
@@ -15,29 +24,32 @@ return {
     },
     config = function()
         local icons = require("core.utils.icons")
+
         require("neo-tree").setup({
+            enable_cursor_hijack = true,
             close_if_last_window = true,
+            auto_clean_after_session_restore = true,
 
             sources = {
                 "filesystem",
+                "buffers",
+                "git_status",
+                "document_symbols",
             },
 
             window = {
                 position = "left",
                 width = 40,
-                mappings = {
-                    ["e"] = function()
-                        vim.api.nvim_exec("Neotree focus filesystem left", true)
-                    end,
-                },
             },
 
             filesystem = {
                 filtered_items = {
                     visible = true,
                     hide_gitignored = true,
-                    use_libuv_file_watcher = true,
                 },
+
+                -- Refresh the tree when files change outside Neovim.
+                use_libuv_file_watcher = true,
             },
 
             default_component_configs = {
@@ -55,13 +67,13 @@ return {
 
                 git_status = {
                     symbols = {
-                        -- Change type, I don't use it anymore
+                        -- File change type
                         added = "",
                         deleted = "",
                         modified = "",
                         renamed = "",
 
-                        -- Status type
+                        -- File status type
                         untracked = icons.git.untracked,
                         ignored = icons.git.ignored,
                         unstaged = icons.git.unstaged,
@@ -81,33 +93,19 @@ return {
                 },
             },
 
-            source_selector = {
-                winbar = true,
-                statusline = false,
-                content_layout = "center",
-                tabs_layout = "equal",
-
-                separator = {
-                    left = "",
-                    right = "",
-                },
-
-                sources = {
-                    {
-                        source = "filesystem",
-                        display_name = "󰉓 Files",
-                    },
-                },
-            },
-
             event_handlers = {
                 {
                     event = "neo_tree_popup_input_ready",
-                    handler = function()
-                        -- On NeoTree buffers movement with left and right arrows
-                        -- are needed to move on pop-up.
-                        pcall(vim.keymap.del, { "i" }, "<Left>")
-                        pcall(vim.keymap.del, { "i" }, "<Right>")
+                    handler = function(args)
+                        -- The prompt needs the arrow keys: shadow global
+                        -- insert-mode mapping disabling arrow keys for this
+                        -- buffer only.
+                        for _, key in ipairs({ "<Left>", "<Right>" }) do
+                            vim.keymap.set("i", key, key, {
+                                buffer = args.bufnr,
+                                noremap = true,
+                            })
+                        end
 
                         set_cursor_visible(true)
                     end,
@@ -115,75 +113,38 @@ return {
 
                 {
                     event = "neo_tree_window_after_open",
-                    handler = function(args)
-                        if args.position == "left" or args.position == "right" then
-                            vim.cmd("wincmd =")
-                        end
-                    end,
+                    handler = equalize_windows,
                 },
 
                 {
                     event = "neo_tree_window_after_close",
-                    handler = function(args)
-                        if args.position == "left" or args.position == "right" then
-                            vim.cmd("wincmd =")
-                        end
-                    end,
+                    handler = equalize_windows,
                 },
             },
 
-            nesting_rules = {
-                ["package.json"] = {
-                    pattern = "^package%.json$",
-                    files = { "package-lock.json" },
-                },
-
-                ["js"] = {
-                    pattern = "(.+)%.js$",
-                    files = { "%1.js.map", "%1.min.js", "%1.d.ts" },
-                },
-
-                ["docker"] = {
-                    pattern = "^dockerfile$",
-                    files = { ".dockerignore", "docker-compose.*", "dockerfile*", "compose.*" },
-                    ignore_case = true,
-                },
-            },
+            nesting_rules = require("neotree-file-nesting-config").nesting_rules,
         })
 
-        vim.api.nvim_create_autocmd("BufEnter", {
-            pattern = "*",
+        -- Hidden in the tree, visible everywhere else. ColorScheme reapplies it,
+        -- because :colorscheme clears every highlight group.
+        vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "ColorScheme" }, {
+            group = vim.api.nvim_create_augroup("NeoTreeCursor", { clear = true }),
+            desc = "Hide the cursor inside neo-tree",
             callback = function()
-                if vim.bo.filetype == "neo-tree" then
-                    set_cursor_visible(false)
-                end
-            end,
-        })
-
-        vim.api.nvim_create_autocmd("BufLeave", {
-            pattern = "*",
-            callback = function()
-                if vim.bo.filetype == "neo-tree" then
-                    set_cursor_visible(true)
-                end
+                set_cursor_visible(vim.bo.filetype ~= "neo-tree")
             end,
         })
 
         local command = require("neo-tree.command")
-        vim.keymap.set({ "n" }, "<leader>ef", function()
-            command.execute({ toggle = true, source = "filesystem" })
-        end, { desc = "toggle files explorer" })
+        local function map(lhs, source, desc)
+            vim.keymap.set("n", lhs, function()
+                command.execute({ toggle = true, source = source })
+            end, { desc = desc })
+        end
 
-        vim.keymap.set({ "n" }, "<leader>eb", function()
-            command.execute({ toggle = true, source = "buffers" })
-        end, { desc = "toggle buffers explorer" })
-
-        vim.keymap.set({ "n" }, "<leader>eg", function()
-            command.execute({ toggle = true, source = "git_status" })
-        end, { desc = "toggle git status explorer" })
-
-        vim.keymap.set({ "n" }, "<leader>es", function()
-            command.execute({ toggle = true, source = "document_symbols" })
-        end, { desc = "lsp document symbols explorer" })
+        map("<leader>ef", "filesystem", "toggle files explorer")
+        map("<leader>eb", "buffers", "toggle buffers explorer")
+        map("<leader>eg", "git_status", "toggle git status explorer")
+        map("<leader>es", "document_symbols", "toggle lsp document symbols explorer")
     end,
 }

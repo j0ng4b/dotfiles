@@ -10,7 +10,6 @@ local set = vim.opt
 --   W: don't overwrite a readonly file without `!`
 set.cpoptions:append("EnW")
 
-
 -- Indentation
 set.autoindent = true
 set.expandtab = true
@@ -19,16 +18,13 @@ set.shiftwidth = 0 -- when zero this uses tabstop value
 set.softtabstop = -1 -- when negative this use shiftwidth value
 set.tabstop = 4
 
-
 -- Files & Buffer
 set.autoread = true
 set.confirm = true
 set.hidden = true
 
-
 -- Clipboard
 set.clipboard = { "unnamedplus" }
-
 
 -- UI & Color
 set.background = "dark"
@@ -45,17 +41,14 @@ set.guicursor = {
     "sm:block-blinkwait175-blinkoff150-blinkon175",
 }
 
-
 -- Cursor line
 set.cursorline = true
 set.cursorlineopt = "both"
-
 
 -- Scrolling
 set.scrolloff = 10
 set.sidescrolloff = 15
 set.smoothscroll = true -- scroll by screen line instead of buffer line when wrapping
-
 
 -- Behaviour
 set.backspace = { "indent", "eol", "start" }
@@ -80,7 +73,6 @@ set.signcolumn = "number"
 set.virtualedit = "block" -- let the cursor go past end of line in visual block mode
 set.jumpoptions = "view" -- restore scroll position when jumping with <C-o>/<C-i>
 
-
 -- Line break
 set.wrap = true
 set.breakindent = true
@@ -88,16 +80,13 @@ set.breakindentopt = { "shift:2", "sbr" }
 set.linebreak = true
 set.showbreak = "󱞪"
 
-
 -- Command line
 set.cmdheight = 0
 set.cmdwinheight = 10
 
-
 -- Swap
 set.updatecount = 500
 set.updatetime = 500
-
 
 -- Special characters
 set.list = true
@@ -118,14 +107,12 @@ set.fillchars = {
     diff = "╱",
 }
 
-
 -- Fold
 set.foldmethod = "manual"
 set.foldcolumn = "1"
 set.foldenable = true
 set.foldlevel = 99
 set.foldlevelstart = 99
-
 
 -- Format
 set.textwidth = 80
@@ -143,7 +130,6 @@ set.textwidth = 80
 -- Not included on purpose: "o" (no comment leader on o/O), see autocmds
 set.formatoptions = "tcrqnl1j"
 
-
 -- Window & Preview window
 set.helpheight = 0
 set.previewheight = 15
@@ -155,7 +141,6 @@ set.winblend = 20
 if vim.fn.has("nvim-0.11") == 1 then
     set.winborder = "rounded"
 end
-
 
 -- Search
 set.hlsearch = false
@@ -170,30 +155,25 @@ if vim.fn.executable("rg") == 1 then
     set.grepformat = "%f:%l:%c:%m" -- file:line:column:message
 end
 
-
 -- Status line & Tab line
 set.laststatus = 3
 set.ruler = false
 set.showtabline = 0
 set.tabpagemax = 10
 
-
 -- Mouse
 set.mouse = "ar"
 set.mousemodel = "popup_setpos"
 set.mousemoveevent = true
 
-
 -- Line numbering
 set.number = true
 set.relativenumber = true
-
 
 -- Pop-up
 set.pumblend = 25
 set.pumheight = 30
 set.pumwidth = 60
-
 
 -- Session
 set.sessionoptions = {
@@ -207,7 +187,6 @@ set.sessionoptions = {
     "folds", -- manual folds
 }
 
-
 -- Spell
 set.spell = true
 set.spelllang = { "en", "pt_br" }
@@ -218,19 +197,16 @@ set.spellfile = {
     vim.fn.stdpath("config") .. "/spell/pt.utf-8.add",
 }
 
-
 -- Timeout
 set.timeout = true
 set.ttimeout = true
 set.timeoutlen = 500
 set.ttimeoutlen = 100
 
-
 -- Undo
 set.undofile = true
 set.undolevels = 1000
 set.undoreload = 10000
-
 
 -- Wild menu
 set.wildcharm = 9 -- key code (9 = <Tab>) that triggers completion inside mappings and macros

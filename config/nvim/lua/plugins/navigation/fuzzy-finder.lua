@@ -1,4 +1,7 @@
--- Most recently used first; the current buffer goes last.
+--- Returns all listed buffers.
+---
+--- Most recently used first, the current buffer goes last.
+---
 ---@return table[]
 local function get_buffers()
     local current = vim.api.nvim_get_current_buf()
@@ -15,9 +18,11 @@ local function get_buffers()
     return infos
 end
 
--- Shortest path suffix that tells the buffers apart: only colliding labels
--- grow, one directory at a time.
+--- Shortest path suffix that tells the buffers apart: only colliding labels
+--- grow, one directory at a time.
+---
 ---@param paths string[]
+---
 ---@return string[]
 local function smart_labels(paths)
     local segs, depth, labels = {}, {}, {}
@@ -52,10 +57,10 @@ local function smart_labels(paths)
     return labels
 end
 
--- Opens an interactive fuzzy-find buffer switcher using fzf-lua.
---
--- Lists buffers ordered by most recently used, with smart path disambiguation,
--- devicons, modified indicators, and management actions (switch / delete).
+--- Opens an interactive fuzzy-find buffer switcher using fzf-lua.
+---
+--- Lists buffers ordered by most recently used, with smart path disambiguation,
+--- devicons, modified indicators, and management actions (switch / delete).
 local function smart_buffers()
     local fzf = require("fzf-lua")
     local fzf_utils = require("fzf-lua.utils")
@@ -63,8 +68,11 @@ local function smart_buffers()
 
     local WIN_W = 0.80
 
-    -- Lines look like "<bufnr>\t<display>"; fzf only shows the display part.
+    --- Lines look like "<bufnr>\t<display>" fzf will only shows the display
+    --- part.
+    ---
     ---@param line? string
+    ---
     ---@return integer|nil
     local function bufnr_of(line)
         return tonumber((line or ""):match("^(%d+)\t"))
@@ -89,19 +97,28 @@ local function smart_buffers()
             local left_w = vim.fn.strdisplaywidth(icon .. " " .. labels[i] .. mod)
             local pad = math.max(1, content_w - left_w - #num)
 
-            cb(("%d\t%s %s%s%s%s"):format(
-                b.bufnr,
-                hl and fzf_utils.ansi_from_hl(hl, icon) or icon,
-                labels[i],
-                mod,
-                (" "):rep(pad),
-                fzf_utils.ansi_codes.magenta(num)
-            ))
+            cb(
+                ("%d\t%s %s%s%s%s"):format(
+                    b.bufnr,
+                    hl and fzf_utils.ansi_from_hl(hl, icon) or icon,
+                    labels[i],
+                    mod,
+                    (" "):rep(pad),
+                    fzf_utils.ansi_codes.magenta(num)
+                )
+            )
         end
 
         cb()
     end, {
-        winopts = { width = WIN_W, height = 0.4, preview = { hidden = true } },
+        winopts = {
+            width = WIN_W,
+            height = 0.4,
+
+            preview = {
+                hidden = true,
+            },
+        },
 
         fzf_opts = {
             ["--delimiter"] = "\t",

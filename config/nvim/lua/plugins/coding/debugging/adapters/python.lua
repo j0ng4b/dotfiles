@@ -8,8 +8,9 @@ dap.adapters.python = {
     args = { "-m", "debugpy.adapter" },
 }
 
--- Interpreter for the debugged program: activated venv, then the project's
--- .venv/venv, then PATH.
+--- Interpreter for the debugged program: activated venv, then the project's
+--- .venv/venv, then PATH.
+---
 ---@return string
 local function python_path()
     local cwd = vim.fn.getcwd()

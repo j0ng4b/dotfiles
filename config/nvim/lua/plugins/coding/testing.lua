@@ -2,8 +2,8 @@ local function nt()
     return require("neotest")
 end
 
--- All adapters are registered up front: each one only claims the projects it
--- recognizes (go.mod, pyproject.toml, *.csproj, package.json...).
+--- All adapters are registered up front: each one only claims the projects it
+--- recognizes.
 local function adapters()
     return {
         require("neotest-python"),
@@ -122,7 +122,11 @@ return {
                 mappings = {
                     jumpto = "<CR>",
                     expand = {
-                        "<space>", "<right>", "<left>", "<2-LeftMouse>" },
+                        "<space>",
+                        "<right>",
+                        "<left>",
+                        "<2-LeftMouse>",
+                    },
                 },
             },
         })

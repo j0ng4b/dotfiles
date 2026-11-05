@@ -1,7 +1,9 @@
 local hl_cache = {}
 
--- Readable foreground (black/white) for a 0xRRGGBB background.
+--- Readable foreground (black/white) for a 0xRRGGBB background.
+---
 ---@param bg integer
+---
 ---@return integer
 local function contrast_fg(bg)
     local r = math.floor(bg / 0x10000)
@@ -11,9 +13,11 @@ local function contrast_fg(bg)
     return (0.299 * r + 0.587 * g + 0.114 * b) > 186 and 0x000000 or 0xFFFFFF
 end
 
--- Creates the badge group once per colorscheme and returns its name.
+--- Creates the badge group once per colorscheme and returns its name.
+---
 ---@param group string
 ---@param bg integer
+---
 ---@return string
 local function badge(group, bg)
     if not hl_cache[group] then
@@ -24,16 +28,19 @@ local function badge(group, bg)
     return group
 end
 
--- Inverted version of cmp's own CmpItemKind<kind> (icon on a colored block).
+--- Inverted version of cmp's own CmpItemKind<kind> (icon on a colored block).
 ---@param kind string
+---
 ---@return string|nil
 local function kind_badge(kind)
     local fg = vim.api.nvim_get_hl(0, { name = "CmpItemKind" .. kind, link = false }).fg
     return fg and badge("CmpKindBadge" .. kind, fg) or nil
 end
 
--- Parses "#rgb", "#rrggbb" or "#rrggbbaa" into 0xRRGGBB. Anything else is nil.
+--- Parses "#rgb", "#rrggbb" or "#rrggbbaa" into 0xRRGGBB. Anything else is nil.
+---
 ---@param text? string
+---
 ---@return integer|nil
 local function hex_to_int(text)
     local digits = text and text:match("#(%x+)")
@@ -52,8 +59,9 @@ local function hex_to_int(text)
     return tonumber(digits:sub(1, 6), 16)
 end
 
--- Color of a completion entry: LSP Color items (tailwind, css-lsp) or a
--- label that is itself a hex color.
+--- Color of a completion entry: LSP Color items (tailwind, css-lsp) or a
+--- label that is itself a hex color.
+---
 ---@return integer|nil
 local function entry_color(entry)
     local item = entry:get_completion_item()

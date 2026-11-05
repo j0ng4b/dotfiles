@@ -98,8 +98,9 @@ local TOOL_GROUPS = {
     },
 }
 
--- Flattens TOOL_GROUPS into a plain list, skipping groups whose required
--- executable is missing.
+--- Flattens TOOL_GROUPS into a plain list, skipping groups whose required
+--- executable is missing.
+---
 ---@return string[]
 local function build_tool_list()
     local tools = {}

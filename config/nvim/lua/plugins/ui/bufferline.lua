@@ -3,28 +3,25 @@ return {
     dependencies = "nvim-tree/nvim-web-devicons",
     config = function()
         local bufferline = require("bufferline")
+        local groups = require("bufferline.groups")
 
         local icons = require("core.utils.icons")
         local buffer = require("core.utils.buffer")
 
         bufferline.setup({
             options = {
-                themable = false,
+                themable = true,
                 separator_style = "slant",
-                modified_icon = icons.file.modified,
-                sort_by = "directory",
 
-                close_command = function(bufnr)
-                    buffer.close(bufnr)
-                end,
-                right_mouse_command = function(bufnr)
-                    buffer.close(bufnr)
-                end,
+                sort_by = "directory",
+                modified_icon = icons.file.modified,
+
+                show_buffer_close_icons = false,
 
                 offsets = {
                     {
                         filetype = "neo-tree",
-                        text = "Explore",
+                        text = "NeoTree",
                         text_align = "center",
                         separator = false,
                     },
@@ -32,7 +29,7 @@ return {
 
                 hover = {
                     enabled = true,
-                    delay = 100,
+                    delay = 500,
                     reveal = { "close" },
                 },
 
@@ -42,6 +39,8 @@ return {
                     },
 
                     items = {
+                        groups.builtin.ungrouped,
+
                         {
                             name = "Terminal",
                             auto_close = true,
@@ -52,10 +51,16 @@ return {
                     },
                 },
 
+                close_command = function(bufnr)
+                    buffer.close(bufnr)
+                end,
+
+                right_mouse_command = function(bufnr)
+                    buffer.close(bufnr)
+                end,
+
                 custom_filter = function(buf_number)
                     if vim.bo[buf_number].filetype == "qf" or vim.bo[buf_number].buftype == "quickfix" then
-                        return false
-                    elseif vim.bo[buf_number].filetype == "codecompanion" then
                         return false
                     end
 

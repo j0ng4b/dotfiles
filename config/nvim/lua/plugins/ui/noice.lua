@@ -1,10 +1,13 @@
 return {
     "folke/noice.nvim",
+    event = "VeryLazy",
     dependencies = {
         "MunifTanjim/nui.nvim",
-        "nvim-treesitter/nvim-treesitter",
         "rcarriga/nvim-notify",
+
+        "nvim-treesitter/nvim-treesitter",
     },
+
     config = function()
         require("nvim-treesitter").install({
             "vim",
@@ -12,9 +15,26 @@ return {
             "bash",
             "regex",
             "markdown",
+            "markdown_inline",
         })
 
         require("noice").setup({
+            lsp = {
+                -- override markdown rendering
+                override = {
+                    ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
+                    ["vim.lsp.util.stylize_markdown"] = true,
+                    ["cmp.entry.get_documentation"] = true,
+                },
+            },
+
+            presets = {
+                command_palette = true,
+                long_message_to_split = true,
+                inc_rename = true,
+                lsp_doc_border = true,
+            },
+
             cmdline = {
                 enable = true,
                 view = "cmdline_popup",
@@ -70,7 +90,7 @@ return {
             views = {
                 cmdline_popup = {
                     position = {
-                        row = vim.api.nvim_win_get_height(0) / 2 - 5,
+                        row = math.floor(vim.o.lines / 2),
                         col = "50%",
                     },
 
@@ -84,7 +104,7 @@ return {
                     relative = "editor",
 
                     position = {
-                        row = vim.api.nvim_win_get_height(0) / 2 - 2,
+                        row = math.floor(vim.o.lines / 2),
                         col = "50%",
                     },
 
@@ -114,6 +134,13 @@ return {
                     filter = {
                         event = "notify",
                         min_height = 10,
+                    },
+                },
+
+                {
+                    view = "notify",
+                    filter = {
+                        event = "msg_showmode",
                     },
                 },
             },

@@ -6,7 +6,8 @@ dap.adapters.coreclr = {
     args = { "--interpreter=vscode" },
 }
 
--- Closest .csproj above the current buffer (or above cwd for unnamed buffers).
+--- Closest .csproj above the current buffer (or above cwd for unnamed buffers).
+---
 ---@return string|nil
 local function find_project()
     local name = vim.api.nvim_buf_get_name(0)
@@ -27,7 +28,8 @@ local function project_dir(project)
     return project and vim.fs.dirname(project) or vim.fn.getcwd()
 end
 
--- Debug build outputs of the project, without reference assemblies.
+--- Debug build outputs of the project, without reference assemblies.
+---
 ---@return string[]
 local function find_dlls()
     local project = find_project()

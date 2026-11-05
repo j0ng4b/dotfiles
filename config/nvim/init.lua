@@ -14,8 +14,12 @@ require("core")
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
     local out = vim.fn.system({
-        "git", "clone", "--filter=blob:none", "--branch=stable",
-        "https://github.com/folke/lazy.nvim.git", lazypath,
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "--branch=stable",
+        "https://github.com/folke/lazy.nvim.git",
+        lazypath,
     })
 
     if vim.v.shell_error ~= 0 then
@@ -28,10 +32,10 @@ require("lazy").setup({
     spec = {
         { import = "plugins.coding" },
         { import = "plugins.coding.editing" },
-        { import = "plugins.coding.syntax" },
 
         { import = "plugins.editor" },
-        { import = "plugins.git" },
+        { import = "plugins.editor.syntax" },
+
         { import = "plugins.integrations" },
         { import = "plugins.navigation" },
 
@@ -46,7 +50,7 @@ require("lazy").setup({
 
     install = {
         -- Colorscheme used while installing plugins on the first run.
-        colorscheme = { "habamax" }
+        colorscheme = { "habamax" },
     },
 
     change_detection = {
@@ -63,7 +67,7 @@ require("lazy").setup({
                 "tarPlugin",
                 "tohtml",
                 "tutor",
-                "zipPlugin"
+                "zipPlugin",
             },
         },
     },

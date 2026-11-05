@@ -40,6 +40,20 @@ local function is_candidate(bufnr, target)
         and not is_ignored(bufnr)
 end
 
+--- Whether the buffer is an unnamed, unmodified, empty one: the placeholder
+--- left behind when the last real buffer is closed.
+---
+---@param bufnr integer
+---
+---@return boolean
+local function is_empty(bufnr)
+    return vim.api.nvim_buf_get_name(bufnr) == ""
+        and vim.bo[bufnr].buftype == ""
+        and not vim.bo[bufnr].modified
+        and vim.api.nvim_buf_line_count(bufnr) == 1
+        and vim.api.nvim_buf_get_lines(bufnr, 0, 1, false)[1] == ""
+end
+
 --- Picks the buffer that should replace `target` in `win`.
 ---
 --- Preference:
@@ -77,7 +91,13 @@ end
 ---@param bufnr integer
 ---@param force boolean?
 local function delete_buffer(bufnr, force)
-    vim.cmd(string.format("bdelete%s %d", force and "!" or "", bufnr))
+    -- The buffer can be gone already: an empty placeholder (bufhidden=wipe) is
+    -- wiped as soon as its window is switched to another buffer.
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+        return
+    end
+
+    pcall(vim.cmd, string.format("bdelete%s %d", force and "!" or "", bufnr))
 end
 
 --- Closes a buffer while preserving the current window layout.
@@ -108,6 +128,16 @@ function M.close(bufnr)
 
     if vim.bo[bufnr].modified then
         vim.notify("Can't close: the buffer was modified!", vim.log.levels.WARN)
+        return
+    end
+
+    -- Nothing left to close: this is the empty placeholder and no other
+    -- buffer could replace it.
+    local has_other = vim.iter(vim.api.nvim_list_bufs()):any(function(buf)
+        return is_candidate(buf, bufnr)
+    end)
+    if is_empty(bufnr) and not has_other then
+        vim.notify("No more buffers to close", vim.log.levels.INFO)
         return
     end
 

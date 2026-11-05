@@ -27,7 +27,7 @@ local REPL_ALIASES = {
 
 local ADAPTERS = "plugins.coding.debugging.adapters"
 
--- Loads every module in adapters/ (one per language: adapter + configurations).
+--- Loads every module in adapters/ (one per language: adapter + configurations).
 local function load_adapters()
     local dir = vim.fn.stdpath("config") .. "/lua/" .. (ADAPTERS:gsub("%.", "/"))
 
@@ -42,7 +42,8 @@ local function load_adapters()
     end
 end
 
--- Breakpoint that asks for a text first (condition or log message).
+--- Breakpoint that asks for a text first (condition or log message).
+---
 ---@param prompt string
 ---@param set fun(dap: table, text: string)
 local function prompted_breakpoint(prompt, set)
@@ -54,7 +55,8 @@ local function prompted_breakpoint(prompt, set)
     end
 end
 
--- Moves the cursor to a DAP UI element, opening the UI if it isn't visible.
+--- Moves the cursor to a DAP UI element, opening the UI if it isn't visible.
+---
 ---@param name string
 local function focus_dapui(name)
     return function()
