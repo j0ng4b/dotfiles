@@ -53,8 +53,8 @@ local function get_formatters_by_ft()
 
     for _, ft in ipairs(WEB_FTS) do
         by_ft[ft] = {
-            "prettier",
             "oxfmt",
+            "prettier",
             stop_after_first = true,
         }
     end

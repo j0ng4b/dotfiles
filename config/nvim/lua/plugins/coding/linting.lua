@@ -54,7 +54,7 @@ return {
     config = function()
         local lint = require("lint")
 
-        local js = { "eslint", "oxlint" }
+        local js = { "oxlint", "eslint" }
         lint.linters_by_ft = {
             javascript = js,
             javascriptreact = js,
