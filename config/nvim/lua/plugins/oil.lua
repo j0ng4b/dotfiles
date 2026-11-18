@@ -46,6 +46,7 @@ return {
                     wrap = true,
                     number = false,
                     relativenumber = false,
+                    colorcolumn = "",
                 },
             },
 
