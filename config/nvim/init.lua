@@ -30,6 +30,8 @@ vim.opt.runtimepath:prepend(lazypath)
 
 require("lazy").setup({
     spec = {
+        { import = "plugins" },
+
         { import = "plugins.coding" },
         { import = "plugins.coding.editing" },
 
