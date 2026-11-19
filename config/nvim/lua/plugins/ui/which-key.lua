@@ -64,6 +64,7 @@ return {
             { "<Leader>b", group = "󰕷 Debug" },
             { "<Leader>q", group = "󰦛 Session" },
             { "<Leader>r", group = "󰖟 HTTP requests" },
+            { "<Leader>D", group = "󰆼 Database" },
 
             { "]", group = "next" },
             { "[", group = "prev" },
