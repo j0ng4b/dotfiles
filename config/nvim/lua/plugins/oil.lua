@@ -55,7 +55,7 @@ return {
                 ["g?"] = { "actions.show_help", mode = "n" },
                 ["g."] = { "actions.toggle_hidden", mode = "n" },
 
-                ["h"] = "actions.parent",
+                ["<S-h>"] = "actions.parent",
                 ["<BS>"] = { "actions.parent", mode = "n" },
 
                 ["s"] = { "actions.select", opts = { horizontal = true } },
