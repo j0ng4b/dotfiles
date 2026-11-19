@@ -248,8 +248,11 @@ return {
 
         vim.api.nvim_create_autocmd("BufUnload", {
             group = group,
-            buffer = 0,
-            callback = function()
+            callback = function(event)
+                if vim.bo[event.buf].filetype ~= "alpha" then
+                    return
+                end
+
                 state.closed = true
                 restore_ui()
             end,
