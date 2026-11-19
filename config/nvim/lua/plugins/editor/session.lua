@@ -122,6 +122,26 @@ return {
             -- purge session that haven't been accessed for more than 3 days.
             purge_after_minutes = 4320,
 
+            pre_save_cmds = {
+                -- Wipe dbui tmp buffers
+                --
+                -- Temp queries are throwaway files and must not be restored
+                -- with the session. They are listed in it as plain file
+                -- buffers, so on the next start they come back either as the
+                -- file itself (when it was saved, so it shows up readonly in
+                -- the dashboard) or as an empty unnamed buffer (when quitting
+                -- without saving, which also breaks the dbout layout, since the
+                -- result replaces the query window).
+                function()
+                    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+                        local name = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t")
+                        if name:match("dbui%-tmp%-") then
+                            pcall(vim.api.nvim_buf_delete, buf, { force = true })
+                        end
+                    end
+                end,
+            },
+
             pre_restore_cmds = {
                 function()
                     local breakpoints = package.loaded["dap.breakpoints"]

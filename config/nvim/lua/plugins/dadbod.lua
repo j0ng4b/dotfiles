@@ -128,5 +128,17 @@ return {
             end,
             desc = "Dadbod keymaps for SQL buffers",
         })
+
+        local tmp_counter = 0
+        vim.g.Db_ui_buffer_name_generator = function(opts)
+            tmp_counter = tmp_counter + 1
+            local suffix = ("%d-%d"):format(os.time(), tmp_counter)
+
+            if opts.table == "" then
+                return "dbui-tmp-" .. suffix
+            end
+
+            return ("dbui-tmp-%s-%s"):format(opts.table, suffix)
+        end
     end,
 }
