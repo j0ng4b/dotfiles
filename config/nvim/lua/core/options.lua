@@ -46,7 +46,7 @@ set.cursorline = true
 set.cursorlineopt = "both"
 
 -- Scrolling
-set.scrolloff = 10
+set.scrolloff = 0
 set.sidescrolloff = 15
 set.smoothscroll = true -- scroll by screen line instead of buffer line when wrapping
 
