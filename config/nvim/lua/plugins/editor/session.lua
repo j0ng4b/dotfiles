@@ -91,7 +91,6 @@ return {
 
     config = function()
         vim.opt.sessionoptions = {
-            "blank",
             "buffers",
             "curdir",
             "folds",
@@ -110,6 +109,7 @@ return {
 
             suppressed_dirs = { "~/", "~/Downloads", "/" },
             bypass_save_filetypes = { "alpha" },
+            close_filetypes_on_save = { "checkhealth", "dbout", "dbui" },
 
             git_use_branch_name = true,
             git_auto_restore_on_branch_change = false,
@@ -118,6 +118,9 @@ return {
 
             save_extra_data = save_breakpoints,
             restore_extra_data = restore_breakpoints,
+
+            -- purge session that haven't been accessed for more than 3 days.
+            purge_after_minutes = 4320,
 
             pre_restore_cmds = {
                 function()
